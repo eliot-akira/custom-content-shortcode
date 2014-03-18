@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.8.1
-Stable tag: 0.6.9
+Stable tag: 0.7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,8 +61,8 @@ None.
 
 * **[content]** - Display correct author name
 * **[content]** - Added field *modified* to display date of last post update
-* **[content]** - Added field *parent* (by slug) to display children
-* **[content]** - Improved *orderby="menu_order"*
+* **[loop]** - Added field *parent* (by slug) to display children
+* **[loop]** - Improved *orderby="menu_order"*
 * **[loop]** - Improved *orderby="modified"*
 * Fixed compatibility with a theme
 
