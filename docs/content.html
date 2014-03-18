@@ -1,0 +1,47 @@
+<h3>Basic Examples</h3>
+
+Here are some examples of using the <strong>[content]</strong> shortcode.
+<h4>Display post content by name</h4>
+<code>[content name="hello-world"]</code>
+<h4>Display the featured image of a page</h4>
+<code>[content type="page" name="about-me" field="image"]</code>
+<h4>Display a custom field from a custom post type</h4>
+<code>[content type="apartment" name="lux-suite-22" field="rent-per-day"]</code>
+<h4>Display fields from the current post</h4>
+<code>The Article &lt;b&gt;[content field="title"]&lt;/b&gt; by [content field="author"] was written on [content field="date"].</code><br>
+<hr>
+<h3>Parameters</h3>
+
+Available parameters of the <strong>[content]</strong> shortcode:
+<ul>
+	<li><strong>type</strong> - which post type to target: <em>post</em>, <em>page</em>, or <em>custom post type</em> - the default is <em>any post type</em></li>
+	<li><strong>name</strong>, <strong>title</strong>, or <strong>id</strong> -  which post to target: <em>name/slug</em>, <em>title</em>, or <em>ID</em> - the default is the <em>current post</em></li>
+	<li><strong>field</strong> - which field to display - the default is the <em>main content</em> of the post
+
+	You can display custom fields as well as predefined fields: <em>title</em>,<em> id</em>,<em> url</em>,<em> date</em>,<em> author</em>,<em> author-id</em>,<em> author-url</em>,<em> avatar</em>,<em> image</em>,<em> image-url</em>,<em> thumbnail</em>, and<em> excerpt.</em></li>
+</ul>
+In addition:
+<ul>
+	<li><strong>taxonomy</strong> - display post taxonomy, such as: <em>category</em>, <em>post_tag</em>, or a custom taxonomy; to output the slug, add: <em>out="slug"</em></li>
+	<li><strong>status</strong> - filter posts by status: <em>any</em>, <em>publish</em>, <em>pending</em>, <em>draft</em>, <em>future</em>, <em>private</em>; the default is <em>publish</em> - combination is possible, i.e., <em>status="publish, pending"</em></li>
+	<li><strong>format</strong> - add paragraph tags &lt;p&gt; and preserve line breaks &lt;br&gt; - set to <em>true</em>/<em>false</em> - by default, post content is formatted and for all other fields, it's set to <em>false</em></li>
+	<li><strong>class</strong> - add a &lt;div&gt; class to the output for styling purpose</li>
+	<li><strong>words</strong> or <strong>length</strong> - limit number of words or characters</li>
+	<li><strong>date_format</strong> - use a custom format when displaying <em>field="date"</em>
+
+	For example, "d.m.Y" will display as <em>18.11.2013</em>. Use double backslashes to escape characters - "Y/m/d \\a\\t g:i A" will show as <em>2013/11/17 at 11:06 PM</em>. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Codex: Formatting Date and Time</a></li>
+</ul>
+Image field:
+<ul>
+	<li><strong>image</strong> - display an image field
+	<li><strong>size</strong> -  size of image to get: <em>thumbnail</em>, <em>middle</em>, <em>large</em>, <em>full</em> (default) or custom defined size
+	<li><strong>in</strong> - type of image field: <em>id</em> (default), <em>url</em>, or <em>object</em>
+
+</ul>
+Other content types:
+<ul>
+	<li><strong>area</strong> or <strong>sidebar</strong> - display a widget area/sidebar by <em>title</em></li>
+	<li><strong>menu</strong> - display a menu list by <em>name/slug</em>, <em>title</em>, or <em>ID</em>.
+
+	Use the <em>ul</em> parameter for Bootstrap <em>nav-tabs, nav-pills and nav-pills-stacked</em>. For a Bootstrap navbar menu, please see the section for the <strong>[navbar]</strong> shortcode, under <b>Etc</b>.</li>
+</ul>

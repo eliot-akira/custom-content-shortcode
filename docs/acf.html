@@ -1,0 +1,87 @@
+<h3>Advanced Custom Fields</h3>
+<hr>
+<h3>Gallery field</h3>
+
+For gallery fields made in Advanced Custom Fields, use the <b>[acf_gallery]</b>  shortcode.
+
+<h4>Display images with title</h4>
+<code>[acf_gallery field="images"]
+&nbsp;&nbsp;&nbsp;&nbsp;[acf_image]
+&nbsp;&nbsp;&nbsp;&nbsp;[acf_image field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[acf_image size="thumbnail"]
+[/acf_gallery]
+</code>
+The<strong> [acf_image]</strong> shortcode displays each image in the gallery field. It can also display these fields: <em>id</em>,<em> title</em>,<em> caption</em>,<em> alt</em>,<em> url</em>, and<em> description</em>. You can set the <em>size</em> parameter to:<em> thumbnail</em>,<em> medium</em>,<em> large</em>. The default is full-size.
+
+You can also pass the image IDs to another shortcode to display.
+<h4>Pass the images to another shortcode</h4>
+<code>[pass acf_gallery="images"]
+&nbsp;&nbsp;&nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
+[/pass]</code><br>
+
+<hr>
+<h3>Repeater field</h3>
+
+For repeater fields made in Advanced Custom Fields, use the <b>[repeater]</b> shortcode. You can display sub-fields using the <strong>[sub]</strong> shortcode.
+
+
+<h4>Display repeater fields</h4>
+<code>[repeater field="boxes"]
+&nbsp;&nbsp;&nbsp;&nbsp;[sub field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[sub image="image"]
+&nbsp;&nbsp;&nbsp;&nbsp;[sub field="description" format="true"]
+[/repeater]</code>
+
+For an image field, use the <em>image</em> parameter to display the field. You can set the <em>size</em> parameter to:<em> thumbnail</em>,<em> medium</em>,<em> large</em> - default is full-size.
+
+Advanced Custom Fields gives you an option to return the image value as: image ID, image URL, or image object. You can set the <em>in</em> parameter as: <em>id</em>, <em>url</em>, or <em>image object</em>. The default is <em>image object</em>.
+<br>
+<hr>
+<h3>Flexible content field</h3>
+
+<code>[flex field="flexible_content"]
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;[layout name="title_text"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="text"]
+&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;[layout name="title_image_text"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub image="image" size="thumbnail"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="text"]
+&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;[layout name="gallery"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_gallery field="gallery" sub="true"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub_image size="thumbnail"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/acf_gallery]
+&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;
+[/flex]</code><br>
+
+<hr>
+<h3>Live Edit</h3>
+
+To enable front-end editing, install <a href="http://wordpress.org/plugins/live-edit/" target="_blank">Live Edit</a> and wrap the content you'd like to edit with the <strong>[live-edit]</strong> shortcode.
+
+If Live Edit is active, and the user is logged in and has <em>post edit</em> capability, there will be an Edit button on the top right corner of the container. Otherwise the shortcode just displays the content normally.
+<h4>Enable live edit of post title and content</h4>
+<code>[live-edit]
+&nbsp;&nbsp;&nbsp;&nbsp;Here is an article you can edit from the front-end.
+[/live-edit]</code>When you press the <em>update</em> button, the changes will be saved to the post. Changes made to any ccontent not wrapped inside the shortcode will be visible after reloading the page.
+
+Here are the available parameters:
+<ul>
+	<li><strong>field</strong> - enable Live Edit for title, content and fields</li>
+	<li><strong>admin</strong> - enable title, content and fields for administrator</li>
+	<li><strong>editor</strong> - enable title, content and fields for editor</li>
+	<li><strong>only</strong> - enable specific fields only, such as post_title</em>, <em>post_content</em>, <em>images</em> - only applies to the editor if the<em> admin</em> parameter is set</li>
+	<li><strong>title</strong> - set to <em>false</em> to disable <em>post_title</em> edit</li>
+	<li><strong>content</strong> - set to <em>false</em> to disable <em>post_content</em> edit</li>
+</ul>
+<em>Admin can edit post content and images; editor can only edit content</em>
+
+<code>[live-edit admin="images" only="post_content"]
+...
+[/live-edit]</code>

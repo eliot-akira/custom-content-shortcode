@@ -1,0 +1,80 @@
+<h3>Loop shortcode</h3>
+Here are examples of using the<b> [loop] </b>and<b> [content] </b>shortcodes.
+<h4>Display all posts</h4>
+<code>[loop type="post"]
+&nbsp;&nbsp;&nbsp;&nbsp;[content]
+[/loop]</code>
+
+Note that inside a query loop, the <strong>[content]</strong> shortcode does not need <em>type</em> or <em>name </em>parameters, because it is targeting each post in the loop.
+<h4>Display fields from all posts of a custom post type, filtered by category</h4>
+<code>[loop type="apartment" category="suite"]
+&nbsp;&nbsp;&nbsp;&nbsp;Apartment: [content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;Rent per day: [content field="rent-per-day"]
+[/loop]</code><br>
+<hr>
+<h3>Parameters</h3>
+
+Available parameters for the <strong>[loop]</strong> shortcode are:
+<ul>
+	<li><strong>type</strong> - which post type to query: <em>post</em>, <em>page</em>, <em>custom post type</em>, or <em>attachment</em> - if empty, the default is <em>any post type</em></li>
+	<li><strong>status</strong> - filter posts by status: <em>any</em>, <em>publish</em>, <em>pending</em>, <em>draft</em>, <em>future</em>, <em>private</em>; the default is <em>publish</em> - combination is possible, i.e., <em>status="publish, pending"</em></li>
+</ul>
+
+<h4>Category, tags and taxonomies</h4>
+<ul>
+	<li><strong>category</strong> - display posts from a category</li>
+	<li><strong>tag</strong> - display posts with a specific tag - for multiple tags:<em> tag="apples, green"</em></li>
+	<li><strong>taxonomy</strong>, <strong>value</strong> - search for posts whose <em>taxonomy</em> equals <em>value</em></li>
+</ul>
+
+<h4>Date</h4>
+<ul>
+	<li><strong>year, month, day</strong> - filter posts by specific year, month, day; you can use <em>today</em> as a value</li>
+</ul>
+
+<h4>Custom field value</h4>
+<ul>
+	<li><strong>field, compare, value</strong> - display posts according to custom field value; where <em>compare</em> is <em>EQUAL</em> (default) or <em>NOT EQUAL</em></li>
+	<li><strong>relation, field_2, compare_2, value_2</strong> - Additional query for custom field value, where <em>relation</em> is <em>AND</em> (default) or <em>OR</em></li>
+	<li><strong>checkbox, value</strong> - display posts according to custom field, whose checkbox contains value - combination is possible, i.e., <em>value="first, second"</em></li>
+	<li><strong>relation, checkbox_2, value_2</strong> - Additional query for checkbox value, where <em>relation</em> is <em>AND</em> (default) or <em>OR</em></li>
+</ul>
+
+<h4>Sorting and series</h4>
+<ul>
+	<li><strong>orderby</strong> - order by<em> ID</em>,<em> author</em>,<em> title</em>,<em> name</em>,<em> date</em>,<em> parent</em>,<em> meta_value</em> (custom field value: string), or<em> meta_value_num</em> (custom field value: number)</li>
+	<li><strong>key</strong> - when ordering by<em> meta_value</em> or<em> meta_value_num</em>, you need to specify<strong> key</strong> as the name of the custom field to order by</li>
+	<li><strong>order</strong> - ASC (ascending/alphabetical) or DESC (descending/from most recent date) when using the <em>orderby</em> parameter</li>
+	<li><strong>series</strong>, <strong>key</strong> - order posts by a series of custom field values, where <em>key</em> is the name of the field - the series can include ranges, for example: <em>1-15,30-40,42,44</em>.</li>
+</ul>
+<h4>Other parameters</h4>
+<ul>
+	<li><strong>count</strong> - number of posts to show - default is <em>all</em></li>
+	<li><strong>offset</strong> - offset the loop by a number of posts, for example: skip the first 3 posts in the query</li>
+	<li><strong>clean</strong> - set to <em>true</em> to remove all <em>&lt;p&gt;</em> and <em>&lt;br&gt;</em> tags inside the loop; use <strong>[p]</strong> and <strong>[br]</strong> shortcodes to manually create paragraphs and break lines
+	<li><strong>strip_tags</strong> - set to <em>true</em> to remove all HTML tags inside the loop
+	<li><strong>allow</strong> - strip all HTML tags except allowed; for example, <em>allow="&lt;a&gt;&lt;li&gt;&lt;br&gt;"</em>
+	<li><strong>x</strong> - repeat the loop <em>x</em> times - no query</li>
+</ul><br>
+<hr>
+<h3>Query for custom field values</h3>
+
+<h4>Single field</h4>
+
+<code>[loop type="hotels" field="stars" value="4"]</code>
+
+<h4>Single field compare</h4>
+
+<code>[loop type="hotels" field="stars" compare="NOT EQUAL" value="3"]</code>
+
+<h4>Two field values</h4>
+
+<code>[loop type="hotels" field="stars" value="4" field_2="service" value_2="all inclusive"]</code>
+
+<h4>Two field values relation</h4>
+
+<code>[loop type="hotels" field="stars" value="4 stars" relation="OR" field_2="service" value_2="all inclusive"]</code>
+
+<h4>Series</h4>
+
+<code>[loop type="books" series="1,2,3,7-15,50-60" key="serial_number"]</code>

@@ -1,0 +1,79 @@
+<h3>Loading HTML/CSS/JS</h3>
+
+Use the <strong>[load]</strong> shortcode to include a file into a page. This could be useful for loading page-specific stylesheets, jQuery scripts, layout templates, etc.
+
+For ease of use, create a field group called <b>Scripts</b>, with custom fields named <em>html</em>, <em>css</em>, and <em>js</em>. These are loaded into the content, header and footer of the page.
+<br>
+<hr>
+<h3>Header - CSS</h3>
+Create a custom field called <em>css</em>, and the content of the field will be included in the header.
+<h4>Load a stylesheet from the <strong>css</strong> field</h4>
+<code>[load css="bootstrap.min.css"]</code>
+<h4>Wrapping CSS script</h4>
+<code>[css]
+&nbsp;&nbsp;&nbsp;&nbsp;.entry-content {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background-color: black;
+&nbsp;&nbsp;&nbsp;&nbsp;}
+[/css]</code><br>
+<hr>
+<h3>Google Fonts</h3>
+
+Use the <strong>[load]</strong> shortcode and the <em>gfonts</em> parameter to include fonts from Google Fonts.
+
+<h4>Include fonts and apply them to page elements</h4>
+
+<code>[load gfonts="Lato|Lora:400,700"]
+[css]
+&nbsp;&nbsp;&nbsp;&nbsp;h1, h2 { font-family: Lora, serif; }
+&nbsp;&nbsp;&nbsp;&nbsp;p { font-family: Lato, sans-serif; }
+[/css]</code>
+
+The code should be placed in a custom field named <em>css</em>, so the fonts will be included in the header.
+<br>
+<hr>
+<h3>Footer - JS</h3>
+Create a custom field called <em>js</em>, and the content of the field will be added at the end of the page, just before &lt;/body&gt;.
+<h4>Load a JavaScript file</h4>
+<code>[load js="bootstrap.min.js"]</code>
+
+You can also load JS files in the header by placing the above command in the <em>css</em> field.
+
+<h4>Wrapping JS script</h4>
+<code>[js]
+&nbsp;&nbsp;&nbsp;&nbsp;jQuery(window).load(function() {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;jQuery('.isotope_container').isotope('reLayout');
+&nbsp;&nbsp;&nbsp;&nbsp;});
+[/js]</code><br>
+<hr>
+<h3>File location</h3>
+By default, the <strong>[load]</strong> shortcode gets the specified file under the <em>css</em> or <em>js</em> folder in the theme directory. You can choose a different directory using the <em>dir</em> parameter.
+<h4>Load a CSS file from a different location</h4>
+<code>[load dir="content" css="includes/css/font-awesome.min.css"]</code>
+
+Available tags for the <em>dir</em> parameter:
+<ul>
+	<li>web - http://</li>
+	<li>site - site address</li>
+	<li>wordpress - WordPress directory</li>
+	<li>content - /wp-content/</li>
+	<li>layout - /wp-content/layout/</li>
+	<li>theme - theme directory - /wp-content/theme</li>
+	<li>child - child theme directory - /wp-content/child_theme</li>
+</ul><br>
+<hr>
+<h3>HTML</h3>
+Create a custom field called <em>html</em>, and the content of the field will be displayed <em>instead of</em> the post content. This is could be useful for wrapping the post content in different layouts, especially using a blank page template.
+<br>
+<h3>Include files</h3>
+
+Use the <strong>[load]</strong> shortcode and the <em>file</em> parameter to include a file anywhere. The file can contain HTML, PHP script, and shortcodes. This can be used for creating flexible and reusable modules. 
+
+<h4>Load a sidebar</h4>
+
+<code>[load dir="layout" file="sidebar.html"]</code>
+
+By default, the <em>file</em> parameter looks in the theme folder.
+
+To format the output with line breaks and paragraph tags, set the parameter <em>format</em> to true. If you want to disable PHP or shortcodes, set the parameter <em>php</em> or <em>shortcode</em> to false.
+
+
