@@ -109,11 +109,11 @@ class Loop_Shortcode {
 				$compare_2 = $c2;
 			if($r!='')
 				$relation = $r;
-			if($checkbox!='')
+/*			if($checkbox!='')
 				$field = $checkbox;
 			if($checkbox_2!='')
 				$field_2 = $checkbox_2;
-
+*/
 
 		if(( $field != 'gallery' ) && ($shortcode_name != 'pass') && ($value!='')) {
 
@@ -411,7 +411,6 @@ class Loop_Shortcode {
 
 		if( $posts->have_posts() ) : while( $posts->have_posts() ) : $posts->the_post();
 
-
 			// Filter by checkbox..
 
 			$skip_1 = false;
@@ -419,8 +418,22 @@ class Loop_Shortcode {
 				$values = explode(",", $query_value);
 				$check_field = get_post_meta( get_the_ID(), $checkbox, $single=true );
 
+				if(empty($compare)) $compare="or";
+				elseif (empty($checkbox_2)) $compare = strtolower($compare);
+				else $compare="or";
+
+				if ($compare == 'or') $skip_1 = true;
+
 				foreach ($values as $value) {
-					if ( ! in_array($value, $check_field) ) {
+
+					$in_array = in_array($value, (array)$check_field);
+
+					if (($compare == 'or') && ( $in_array )) {
+						$skip_1 = false;
+						break;						
+					}
+
+					if (($compare == 'and') && ( ! $in_array )) {
 						$skip_1 = true;
 /*						echo 'SKIPPED: ';
 						print_r($values);
@@ -428,6 +441,7 @@ class Loop_Shortcode {
 						print_r($check_field);
 						echo '<br>';
 */					}
+
 				}
 			}
 
@@ -436,26 +450,42 @@ class Loop_Shortcode {
 				$values = explode(",", $value_2);
 				$check_field = get_post_meta( get_the_ID(), $checkbox_2, $single=true );
 
+				if(! empty($compare_2)) $compare_2 = strtolower($compare_2);
+				else $compare_2 = "or";
+
+				if ($compare_2 == 'or') $skip_2 = true;
+
 				foreach ($values as $value) {
-					if ( ! in_array($value, $check_field) ) {
+
+					$in_array = in_array($value, (array)$check_field);
+
+					if (($compare_2 == 'or') && ( $in_array )) {
+						$skip_2 = false;
+						break;						
+					}
+
+					if (($compare_2 == 'and') && ( ! $in_array )) {
 						$skip_2 = true;
 					}
 				}
 			}
 
-			$relation = strtoupper($relation);
-			if ($relation=='OR') {
-				if ( ( ! $skip_1 ) || ( ! $skip_2 ) )
-					$skip = false;
-				else
-					$skip = true;
+			if (!empty($checkbox_2)) {
+				$relation = strtoupper($relation);
+				if ($relation=='OR') {
+					if ( ( ! $skip_1 ) || ( ! $skip_2 ) )
+						$skip = false;
+					else
+						$skip = true;
+				} else {
+					if ( ( ! $skip_1 ) && ( ! $skip_2 ) )
+						$skip = false;
+					else
+						$skip = true;
+				}
 			} else {
-				if ( ( ! $skip_1 ) && ( ! $skip_2 ) )
-					$skip = false;
-				else
-					$skip = true;
+				$skip = $skip_1;
 			}
-
 
 			if( ! $skip ) {
 

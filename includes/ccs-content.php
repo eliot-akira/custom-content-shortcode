@@ -587,4 +587,26 @@ function custom_custom_taxonomies_terms_links($id){
 		return ( $apos < $bpos ) ? -1 : 1;
 	}
 
+// Clean shortcode content from paragraphs and line breaks
+
+if (!function_exists('custom_clean_shortcode')) {
+	function custom_clean_shortcode( $atts, $content ){
+
+		$remove = array (
+			'<p>[' => '[', 
+			']</p>' => ']', 
+			']<br />' => ']',
+			']<br/>' => ']',
+			']<br>' => ']',
+			'<br />[' => '[',
+			'<br/>[' => '[',
+			'<br>[' => '[',
+			'<br />' => '',
+			'<br/>' => ''
+		);
+	    $content = strtr($content, $remove);
+	    return do_shortcode($content);
+	}
+	add_shortcode('clean', 'custom_clean_shortcode');
+}
 

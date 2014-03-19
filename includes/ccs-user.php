@@ -200,11 +200,15 @@ function custom_is_shortcode( $atts, $content, $tag ) {
 		get_currentuserinfo();
 		$is_it = false;
 
-		if ( $user == ($current_user->user_login) )
-			$is_it = true;
-		if ( ( $user == ($current_user->ID) ) &&
-			ctype_digit($user) ) // $user is a number?
+		$user_array = explode(",", $user);
+
+		foreach ($user_array as $this_user) {
+			if ( $this_user == ($current_user->user_login) )
 				$is_it = true;
+			if ( ( $this_user == ($current_user->ID) ) &&
+				ctype_digit($this_user) ) // $user is a number?
+					$is_it = true;
+		}
 		if($tag=="isnt")
 			$is_it = !$is_it;
 		if($is_it)
