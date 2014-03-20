@@ -100,7 +100,7 @@ function custom_load_script_file( $atts ) {
 	extract( shortcode_atts( array(
 		'css' => null, 'js' => null, 'dir' => null,
 		'file' => null,'format' => null, 'shortcode' => null,
-		'gfonts' => null, 'cache' => 'false',
+		'gfonts' => null, 'cache' => 'true',
 		'php' => 'true', 'debug' => 'false',
 		), $atts ) );
 
@@ -129,9 +129,11 @@ function custom_load_script_file( $atts ) {
 			}
 	}
 
+	$out = '';
+
 	if($css != '') {
-		echo '<link rel="stylesheet" type="text/css" href="';
-		echo $dir . $css;
+		$out .= '<link rel="stylesheet" type="text/css" href="';
+		$out .= $dir . $css;
 
 		if($cache=='false') {
 
@@ -139,16 +141,16 @@ function custom_load_script_file( $atts ) {
 				$tail .= rand(0,9) ; 
 			} 
 
-			echo '?' . $tail;
+			$out .= '?' . $tail;
 		}
-		echo '" />';
+		$out .= '" />';
 	}
 	if($gfonts != '') {
-		echo '<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=';
-		echo $gfonts . '" />';
+		$out .= '<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=';
+		$out .= $gfonts . '" />';
 	}
 	if($js != '') {
-		echo '<script type="text/javascript" src="' . $dir . $js . '"></script>';
+		$out .= '<script type="text/javascript" src="' . $dir . $js . '"></script>';
 	}
 	if($file != '') {
 
@@ -184,7 +186,7 @@ function custom_load_script_file( $atts ) {
 			return $output;
 		}
 	}
-	return null;
+	return $out;
 }
 add_shortcode('load', 'custom_load_script_file');
 
