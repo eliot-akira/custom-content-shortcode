@@ -7,6 +7,10 @@ Version: 0.7.2
 Author: Eliot Akira
 Author URI: eliotakira.com
 License: GPL2
+
+To do:
+- 
+
 */
 
 define('CCS_PATH', dirname(__FILE__));
