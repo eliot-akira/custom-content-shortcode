@@ -34,11 +34,12 @@ function custom_content_shortcode($atts) {
 		'status' => null,
 		'post' => null, 'page' => null,
 		'embed' => '',
+		'more' => '', 'dots' => '...',
 
 		/* Native gallery options: orderby, order, columns, size, link, include, exclude */
 
 		'orderby' => null, 'order' => null, 'columns' => null, 'size' => 'full',
-		'link' => null, 'include' => null, 'exclude' => null, 'more' => ''
+		'link' => null, 'include' => null, 'exclude' => null
 	), $atts));
 
 	$custom_post_type = $type;
@@ -67,6 +68,10 @@ function custom_content_shortcode($atts) {
 		$taxonomy_out = $out;
 		$out = null;
 	}
+
+/*	if ((!empty($more)) && (empty($field)))
+		$words="55";
+*/
 
 	if ($checkbox != '')
 		$custom_field = $checkbox;
@@ -503,6 +508,8 @@ function custom_content_shortcode($atts) {
 	}
 
 	if($words!='') {
+		$out = wp_trim_words( $out, $words );
+/*
 		$excerpt_length = $words;
 		$the_excerpt = $out;
 
@@ -516,6 +523,7 @@ function custom_content_shortcode($atts) {
 		endif;
 
 		$out = $the_excerpt;
+*/
 	}
 
 	if($length!='') {
@@ -544,16 +552,20 @@ function custom_content_shortcode($atts) {
 		$out = wpautop( $out );
 	}
 
-	if ($more!='') {
-		$out = strstr($out, '<!--more-->', true);
+	if (!empty($more)) {
+
+		$until = strstr($out, '<!--more-->', true);
+		if (!empty($until))
+			$out = $until;
 
 		if ($more=='true') {
 			$more = 'Read more';
 		}
 
 		if ($more!='none') {
+
 			if ($link != 'false') {
-				$out .= '<a class="moretag" href="'. get_permalink($post->ID) . '">'
+				$out .= '<a class="more-tag" href="'. get_permalink($post->ID) . '">'
 						. $more . '</a>';
 			} else {
 				$out .= $more;
