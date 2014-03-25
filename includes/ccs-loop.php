@@ -30,6 +30,7 @@ class Loop_Shortcode {
 		$ccs_global_variable['is_gallery_loop'] = "false";
 		$ccs_global_variable['is_attachment_loop'] = "false";
 		$ccs_global_variable['is_repeater_loop'] = "false";
+		$ccs_global_variable['total_comments'] = 0;
 
 		if( ! is_array( $atts ) ) return;
 
@@ -62,7 +63,7 @@ class Loop_Shortcode {
 			'year' => '', 'month' => '', 'day' => '',
 			'list' => '',
 			'allow' => '', 'checkbox' => '', 'checkbox_2' => '', 
-			'status' => '', 'parent' => ''
+			'status' => '', 'parent' => '', 'exclude' => ''
 		);
 
 		$all_args = shortcode_atts( $args , $atts, true );
@@ -179,57 +180,64 @@ class Loop_Shortcode {
 		if($post_offset!='')
 			$query['offset'] = $post_offset;
 
-		if( $id != '' ) {
-			$query['p'] = $id; $query['post_type'] = "any";
-		} else {
-			if( $current_name != '') {
-
-				// Get ID from post slug
-
-				$query['name']=$current_name; $query['post_type'] = $type;
-				$ccs_global_variable['current_gallery_name'] = $current_name;
-				$posts = get_posts( $query );
-				if( $posts ) { $ccs_global_variable['current_gallery_id'] = $posts[0]->ID;
-				}
-			} else {
-
-				if( $parent != '') {
-					// Parent post by name
-
-
-					$posts = get_posts( array('name' => $parent, 'post_type' => $type) );
-
-					if( $posts ) $parent_id = $posts[0]->ID;
-					else return;
-
-					$query['post_parent'] = $parent_id; $query['post_type'] = $type;
-
-				} else {
-					// Current post
-
-					$query['p'] = get_the_ID(); $query['post_type'] = "any";
-				}
-			}
-		}
-
-		if(!isset($custom_field)) $custom_field='';
-
-		if(( $custom_field == 'gallery' ) && ($shortcode_name != 'pass') ){
-			$gallery = 'true';
-		}
-
-
 		if( $type == '' ) {
 			$query['post_type'] = 'any';
 		} else {
 			$query['post_type'] = $type;
-			if( $custom_field != 'gallery' ) {
+			if ( $custom_field != 'gallery' ){
 				$query['p'] = '';
 			}
 		}
 
-// Query by date
+		if ( $id != '' ) {
 
+			$id_array = explode(",", $id); // Multiple IDs possible
+
+			$query['post__in'] = $id_array;
+
+		} elseif ( $exclude != '' ) {
+
+			$id_array = explode(",", $exclude);
+
+			$query['post__not_in'] = $id_array;
+
+		} elseif ( $current_name != '') {
+
+			// Get ID from post slug
+
+			$query['name']=$current_name; $query['post_type'] = $type;
+
+		} elseif ( $parent != '') {
+
+			// Parent post by name
+
+			$posts = get_posts( array('name' => $parent, 'post_type' => $type) );
+
+			if ( $posts ) $parent_id = $posts[0]->ID;
+			else return;
+
+			$query['post_parent'] = $parent_id; $query['post_type'] = $type;
+
+		} elseif (( $custom_field == 'gallery' ) && ($shortcode_name != 'pass') ){
+
+			$gallery = 'true';
+
+			if (!empty($current_name)) {
+				$query['name']=$current_name;
+				$ccs_global_variable['current_gallery_name'] = $current_name;
+			} else {
+				$query['p'] = get_the_ID(); $query['post_type'] = "any";
+			}
+
+			$posts = get_posts( $query );
+			if( $posts ) { $ccs_global_variable['current_gallery_id'] = $posts[0]->ID;
+			}
+
+		}
+
+		if(!isset($custom_field)) $custom_field='';
+
+// Query by date
 
 		if ( ($year!='') || ($month!='') || ($day!='') ) {
 
@@ -239,13 +247,12 @@ class Loop_Shortcode {
 			if ($day=='today') $day=$today["mday"];
 
 			$query['date_query'] = array(
-
-					array(
-						'year' => $year,
-						'month' => $month,
-						'day' => $day,
-					)
-				);
+				array(
+					'year' => $year,
+					'month' => $month,
+					'day' => $day,
+				)
+			);
 		}
 
 // Custom taxonomy query
@@ -288,16 +295,17 @@ class Loop_Shortcode {
 
 //			Expand range: 1-3 -> 1,2,3
 
-		/* PHP 5.3+
-			$series = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
-			    return implode(',', range($m[1], $m[2]));
-			}, $series);
-		*/
+			/* PHP 5.3+
+				$series = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
+				    return implode(',', range($m[1], $m[2]));
+				}, $series);
+			*/
 
-		/* Compatible with older versions of PHP */
+			/* Compatible with older versions of PHP */
 
 			$callback = create_function('$m', 'return implode(\',\', range($m[1], $m[2]));');
 			$series = preg_replace_callback('/(\d+)-(\d+)/', $callback, $series);
+
 
 			$sort_posts = explode(',', $series);
 
@@ -339,8 +347,6 @@ class Loop_Shortcode {
 							'compare' => $compare
 					);
 
-/*				print_r($query);
-*/
 				if( ($field_2!='') && ($value_2!='') ) {
 
 					if($relation!='')
@@ -409,7 +415,11 @@ class Loop_Shortcode {
 
 		// For each post found
 
-		if( $posts->have_posts() ) : while( $posts->have_posts() ) : $posts->the_post();
+		if( $posts->have_posts() ) : while( $posts->have_posts() ) :
+
+			$posts->the_post();
+
+			$ccs_global_variable['total_comments']+=get_comments_number();
 
 			// Filter by checkbox..
 
@@ -435,12 +445,7 @@ class Loop_Shortcode {
 
 					if (($compare == 'and') && ( ! $in_array )) {
 						$skip_1 = true;
-/*						echo 'SKIPPED: ';
-						print_r($values);
-						echo ' not in ';
-						print_r($check_field);
-						echo '<br>';
-*/					}
+					}
 
 				}
 			}
@@ -552,9 +557,17 @@ class Loop_Shortcode {
 							foreach( $images as $image ) :
 
 							$ccs_global_variable['current_row'] = $count;
-							$ccs_global_variable['current_image'] = '<img src="' . $image['sizes']['large'] . '">';
+
+							$ccs_global_variable['current_image']['full'] = '<img src="' . $image['sizes']['full'] . '">';
+							$image_sizes = get_intermediate_image_sizes();
+
+							foreach ($image_sizes as $image_size) {
+								$ccs_global_variable['current_image'][$image_size] = '<img src="' . $image['sizes'][$image_size] . '">';
+							}
+
 							$ccs_global_variable['current_image_id'] = $image['id'];
 							$ccs_global_variable['current_attachment_id'] = $image['id'];
+							$ccs_global_variable['current_attachment_link'] = get_attachment_link($image['id']);
 							$ccs_global_variable['current_image_url'] = $image['url'];
 							$ccs_global_variable['current_image_title'] = $image['title'];
 							$ccs_global_variable['current_image_caption'] = $image['caption'];
@@ -735,8 +748,16 @@ class Loop_Shortcode {
 						$image_link	= wp_get_attachment_image_src( $attachment_id, "full" );
 						$image_link	= $image_link[0];	
 										
-						$ccs_global_variable['current_image'] = wp_get_attachment_image( $attachment_id, "full" );
+						$ccs_global_variable['current_image']['full'] = wp_get_attachment_image( $attachment_id, "full" );
+
+						$image_sizes = get_intermediate_image_sizes();
+
+						foreach ($image_sizes as $image_size) {
+							$ccs_global_variable['current_image'][$image_size] = wp_get_attachment_image( $attachment_id, $image_size );
+						}
+
 						$ccs_global_variable['current_image_url'] = $image_link;
+						$ccs_global_variable['current_attachment_link'] = get_attachment_link($attachment_id);
 						$ccs_global_variable['current_image_thumb'] = wp_get_attachment_image( $attachment_id, 'thumbnail', '', array( 'alt' => trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) ) ) );
 						$ccs_global_variable['current_image_thumb_url'] = wp_get_attachment_thumb_url( $attachment_id, 'thumbnail' ) ;
 						$ccs_global_variable['current_image_caption'] = get_post( $attachment_id )->post_excerpt ? get_post( $attachment_id )->post_excerpt : '';
@@ -820,9 +841,17 @@ class Loop_Shortcode {
 					// get original image
 					$image_link	= wp_get_attachment_image_src( $attachment_id, 'full' );
 					$image_link	= $image_link[0];	
-										
-					$ccs_global_variable['current_image']=wp_get_attachment_image( $attachment_id, 'full' );
+
+					$ccs_global_variable['current_image']['full'] = wp_get_attachment_image( $attachment_id, "full" );
+
+					$image_sizes = get_intermediate_image_sizes();
+
+					foreach ($image_sizes as $image_size) {
+						$ccs_global_variable['current_image'][$image_size] = wp_get_attachment_image( $attachment_id, $image_size );
+					}
+
 					$ccs_global_variable['current_image_url']=$image_link;
+					$ccs_global_variable['current_attachment_link'] = get_attachment_link($attachment_id);
 					$ccs_global_variable['current_image_thumb']=wp_get_attachment_image( $attachment_id, apply_filters( 'thumbnail_image_size', 'thumbnail' ), '', array( 'alt' => trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) ) ) );
 					$ccs_global_variable['current_image_thumb_url']= wp_get_attachment_thumb_url( $attachment_id ) ;
 					$ccs_global_variable['current_image_caption']=get_post( $attachment_id )->post_excerpt ? get_post( $attachment_id )->post_excerpt : '';
@@ -893,11 +922,6 @@ class Loop_Shortcode {
 		return $string;
 	}
 
-
-
-
-
-
 }
 
 $loop_shortcode = new Loop_Shortcode;
@@ -906,6 +930,7 @@ $loop_shortcode = new Loop_Shortcode;
 /*    Clean up Shortcodes
 /*--------------------------------------*/
 
+if (!function_exists('custom_clean_shortcodes')) {
 	function custom_clean_shortcodes($content){   
 	    $array = array (
 	        '<p>[' => '[', 
@@ -921,5 +946,6 @@ $loop_shortcode = new Loop_Shortcode;
 //	        '<br>' => ''
 	    );
 	    $content = strtr($content, $array);
-	    return $content;
+	    return do_shortcode($content);
 	}
+}

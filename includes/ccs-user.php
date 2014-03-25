@@ -160,6 +160,8 @@ function ccs_return_comments_template($file) {
 
 function custom_comment_shortcode( $atts, $content, $tag ) {
 
+	global $ccs_global_variable;
+
 	if( is_array( $atts ) ) {
 		$atts = array_flip( $atts );
 	}
@@ -175,6 +177,9 @@ function custom_comment_shortcode( $atts, $content, $tag ) {
 	}
 	if( isset( $atts['count'] ) ) {
 		return get_comments_number();
+	}
+	if( isset( $atts['total'] ) ) {
+		return $ccs_global_variable['total_comments'];
 	}
 }
 add_shortcode('comment', 'custom_comment_shortcode');

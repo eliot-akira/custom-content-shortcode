@@ -59,12 +59,19 @@ None.
 
 = 0.7.2 =
 
-* **[load]** - Fixed: return output instead of echo
+* **[loop]** - Enable multiple values for post ID, i.e., *id="1,3,7"*
+* **[loop]** - Add parameter *exclude* by post ID, i.e., *exclude="7,15,21"*
+* **[content]** - Add parameter *more* to display content up to the more tag
+* **[content]** - Add field *attach-link* to display image attachment page link
+* **[content]** - Process content in correct order: do_shortcode, then wpautop
+* **[comment total]** - New parameter to display total comment count of last loop
+* **[load]** - Return output instead of echo
+* **Gallery Field** - Add all image sizes for parameter *size*
 
 = 0.7.1 =
 
 * **[loop]** - Improved parameter *checkbox* to query by checkbox value(s)
-* **[is user]** - Multiple values possible, i.e., *user="1,3,7,guest"*
+* **[is user]** - Enable multiple values, i.e., *user="1,3,7,guest"*
 
 = 0.7.0 =
 
