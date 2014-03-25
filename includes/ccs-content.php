@@ -554,9 +554,10 @@ function custom_content_shortcode($atts) {
 
 	if (!empty($more)) {
 
-		$until = strstr($out, '<!--more-->', true);
-		if (!empty($until))
-			$out = $until;
+		$until_pos = strpos($out, '<!--more-->');
+		if ($until_pos!==false) {
+			$out = substr($out, 0, $until_pos);
+		}
 
 		if ($more=='true') {
 			$more = 'Read more';
@@ -565,7 +566,11 @@ function custom_content_shortcode($atts) {
 		if ($more!='none') {
 
 			if ($link != 'false') {
-				$out .= '<a class="more-tag" href="'. get_permalink($post->ID) . '">'
+				if ($field=='excerpt')
+					$out .= '<br>';
+/*				if ((substr($out, -3)!='</p>') && (substr($out, -4)!='</br>'))
+					$out .= '<br>';
+*/				$out .= '<a class="more-tag" href="'. get_permalink($post->ID) . '">'
 						. $more . '</a>';
 			} else {
 				$out .= $more;

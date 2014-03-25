@@ -180,7 +180,7 @@ function ccs_get_all_fields_from_post_type( $post_type ) {
 
 function ccs_content_settings_page() {
 
-	/* -- For later, in case of option form is needed
+	/* -- For later, in case an option form is needed
 	?>
 		<div class="wrap">
 		<h2>Form title</h2>
@@ -196,8 +196,8 @@ function ccs_content_settings_page() {
 	$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'overview';
 
 
-	$all_tabs = array( 'overview', 'content', 'loop', 'views', 'load', 'gallery',
-						'user', 'mobile', 'ACF', 'etc' );
+	$all_tabs = array( 'overview', 'content', 'loop', 'views', 'each', 'gallery',
+						'user', 'load', 'mobile', 'ACF', 'etc' );
 
 	?>
 		<div class="wrap">
@@ -208,10 +208,13 @@ function ccs_content_settings_page() {
 		<?php
 
 			foreach ($all_tabs as $tab) {
+
+				$tab_name = ucwords(str_replace('-', ' ', $tab));
+
 				?>
 				<a href="?page=ccs_content_shortcode_help&tab=<?php echo $tab; ?>"
 					class="nav-tab <?php echo $active_tab == $tab ? 'nav-tab-active' : ''; ?>">
-						<?php echo ucwords($tab); ?></a>
+						<?php echo $tab_name; ?></a>
 				<?php
 
 			}

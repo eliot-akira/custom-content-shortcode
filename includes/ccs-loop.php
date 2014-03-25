@@ -6,8 +6,7 @@
  *
  *====================================================================================================*/
 
-
-class Loop_Shortcode {
+class LoopShortcode {
 
 	function __construct() {
 		add_action( 'init', array( &$this, 'register' ) );
@@ -155,6 +154,20 @@ class Loop_Shortcode {
 		/*----------------
 		 * Alter query
 		 *---------------*/
+
+
+		/*---------------
+		 * In a foreach loop?
+		 *-------------*/
+
+		if (isset($ccs_global_variable['for_loop']) &&
+			($ccs_global_variable['for_loop']=='true')) {
+
+			if ($ccs_global_variable['for_each']['type']=='taxonomy') {
+				$taxonomy = $ccs_global_variable['for_each']['taxonomy'];
+				$custom_value = $ccs_global_variable['for_each']['slug'];
+			}
+		}
 
 
 		if( $category != '' ) {
@@ -682,12 +695,19 @@ class Loop_Shortcode {
 
 					$col = 0;
 					$percent = 100 / (int)$columns;
+					$clear = '<div style="clear:both;"><br></div>';
+
 					foreach ($output as $each) {
-						echo '<div class="column-1_of_'.$columns.'" style="width:'.$percent.'%;display:inline-block;">';
+						$col++;
+						echo '<div class="column-1_of_'.$columns.'" style="width:'.$percent.'%;float:left;">';
 						echo $each;
 						echo '</div>';
+						if (($col%$columns)==0)
+							echo $clear;
+
 					}
-					echo '<br>';
+					if (($col%$columns)!=0) // Last row not filled
+						echo $clear;
 
 				} else {
 					echo implode( $posts_separator, $output );
@@ -941,7 +961,7 @@ class Loop_Shortcode {
 
 }
 
-$loop_shortcode = new Loop_Shortcode;
+$loop_shortcode = new LoopShortcode;
 
 /*--------------------------------------*/
 /*    Clean up Shortcodes

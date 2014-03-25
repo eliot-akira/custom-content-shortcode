@@ -1,0 +1,26 @@
+<h3>"For each" loop</h3>
+
+This is a feature to loop through categories, tags, or taxonomy terms.
+
+<h4>Display a loop for each category</h4>
+<code>[for each="category"]
+&nbsp;&nbsp;&nbsp;&nbsp;[each name]
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="post"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+[/for]</code><br>
+<hr>
+<h3>Parameters</h3>
+
+Available parameter for the <strong>[for]</strong> shortcode is:
+<ul>
+	<li><strong>each</strong> - <em>category</em>, <em>tag</em>, or custom taxonomy slug</li>
+</ul>
+
+Available parameters for the <strong>[each]</strong> shortcode are:
+<ul>
+	<li><strong>name</strong> - name of category, tag, or taxonomy term</li>
+	<li><strong>slug</strong> - slug of category, tag, or taxonomy term</li>
+	<li><strong>id</strong> - ID of category, tag, or taxonomy term</li>
+
+</ul>
