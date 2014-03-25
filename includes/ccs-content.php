@@ -33,6 +33,7 @@ function custom_content_shortcode($atts) {
 		'taxonomy' => null, 'checkbox' => null, 'out' => null,
 		'status' => null,
 		'post' => null, 'page' => null,
+		'embed' => '',
 
 		/* Native gallery options: orderby, order, columns, size, link, include, exclude */
 
@@ -392,6 +393,8 @@ function custom_content_shortcode($atts) {
 			$out = $out->post_content;
 			if($content_format=='')
 				$content_format = 'true';
+			if($embed=='')
+				$embed = 'true';
 		}
 
 	} else { // else return specified field
@@ -526,11 +529,18 @@ function custom_content_shortcode($atts) {
 	if ($class!='')
 		$out = '<div class="' . $class . '">' . $out . '</div>';
 
-	if ($shortcode_option != 'false') { // Shortcode
+	if ($shortcode_option != 'false') {		// Shortcode
 		$out = do_shortcode( $out );
 	}
 
-	if ($content_format == 'true') { // Then format
+	if ($embed == 'true') {					// Then auto-embed
+		if(isset($GLOBALS['wp_embed'])) {
+			$wp_embed = $GLOBALS['wp_embed'];
+			$out = $wp_embed->autoembed($out);
+		}
+	}
+
+	if ($content_format == 'true') {		// Then format
 		$out = wpautop( $out );
 	}
 

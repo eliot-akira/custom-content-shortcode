@@ -676,7 +676,7 @@ class Loop_Shortcode {
 			wp_reset_query();
 			wp_reset_postdata();
 
-			if ($if=='') {
+			if (empty($if)) {
 
 				if (!empty($columns)) { // Create simple columns
 

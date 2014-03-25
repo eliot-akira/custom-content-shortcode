@@ -59,7 +59,8 @@ None.
 
 = 0.7.3 =
 
-* **[loop]** - Add parameter *columns* for simple columns feature *columns="3"*
+* **[loop]** - Add parameter *columns* for simple columns feature: *columns="3"*
+* **[content]** - Add parameter *embed* to autoembed URLs: *embed="true"*; it's enabled by default for post content, i.e., [content] inside a loop
 
 = 0.7.2 =
 
