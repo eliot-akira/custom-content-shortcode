@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.8.1
-Stable tag: 0.7.2
+Stable tag: 0.7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,10 +57,14 @@ None.
 
 == Changelog ==
 
+= 0.7.3 =
+
+* **[loop]** - Add parameter *columns* for simple columns feature *columns="3"*
+
 = 0.7.2 =
 
-* **[loop]** - Enable multiple values for post ID, i.e., *id="1,3,7"*
-* **[loop]** - Add parameter *exclude* by post ID, i.e., *exclude="7,15,21"*
+* **[loop]** - Enable multiple values for post ID: *id="1,3,7"*
+* **[loop]** - Add parameter *exclude* by post ID: *exclude="7,15,21"*
 * **[content]** - Add parameter *more* to display content up to the more tag
 * **[content]** - Add field *attach-link* to display image attachment page link
 * **[content]** - Process content in correct order: do_shortcode, then wpautop
