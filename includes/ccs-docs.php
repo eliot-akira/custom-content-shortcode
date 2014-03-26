@@ -243,8 +243,9 @@ function ccs_content_settings_page() {
 
 				<div align="center">
 					<img src="<?php echo plugins_url();?>/custom-content-shortcode/docs/logo/logo.png"><br><br>
-					<b>Custom Content Shortcode</b> is developed by Eliot Akira.<br>
-					For support and other inquiries, contact <a href="mailto:me@eliotakira.com">me@eliotakira.com</a><br>
+					<b>Custom Content Shortcode</b> is developed by Eliot Akira.<br><br>
+					For general questions, please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">WordPress plugin support forum</a>.<br>
+					For commercial support and other inquiries, contact <a href="mailto:me@eliotakira.com">me@eliotakira.com</a><br>
 				</div>
 
 				<?php

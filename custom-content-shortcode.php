@@ -8,6 +8,8 @@ Author: Eliot Akira
 Author URI: eliotakira.com
 License: GPL2
 
+To do: display native read more tag
+
 */
 
 define('CCS_PATH', dirname(__FILE__));
