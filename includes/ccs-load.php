@@ -165,7 +165,7 @@ function custom_load_script_file( $atts ) {
 
 		if( empty($output) ) {
 			$output = @file_get_contents($dir . $file);
-			if( empty($output) ) {
+			if( ($dir == 'web') && empty($output) ) {
 				$url = $dir . $file;
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $url);
