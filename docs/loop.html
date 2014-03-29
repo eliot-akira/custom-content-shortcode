@@ -24,9 +24,10 @@ Available parameters for the <strong>[loop]</strong> shortcode are:
 
 <h4>Category, tags and taxonomies</h4>
 <ul>
-	<li><strong>category</strong> - display posts from a category</li>
-	<li><strong>tag</strong> - display posts with a specific tag - for multiple tags:<em> tag="apples, green"</em></li>
-	<li><strong>taxonomy</strong>, <strong>value</strong> - search for posts whose <em>taxonomy</em> equals <em>value</em></li>
+	<li><strong>category</strong> - display posts from one or more categories: <em>category="sports, fashion"</em></li>
+	<li><strong>tag</strong> - display posts with one or more tags: <em>tag="apples, green"</em></li>
+	<li><strong>taxonomy</strong>, <strong>value</strong> - display posts whose <em>taxonomy</em> equals <em>value</em>; mutiple values are possible: <em>value="drama, comedy"</em> shows all posts whose taxonomy value is <em>drama</em> <b>or</b> <em>comedy</em></li>
+	<li><strong>compare</strong> - optional for taxonomy query: use <em>compare="NOT"</em> for posts whose <em>taxonomy</em> is <b>not</b> <em>value</em>; use <em>compare="AND"</em> when you want posts whose <em>taxonomy</em> contains all values</li>
 </ul>
 
 <h4>Date</h4>
@@ -36,7 +37,7 @@ Available parameters for the <strong>[loop]</strong> shortcode are:
 
 <h4>Custom field value</h4>
 <ul>
-	<li><strong>field, compare, value</strong> - display posts according to custom field value; where <em>compare</em> is <em>EQUAL</em> (default) or <em>NOT EQUAL</em></li>
+	<li><strong>field, compare, value</strong> - display posts according to custom field value; where <em>compare</em> is <em>EQUAL</em> (default) or <em>NOT</em></li>
 	<li><strong>relation, field_2, compare_2, value_2</strong> - additional query for custom field value, where <em>relation</em> is <em>AND</em> (default) or <em>OR</em></li>
 </ul>
 

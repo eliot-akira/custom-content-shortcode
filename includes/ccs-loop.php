@@ -63,7 +63,7 @@ class LoopShortcode {
 			'list' => '',
 			'allow' => '', 'checkbox' => '', 'checkbox_2' => '', 
 			'status' => '', 'parent' => '', 'exclude' => '',
-			'columns' => ''
+			'columns' => '', 'tag' => ''
 		);
 
 		$all_args = shortcode_atts( $args , $atts, true );
@@ -173,6 +173,9 @@ class LoopShortcode {
 		if( $category != '' ) {
 			$query['category_name'] = $category;
 		}
+		if( $tag != '' ) {
+			$query['tag'] = $tag;
+		}
 		if( $count != '' ) {
 
 			if ($orderby=='rand') {
@@ -269,16 +272,30 @@ class LoopShortcode {
 			);
 		}
 
-// Custom taxonomy query
+// Taxonomy query
 
 		if($tax!='') $taxonomy=$tax;
 		if($taxonomy!='') {
+
+			$terms = explode(",", $custom_value);
+
+			if (!empty($compare)) {
+
+				if ($compare=='NOT')
+					$compare = 'NOT IN';
+
+				$operator = $compare;
+
+			} else {
+				$operator = 'IN';
+			}
 
 			$query['tax_query'] = array (
 					array(
 					'taxonomy' => $taxonomy,
 					'field' => 'slug',
-					'terms' => array($custom_value),
+					'terms' => $terms,
+					'operator' => $operator
 					)
 				);
 		}
@@ -350,6 +367,7 @@ class LoopShortcode {
 				switch ($compare) {
 					case '':
 					case 'EQUAL': $compare = "LIKE"; break;
+					case 'NOT':
 					case 'NOT EQUAL': $compare = 'NOT LIKE'; break;
 					default: break;
 				}
@@ -373,6 +391,7 @@ class LoopShortcode {
 					switch ($compare_2) {
 						case '':
 						case 'EQUAL': $compare_2 = 'LIKE'; break;
+						case 'NOT':
 						case 'NOT EQUAL': $compare_2 = 'NOT LIKE'; break;
 						default: break;
 					}

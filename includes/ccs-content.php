@@ -367,13 +367,16 @@ function custom_content_shortcode($atts) {
 		}
 	}
 
-	// If no field is specified, return content
+	// If no field is specified..
 
 	if($custom_field == '') { 
 
-		if ($taxonomy != '') {
+		if ($taxonomy != '') { // Taxonomy query?
 
 		    // Get taxonomy terms related to post
+
+			if ($taxonomy == "tag")
+				$taxonomy="post_tag";
 
 		    $terms = get_the_terms( $custom_id, $taxonomy );
 
@@ -392,7 +395,7 @@ function custom_content_shortcode($atts) {
 		    	$out = null;
 		    }
 
-	    } else {
+	    } else { // no field or taxonomy, then just return post content
 
 			$out = get_post( $custom_id );
 			$out = $out->post_content;
