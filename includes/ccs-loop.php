@@ -63,7 +63,7 @@ class LoopShortcode {
 			'list' => '',
 			'allow' => '', 'checkbox' => '', 'checkbox_2' => '', 
 			'status' => '', 'parent' => '', 'exclude' => '',
-			'columns' => '', 'tag' => ''
+			'columns' => '', 'tag' => '', 'pad' => ''
 		);
 
 		$all_args = shortcode_atts( $args , $atts, true );
@@ -719,7 +719,15 @@ class LoopShortcode {
 					foreach ($output as $each) {
 						$col++;
 						echo '<div class="column-1_of_'.$columns.'" style="width:'.$percent.'%;float:left;">';
+
+						if (!empty($pad))
+							echo '<div class="column-inner" style="padding:'.$pad.'">';
+
 						echo $each;
+
+						if (!empty($pad))
+							echo '</div>';
+
 						echo '</div>';
 						if (($col%$columns)==0)
 							echo $clear;

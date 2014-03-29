@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.8.1
-Stable tag: 0.7.8
+Stable tag: 0.7.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,11 +57,12 @@ None.
 
 == Changelog ==
 
-= 0.7.8 =
+= 0.7.9 =
 
 * **[loop]** - Taxonomy query - multiple values possible: *value="apple, green"*
 * **[loop]** - Add parameter *compare="AND"*, *compare="NOT"* for taxonomy query
-* **[loop]** - Correctly display posts with tag(s): tag="tag1,tag2"
+* **[loop]** - Correctly display posts with tag(s): *tag="tag1,tag2"*
+* **[loop]** - Add parameter *pad* for column padding: *pad="0 10px"*
 
 = 0.7.7 =
 
