@@ -15,6 +15,7 @@ class LoopShortcode {
 	function register() {
 		add_shortcode( 'loop', array( &$this, 'simple_query_shortcode' ) );
 		add_shortcode( 'pass', array( &$this, 'simple_query_shortcode' ) );
+//		add_filter( 'the_content', 'wpautop', 20 );  // change priority: wpautop after shortcode
 	}
 
 	function simple_query_shortcode( $atts, $template = null, $shortcode_name ) {
@@ -678,14 +679,17 @@ class LoopShortcode {
 
 					if ($strip_tags!='') {
 
-						if ($strip_tags=='true')
-							$strip_tags='';
-
-						$output[] = do_shortcode(
-							strip_tags($this->get_block_template( $template, $keywords ), $strip_tags)
-						);
-
+						if ($strip_tags=='true') {
+							$output[] = do_shortcode(
+								strip_tags(html_entity_decode($this->get_block_template( $template, $keywords )))
+							);
+						} else {
+							$output[] = do_shortcode(
+								strip_tags(html_entity_decode($this->get_block_template( $template, $keywords )), $strip_tags)
+							);
+						}
 					} elseif ($clean == 'true') {
+
 						$output[] = do_shortcode($this->get_block_template( custom_clean_shortcodes($template), $keywords ));
 					} else {
 						$output[] = do_shortcode($this->get_block_template( $template, $keywords ));
@@ -996,10 +1000,10 @@ $loop_shortcode = new LoopShortcode;
 /*    Clean up Shortcodes
 /*--------------------------------------*/
 
-if (!function_exists('custom_clean_shortcodes')) {
+
 	function custom_clean_shortcodes($content){   
 	    $array = array (
-	        '<p>[' => '[', 
+/*	        '<p>[' => '[', 
 	        ']</p>' => ']', 
 	        ']<br />' => ']',
 	        ']<br/>' => ']',
@@ -1007,11 +1011,33 @@ if (!function_exists('custom_clean_shortcodes')) {
 	        '<br />[' => '[',
 	        '<br/>[' => '[',
 	        '<br>[' => '[',
-	        '<br />' => '',
+*/	        '<br />' => '', // remove all
 	        '<br/>' => '',
-//	        '<br>' => ''
+	        '<br>' => '',
+	        '<p>' => '',
+	        '</p>' => ''
 	    );
 	    $content = strtr($content, $array);
-	    return do_shortcode($content);
+	    return $content;
+	}
+
+if (!function_exists('undo_wptexturize')) {
+	function undo_wptexturize($content) {
+		$content = strip_tags($content);
+		$content = htmlspecialchars($content, ENT_NOQUOTES);
+		$content = str_replace("&amp;#8217;","'",$content);
+		$content = str_replace("&amp;#8216;","'",$content);
+		$content = str_replace("&amp;#8242;","'",$content);
+		$content = str_replace("&amp;#8220;","\"",$content);
+		$content = str_replace("&amp;#8221;","\"",$content);
+		$content = str_replace("&amp;#8243;","\"",$content);
+		$content = str_replace("&amp;#039;","'",$content);
+		$content = str_replace("&#039;","'",$content);
+		$content = str_replace("&amp;#038;","&",$content);
+		$content = str_replace("&amp;gt;",'>',$content);
+		$content = str_replace("&amp;lt;",'<',$content);
+		$content = htmlspecialchars_decode($content);
+
+		return $content;
 	}
 }
