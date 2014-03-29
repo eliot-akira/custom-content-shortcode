@@ -57,11 +57,9 @@ None.
 
 == Changelog ==
 
-= 0.8.1 =
+= 0.8.2 =
 
-* **[loop]** - Improve parameter *clean*: remove p and br tags inside loop
-* **[loop]** - Improve parameter *strip*/*strip_tags*/*allow*...
-
+* **[loop]** - Improve formatting parameters: *clean*, *strip_tags*, *allow*
 
 = 0.8.0 =
 

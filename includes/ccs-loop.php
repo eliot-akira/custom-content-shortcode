@@ -626,78 +626,81 @@ class LoopShortcode {
 
 				// Not gallery field
 
-				// Attachments?
+					// Attachments?
 
-				if($custom_field == "attachment") {
-					$attachments =& get_children( array(
-						'post_parent' => get_the_ID(),
-						'post_type' => 'attachment',
-					) );
-					if( empty($attachments) ) {
-						$custom_field_content = null; $attachment_ids = null;
-					} else {
-						$attachment_ids = '';
-						foreach( $attachments as $attachment_id => $attachment) {
-							$attachment_ids .= $attachment_id . ",";
+					if($custom_field == "attachment") {
+						$attachments =& get_children( array(
+							'post_parent' => get_the_ID(),
+							'post_type' => 'attachment',
+						) );
+						if( empty($attachments) ) {
+							$custom_field_content = null; $attachment_ids = null;
+						} else {
+							$attachment_ids = '';
+							foreach( $attachments as $attachment_id => $attachment) {
+								$attachment_ids .= $attachment_id . ",";
+							}
+							$attachment_ids = trim($attachment_ids, ",");
+							$custom_field_content = $attachment_ids;
 						}
-						$attachment_ids = trim($attachment_ids, ",");
-						$custom_field_content = $attachment_ids;
+					} else {
+
+					// Normal custom fields
+
+						$custom_field_content = get_post_meta( get_the_ID(), $custom_field, $single=true );
+						$attachment_ids = get_post_meta( get_the_ID(), '_custom_gallery', true );
 					}
-				} else {
 
-				// Normal custom fields
+					$keywords = apply_filters( 'query_shortcode_keywords', array(
+						'QUERY' => serialize($query), // DEBUG purpose
+						'URL' => get_permalink(),
+						'ID' => get_the_ID(),
+						'TITLE' => get_the_title(),
+						'AUTHOR' => get_the_author(),
+						'AUTHOR_URL' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
+						'DATE' => get_the_date(),
+						'THUMBNAIL' => get_the_post_thumbnail( null, $thumbnail_size ),
+						'THUMBNAIL_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
+						'CONTENT' => ( $content_limit ) ? wp_trim_words( get_the_content(), $content_limit ) : get_the_content(),
+						'EXCERPT' => get_the_excerpt(),
+						'COMMENT_COUNT' => get_comments_number(),
+						'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
+						'IMAGE' => get_the_post_thumbnail(),
+						'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
+						'FIELD' => $custom_field_content,
+						'VAR' => $variable,
+						'VARIABLE' => $variable,
+						'IDS' => $attachment_ids,
+					) );
 
-					$custom_field_content = get_post_meta( get_the_ID(), $custom_field, $single=true );
-					$attachment_ids = get_post_meta( get_the_ID(), '_custom_gallery', true );
-				}
+					$total_comment_count += get_comments_number();
 
-				$keywords = apply_filters( 'query_shortcode_keywords', array(
-					'QUERY' => serialize($query), // DEBUG purpose
-					'URL' => get_permalink(),
-					'ID' => get_the_ID(),
-					'TITLE' => get_the_title(),
-					'AUTHOR' => get_the_author(),
-					'AUTHOR_URL' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
-					'DATE' => get_the_date(),
-					'THUMBNAIL' => get_the_post_thumbnail( null, $thumbnail_size ),
-					'THUMBNAIL_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
-					'CONTENT' => ( $content_limit ) ? wp_trim_words( get_the_content(), $content_limit ) : get_the_content(),
-					'EXCERPT' => get_the_excerpt(),
-					'COMMENT_COUNT' => get_comments_number(),
-					'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
-					'IMAGE' => get_the_post_thumbnail(),
-					'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
-					'FIELD' => $custom_field_content,
-					'VAR' => $variable,
-					'VARIABLE' => $variable,
-					'IDS' => $attachment_ids,
-				) );
-
-				$total_comment_count += get_comments_number();
-
-				if ( ( $title == '' ) || ( strtolower($title) == strtolower(get_the_title()) ) ) {
+					$out = $this->get_block_template( $template, $keywords ); // Process {KEYWORDS}
 
 					if ($strip_tags!='') {
 
 						if ($strip_tags=='true') {
-							$output[] = do_shortcode(
-								strip_tags(html_entity_decode($this->get_block_template( $template, $keywords )))
-							);
+							$out = wp_kses($out, array());
+//							$output[] = strip_tags(html_entity_decode($out));
 						} else {
-							$output[] = do_shortcode(
-								strip_tags(html_entity_decode($this->get_block_template( $template, $keywords )), $strip_tags)
-							);
-						}
-					} elseif ($clean == 'true') {
 
-						$output[] = do_shortcode($this->get_block_template( custom_clean_shortcodes($template), $keywords ));
+							// This seems to work the best for allowing certain tags
+
+							$out = strip_tags(html_entity_decode($out), $strip_tags);
+
+//							$out = wp_kses($out, $strip_tags);
+//							$output[] = strip_tags(html_entity_decode($out), $strip_tags);
+//							print_r(wp_kses($this->get_block_template( $template, $keywords ), $strip_tags));
+						}
+					} 
+
+					if ($clean == 'true') {
+						$output[] = do_shortcode(custom_clean_shortcodes( $out ));
 					} else {
-						$output[] = do_shortcode($this->get_block_template( $template, $keywords ));
+						$output[] = do_shortcode($out);
 					}
 
-					} // End of not gallery field
-
-				}
+				} // End of not gallery field (just attachment or normal field)
 
 			} // End of not repeater
 
@@ -743,7 +746,7 @@ class LoopShortcode {
 						echo $clear;
 
 				} else {
-					echo implode( $posts_separator, $output );
+					echo implode( "", $output );
 				}
 
 			} else {
@@ -861,7 +864,7 @@ class LoopShortcode {
 					wp_reset_query();
 					wp_reset_postdata();
 
-					echo implode( $posts_separator, $output );
+					echo implode( "", $output );
 					$ccs_global_variable['is_loop'] = "false";
 					return ob_get_clean();
 				}
@@ -958,7 +961,7 @@ class LoopShortcode {
 						wp_reset_query();
 						wp_reset_postdata();
 
-						echo implode( $posts_separator, $output );
+						echo implode( "", $output );
 						$ccs_global_variable['is_loop'] = "false";
 						return ob_get_clean();
 			    	} // End if attachment IDs exist
