@@ -279,6 +279,8 @@ class LoopShortcode {
 
 			$terms = explode(",", $custom_value);
 
+			$compare = strtoupper($compare);
+
 			if (!empty($compare)) {
 
 				if ($compare=='NOT')
@@ -382,7 +384,7 @@ class LoopShortcode {
 				if( ($field_2!='') && ($value_2!='') ) {
 
 					if($relation!='')
-						$query['meta_query']['relation'] = $relation;
+						$query['meta_query']['relation'] = strtoupper($relation);
 					else
 						$query['meta_query']['relation'] = 'AND';
 
