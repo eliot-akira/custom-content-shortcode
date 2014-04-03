@@ -225,7 +225,6 @@ function do_shortcode_file( $file, $dir = "" ) {
 	}
 */
 
-
 	$file = $dir . $file . '.html';
 
 	$output = @file_get_contents( $file );
