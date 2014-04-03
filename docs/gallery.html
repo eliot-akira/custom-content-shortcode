@@ -1,0 +1,48 @@
+<h3>Gallery field</h3>
+
+In the admin menu, under <em>Settings -&gt; Gallery Fields</em>, there is an option to enable a simple gallery field for any post type. Images can be added, removed, and ordered.
+
+The <strong>[loop]</strong> shortcode handles the gallery field just like attachments. For each image, the<strong> [content] </strong>shortcode can display these fields: <em>id</em>, <em>title</em>, <em>image</em>, <em>image-url</em>, <em>caption</em>, <em>description</em>,<em> thumbnail</em>, and<em> thumbnail-url</em>.
+
+This could be useful if you want to show captions, link the thumbnails to their full-size images, add a lightbox, etc.
+<h4>Display image details from the gallery field of a specific post</h4>
+<code>[loop field="gallery" name="hello-world"]
+&nbsp;&nbsp;&nbsp;&nbsp;Title: [content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;Full-size image: [content field="image"]
+&nbsp;&nbsp;&nbsp;&nbsp;Caption: [content field="caption"]
+[/loop]</code>
+
+The content shortcode can display individual images of the gallery field, or all images in a gallery layout.
+<h4>Display the 3rd image in the gallery field</h4>
+<code>[content field="gallery" num="3"]</code>
+<h4>Display the images in a native gallery or a Bootstrap carousel</h4>
+<code>[content gallery="native"]
+[content gallery="carousel"]</code>
+
+You can pass the following parameters to the native gallery: <em>orderby</em>, <em>order</em>, <em>columns</em>, <em>size</em>, <em>link</em>, <em>include</em>, <em>exclude</em>. For details, please refer to <a href="http://codex.wordpress.org/Gallery_Shortcode" target="_blank">the Codex: Gallery Shortcode</a>.
+<br>
+<hr>
+<h3>Attachments</h3>
+
+For post attachments such as images, you can query the post type <em>attachment</em> and display the necessary fields.
+
+<h4>Display details on all the attachments of the current post</h4>
+
+<code>[loop type="attachment"]
+&nbsp;&nbsp;&nbsp;&nbsp;Attachment ID: [content field="id"]
+&nbsp;&nbsp;&nbsp;&nbsp;Title: [content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;Full-size image: [content field="image"]
+&nbsp;&nbsp;&nbsp;&nbsp;Full-size image URL: [content field="image-url"]
+&nbsp;&nbsp;&nbsp;&nbsp;Caption: [content field="caption"]
+&nbsp;&nbsp;&nbsp;&nbsp;Description: [content field="description"]
+&nbsp;&nbsp;&nbsp;&nbsp;Thumbnail: [content field="thumbnail"]
+&nbsp;&nbsp;&nbsp;&nbsp;Thumbnail URL: [content field="thumbnail-url"]
+[/loop]</code>
+
+<h4>Display attachment thumbnails of all posts in the category <b>tree</b>, linked to full-sized images in a lightbox</h4>
+
+<code>[loop type="attachment" category="tree"]
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href='[content field="image-url"]' rel="lightbox"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;img src='[content field="thumbnail-url"]'&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;
+[/loop]</code>

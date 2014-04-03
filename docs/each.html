@@ -1,0 +1,40 @@
+<h3>For/each loop</h3>
+
+This is a feature to create a loop for each category, tag, or taxonomy term.
+
+<h4>Display a loop for each category</h4>
+<code>[for each="category"]
+&nbsp;&nbsp;&nbsp;&nbsp;[each name]
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="post"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+[/for]</code>
+It gets all terms of a given taxonomy, in this case <em>category</em>, and loops through each term.
+
+<h4>For each category, display 3 most recent post titles with links</h4>
+<code>[for each="category"]
+&nbsp;&nbsp;&nbsp;&nbsp;Category: [each name]
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="post" count="3"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[content field='url']"&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+[/for]</code>
+<br>
+<hr>
+<h3>Parameters</h3>
+
+Available parameters for the <strong>[for]</strong> shortcode are:
+<ul>
+	<li><strong>each</strong> - <em>category</em>, <em>tag</em>, or custom taxonomy slug</li>
+	<li><strong>orderby</strong> - order by <em>name</em> (default), <em>count</em> (post count), <em>id</em>, or <em>slug</em></li>
+	<li><strong>order</strong> - <em>ASC</em> (ascending - default), or <em>DESC</em> (descending)</li>
+	<li><strong>count</strong> - limit number of terms: <em>count="3"</em></li>
+</ul>
+
+Available parameters for the <strong>[each]</strong> shortcode are:
+<ul>
+	<li><strong>name</strong> - name of category, tag, or taxonomy term</li>
+	<li><strong>slug</strong> - slug of category, tag, or taxonomy term</li>
+	<li><strong>id</strong> - ID of category, tag, or taxonomy term</li>
+</ul>

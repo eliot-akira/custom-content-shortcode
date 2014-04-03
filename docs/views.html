@@ -1,0 +1,25 @@
+<h3>Content views</h3>
+
+Here is an example of how to create templates to display your content.
+
+Let's imagine a bicycle shop. We create a custom post type called <em>bicycle</em>, and add custom fields such as <em>model</em>, <em>price</em>, and <em>description</em>.
+
+Add all bicycles in the store as new entries, with featured image and other info in the fields.
+
+Create a new page to display the bicycles. A basic template could be:
+
+<code>[loop type="bicycle"]
+&nbsp;&nbsp;&nbsp;&nbsp;[content field="image"]
+&nbsp;&nbsp;&nbsp;&nbsp;Model: [content field="model"]
+&nbsp;&nbsp;&nbsp;&nbsp;Price: [content field="price"]
+&nbsp;&nbsp;&nbsp;&nbsp;Description: [content field="description"]
+[/loop]</code>
+
+Another page can display a list of bicycles in the<em> freestyle</em> category:
+
+<code>Freestyle bikes available:
+&lt;ul&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="bicycle" category="freestyle"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;[content field="model"] - [content field="price"]&lt;/li&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+&lt;/ul&gt;</code><br>
