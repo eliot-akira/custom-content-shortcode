@@ -160,8 +160,11 @@ function custom_load_script_file( $atts ) {
 
 		$output = '';
 
+<<<<<<< HEAD
 //		echo $path . $file;
 
+=======
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 		if ($dir != 'web')
 			$output = @file_get_contents($path . $file);
 
@@ -320,14 +323,21 @@ function load_custom_js() {
 
 add_action('the_content', 'load_custom_html');
 function load_custom_html($content) {
+<<<<<<< HEAD
 
 	global $ccs_global_variable;
+=======
+	global $wp_query;
+	global $ccs_global_variable;
+	global $ccs_content_template_loader;
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 
 	if(( $ccs_global_variable['is_loop'] == "false" ) &&
 		!is_admin() ) {
 
 		$html_field = get_post_meta( $wp_query->post->ID, "html", $single=true );
 
+<<<<<<< HEAD
 		$output = '';
 
 		/*--- Template loader ---*/
@@ -335,6 +345,8 @@ function load_custom_html($content) {
 		global $ccs_content_template_loader;
 		global $wp_query;
 
+=======
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 		/* Set default layout filename */
 
 		$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/';
@@ -354,18 +366,31 @@ function load_custom_html($content) {
 
 		$default_footer = 'footer.html';
 
+<<<<<<< HEAD
+=======
+		$output = '';
+
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 		// Load default header
 
 		if ( ($ccs_content_template_loader == true) &&
 			( file_exists( $default_layout_dir . $default_header ) ) ) {
 			$output .= '[load file="'. $default_header . '" dir="layout"]';
 		}
+<<<<<<< HEAD
 
 		if (!empty($html_field)) {
 			$output .= $html_field;
 		} elseif ( $ccs_content_template_loader == true ) {
 
 			// Load default page template
+=======
+		// Load default page template
+
+		if ( ($ccs_content_template_loader == true) &&
+			( $html_field == '' ) ) {
+
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 /*
 			echo 'Searching templates<br>';
 
@@ -373,8 +398,13 @@ function load_custom_html($content) {
 			echo $default_layout_dir . $default_post_type_template . '<br>';
 			echo $default_layout_dir . $current_post_type . '/' . $current_post_slug . '.html' . '<br>';
 			echo $default_layout_dir . $current_post_type . '/' . $default_post_type_template . '<br>';
+<<<<<<< HEAD
 */
 
+=======
+
+*/
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 			/*----  post-example.html  ----*/ 
 
 			/*----  home.html  ----*/ 
@@ -432,6 +462,13 @@ function load_custom_html($content) {
 			elseif( file_exists( $default_layout_dir . 'page/' . $default_page_template ) ) {
 				$output .= '[load file="' . 'page/' . $default_page_template . '" dir="layout"]';
 			}
+<<<<<<< HEAD
+=======
+
+
+		} else {
+			$output .= $html_field;
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 		}
 
 		// Load default footer
@@ -441,7 +478,10 @@ function load_custom_html($content) {
 			$output .= '[load file="' . $default_footer . '" dir="layout"]';
 		}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 		$custom_html = do_shortcode( $output );
 		if( $custom_html != '' ) {
 			return $custom_html;

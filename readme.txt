@@ -57,10 +57,13 @@ None.
 
 == Changelog ==
 
+<<<<<<< HEAD
 = 0.8.3 =
 
 * 
 
+=======
+>>>>>>> b2053fea02f82ff6a6776717ee9c24d5f1e1e5f0
 = 0.8.2 =
 
 * **[loop]** - Improve formatting parameters: *clean*, *strip_tags*, *allow*
