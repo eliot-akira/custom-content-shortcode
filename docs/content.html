@@ -20,31 +20,35 @@ Available parameters of the <strong>[content]</strong> shortcode:
 
 	You can display custom fields as well as predefined fields: <em>title</em>,<em> id</em>,<em> url</em>,<em> date</em>,<em> modified</em>,<em> author</em>,<em> author-id</em>,<em> author-url</em>,<em> avatar</em>,<em> image</em>,<em> image-url</em>,<em> thumbnail</em>, and<em> excerpt.</em></li>
 </ul>
-In addition:
+<em>In addition</em>
 <ul>
 	<li><strong>taxonomy</strong> - display post taxonomy, such as: <em>category</em>, <em>post_tag</em>, or a custom taxonomy; to output the slug, add: <em>out="slug"</em></li>
 	<li><strong>status</strong> - filter posts by status: <em>any</em>, <em>publish</em>, <em>pending</em>, <em>draft</em>, <em>future</em>, <em>private</em>; the default is <em>publish</em> - combination is possible, i.e., <em>status="publish, pending"</em></li>
+	<li><strong>meta</strong> - display author meta: <em>field="author" meta="user_email"</em> - see: <a href="http://codex.wordpress.org/Function_Reference/get_the_author_meta" target="_blank">Codex: Author Meta</a></li>
 	<li><strong>format</strong> - add paragraph tags &lt;p&gt; and preserve line breaks &lt;br&gt; - set to <em>true</em>/<em>false</em> - by default, post content is formatted and for all other fields, it's set to <em>false</em></li>
-	<li><strong>embed</strong> - auto-embed URLs like YouTube, Vimeo, etc - set to <em>true</em>/<em>false</em> - by default, such URLs in post content are auto-embedded</li>
 	<li><strong>class</strong> - add a &lt;div&gt; class to the output for styling purpose</li>
+	<li><strong>embed</strong> - auto-embed URLs like YouTube, Vimeo, etc - set to <em>true</em>/<em>false</em> - by default, such URLs in post content are auto-embedded</li>
 	<li><strong>words</strong> or <strong>length</strong> - limit number of words or characters</li>
-	<li><strong>date_format</strong> - use a custom format when displaying <em>field="date"</em> or <em>"modified"</em>
+	<li><strong>date_format</strong> - use a custom format when displaying <em>field="date"</em>, <em>"modified", or a custom field</em>
 
-	For example, "d.m.Y" will display as <em>18.11.2013</em>. Use double backslashes to escape characters - "Y/m/d \\a\\t g:i A" will show as <em>2013/11/17 at 11:06 PM</em>. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Codex: Formatting Date and Time</a></li>
+	For example, "d.m.Y" will display as <em>18.11.2013</em>. Use double backslashes to escape characters - "Y/m/d \\a\\t g:i A" will show as <em>2013/11/17 at 11:06 PM</em>. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Codex: Formatting Date and Time</a>
+
+	To format a unix timestamp value, use: <em>in="timestamp"</em>
+	</li>
 </ul>
-Read more:
+<em>Read more</em>
 <ul>
 	<li><strong>more</strong> - display content up to the &lt;!--more--&gt; tag; <em>more="true"</em> will show "Read More" at the end, with a link to the post; to change the text, use: <em>more="..."</em></li>
 	<li><strong>link</strong> - set <em>link="false"</em> to disable link to the post</li>
 </ul>
-Image field:
+<em>Image field</em>
 <ul>
 	<li><strong>image</strong> - display an image field
 	<li><strong>size</strong> -  size of image to get: <em>thumbnail</em>, <em>middle</em>, <em>large</em>, <em>full</em> (default) or custom defined size
 	<li><strong>in</strong> - type of image field: <em>id</em> (default), <em>url</em>, or <em>object</em>
 
 </ul>
-Other content types:
+<em>Other content types</em>
 <ul>
 	<li><strong>area</strong> or <strong>sidebar</strong> - display a widget area/sidebar by <em>title</em></li>
 	<li><strong>menu</strong> - display a menu list by <em>name/slug</em>, <em>title</em>, or <em>ID</em>.

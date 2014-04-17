@@ -35,6 +35,7 @@ function custom_content_shortcode($atts) {
 		'post' => null, 'page' => null,
 		'embed' => '',
 		'more' => '', 'dots' => '...',
+		'meta' => '',
 
 		/* Native gallery options: orderby, order, columns, size, link, include, exclude */
 
@@ -417,8 +418,14 @@ function custom_content_shortcode($atts) {
 			case "title-length": $out = strlen(apply_filters( 'the_title', get_post($custom_id)->post_title )); break;
 			case "author":
 				$this_post = get_post($custom_id);
-				$user = get_user_by('id',$this_post->post_author);
-				$out = $user->display_name; break;
+				$author_id = $this_post->post_author;
+				$user = get_user_by( 'id', $author_id);
+
+				if ( !empty($meta) )
+					$out = get_the_author_meta( $meta, $author_id );
+				else
+					$out = $user->display_name; break;
+
 			case "author-id":
 
 				$current_post = get_post( $custom_id );
@@ -504,6 +511,20 @@ function custom_content_shortcode($atts) {
 
 	}
 
+	if (($date_format!='') && ($custom_field!="date") && ($custom_field!="modified")) {
+
+		// Date format for custom field
+
+		if ($in=="timestamp")
+			$out = gmdate("Y-m-d H:i:s", $out);
+
+		if ($date_format=="true") {
+			$out = mysql2date(get_option('date_format'), $out);
+		} else {
+			$out = mysql2date($date_format, $out);
+		}
+	}
+
 	if ($checkbox != '') {
 		if(! empty($out) )
 			$out = implode(", ", $out);
@@ -573,7 +594,7 @@ function custom_content_shortcode($atts) {
 					$out .= '<br>';
 /*				if ((substr($out, -3)!='</p>') && (substr($out, -4)!='</br>'))
 					$out .= '<br>';
-*/				$out .= '<a class="more-tag" href="'. get_permalink($post->ID) . '">'
+*/				$out .= '<a class="more-tag" href="'. get_permalink($custom_id) . '">'
 						. $more . '</a>';
 			} else {
 				$out .= $more;

@@ -64,7 +64,8 @@ class LoopShortcode {
 			'list' => '',
 			'allow' => '', 'checkbox' => '', 'checkbox_2' => '', 
 			'status' => '', 'parent' => '', 'exclude' => '',
-			'columns' => '', 'tag' => '', 'pad' => ''
+			'columns' => '', 'tag' => '', 'pad' => '',
+			'blog' => ''
 		);
 
 		$all_args = shortcode_atts( $args , $atts, true );
@@ -75,6 +76,11 @@ class LoopShortcode {
 		 * Parameters
 		 *-------------*/
 
+		if (!empty($blog)) {
+			switch_to_blog($blog);
+		}
+		if (!isset($custom_field))
+			$custom_field = "";
 
 		if( $type == '' ) $type = 'any';
 		$custom_value = $value;
@@ -140,7 +146,12 @@ class LoopShortcode {
 				echo do_shortcode( $this->get_block_template( $template, $keywords ) );
 				$x--;
 			}
+
 			$ccs_global_variable['is_loop'] = "false";
+			if (!empty($blog)) {
+				restore_current_blog();;
+			}
+
 			return ob_get_clean();
 		}
 
@@ -756,6 +767,10 @@ class LoopShortcode {
 			}
 
 			$ccs_global_variable['is_loop'] = "false";
+			if (!empty($blog)) {
+				restore_current_blog();;
+			}
+
 			return ob_get_clean();
 
 		} else {
@@ -866,6 +881,10 @@ class LoopShortcode {
 
 					echo implode( "", $output );
 					$ccs_global_variable['is_loop'] = "false";
+					if (!empty($blog)) {
+						restore_current_blog();;
+					}
+
 					return ob_get_clean();
 				}
 			} // End type="attachment"
@@ -893,6 +912,10 @@ class LoopShortcode {
 						$has_gallery_images = get_post_meta( $ccs_global_variable['current_gallery_id'], '_custom_gallery', true );
 						if ( !$has_gallery_images ) {
 							$ccs_global_variable['is_loop'] = "false";
+							if (!empty($blog)) {
+								restore_current_blog();;
+							}
+
 							return;
 						}
 						// convert string into array
@@ -963,11 +986,19 @@ class LoopShortcode {
 
 						echo implode( "", $output );
 						$ccs_global_variable['is_loop'] = "false";
+						if (!empty($blog)) {
+							restore_current_blog();;
+						}
+
 						return ob_get_clean();
 			    	} // End if attachment IDs exist
 				} // End if function exists 
 				$ccs_global_variable['current_gallery_id'] = '';
 				$ccs_global_variable['is_loop'] = "false";
+				if (!empty($blog)) {
+					restore_current_blog();;
+				}
+
 				return;
 			} /* End of gallery loop */
 
@@ -1005,8 +1036,8 @@ $loop_shortcode = new LoopShortcode;
 
 
 	function custom_clean_shortcodes($content){   
-	    $array = array (
-/*	        '<p>[' => '[', 
+/*	    $array = array (
+	        '<p>[' => '[', 
 	        ']</p>' => ']', 
 	        ']<br />' => ']',
 	        ']<br/>' => ']',
@@ -1014,15 +1045,63 @@ $loop_shortcode = new LoopShortcode;
 	        '<br />[' => '[',
 	        '<br/>[' => '[',
 	        '<br>[' => '[',
-*/	        '<br />' => '', // remove all
+	        '<br />' => '', // remove all
 	        '<br/>' => '',
 	        '<br>' => '',
 	        '<p>' => '',
 	        '</p>' => ''
 	    );
 	    $content = strtr($content, $array);
+*/
+
+	    $content = custom_strip_tag_list( $content, array('p','br') );
+
 	    return $content;
 	}
+
+	function custom_strip_tag_list( $content, $tags ) {
+
+		$tags = implode("|", $tags);
+
+		$out = preg_replace('!<\s*('.$tags.').*?>((.*?)</\1>)?!is', '\3', $content); 
+
+/*
+		foreach ($tags as $tag) {
+			$out = preg_replace('/<\/?' . $tag . '(.|\s)*?>/', '', $content);
+//			$out = preg_replace('#</?'.$tag.'[^>]*>#is', '--', $content);
+		}
+*/
+		return $out;
+	}
+
+
+	function custom_br_shortcode( $atts, $content ) {
+		return '<br>';
+	}
+	add_shortcode('br', 'custom_br_shortcode');
+
+
+	function custom_p_shortcode( $atts, $content ) {
+		return '<p>' . $content . '</p>';
+	}
+	add_shortcode('p', 'custom_p_shortcode');
+
+
+	function custom_format_shortcode( $atts, $content ) {
+		return do_shortcode(wpautop($content));
+	}
+	add_shortcode('format', 'custom_format_shortcode');
+
+
+	function custom_cleaner_shortcode( $atts, $content ) {
+
+		$content = custom_strip_tag_list( $content, array('p','br') );
+
+		return do_shortcode($content);
+	}
+	add_shortcode('clean', 'custom_cleaner_shortcode');
+
+
 
 if (!function_exists('undo_wptexturize')) {
 	function undo_wptexturize($content) {

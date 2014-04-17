@@ -313,14 +313,15 @@ function load_custom_html($content) {
 	if(( $ccs_global_variable['is_loop'] == "false" ) &&
 		!is_admin() ) {
 
-		$html_field = get_post_meta( $wp_query->post->ID, "html", $single=true );
-
-		$output = '';
-
 		/*--- Template loader ---*/
 
 		global $ccs_content_template_loader;
 		global $wp_query;
+
+
+		$html_field = get_post_meta( $wp_query->post->ID, "html", $single=true );
+
+		$output = '';
 
 		/* Set default layout filename */
 
