@@ -141,7 +141,6 @@ function custom_gallery_get_image_ids() {
 
 /*
  * Shortcode
- */
 
 function ccs_gallery_shortcode() {
 
@@ -153,6 +152,8 @@ function ccs_gallery_shortcode() {
 }
 
 add_shortcode( 'custom_gallery', 'ccs_gallery_shortcode' );
+ */
+
 
 
 /*
@@ -172,9 +173,9 @@ function custom_gallery_count_images() {
 /*
  * Output gallery
  *
- */
 function custom_gallery() { // No output without shortcode
 }
+ */
 
 
 /*
