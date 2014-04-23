@@ -286,15 +286,7 @@ function custom_user_shortcode( $atts, $content ) {
 	$out = null;
 
 	if (!empty($field)) {
-		if($field=="all") {
-			$all_metas = array_map( function( $a ){ return $a[0]; }, get_user_meta( $current_user->ID ) );
-			foreach ($all_metas as $key => $value) {
-				$out .= $key." = ".$value."<br>";
-			}
-			return $out;
-		} else {
-			return get_user_meta( $current_user->ID, $field, true );
-		}
+		return get_user_meta( $current_user->ID, $field, true );
 	}
 
 
