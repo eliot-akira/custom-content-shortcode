@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.9
-Stable tag: 0.8.7
+Stable tag: 0.8.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,13 @@ With other libraries:
 None.
 
 == Changelog ==
+
+= 0.8.8 =
+
+* **[content]** - Display multiple vales from checkbox or selector field
+* **[repeater]** - ACF: repeater field (correct shortcode name)
+* **[loop]** - get a post by name or ID, for repeater field to target
+
 
 = 0.8.7 =
 

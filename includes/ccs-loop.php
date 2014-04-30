@@ -447,7 +447,7 @@ class LoopShortcode {
 	// Re-order by series
 
 			if($series!='') {
-				usort($posts->posts, "series_orderby_key");
+				usort($posts->posts, array($this, "custom_series_orderby_key"));
 			}
 
 			if($orderby=='rand') {
@@ -1026,13 +1026,43 @@ class LoopShortcode {
 		return $string;
 	}
 
+	/*============================================================================
+	 *
+	 * Sort series helper function
+	 *
+	 *===========================================================================*/
+
+	public static function custom_series_orderby_key( $a, $b ) {
+		global $sort_posts; global $sort_key;
+
+		$apos = array_search( get_post_meta( $a->ID, $sort_key, $single=true ), $sort_posts );
+		$bpos = array_search( get_post_meta( $b->ID, $sort_key, $single=true ), $sort_posts );
+
+		return ( $apos < $bpos ) ? -1 : 1;
+	}
+
+
+
+
 }
 
 $loop_shortcode = new LoopShortcode;
 
+
+
+
+
+
 /*--------------------------------------*/
 /*    Clean up Shortcodes
 /*--------------------------------------*/
+
+
+class CleanShortcodes {
+
+}
+
+
 
 
 	function custom_clean_shortcodes($content){   
@@ -1123,3 +1153,4 @@ if (!function_exists('undo_wptexturize')) {
 		return $content;
 	}
 }
+
