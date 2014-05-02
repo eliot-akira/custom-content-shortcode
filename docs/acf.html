@@ -61,6 +61,19 @@ Advanced Custom Fields gives you an option to return the image value as: image I
 [/flex]</code><br>
 
 <hr>
+<h3>ACF fields in other posts</h3>
+
+To display gallery, repeater, or flexible content fields from other posts, use the <em>loop</em> shortcode:
+
+<code>[loop name="hello-world"]
+&nbsp;&nbsp;&nbsp;&nbsp;[repeater field="boxes"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub image="image"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="description" format="true"]
+&nbsp;&nbsp;&nbsp;&nbsp;[/repeater]
+[/loop]
+</code><br>
+<hr>
 <h3>Live Edit</h3>
 
 To enable front-end editing, install <a href="http://wordpress.org/plugins/live-edit/" target="_blank">Live Edit</a> and wrap the content you'd like to edit with the <strong>[live-edit]</strong> shortcode.

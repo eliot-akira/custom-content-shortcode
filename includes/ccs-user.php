@@ -48,7 +48,7 @@ class urlShortcode
 				$go = $blogurl_settings['home'];
 			elseif( (isset( $attributes['login'] )) || (isset( $attributes['logout'] )) )
 				if( !strpos ($go,"." ) )
-					$go = custom_content_shortcode(array('name'=>$go, 'field'=>'url'));
+					$go = do_shortcode('[content name="'.$go.'" field="url"]');
 		}
 
 
