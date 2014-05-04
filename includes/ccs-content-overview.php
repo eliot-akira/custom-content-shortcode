@@ -374,7 +374,7 @@
 
 								<?php
 
-						        	$the_tax = get_taxonomy( $taxonomy );
+						        	$the_tax = get_taxonomy( $taxonomy, 'hide_empty=0' );
 
 									echo $taxonomy . '<br>';
 
