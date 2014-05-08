@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.9
-Stable tag: 0.8.9
+Stable tag: 0.9.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,9 +57,10 @@ None.
 
 == Changelog ==
 
-= 0.8.9 =
+= 0.9.0 =
 
-* **[if flag]** - if a field is not empty, then display something
+* **[if flag]** - if a field has value, then display something
+* **[if no_flag]** - if a field is empty, then display something
 * **[for each]** - now able to use inside loop; display for each category, tag or taxonomy
 * **[url login]** - updated *go* parameter
 * Content Overview - display all taxonomy terms, even unused ones

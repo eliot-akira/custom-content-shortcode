@@ -129,7 +129,7 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 <hr>
 <h3>Conditional: if a field value exists</h3>
 
-Use the <b>[if]</b> and <b>[flag]</b> shortcodes to display something only when a field is not empty.
+Use the <b>[if]</b> and <b>[flag]</b> shortcodes to display something only when a field has a value.
 
 <h4>Display only products that have serial numbers</h4>
 
@@ -141,5 +141,17 @@ Use the <b>[if]</b> and <b>[flag]</b> shortcodes to display something only when 
 [/loop]</code>
 
 The <em>flag</em> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
+
+In addition, you can display something when a field is empty:
+
+<code>[loop type="product"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;&nbsp;&nbsp;[if no_flag="serial_number"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Serial Number
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
 
 <h4></h4>

@@ -122,22 +122,28 @@ class IfShortcode {
 	function if_shortcode( $atts, $content = null, $shortcode_name ) {
 		global $ccs_global_variable;
 		$args = array(
-			'flag' => ''
+			'flag' => '',
+			'no_flag' => ''
 		);
 		extract( shortcode_atts( $args , $atts, true ) );
-		if (empty($flag)) return;
+		if ((empty($flag))&&(empty($no_flag))) return;
+		if (!empty($no_flag)) $flag = $no_flag;
 		$out = '';
 
 		if ($ccs_global_variable['is_loop']=="true") { // If we're inside loop shortcode
 			$current_id = $ccs_global_variable['current_loop_id'];
 			$check = get_post_meta( $current_id, $flag, true );
-			if (empty($check)) return;
+
+			if ((!empty($check)) && (!empty($no_flag))) return;
+			if ((empty($check)) && (empty($no_flag))) return;
 			else {
 				$ccs_global_variable['if_flag'] = $check;
 				$out = do_shortcode( $content );
 				$ccs_global_variable['if_flag'] = '';
 				return $out;
 			}
+
+
 		}
 	}
 
