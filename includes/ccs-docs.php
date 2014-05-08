@@ -121,6 +121,13 @@ function ccs_docs_admin_css() {
 						font-size: 16px;
 						line-height: 1.4em; 
 					}
+					.doc-style a {
+						text-decoration: none;
+						color: #000;
+					}
+					.doc-style a:hover {
+						color: #0074A2;
+					}
 					.doc-style code {
 						font-size: 16px;
 						padding: 10px 15px;
