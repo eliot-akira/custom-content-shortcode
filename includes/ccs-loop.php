@@ -243,7 +243,10 @@ class LoopShortcode {
 			$posts = get_posts( array('name' => $parent, 'post_type' => $type) );
 
 			if ( $posts ) $parent_id = $posts[0]->ID;
-			else return;
+			else {
+				$ccs_global_variable['is_loop']='false';
+				return;
+			}
 
 			$query['post_parent'] = $parent_id; $query['post_type'] = $type;
 
@@ -469,13 +472,15 @@ class LoopShortcode {
 			if( $posts->have_posts() ) : while( $posts->have_posts() ) : $posts->the_post();
 
 				$ccs_global_variable['total_comments']+=get_comments_number();
+				$current_id = get_the_ID();
+				$ccs_global_variable['current_loop_id']=$current_id;
 
 				// Filter by checkbox..
 
 				$skip_1 = false;
 				if ($checkbox!='') {
 					$values = explode(",", $query_value);
-					$check_field = get_post_meta( get_the_ID(), $checkbox, $single=true );
+					$check_field = get_post_meta( $current_id, $checkbox, $single=true );
 
 					if(empty($compare)) $compare="or";
 					elseif (empty($checkbox_2)) $compare = strtolower($compare);
@@ -502,7 +507,7 @@ class LoopShortcode {
 				$skip_2 = false;
 				if ($checkbox_2!='') {
 					$values = explode(",", $value_2);
-					$check_field = get_post_meta( get_the_ID(), $checkbox_2, $single=true );
+					$check_field = get_post_meta( $current_id, $checkbox_2, $single=true );
 
 					if(! empty($compare_2)) $compare_2 = strtolower($compare_2);
 					else $compare_2 = "or";
@@ -549,7 +554,7 @@ class LoopShortcode {
 
 				if($repeater != '') {
 					$ccs_global_variable['is_repeater_loop'] = "true";
-					$ccs_global_variable['current_loop_id'] = get_the_ID();
+					$ccs_global_variable['current_loop_id'] = $current_id;
 
 					if( function_exists('get_field') ) {
 
@@ -580,16 +585,16 @@ class LoopShortcode {
 
 				if($acf_gallery != '') {
 					$ccs_global_variable['is_acf_gallery_loop'] = "true";
-					$ccs_global_variable['current_loop_id'] = get_the_ID();
+					$ccs_global_variable['current_loop_id'] = $current_id;
 
 					if( function_exists('get_field') ) {
 
-						$images = get_field($acf_gallery, get_the_ID());
+						$images = get_field($acf_gallery, $current_id);
 						if( $images ) { // If images exist
 
 							$count=1;
 
-							$ccs_global_variable['current_image_ids'] = implode(',', get_field($acf_gallery, get_the_ID(), false));
+							$ccs_global_variable['current_image_ids'] = implode(',', get_field($acf_gallery, $current_id, false));
 
 							if($shortcode_name == 'pass') {
 
@@ -641,7 +646,7 @@ class LoopShortcode {
 
 					if($custom_field == "attachment") {
 						$attachments =& get_children( array(
-							'post_parent' => get_the_ID(),
+							'post_parent' => $current_id,
 							'post_type' => 'attachment',
 						) );
 						if( empty($attachments) ) {
@@ -658,26 +663,26 @@ class LoopShortcode {
 
 					// Normal custom fields
 
-						$custom_field_content = get_post_meta( get_the_ID(), $custom_field, $single=true );
-						$attachment_ids = get_post_meta( get_the_ID(), '_custom_gallery', true );
+						$custom_field_content = get_post_meta( $current_id, $custom_field, $single=true );
+						$attachment_ids = get_post_meta( $current_id, '_custom_gallery', true );
 					}
 
 					$keywords = apply_filters( 'query_shortcode_keywords', array(
 						'QUERY' => serialize($query), // DEBUG purpose
 						'URL' => get_permalink(),
-						'ID' => get_the_ID(),
+						'ID' => $current_id,
 						'TITLE' => get_the_title(),
 						'AUTHOR' => get_the_author(),
 						'AUTHOR_URL' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
 						'DATE' => get_the_date(),
 						'THUMBNAIL' => get_the_post_thumbnail( null, $thumbnail_size ),
-						'THUMBNAIL_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
+						'THUMBNAIL_URL' => wp_get_attachment_url(get_post_thumbnail_id($current_id)),
 						'CONTENT' => ( $content_limit ) ? wp_trim_words( get_the_content(), $content_limit ) : get_the_content(),
 						'EXCERPT' => get_the_excerpt(),
 						'COMMENT_COUNT' => get_comments_number(),
 						'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
 						'IMAGE' => get_the_post_thumbnail(),
-						'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
+						'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id($current_id)),
 						'FIELD' => $custom_field_content,
 						'VAR' => $variable,
 						'VARIABLE' => $variable,
@@ -782,9 +787,11 @@ class LoopShortcode {
 				$output = array();
 				ob_start();
 
+				$current_id = get_the_ID();
+
 				if($category == '') {
 					$posts =& get_children( array (
-					'post_parent' => get_the_ID(),
+					'post_parent' => $current_id,
 					'post_type' => 'attachment',
 					'post_status' => $status
 					) );
@@ -868,8 +875,8 @@ class LoopShortcode {
 					'THUMBNAIL' => $ccs_global_variable['current_image_thumb'],
 					'THUMBNAIL_URL' => $ccs_global_variable['current_image_thumb_url'],
 					'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
-					'FIELD' => get_post_meta( get_the_ID(), $custom_field, $single=true ),
-					'IDS' => get_post_meta( get_the_ID(), '_custom_gallery', true ),
+					'FIELD' => get_post_meta( $current_id, $custom_field, $single=true ),
+					'IDS' => get_post_meta( $current_id, '_custom_gallery', true ),
 				) );
 
 							$output[] = do_shortcode( $this->get_block_template( $template, $keywords ) );
@@ -900,15 +907,21 @@ class LoopShortcode {
 				if( function_exists('custom_gallery_get_image_ids') ) {
 
 					$output = array();
-					ob_start();
 
 					if($ccs_global_variable['current_gallery_id'] == '') {
-						$ccs_global_variable['current_gallery_id'] = get_the_ID();
+						$ccs_global_variable['current_gallery_id'] = $current_id;
 					}
-					$posts = new WP_Query( $query );
+
+//				$posts = new WP_Query( $query );
+
+					$current_id = get_the_ID();
+
 					$attachment_ids = custom_gallery_get_image_ids();
 
 					if ( $attachment_ids ) { 
+
+						ob_start();
+
 						$has_gallery_images = get_post_meta( $ccs_global_variable['current_gallery_id'], '_custom_gallery', true );
 						if ( !$has_gallery_images ) {
 							$ccs_global_variable['is_loop'] = "false";
@@ -971,10 +984,10 @@ class LoopShortcode {
 						'THUMBNAIL_URL' => $ccs_global_variable['current_image_thumb_url'],
 						'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
 						'IMAGE' => get_the_post_thumbnail(),
-						'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
+						'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id($current_id)),
 
-						'FIELD' => get_post_meta( get_the_ID(), $custom_field, $single=true ),
-						'IDS' => get_post_meta( get_the_ID(), '_custom_gallery', true ),
+						'FIELD' => get_post_meta( $current_id, $custom_field, $single=true ),
+						'IDS' => get_post_meta( $current_id, '_custom_gallery', true ),
 					) );
 						
 							$output[] = do_shortcode( $this->get_block_template( $template, $keywords ) );
@@ -1058,31 +1071,7 @@ $loop_shortcode = new LoopShortcode;
 /*--------------------------------------*/
 
 
-class CleanShortcodes {
-
-}
-
-
-
-
 	function custom_clean_shortcodes($content){   
-/*	    $array = array (
-	        '<p>[' => '[', 
-	        ']</p>' => ']', 
-	        ']<br />' => ']',
-	        ']<br/>' => ']',
-	        ']<br>' => ']',
-	        '<br />[' => '[',
-	        '<br/>[' => '[',
-	        '<br>[' => '[',
-	        '<br />' => '', // remove all
-	        '<br/>' => '',
-	        '<br>' => '',
-	        '<p>' => '',
-	        '</p>' => ''
-	    );
-	    $content = strtr($content, $array);
-*/
 
 	    $content = custom_strip_tag_list( $content, array('p','br') );
 

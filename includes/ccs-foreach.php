@@ -38,11 +38,22 @@ class ForShortcode {
 
 		/* Loop through taxonomies */
 
-		$taxonomies = get_terms( $each, array(
-			'orderby' => $orderby,
-			'order' => $order,
-			'number' => $count,
-			) );
+		if ($ccs_global_variable['is_loop']=="true") {
+			$taxonomies = wp_get_post_terms(
+				$ccs_global_variable['current_loop_id'],
+				$each, array(
+				'orderby' => $orderby,
+				'order' => $order,
+				'number' => $count,
+				) );
+		} else {
+			$taxonomies = get_terms( $each, array(
+				'orderby' => $orderby,
+				'order' => $order,
+				'number' => $count,
+				) );
+		}
+
 
 		if (is_array($taxonomies)) {
 
@@ -90,5 +101,50 @@ class ForShortcode {
 	}
 
 }
+new ForShortcode;
 
-$for_shortcode = new ForShortcode;
+
+class IfShortcode {
+
+	function __construct() {
+
+		global $ccs_global_variable;
+		$ccs_global_variable['if_flag'] = '';
+
+		add_action( 'init', array( &$this, 'register' ) );
+	}
+
+	function register() {
+		add_shortcode( 'if', array( &$this, 'if_shortcode' ) );
+		add_shortcode( 'flag', array( &$this, 'flag_shortcode' ) );
+	}
+
+	function if_shortcode( $atts, $content = null, $shortcode_name ) {
+		global $ccs_global_variable;
+		$args = array(
+			'flag' => ''
+		);
+		extract( shortcode_atts( $args , $atts, true ) );
+		if (empty($flag)) return;
+		$out = '';
+
+		if ($ccs_global_variable['is_loop']=="true") { // If we're inside loop shortcode
+			$current_id = $ccs_global_variable['current_loop_id'];
+			$check = get_post_meta( $current_id, $flag, true );
+			if (empty($check)) return;
+			else {
+				$ccs_global_variable['if_flag'] = $check;
+				$out = do_shortcode( $content );
+				$ccs_global_variable['if_flag'] = '';
+				return $out;
+			}
+		}
+	}
+
+	function flag_shortcode() {
+		global $ccs_global_variable;
+		return $ccs_global_variable['if_flag'];
+	}
+
+}
+new IfShortcode;

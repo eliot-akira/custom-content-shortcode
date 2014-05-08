@@ -38,3 +38,16 @@ Available parameters for the <strong>[each]</strong> shortcode are:
 	<li><strong>slug</strong> - slug of category, tag, or taxonomy term</li>
 	<li><strong>id</strong> - ID of category, tag, or taxonomy term</li>
 </ul>
+<br>
+<hr>
+<h3>Category/tag/taxonomy of each post in a loop</h3>
+
+It's also possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
+
+<h4>Display a link for each category assigned to a post</h4>
+<code>[loop type="post"]
+&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[for each="category"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url]/category/[each slug]"&gt;[each name]&lt;/a&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;[/for]
+[/loop]</code>

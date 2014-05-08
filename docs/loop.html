@@ -125,3 +125,21 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 <h4>Two checkboxes..</h4>
 
 <code>[loop type="movies" checkbox="genre" compare="AND" value="comedy, drama" checkbox_2="in-stock" value_2="current, pending"]</code>
+<br>
+<hr>
+<h3>Conditional: if a field value exists</h3>
+
+Use the <b>[if]</b> and <b>[flag]</b> shortcodes to display something only when a field is not empty.
+
+<h4>Display only products that have serial numbers</h4>
+
+<code>[loop type="product"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
+The <em>flag</em> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
+
+<h4></h4>

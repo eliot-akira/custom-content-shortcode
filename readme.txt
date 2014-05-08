@@ -58,12 +58,18 @@ None.
 
 == Changelog ==
 
+= 0.8.9 =
+
+* **[if flag]** - if a field is not empty, then display something
+* **[for each]** - now able to use inside loop; display for each category, tag or taxonomy
+* **[url login]** - updated *go* parameter
+* Content Overview - display all taxonomy terms, even unused ones
+
 = 0.8.8 =
 
 * **[content]** - Display multiple vales from checkbox or selector field
 * **[repeater]** - ACF: repeater field (correct shortcode name)
 * **[loop]** - get a post by name or ID, for repeater field to target
-* Updated documentation
 
 = 0.8.7 =
 
