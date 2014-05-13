@@ -37,13 +37,14 @@ class urlShortcode
 			'go' => '',
 		), $attributes));
 
-        if( is_array( $attributes ) )
-        {
+        if ( is_array( $attributes ) ) {
             $attributes = array_flip( $attributes );
         }
-        
 
-		if($go!='') {
+		if ( ($go=='here') || (isset($attributes['logout']) && empty($go)) ) {
+			global $wp;
+			$go = home_url( $wp->request );
+		} elseif($go!='') {
 			if($go=='home')
 				$go = $blogurl_settings['home'];
 			elseif( (isset( $attributes['login'] )) || (isset( $attributes['logout'] )) )
