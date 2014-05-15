@@ -153,5 +153,20 @@ In addition, you can display something when a field is empty:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Serial Number
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
+<br>
+<hr>
+<h3>Conditional: if there is no query result</h3>
 
-<h4></h4>
+Use <b>[if empty]</b> to display something when there is no post matching the query.
+
+<h4>Display a message for no query result</h4>
+
+<code>[loop type="events" category="weekend"]
+&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[content field="description"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if empty]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no event for this category.
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
+If there's no post found, the loop displays only what's inside <b>[if empty]</b>.

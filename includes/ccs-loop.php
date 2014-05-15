@@ -13,12 +13,12 @@ class LoopShortcode {
 	}
 
 	function register() {
-		add_shortcode( 'loop', array( &$this, 'simple_query_shortcode' ) );
-		add_shortcode( 'pass', array( &$this, 'simple_query_shortcode' ) );
+		add_shortcode( 'loop', array( &$this, 'the_loop_shortcode' ) );
+		add_shortcode( 'pass', array( &$this, 'the_loop_shortcode' ) );
 //		add_filter( 'the_content', 'wpautop', 20 );  // change priority: wpautop after shortcode
 	}
 
-	function simple_query_shortcode( $atts, $template = null, $shortcode_name ) {
+	function the_loop_shortcode( $atts, $template = null, $shortcode_name ) {
 
 		global $ccs_global_variable;
 		global $sort_posts;
@@ -469,7 +469,9 @@ class LoopShortcode {
 			 * 
 			 */ 
 
-			if( $posts->have_posts() ) : while( $posts->have_posts() ) : $posts->the_post();
+			if( $posts->have_posts() ) {
+
+				while( $posts->have_posts() ) : $posts->the_post();
 
 				$ccs_global_variable['total_comments']+=get_comments_number();
 				$current_id = get_the_ID();
@@ -728,46 +730,65 @@ class LoopShortcode {
 
 			} /* Not skip */
 
-			endwhile; endif; // End loop for each post
+			endwhile; $nothing_found = false;
+			} // End loop for each post found
+			else {
+
+				$nothing_found = true;
+
+				// search content for [if empty]
+
+				$start = '[if empty]';
+				$end = '[/if]';
+
+				$middle = explode($start, $template);
+				if (isset($middle[1])){
+					$middle = explode($end, $middle[1]);
+					$middle = $middle[0];
+					echo do_shortcode($middle); // then do it
+				}
+			}
 
 			wp_reset_query();
 			wp_reset_postdata();
 
-			if (empty($if)) {
+			if (!$nothing_found) {
+				if (empty($if)) {
 
-				if (!empty($columns)) { // Create simple columns
+					if (!empty($columns)) { // Create simple columns
 
-					$col = 0;
-					$percent = 100 / (int)$columns;
-					$clear = '<div style="clear:both;"><br></div>';
+						$col = 0;
+						$percent = 100 / (int)$columns;
+						$clear = '<div style="clear:both;"><br></div>';
 
-					foreach ($output as $each) {
-						$col++;
-						echo '<div class="column-1_of_'.$columns.'" style="width:'.$percent.'%;float:left;">';
+						foreach ($output as $each) {
+							$col++;
+							echo '<div class="column-1_of_'.$columns.'" style="width:'.$percent.'%;float:left;">';
 
-						if (!empty($pad))
-							echo '<div class="column-inner" style="padding:'.$pad.'">';
+							if (!empty($pad))
+								echo '<div class="column-inner" style="padding:'.$pad.'">';
 
-						echo $each;
+							echo $each;
 
-						if (!empty($pad))
+							if (!empty($pad))
+								echo '</div>';
+
 							echo '</div>';
+							if (($col%$columns)==0)
+								echo $clear;
 
-						echo '</div>';
-						if (($col%$columns)==0)
+						}
+						if (($col%$columns)!=0) // Last row not filled
 							echo $clear;
 
+					} else {
+						echo implode( "", $output );
 					}
-					if (($col%$columns)!=0) // Last row not filled
-						echo $clear;
 
 				} else {
-					echo implode( "", $output );
-				}
-
-			} else {
-				if ( ($if=='all-no-comments') && ($total_comment_count==0) ) {
-					echo $output[0];
+					if ( ($if=='all-no-comments') && ($total_comment_count==0) ) {
+						echo $output[0];
+					}
 				}
 			}
 
@@ -780,7 +801,11 @@ class LoopShortcode {
 
 		} else {
 
-	// Loop for attachments
+			/*********************
+			 *
+			 * Attachment Loop
+			 *
+			 */
 
 			if( $type == 'attachment' ) {
 
@@ -1017,7 +1042,7 @@ class LoopShortcode {
 
 		} /* End: attachment or gallery field */
 
-	} /* End of function simple_query_shortcode */ 
+	} /* End of function the_loop_shortcode */ 
 
 	/*
 	 * Replaces {VAR} with $parameters['var'];

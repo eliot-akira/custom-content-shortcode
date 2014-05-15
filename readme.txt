@@ -59,6 +59,7 @@ None.
 
 = 0.9.1 =
 
+* **[if empty]** - display something when there is no query result
 * **[url login], [url logout]** - updated *go* parameter; by default, return to the same page
 
 

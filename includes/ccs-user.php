@@ -1,11 +1,8 @@
 <?php
 
-
-
-
 /*====================================================================================================
  *
- * Relative URL shortcodes - [url site/theme/child/content/uploads]
+ * Relative URL shortcodes - [url site/theme/child/views/content/uploads]
  *
  *====================================================================================================*/
 
@@ -289,7 +286,6 @@ function custom_user_shortcode( $atts, $content ) {
 	if (!empty($field)) {
 		return get_user_meta( $current_user->ID, $field, true );
 	}
-
 
 	if( is_array( $atts ) )
 		$atts = array_flip( $atts );

@@ -1,5 +1,7 @@
 <?php
 
+/* Shortcodes: for, each, if */
+
 class ForShortcode {
 
 	function __construct() {
@@ -125,12 +127,19 @@ class IfShortcode {
 			'flag' => '',
 			'no_flag' => ''
 		);
+
 		extract( shortcode_atts( $args , $atts, true ) );
-		if ((empty($flag))&&(empty($no_flag))) return;
+
+
+		if (is_array($atts)) $atts = array_flip($atts);
+
+		if ( (empty($flag))&&(empty($no_flag)) || (isset($atts['empty']))) return;
 		if (!empty($no_flag)) $flag = $no_flag;
 		$out = '';
 
-		if ($ccs_global_variable['is_loop']=="true") { // If we're inside loop shortcode
+		// If we're inside loop shortcode
+
+		if ($ccs_global_variable['is_loop']=="true") {
 			$current_id = $ccs_global_variable['current_loop_id'];
 			$check = get_post_meta( $current_id, $flag, true );
 
@@ -142,8 +151,6 @@ class IfShortcode {
 				$ccs_global_variable['if_flag'] = '';
 				return $out;
 			}
-
-
 		}
 	}
 
