@@ -53,7 +53,9 @@ With other libraries:
 
 == Screenshots ==
 
-None.
+1. Documentation and examples
+2. Content overview page
+3. Gallery field
 
 == Changelog ==
 

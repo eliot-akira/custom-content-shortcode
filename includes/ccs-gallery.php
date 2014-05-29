@@ -229,7 +229,7 @@ function custom_gallery_admin_css() { ?>
             height: auto;
         }
 
-        .add_gallery_images { margin-top: -15px; }
+        .add_gallery_images { margin-top: -15px; float:left; }
 
     </style>
 
