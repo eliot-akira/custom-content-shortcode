@@ -262,21 +262,24 @@ add_action('wp_head', 'load_custom_css');
 function load_custom_css() {
 	global $wp_query;
 
-	$custom_css = get_post_meta( $wp_query->post->ID, "css", $single=true );
-
-/*	if($custom_css == '') { */
-		$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/';
-		$default_layout_dir = $root_dir_soft . 'wp-content/layout/';
-		$default_css = $default_layout_dir . 'style.css';
-
-		if(file_exists($default_css))
-			$custom_css .= '[load css="style.css" dir="layout"]';
-/*	} */
-
-	$custom_css = do_shortcode( $custom_css );
-	if( $custom_css != '' ) {
-		echo $custom_css;
+	if (isset($wp_query->post)) {
+		$custom_css = get_post_meta( $wp_query->post->ID, "css", $single=true );
+	} else {
+		$custom_css = null;
 	}
+
+	/*	if($custom_css == '') { */
+			$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/';
+			$default_layout_dir = $root_dir_soft . 'wp-content/layout/';
+			$default_css = $default_layout_dir . 'style.css';
+
+			if(file_exists($default_css))
+				$custom_css .= '[load css="style.css" dir="layout"]';
+	/*	} */
+		if (!empty($custom_css)) {
+			$custom_css = do_shortcode( $custom_css );
+			echo $custom_css;
+		}
 }
 
 /** Load JS field into footer **/
@@ -285,7 +288,12 @@ add_action('wp_footer', 'load_custom_js');
 function load_custom_js() {
 	global $wp_query;
 
-	$custom_js = get_post_meta( $wp_query->post->ID, "js", $single=true );
+
+	if (isset($wp_query->post)) {
+		$custom_js = get_post_meta( $wp_query->post->ID, "js", $single=true );
+	} else {
+		$custom_js = null;
+	}
 
 /*	if($custom_js == '') { */
 
