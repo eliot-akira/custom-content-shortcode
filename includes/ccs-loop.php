@@ -9,12 +9,12 @@
 class LoopShortcode {
 
 	function __construct() {
-		add_action( 'init', array( &$this, 'register' ) );
+		add_action( 'init', array( $this, 'register' ) );
 	}
 
 	function register() {
-		add_shortcode( 'loop', array( &$this, 'the_loop_shortcode' ) );
-		add_shortcode( 'pass', array( &$this, 'the_loop_shortcode' ) );
+		add_shortcode( 'loop', array( $this, 'the_loop_shortcode' ) );
+		add_shortcode( 'pass', array( $this, 'pass_shortcode' ) );
 //		add_filter( 'the_content', 'wpautop', 20 );  // change priority: wpautop after shortcode
 	}
 
@@ -179,6 +179,11 @@ class LoopShortcode {
 				$taxonomy = $ccs_global_variable['for_each']['taxonomy'];
 				$custom_value = $ccs_global_variable['for_each']['slug'];
 			}
+		}
+
+
+		if ($shortcode_name=="pass") {
+			$id = get_the_ID();
 		}
 
 
@@ -444,6 +449,8 @@ class LoopShortcode {
 
 			$output = array();
 			ob_start();
+
+/*			print_r($query); */
 
 			$posts = new WP_Query( $query );
 
@@ -1048,7 +1055,7 @@ class LoopShortcode {
 	 * Replaces {VAR} with $parameters['var'];
 	 */
 
-	function get_block_template( $string, $parameters ) {
+	public static function get_block_template( $string, $parameters ) {
 		$searches = $replacements = null;
 
 
@@ -1077,6 +1084,38 @@ class LoopShortcode {
 		$bpos = array_search( get_post_meta( $b->ID, $sort_key, $single=true ), $sort_posts );
 
 		return ( $apos < $bpos ) ? -1 : 1;
+	}
+
+
+
+	/*============================================================================
+	 *
+	 * Pass shortcode
+	 *
+	 *===========================================================================*/
+
+	public static function pass_shortcode( $atts, $content ) {
+
+		$args = array(
+			'field' => ''
+			);
+		extract( shortcode_atts( $args , $atts, true ) );
+
+		if (!empty($field)) {
+			$post_id = get_the_id();
+			$field_value = get_post_meta( $post_id, $field, true );
+			if (is_array($field_value))
+				$field_value = implode(",", $field_value);
+
+			$replace = array(
+				'ID' => $post_id,
+				'FIELD' => $field_value,
+				);
+
+			$content = self::get_block_template( $content, $replace );
+		}
+
+		return do_shortcode( $content );
 	}
 
 
