@@ -112,10 +112,19 @@ function ccs_docs_admin_css() {
 	if ( ccs_is_current_plugin_screen() ) {
 
 		echo '<style type="text/css">
+					.wrap h2 {
+						margin-bottom: -10px;
+					}
+					h2 .nav-tab {
+						font-size: 12px; line-height: 16px;
+					}
 					.doc-style {
 						max-width: 760px; /*margin: 0 auto;*/
 						padding-top:10px;
 						padding-left:10px;
+					}
+					.doc-style h3 {
+						font-size: 1.2em;
 					}
 					.doc-style, .doc-style p {
 						font-size: 16px;
@@ -259,7 +268,6 @@ function ccs_content_settings_page() {
 
 			}
 
-			/*-- End of .doc-style --*/
 	?>
 
 
@@ -280,12 +288,16 @@ function ccs_content_settings_page() {
 				?>
 					</div>
 				<?php
-				/*-- End of .wrap --*/
+
+			/*-- End of .doc-style --*/
 
 			 }
 	?>
 	</div>
 	<?php
+
+				/*-- End of .wrap --*/
+
 }
 
 

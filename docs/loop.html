@@ -43,7 +43,8 @@ Available parameters for the <strong>[loop]</strong> shortcode are:
 <ul>
 	<li><strong>category</strong> - display posts from one or more categories: <em>category="sports, fashion"</em></li>
 	<li><strong>tag</strong> - display posts with one or more tags: <em>tag="apples, green"</em></li>
-	<li><strong>taxonomy</strong>, <strong>value</strong> - display posts whose <em>taxonomy</em> equals <em>value</em>; mutiple values are possible: <em>value="drama, comedy"</em> shows all posts whose taxonomy value is <em>drama</em> <b>or</b> <em>comedy</em></li>
+	<li><strong>taxonomy</strong>, <strong>value</strong> - display posts by taxonomy value: <em>taxonomy="product-type" value="book"</em>.
+	 Mutiple values are possible: <em>value="drama, comedy"</em> shows all posts whose taxonomy value is <em>drama</em> <b>or</b> <em>comedy</em></li>
 	<li><strong>compare</strong> - optional for taxonomy query: use <em>compare="NOT"</em> for posts whose <em>taxonomy</em> is <b>not</b> <em>value</em>; use <em>compare="AND"</em> when you want posts whose <em>taxonomy</em> contains all values</li>
 </ul>
 
@@ -56,7 +57,7 @@ Available parameters for the <strong>[loop]</strong> shortcode are:
 <h4>Sorting and series</h4>
 <ul>
 	<li><strong>parent</strong> - display all children of a parent, specified by slug</li>
-	<li><strong>orderby</strong> - order by<em> ID</em>,<em> author</em>,<em> title</em>,<em> name</em>,<em> date</em>,<em> modified</em>,<em> menu_order</em>,<em> parent</em>,<em> meta_value</em> (custom field value: string), or<em> meta_value_num</em> (custom field value: number)</li>
+	<li><strong>orderby</strong> - order by<em> ID</em>,<em> author</em>,<em> title</em>,<em> name</em>,<em> date</em>,<em> rand</em> (randomized),<em> modified</em>,<em> menu_order</em>,<em> parent</em>,<em> meta_value</em> (custom field value: string), or<em> meta_value_num</em> (custom field value: number)</li>
 	<li><strong>key</strong> - when ordering by<em> meta_value</em> or<em> meta_value_num</em>, you need to specify<strong> key</strong> as the name of the custom field to order by</li>
 	<li><strong>order</strong> - ASC (ascending/alphabetical) or DESC (descending/from most recent date) when using the <em>orderby</em> parameter</li>
 	<li><strong>series</strong>, <strong>key</strong> - order posts by a series of custom field values, where <em>key</em> is the name of the field - the series can include ranges, for example: <em>1-15,30-40,42,44</em>.</li>
@@ -153,5 +154,20 @@ In addition, you can display something when a field is empty:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Serial Number
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
+<br>
+<hr>
+<h3>Conditional: if there is no query result</h3>
 
-<h4></h4>
+Use <b>[if empty]</b> to display something when there is no post matching the query.
+
+<h4>Display a message for no query result</h4>
+
+<code>[loop type="events" category="weekend"]
+&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[content field="description"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if empty]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no event for this category.
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
+If there's no post found, the loop displays only what's inside <b>[if empty]</b>.
