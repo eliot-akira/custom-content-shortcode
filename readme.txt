@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.9
-Stable tag: 0.9.2
+Stable tag: 0.9.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,11 @@ With other libraries:
 3. Gallery field
 
 == Changelog ==
+
+= 0.9.3 =
+
+* **[for each]** - for each child category, by parent slug; *each="category" parent="products"*
+* **[content field]** - added *edit-url*; only shows when user is logged in and can edit posts
 
 = 0.9.2 =
 

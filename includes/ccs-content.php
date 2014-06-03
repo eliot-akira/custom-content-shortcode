@@ -431,6 +431,7 @@ class CustomContentShortcode {
 
 			switch($custom_field) {
 				case "id": $out = $custom_id; break;
+				case "edit-url": $out = get_edit_post_link( $custom_id ); break;
 				case "slug": $this_post = get_post($custom_id); $out = $this_post->post_name; break;
 				case "title": $out = apply_filters( 'the_title', get_post($custom_id)->post_title ); break;
 				case "title-length": $out = strlen(apply_filters( 'the_title', get_post($custom_id)->post_title )); break;

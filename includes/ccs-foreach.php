@@ -26,7 +26,8 @@ class ForShortcode {
 			'each' => '',
 			'orderby' => '',
 			'order' => '',
-			'count' => ''
+			'count' => '',
+			'parent' => ''
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -49,11 +50,35 @@ class ForShortcode {
 				'number' => $count,
 				) );
 		} else {
-			$taxonomies = get_terms( $each, array(
-				'orderby' => $orderby,
-				'order' => $order,
-				'number' => $count,
-				) );
+
+			if (empty($parent)) {
+
+				$taxonomies = get_terms( $each, array(
+					'orderby' => $orderby,
+					'order' => $order,
+					'number' => $count,
+					) );
+
+			} else {
+
+				/* Get parent term ID from name */
+
+				$term = get_term_by( 'slug', $parent, $each );
+				if (!empty($term)) {
+					$parent_term_id = $term->term_id;
+
+					/* Get direct children */
+					$taxonomies = get_terms( $each, array(
+						'orderby' => $orderby,
+						'order' => $order,
+						'number' => $count,
+						'parent' => $parent_term_id
+						) );
+
+				} else { /* No parent found */
+					$taxonomies = null;
+				}
+			}
 		}
 
 
