@@ -59,6 +59,11 @@ With other libraries:
 
 == Changelog ==
 
+= 0.9.4 =
+
+* **[for each]** - for each category/tag/taxonomy of current post: *current="true"*
+* Added a note in the documentation about using [loop] to create multiple Bootstrap carousels
+
 = 0.9.3 =
 
 * **[for each]** - for each child category, by parent slug; *each="category" parent="products"*
@@ -67,7 +72,6 @@ With other libraries:
 = 0.9.2 =
 
 * **[pass]** - correctly pass when field value is an array (for example, post IDs)
-* Updated documentation
 
 = 0.9.1 =
 

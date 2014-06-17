@@ -27,7 +27,8 @@ class ForShortcode {
 			'orderby' => '',
 			'order' => '',
 			'count' => '',
-			'parent' => ''
+			'parent' => '',
+			'current' => ''
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -41,14 +42,22 @@ class ForShortcode {
 
 		/* Loop through taxonomies */
 
-		if ($ccs_global_variable['is_loop']=="true") {
+		if (($ccs_global_variable['is_loop']=="true") || ($current=="true")) {
+
+			if ($current=="true") {
+				$post_id = get_the_ID();
+			} else {
+				$post_id = $ccs_global_variable['current_loop_id'];
+			}
+
 			$taxonomies = wp_get_post_terms(
-				$ccs_global_variable['current_loop_id'],
+				$post_id,
 				$each, array(
 				'orderby' => $orderby,
 				'order' => $order,
 				'number' => $count,
 				) );
+
 		} else {
 
 			if (empty($parent)) {

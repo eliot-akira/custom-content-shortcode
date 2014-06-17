@@ -20,7 +20,11 @@ The content shortcode can display individual images of the gallery field, or all
 [content gallery="carousel"]</code>
 
 You can pass the following parameters to the native gallery: <em>orderby</em>, <em>order</em>, <em>columns</em>, <em>size</em>, <em>link</em>, <em>include</em>, <em>exclude</em>. For details, please refer to <a href="http://codex.wordpress.org/Gallery_Shortcode" target="_blank">the Codex: Gallery Shortcode</a>.
-<br>
+
+When using the <b>[loop]</b> to generate multiple Bootstrap carousels, the following will put images from each post in its own carousel.
+
+<code>[content gallery="carousel" group="gallery-{ID}"]</code>
+
 <hr>
 <h3>Attachments</h3>
 
