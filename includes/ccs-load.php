@@ -232,7 +232,7 @@ function do_shortcode_file( $file, $dir = "" ) {
 
 	$output = @file_get_contents( $file );
 
-	if ( ( $output!='' ) && ($output != false) ) {
+	if ( !empty($output) ) {
 
 		$output = ccs_safe_eval( $output );
 		$output = do_shortcode( $output );
@@ -322,14 +322,14 @@ function load_custom_html($content) {
 		global $ccs_content_template_loader;
 		global $wp_query;
 
-
 		$html_field = get_post_meta( $wp_query->post->ID, "html", $single=true );
 
 		$output = '';
 
 		/* Set default layout filename */
 
-		$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/';
+		$root_dir_soft = ABSPATH . '/';
+//		$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/';
 
 		$default_layout_dir = $root_dir_soft . 'wp-content/layout/';
 
