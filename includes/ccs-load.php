@@ -85,7 +85,8 @@ function custom_load_script_file( $atts ) {
 		'php' => 'true', 'debug' => 'false',
 		), $atts ) );
 
-	$root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
+
+//	$root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
 	$path = $root_path . '/';
 	$site_url = get_site_url();
 
@@ -199,7 +200,9 @@ add_shortcode('load', 'custom_load_script_file');
 
 function do_shortcode_file( $file, $dir = "" ) {
 
-	$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
+	$root_dir_soft = get_home_path();
+
+//	$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
 
 	switch($dir) {
 		case 'root' : 

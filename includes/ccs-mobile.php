@@ -14,6 +14,18 @@
 
 if ( !is_admin() ) {	
 	add_filter('body_class','ccs_mobile_body_class');
+
+	/**
+	 * Set up mobile detect library
+	 *
+	 */
+
+	if (!class_exists('Mobile_Detect')) {
+		require_once (CCS_PATH.'/includes/Mobile_Detect.php');	
+	}
+
+	$detect = new Mobile_Detect();
+	$device_type = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
 }
 
 /* .is_phone, .is_tablet, .is_mobile, .isnt_phone, .is_computer */

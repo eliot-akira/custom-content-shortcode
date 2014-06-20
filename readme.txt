@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.9.1
-Stable tag: 0.9.4
+Stable tag: 0.9.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,7 +46,7 @@ With other libraries:
 == Installation ==
 
 1. Install from *Plugins -> Add New*
-1. Or download the .zip and extract to *wp-contents/plugins*
+1. Or download the .zip and extract to *wp-content/plugins*
 1. Activate the plugin from the *Plugins* menu
 1. See: *Settings -> Custom Content*
 
@@ -57,7 +57,29 @@ With other libraries:
 2. Content overview page
 3. Gallery field
 
+== Frequently Asked Questions ==
+
+**Q:** Switching from text to visual editor breaks my HTML.
+
+**A:** The visual editor (TinyMCE) sometimes misinterprets HTML code placed in the text editor. There are several ways to address this issue.
+
+* Disable the visual editor for certain posts or post types, with the [Raw HTML](http://wordpress.org/plugins/raw-html/) plugin. However, if the post needs to be editable by the client, this won't be ideal.
+
+* Put the code in a custom field, then include it in the post. For example: *[content field="code_block"]*
+
+* Put the code in a file, then include it into the post. For example: *[load dir="views" file="recent-posts.html"]*
+
+* You can create a custom field called *html*. This special field is displayed **instead of** the post content. All your HTML and shortcodes can be put there, then place *[content]* where you need the content of the visual editor to appear.
+
+* Put your code in a text widget, and use a plugin like [Widgets on Pages](http://wordpress.org/plugins/widgets-on-pages/).
+
+
 == Changelog ==
+
+= 0.9.5 =
+
+* **[loop]** - correctly reset query when [loop] is inside another loop
+* **[loop]** - move wpautop filter to *after* shortcode is processed
 
 = 0.9.4 =
 
@@ -299,7 +321,7 @@ With other libraries:
 
 = 0.3.6 =
 
-* Fixed one line to be compatible with older versions (<5.3) of PHP
+* Fixed one line to be compatible with older versions (less than 5.3) of PHP
 
 = 0.3.5 =
 

@@ -8,6 +8,9 @@
 
 class LoopShortcode {
 
+	private static $sort_posts;
+	private static $sort_key;
+
 	function __construct() {
 		add_action( 'init', array( $this, 'register' ) );
 	}
@@ -15,14 +18,16 @@ class LoopShortcode {
 	function register() {
 		add_shortcode( 'loop', array( $this, 'the_loop_shortcode' ) );
 		add_shortcode( 'pass', array( $this, 'pass_shortcode' ) );
-//		add_filter( 'the_content', 'wpautop', 20 );  // change priority: wpautop after shortcode
+
+		// move wpautop filter to AFTER shortcode is processed
+		remove_filter( 'the_content', 'wpautop' );
+		add_filter( 'the_content', 'wpautop' , 99);
+		add_filter( 'the_content', 'shortcode_unautop',100 );
 	}
 
 	function the_loop_shortcode( $atts, $template = null, $shortcode_name ) {
 
 		global $ccs_global_variable;
-		global $sort_posts;
-		global $sort_key;
 
 		$ccs_global_variable['is_loop'] = "true";
 		$ccs_global_variable['current_gallery_name'] = '';
@@ -346,6 +351,9 @@ class LoopShortcode {
 
 		if($series!='') {
 
+			// Remove white space
+			$series = str_replace(' ', '', $series);
+
 //			Expand range: 1-3 -> 1,2,3
 
 			/* PHP 5.3+
@@ -359,15 +367,14 @@ class LoopShortcode {
 			$callback = create_function('$m', 'return implode(\',\', range($m[1], $m[2]));');
 			$series = preg_replace_callback('/(\d+)-(\d+)/', $callback, $series);
 
+			self::$sort_posts = explode(',', $series);
 
-			$sort_posts = explode(',', $series);
-
-			$sort_key = $keyname;
+			self::$sort_key = $keyname;
 
 				$query['meta_query'] = array(
 						array(
 							'key' => $keyname,
-							'value' => $sort_posts,
+							'value' => self::$sort_posts,
 							'compare' => 'IN'
 						)
 					);
@@ -756,7 +763,7 @@ class LoopShortcode {
 				}
 			}
 
-			wp_reset_query();
+			// wp_reset_query(); not necessary
 			wp_reset_postdata();
 
 			if (!$nothing_found) {
@@ -1078,10 +1085,9 @@ class LoopShortcode {
 	 *===========================================================================*/
 
 	public static function custom_series_orderby_key( $a, $b ) {
-		global $sort_posts; global $sort_key;
 
-		$apos = array_search( get_post_meta( $a->ID, $sort_key, $single=true ), $sort_posts );
-		$bpos = array_search( get_post_meta( $b->ID, $sort_key, $single=true ), $sort_posts );
+		$apos = array_search( get_post_meta( $a->ID, self::$sort_key, $single=true ), self::$sort_posts );
+		$bpos = array_search( get_post_meta( $b->ID, self::$sort_key, $single=true ), self::$sort_posts );
 
 		return ( $apos < $bpos ) ? -1 : 1;
 	}
