@@ -85,6 +85,7 @@ function custom_load_script_file( $atts ) {
 		'php' => 'true', 'debug' => 'false',
 		), $atts ) );
 
+	$root_path = ABSPATH;
 
 //	$root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
 	$path = $root_path . '/';
@@ -202,7 +203,7 @@ function do_shortcode_file( $file, $dir = "" ) {
 
 	$root_dir_soft = ABSPATH;
 
-//	$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
+	$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
 
 	switch($dir) {
 		case 'root' : 
