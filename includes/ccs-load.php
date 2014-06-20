@@ -202,8 +202,7 @@ add_shortcode('load', 'custom_load_script_file');
 function do_shortcode_file( $file, $dir = "" ) {
 
 	$root_dir_soft = ABSPATH;
-
-	$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
+//	$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
 
 	switch($dir) {
 		case 'root' : 
