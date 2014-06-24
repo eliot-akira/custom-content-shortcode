@@ -230,11 +230,16 @@ function do_shortcode_file( $file, $dir = "" ) {
 
 	$file = $dir . $file . '.html';
 
-	$output = @file_get_contents( $file );
+
+/*	$output = @file_get_contents( $file ); */
+
+	ob_start();
+	@include($file);
+	$output = ob_get_clean();
 
 	if ( !empty($output) ) {
 
-		$output = ccs_safe_eval( $output );
+/*		$output = ccs_safe_eval( $output ); */
 		$output = do_shortcode( $output );
 
 		echo $output;
