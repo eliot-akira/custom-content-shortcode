@@ -30,6 +30,7 @@ class LoopShortcode {
 		global $ccs_global_variable;
 
 		$ccs_global_variable['is_loop'] = "true";
+		$ccs_global_variable['current_loop_count'] = 0;
 		$ccs_global_variable['current_gallery_name'] = '';
 		$ccs_global_variable['current_gallery_id'] = '';
 		$ccs_global_variable['is_gallery_loop'] = "false";
@@ -75,6 +76,13 @@ class LoopShortcode {
 
 		$all_args = shortcode_atts( $args , $atts, true );
 		extract( $all_args );
+
+
+/*========================================================================
+ *
+ * Set up query based on parameters
+ *
+ *=======================================================================*/
 
 
 		/*---------------
@@ -168,11 +176,6 @@ class LoopShortcode {
 		}
 
 
-		/*----------------
-		 * Alter query
-		 *---------------*/
-
-
 		/*---------------
 		 * In a foreach loop?
 		 *-------------*/
@@ -204,8 +207,8 @@ class LoopShortcode {
 				$query['posts_per_page'] = '-1';
 			} else {
 				$query['posts_per_page'] = $count;
+				$query['ignore_sticky_posts'] = true;
 			}
-
 
 		} else {
 
@@ -434,11 +437,13 @@ class LoopShortcode {
 				}
 			}
 
-	/*====================================================================================
-	 *
-	 * Main loop
-	 * 
-	 *====================================================================================*/
+
+
+/*====================================================================================
+ *
+ * Main loop
+ * 
+ *====================================================================================*/
 
 		/*--------------
 		 * Put a hook here?
@@ -490,6 +495,7 @@ class LoopShortcode {
 				$ccs_global_variable['total_comments']+=get_comments_number();
 				$current_id = get_the_ID();
 				$ccs_global_variable['current_loop_id']=$current_id;
+				$ccs_global_variable['current_loop_count']=$current_count;
 
 				// Filter by checkbox..
 
@@ -685,6 +691,7 @@ class LoopShortcode {
 
 					$keywords = apply_filters( 'query_shortcode_keywords', array(
 						'QUERY' => serialize($query), // DEBUG purpose
+						'COUNT' => $current_count,
 						'URL' => get_permalink(),
 						'ID' => $current_id,
 						'TITLE' => get_the_title(),
@@ -922,7 +929,7 @@ class LoopShortcode {
 						} /** End for each attachment **/
 					}
 					$ccs_global_variable['is_attachment_loop'] = "false";
-					wp_reset_query();
+					// wp_reset_query(); not necessary
 					wp_reset_postdata();
 
 					echo implode( "", $output );
@@ -1033,7 +1040,7 @@ class LoopShortcode {
 						} /** End for each attachment **/
 
 						$ccs_global_variable['is_gallery_loop'] = "false";
-						wp_reset_query();
+						// wp_reset_query(); not necessary
 						wp_reset_postdata();
 
 						echo implode( "", $output );

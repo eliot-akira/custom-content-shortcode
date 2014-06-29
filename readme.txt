@@ -78,8 +78,10 @@ With other libraries:
 
 = 0.9.5 =
 
-* **[loop]** - correctly reset query when [loop] is inside another loop
-* **[loop]** - move wpautop filter to *after* shortcode is processed
+* **[if every]** - display something for every X number of posts
+* **[loop]** - count sticky posts for parameter *count*
+* **[loop]** - reset query when [loop] is inside another loop
+* **[loop]** - process shortcode *before* wpautop filter to prevent unwanted formatting
 
 = 0.9.4 =
 
