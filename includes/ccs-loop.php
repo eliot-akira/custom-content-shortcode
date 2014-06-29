@@ -1191,6 +1191,11 @@ $loop_shortcode = new LoopShortcode;
 	add_shortcode('clean', 'custom_cleaner_shortcode');
 
 
+	function custom_direct_shortcode( $atts, $content ) {
+		return $content;
+	}
+	add_shortcode('direct', 'custom_direct_shortcode');
+
 
 if (!function_exists('undo_wptexturize')) {
 	function undo_wptexturize($content) {
