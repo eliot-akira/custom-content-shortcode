@@ -177,10 +177,20 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 
 <h4>Add an extra break line for every 3 posts</h4>
 
-
 <code>[loop type="post" count="9"]
 &nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
 &nbsp;&nbsp;&nbsp;&nbsp;[if every="3"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;br&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
+<h4>Display something for the first or last post</h4>
+<code>[loop type="post"]
+&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if first]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(first post)
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;&nbsp;&nbsp;[if last]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(last post)
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
