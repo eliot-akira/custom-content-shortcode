@@ -168,17 +168,16 @@ class IfShortcode {
 		extract( shortcode_atts( $args , $atts, true ) );
 
 		if (is_array($atts)) $atts = array_flip($atts); /* To allow check for parameters with no value set */
-
+/*
 //		if ( (empty($flag))&&(empty($no_flag)) || (isset($atts['empty']))) return;
-		if ((isset($atts['empty']))) return; // [if empty] is processed by [loop]
-
+		if ((isset($atts['empty'])) || (isset($atts['last'])) ) return; // [if empty] [if last] is processed by [loop]
+*/
 		if (!empty($no_flag)) $flag = $no_flag;
 		$out = '';
 
 		// If we're inside loop shortcode
 
 		if ($ccs_global_variable['is_loop']=="true") {
-
 
 			if (!empty($every)) {
 

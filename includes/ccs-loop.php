@@ -733,6 +733,39 @@ class LoopShortcode {
 						}
 					} 
 
+
+// First post found?
+
+					if ($current_count == 1) {
+
+						// search content for [if last]
+
+						$start = '[if first]';
+						$end = '[/if]';
+
+						$middle = self::getBetween($start, $end, $out);
+						if($middle) {
+							$out = str_replace($start.$middle.$end, $middle, $out);
+						}
+
+					}
+
+// Last post found?
+
+					if ($current_count == $posts->post_count) {
+
+						// search content for [if last]
+
+						$start = '[if last]';
+						$end = '[/if]';
+
+						$middle = self::getBetween($start, $end, $out);
+						if($middle) {
+							$out = str_replace($start.$middle.$end, $middle, $out);
+						}
+
+					}
+
 					if ($clean == 'true') {
 						$output[] = do_shortcode(custom_clean_shortcodes( $out ));
 					} else {
@@ -751,8 +784,12 @@ class LoopShortcode {
 
 			} /* Not skip */
 
+// End loop for each post found
+
 			endwhile; $nothing_found = false;
-			} // End loop for each post found
+
+			} // End if post found
+
 			else {
 
 				$nothing_found = true;
@@ -762,12 +799,9 @@ class LoopShortcode {
 				$start = '[if empty]';
 				$end = '[/if]';
 
-				$middle = explode($start, $template);
-				if (isset($middle[1])){
-					$middle = explode($end, $middle[1]);
-					$middle = $middle[0];
-					echo do_shortcode($middle); // then do it
-				}
+				$middle = self::getBetween($start, $end, $template);
+				if($middle)
+					echo do_shortcode($middle); // then do it	
 			}
 
 			// wp_reset_query(); not necessary
@@ -803,7 +837,16 @@ class LoopShortcode {
 							echo $clear;
 
 					} else {
+
+
+/*========================================================================
+ *
+ * Final output (for not attachment or gallery)
+ *
+ *=======================================================================*/
+
 						echo implode( "", $output );
+
 					}
 
 				} else {
@@ -822,11 +865,12 @@ class LoopShortcode {
 
 		} else {
 
-			/*********************
-			 *
-			 * Attachment Loop
-			 *
-			 */
+
+/*========================================================================
+ *
+ * Attachment Loop
+ *
+ *=======================================================================*/
 
 			if( $type == 'attachment' ) {
 
@@ -944,11 +988,13 @@ class LoopShortcode {
 
 			else {
 
-				/*********************
-				 *
-				 * Gallery Loop
-				 *
-				 */
+
+/*========================================================================
+ *
+ * Gallery Loop
+ *
+ *=======================================================================*/
+
 
 				if( function_exists('custom_gallery_get_image_ids') ) {
 
@@ -1084,6 +1130,19 @@ class LoopShortcode {
 
 		return $string;
 	}
+
+	public static function getBetween($start, $end, $text) {
+
+				$middle = explode($start, $text);
+				if (isset($middle[1])){
+					$middle = explode($end, $middle[1]);
+					$middle = $middle[0];
+					return $middle;
+				} else {
+					return false;
+				}
+	}
+
 
 	/*============================================================================
 	 *

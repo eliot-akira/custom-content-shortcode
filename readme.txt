@@ -78,8 +78,10 @@ With other libraries:
 
 = 0.9.5 =
 
-* **[if every]** - display something for every X number of posts
-* **[loop]** - count sticky posts for parameter *count*
+* **[if every]** - for every X number of posts: *every="3"*
+* **[if first]** - for the first post
+* **[if last]** - for the last post
+* **[loop]** - include sticky posts for parameter *count*
 * **[loop]** - reset query when [loop] is inside another loop
 * **[loop]** - process shortcode *before* wpautop filter to prevent unwanted formatting
 
