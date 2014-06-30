@@ -132,10 +132,10 @@ function ccs_docs_admin_css() {
 					}
 					.doc-style a {
 						text-decoration: none;
-						color: #000;
+						color: #0074A2;
 					}
 					.doc-style a:hover {
-						color: #0074A2;
+						color: #000;
 					}
 					.doc-style code {
 						font-size: 16px;

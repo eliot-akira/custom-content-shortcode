@@ -40,7 +40,7 @@ $ccs_global_variable = array(
 	'current_script' => '',
 );
 
-$ccs_content_template_loader = false; // Set true to enable template loader
+$ccs_content_template_loader = false; // Set true to enable template loader (under development)
 
 require_once (CCS_PATH.'/includes/ccs-content.php');		// Content shortcode
 require_once (CCS_PATH.'/includes/ccs-loop.php');			// Loop shortcode
