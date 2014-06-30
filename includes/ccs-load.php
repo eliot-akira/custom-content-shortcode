@@ -50,7 +50,7 @@ function custom_load_script_file( $atts ) {
 	$site_url = get_site_url();
 
 	switch($dir) {
-		case 'web' : $dir = ""; $path = ""; break;
+		case 'web' : $path = ""; break;
         case 'site' : $dir = home_url() . '/'; break; /* Site address */
 		case 'wordpress' : $dir =  $site_url . '/'; break; /* WordPress directory */
 		case 'content' :
@@ -110,23 +110,38 @@ function custom_load_script_file( $atts ) {
 
 //		echo $path . $file;
 
-		if ($dir != 'web')
+		if ($dir != 'web') {
 			$output = @file_get_contents($path . $file);
+			if (empty($output)) {
 
-		if( empty($output) ) {
-			$output = @file_get_contents($dir . $file);
-			if( ($dir == 'web') && empty($output) ) {
-				$url = $dir . $file;
-				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_URL, $url);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				$data = curl_exec($ch);
-				curl_close($ch);
-				$output = $data;
+				// Try again
+				$output = @file_get_contents($dir . $file);
+
 			}
+
+
+		} else {
+
+			// get external file
+
+			$url = $file;
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			$data = curl_exec($ch);
+			curl_close($ch);
+			$output = $data;
 		}
 
-		if($output!='') {
+/*		if( empty($output) ) {
+			$output = @file_get_contents($dir . $file);
+			if( ($dir == 'web') && empty($output) ) {
+*/
+//				$url = $dir . $file;
+/*			}
+		} */
+
+		if(!empty($output)) {
 			if(($format == 'on')||($format == 'true')) { // Format?
 				$output = wpautop( $output );
 			}
