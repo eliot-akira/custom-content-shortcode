@@ -22,10 +22,10 @@ class LoopShortcode {
 		add_shortcode( 'loop-count', array( $this, 'loop_count_shortcode' ) );
 
 		// move wpautop filter to AFTER shortcode is processed
-		remove_filter( 'the_content', 'wpautop' );
+/*		remove_filter( 'the_content', 'wpautop' );
 		add_filter( 'the_content', 'wpautop' , 99);
 		add_filter( 'the_content', 'shortcode_unautop',100 );
-	}
+*/	}
 
 	function the_loop_shortcode( $atts, $template = null, $shortcode_name ) {
 
