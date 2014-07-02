@@ -111,15 +111,20 @@ function custom_load_script_file( $atts ) {
 //		echo $path . $file;
 
 		if ($dir != 'web') {
-			$output = @file_get_contents($path . $file);
+
+			ob_start();
+			@include($path . $file);
+			$output = ob_get_clean();
+
 			if (empty($output)) {
-
 				// Try again
-				$output = @file_get_contents($dir . $file);
+				$output = @file_get_contents($path . $file);
+				if (empty($output)) {
+					// Try again
+					$output = @file_get_contents($dir . $file);
 
+				}
 			}
-
-
 		} else {
 
 			// get external file
@@ -149,7 +154,7 @@ function custom_load_script_file( $atts ) {
 			/* Put safe_eval here for executing PHP inside template files */
 
 			if($php=='true') {
-				$output = ccs_safe_eval( $output );
+/*				$output = ccs_safe_eval( $output ); */
 			}
 
 			if(($shortcode != 'false')||($shortcode != 'off')) { // Shortcode?
@@ -202,7 +207,6 @@ function do_shortcode_file( $file, $dir = "" ) {
 */
 
 	$file = $dir . $file . '.html';
-
 
 /*	$output = @file_get_contents( $file ); */
 
