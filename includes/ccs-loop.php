@@ -155,6 +155,7 @@ class LoopShortcode {
 
 			while($x > 0) {
 				$count++;
+				$ccs_global_variable['current_loop_count'] = $count;
 				$keywords = array(
 					'COUNT' => $count
 					);
