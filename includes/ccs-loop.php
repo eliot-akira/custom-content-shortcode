@@ -21,11 +21,21 @@ class LoopShortcode {
 
 		add_shortcode( 'loop-count', array( $this, 'loop_count_shortcode' ) );
 
+		add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize') );
+/*
 		// move wpautop filter to AFTER shortcode is processed
-/*		remove_filter( 'the_content', 'wpautop' );
+		remove_filter( 'the_content', 'wpautop' );
 		add_filter( 'the_content', 'wpautop' , 99);
 		add_filter( 'the_content', 'shortcode_unautop',100 );
-*/	}
+*/
+	}
+
+	function shortcodes_to_exempt_from_wptexturize($shortcodes){
+		$shortcodes[] = 'loop';
+		return $shortcodes;
+	}
+
+
 
 	function the_loop_shortcode( $atts, $template = null, $shortcode_name ) {
 
@@ -159,9 +169,17 @@ class LoopShortcode {
 				$keywords = array(
 					'COUNT' => $count
 					);
-				echo do_shortcode( $this->get_block_template( $template, $keywords ) );
+				$out = $this->get_block_template( $template, $keywords );
+
+				if ($clean == 'true') {
+					$output[] = do_shortcode(custom_clean_shortcodes( $out ));
+				} else {
+					$output[] = do_shortcode($out);
+				}
 				$x--;
 			}
+
+			echo implode("", $output);
 
 			$ccs_global_variable['is_loop'] = "false";
 			if (!empty($blog)) {
