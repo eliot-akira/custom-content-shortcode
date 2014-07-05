@@ -78,7 +78,7 @@ With other libraries:
 
 = 0.9.7 =
 
-* 
+* **[if]** - type, slug, category, taxonomy, term, ...
 
 = 0.9.6 =
 
