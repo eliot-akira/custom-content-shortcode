@@ -364,7 +364,8 @@ class LoopShortcode {
 					$query['meta_key'] = $keyname;
 				}
 				if($order=='') {
-					if (($orderby=='meta_value_num') || ($orderby=='menu_order'))
+					if (($orderby=='meta_value_num') || ($orderby=='menu_order')
+						|| ($orderby=='title') || ($orderby=='name') )
 						$query['order'] = 'ASC';	
 					else
 						$query['order'] = 'DESC';

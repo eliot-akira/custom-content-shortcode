@@ -76,6 +76,10 @@ With other libraries:
 
 == Changelog ==
 
+= 0.9.7 =
+
+* 
+
 = 0.9.6 =
 
 * **[loop]** - move wpautop filter back to before shortcode; will add an option if this solves formatting issue for some people
