@@ -78,7 +78,7 @@ With other libraries:
 
 = 0.9.8 =
 
-* **[if]** - add parameters: type, slug, category, taxonomy, term, field, value
+* **[if]** - add parameters: *type, slug, category, taxonomy, term, field, value*
 * **[load]** - improve loading CSS or JS from external site: either specify dir="web" or use `http://` in the file name
 * Organize and simplify: remove mobile detect library
 
