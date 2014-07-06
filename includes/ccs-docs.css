@@ -1,0 +1,65 @@
+
+	.wrap h2 {
+		margin-bottom: -10px;
+	}
+	.wrap .plugin-title {
+		padding-left: 10px;
+	}
+	h2 .nav-tab {
+		font-size: 12px; line-height: 16px;
+	}
+	.doc-style {
+		max-width: 760px; /*margin: 0 auto;*/
+		padding-top:10px;
+		padding-left:10px;
+	}
+	.doc-style .nav-tab-wrapper {
+		padding-top: 0;
+		margin-bottom: 20px;
+		border-bottom: 1px solid #ddd;
+	}
+	.doc-style .nav-tab-wrapper a {
+		color: #555;
+		border-color: #ddd; border-bottom: 0;
+	}
+	.doc-style .nav-tab-wrapper a {
+		outline: 0; /* prevent dotted-line in Firefox */
+	}
+
+/*
+	.wrap .nav-tab {
+		background-color: #f1f1f1;
+	}
+
+	.wrap .nav-tab-active, .nav-tab-active:hover {
+		background-color: #e4e4e4;
+	}
+*/
+
+	.doc-style h3 {
+		font-size: 1.2em;
+	}
+	.doc-style, .doc-style p {
+		font-size: 16px;
+		line-height: 1.4em; 
+	}
+	.doc-style a {
+		text-decoration: none;
+		color: #0074A2;
+	}
+	.doc-style a:hover {
+		color: #000;
+	}
+	.doc-style code {
+		font-size: 16px;
+		padding: 10px 15px;
+	    line-height: 24px;
+	    display: block;
+	}
+	.doc-style h4 {
+		font-weight:normal;
+		font-style:italic;
+	}
+	.doc-style ul {
+		list-style:disc; padding-left:40px;
+	}

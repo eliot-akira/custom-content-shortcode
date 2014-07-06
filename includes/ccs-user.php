@@ -187,19 +187,28 @@ function custom_comment_shortcode( $atts, $content, $tag ) {
 add_shortcode('comment', 'custom_comment_shortcode');
 add_shortcode('comments', 'custom_comment_shortcode');
 
+
+
+/*========================================================================
+ *
+ * [is] shortcode - combine with [if]...
+ *
+ *=======================================================================*/
+
 function custom_is_shortcode( $atts, $content, $tag ) {
+
 	global $current_user;
 
 	extract(shortcode_atts(array(
 		'user' => '',
-		'format' => '',
-		'shortcode' => '',
+		'format' => 'false',
+		'shortcode' => 'true',
 	), $atts));
 
-	if($format == 'true') { // Format?
+	if ($format == 'true') { // Format?
 		$content = wpautop( $content );
 	}
-	if($shortcode != 'false') { // Shortcode?
+	if ($shortcode != 'false') { // Shortcode?
 		$content = do_shortcode( $content );
 	}
 

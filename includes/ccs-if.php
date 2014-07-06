@@ -21,14 +21,22 @@ class IfShortcode {
 		global $ccs_global_variable;
 
 		$args = array(
+			'every' => '',
 			'flag' => '',
 			'no_flag' => '',
-			'every' => '',
+
 			'type' => '',
 			'name' => '',
+
 			'category' => '',
+			'tag' => '',
 			'taxonomy' => '',
 			'term' => '',
+			'compare' => 'OR',
+
+			'field' => '',
+			'value' => '',
+
 			'not' => '',
 		);
 
@@ -40,14 +48,26 @@ class IfShortcode {
 		if ((isset($atts['empty'])) || (isset($atts['last'])) ) return; // [if empty] [if last] is processed by [loop]
 */
 		if (!empty($no_flag)) $flag = $no_flag;
+		$compare = strtoupper($compare);
+
 		$out = '';
 		$condition = false;
 
-		// If we're inside loop shortcode
+		/*========================================================================
+		 *
+		 * If we're inside loop shortcode
+		 *
+		 *=======================================================================*/
 
 		if ($ccs_global_variable['is_loop']=="true") {
 
 			if (!empty($every)) {
+
+				/*========================================================================
+				 *
+				 * Every X number of posts in [loop]
+				 *
+				 *=======================================================================*/
 
 				$count = $ccs_global_variable['current_loop_count'];
 
@@ -70,7 +90,11 @@ class IfShortcode {
 
 			} elseif (!empty($flag)) {
 
-				// Check custom field as flag
+				/*========================================================================
+				 *
+				 * Check field as condition [if flag="field"]
+				 *
+				 *=======================================================================*/
 
 				$current_id = $ccs_global_variable['current_loop_id'];
 				$check = get_post_meta( $current_id, $flag, true );
@@ -83,31 +107,129 @@ class IfShortcode {
 					$ccs_global_variable['if_flag'] = '';
 					return $out;
 				}
-
 			}
 
-		}
+		} // End [loop] only conditions
+
+		/*========================================================================
+		 *
+		 * Get global post info
+		 *
+		 *=======================================================================*/
 
 		global $post;
 
+		if (empty($post)) return; // Make sure post exists
+
 		$current_post_type = isset($post->post_type) ? $post->post_type : null;
 		$current_post_name = isset($post->post_name) ? $post->post_name : null;
+		$current_post_id = isset($post->ID) ? $post->ID : null;
 
-		if(isset($atts['home'])){
-			$condition = is_front_page();
+
+		/*========================================================================
+		 *
+		 * Taxonomy: category, tags, ..
+		 *
+		 *=======================================================================*/
+		
+		if (!empty($category)) {
+			$taxonomy = "category";
+			$term = $category;
 		}
 
-		if ( ($type == $current_post_type) || ($name == $current_post_name) ) {
-			$condition = true;
+		if (!empty($tag)) {
+			$taxonomy = "post_tag";
+			$term = $tag;
 		}
 
-		if(isset($atts['not'])){
-			$condition = (! $condition);
+		if (!empty($taxonomy)) {
+
+			$taxonomies = wp_get_post_terms(
+				$current_post_id,
+				$taxonomy, array() );
+
+			$post_tax_array = array();
+			foreach ($taxonomies as $term_object) {
+				$post_tax_array[] = $term_object->slug;
+			}
+
+			$terms = comma_list_to_array($term);
+
+//			echo "Find $term in ";
+//			print_r($post_tax_array);
+
+			foreach ($terms as $term) {
+
+				if ($compare == "OR") {
+					$condition = in_array($term, $post_tax_array) ? true : $condition;
+				} else {
+					// AND
+					$condition = in_array($term, $post_tax_array) ? true : false;
+					if (!$condition) break; // Every term must be found
+				}
+
+			}
+
+		} // End taxonomy conditions
+
+
+		/*========================================================================
+		 *
+		 * Field: field="field_slug" value="this,that"
+		 *
+		 *=======================================================================*/
+		
+
+		if (!empty($field)) {
+
+			$check = get_post_meta( $current_post_id, $field, true );
+			if (!is_array($check)) $check = array($check);
+
+			$values = comma_list_to_array($value);
+
+			foreach ($values as $this_value) {
+
+				if ($compare == "OR") {
+					$condition = in_array($this_value, $check) ? true : $condition;
+				} else { // AND
+					$condition = in_array($this_value, $check) ? true : false;
+					if (!$condition) break; // Every term must be found
+				}
+			}
+		}		
+
+
+		/*========================================================================
+		 *
+		 * Post type, name
+		 *
+		 *=======================================================================*/
+
+		if (!empty($type)) {
+			$types = comma_list_to_array($types); // Enable comma-separated list
+			$condition = in_array($current_post_type, $types) ? true : false;
 		}
 
-		if ($condition) {
-			return do_shortcode( $content );
+		if (!empty($name)) {
+			$names = comma_list_to_array($name);
+			$condition = in_array($current_post_name, $names) ? true : false;
 		}
+
+
+
+		/*========================================================================
+		 *
+		 * Template: home, archive, single..
+		 *
+		 *=======================================================================*/
+		
+		$condition = isset($atts['home']) ? is_front_page() : $condition;
+		$condition = isset($atts['archive']) ? is_archive() : $condition;
+		$condition = isset($atts['single']) ? is_single() : $condition;
+
+		$condition = isset($atts['not']) ? !$condition : $condition;
+
+		return $condition ? do_shortcode( $content ) : null;
 	}
 
 	function flag_shortcode() {

@@ -321,17 +321,21 @@ class LoopShortcode {
 			);
 		}
 
-// Taxonomy query
 
-		if($tax!='') $taxonomy=$tax;
-		if($taxonomy!='') {
+		/*========================================================================
+		 *
+		 * Query: taxonomy
+		 *
+		 *=======================================================================*/
+
+		if ( !empty($tax) ) $taxonomy = $tax;
+		if ( !empty($taxonomy) ) {
 
 			$terms = explode(",", $custom_value);
 
-			$compare = strtoupper($compare);
-
 			if (!empty($compare)) {
 
+				$compare = strtoupper($compare);
 				if ($compare=='NOT')
 					$compare = 'NOT IN';
 
@@ -1234,11 +1238,13 @@ $loop_shortcode = new LoopShortcode;
 
 
 
-
-
-/*--------------------------------------*/
-/*    Clean up Shortcodes
-/*--------------------------------------*/
+/*========================================================================
+ *
+ * Clean up shortcodes
+ *
+ * To do: put these somewhere organized
+ *
+ *=======================================================================*/
 
 
 	function custom_clean_shortcodes($content){   

@@ -110,47 +110,7 @@ function ccs_is_current_plugin_screen() {
 function ccs_docs_admin_css() {
 
 	if ( ccs_is_current_plugin_screen() ) {
-
-		echo '<style type="text/css">
-					.wrap h2 {
-						margin-bottom: -10px;
-					}
-					h2 .nav-tab {
-						font-size: 12px; line-height: 16px;
-					}
-					.doc-style {
-						max-width: 760px; /*margin: 0 auto;*/
-						padding-top:10px;
-						padding-left:10px;
-					}
-					.doc-style h3 {
-						font-size: 1.2em;
-					}
-					.doc-style, .doc-style p {
-						font-size: 16px;
-						line-height: 1.4em; 
-					}
-					.doc-style a {
-						text-decoration: none;
-						color: #0074A2;
-					}
-					.doc-style a:hover {
-						color: #000;
-					}
-					.doc-style code {
-						font-size: 16px;
-						padding: 10px 15px;
-					line-height: 24px;
-					display: block;
-					}
-					.doc-style h4 {
-						font-weight:normal;
-						font-style:italic;
-					}
-					.doc-style ul {
-						list-style:disc; padding-left:40px;
-					}
-		     </style>';
+		wp_enqueue_style( "ccs-docs", CCS_URL."/includes/ccs-docs.css");
 	}
 }
 add_action('admin_head', 'ccs_docs_admin_css');
@@ -212,19 +172,24 @@ function ccs_content_settings_page() {
 	$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'overview';
 
 
-	$all_tabs = array( 'overview', 'content', 'loop', 'views', 'each', 'gallery',
-						'user', 'load', 'mobile', 'ACF', 'etc' );
+	$all_tabs = array( 'overview', 'content', 'loop', 'views', 'each',
+						'if', 'user', 'load', 'gallery', 'ACF', 'etc' );
 
 	?>
 		<div class="wrap">
-		<h2>Custom Content Shortcode</h2>
+		<h2 class="plugin-title">Custom Content Shortcode</h2>
 		<br>
+
+
+		<div class="doc-style">
+
 		<h2 class="nav-tab-wrapper">  
 		
 		<?php
-
+			$i = 0; $middle = intval(count($all_tabs)/2);
 			foreach ($all_tabs as $tab) {
 
+				$i++;
 				$tab_name = ucwords(str_replace('-', ' ', $tab));
 
 				?>
@@ -233,12 +198,12 @@ function ccs_content_settings_page() {
 						<?php echo $tab_name; ?></a>
 				<?php
 
+				// if ($i==$middle) echo '<br>'; // Put section break
 			}
 		?>
 
 		</h2>  
 
-		<div class="doc-style">
 
 			<?php
 

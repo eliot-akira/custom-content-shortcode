@@ -1,6 +1,14 @@
 <?php
 
-/* Shortcodes: for, each, if */
+/*========================================================================
+ *
+ * For each taxonomy
+ * 
+ * [for each="category"]
+ * [each name,id,slug]
+ * 
+ *=======================================================================*/
+
 
 class ForShortcode {
 
@@ -37,8 +45,7 @@ class ForShortcode {
 
 		$ccs_global_variable['for_loop'] = 'true';
 
-		if ($each=='tag')
-			$each='post_tag';
+		if ($each=='tag') $each='post_tag';
 
 		/* Loop through taxonomies */
 
