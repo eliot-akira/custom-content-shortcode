@@ -24,22 +24,28 @@ The available parameters are:
 <ul>
 	<li><strong>category</strong> - if post has category</li>
 	<li><strong>tag</strong> - if post has tag
-	<li><strong>taxonomy</strong> - name of custom taxonomy to query
+</ul>
+<ul>
+	<li><strong>taxonomy</strong> - name of taxonomy to query
 	<li><strong>term</strong> - if post has term(s) in the specified taxonomy
 </ul>
+<h4>Field value</h4>
+<ul>
+	<li><strong>field</strong> - name of field to query</li>
+	<li><strong>value</strong> - if post has value(s) in the specified field</li>
+</ul>
 You can pass multiple values, for example: <i>category="sci-fi,comedy"</i>. This returns posts in <i>either</i> Sci-Fi or Comedy. If you want only posts matching <i>both</i> categories, use the <i>compare</i> parameter:
-
 <ul>
 	<li><strong>compare</strong> - Set compare="AND" to query for <i>all</i> terms.
 </ul>
 <br>
 <hr>
-<h3>Template conditionals</h3>
+<h3>Current template</h3>
 
-You can also display depending on template status. For now, there is only:
+You can also display something depending on current template. For now, there is only:
 
 <ul>
-	<li><strong>home</strong> - front page</li>
+	<li><strong>home</strong> - front page (recent posts or static page)</li>
 </ul>
 
 It's used without parameter value.
