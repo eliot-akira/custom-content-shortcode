@@ -159,7 +159,7 @@ class LoopShortcode {
 
 		if($x != '') { // Simple loop without query
 
-			$count = 0;
+			$count = 0; $max = $x;
 			$output = array();
 			ob_start();
 
@@ -170,6 +170,23 @@ class LoopShortcode {
 					'COUNT' => $count
 					);
 				$out = $this->get_block_template( $template, $keywords );
+
+				// First post found?
+				if ($count == 1) {
+					// search content for [if first]
+					$start = '[if first]'; $end = '[/if]';
+					$middle = self::getBetween($start, $end, $out);
+					if ($middle) $out = str_replace($start.$middle.$end, $middle, $out);
+				}
+
+				// Last post found?
+				if ($count == $max) {
+					// search content for [if last]
+					$start = '[if last]'; $end = '[/if]';
+					$middle = self::getBetween($start, $end, $out);
+					if($middle) $out = str_replace($start.$middle.$end, $middle, $out);
+				}
+
 
 				if ($clean == 'true') {
 					$output[] = do_shortcode(custom_clean_shortcodes( $out ));
@@ -770,7 +787,7 @@ class LoopShortcode {
 						$end = '[/if]';
 
 						$middle = self::getBetween($start, $end, $out);
-						if($middle) {
+						if ($middle) {
 							$out = str_replace($start.$middle.$end, $middle, $out);
 						}
 

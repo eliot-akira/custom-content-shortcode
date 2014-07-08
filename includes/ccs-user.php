@@ -64,11 +64,11 @@ class urlShortcode
         }
         elseif( isset( $attributes['layout'] ) )
         {
-            $return_blogurl = $blogurl_settings['content'] . '/layout/';
+            $return_blogurl = $blogurl_settings['content'] . '/layout';
         }
         elseif( isset( $attributes['views'] ) )
         {
-            $return_blogurl = $blogurl_settings['content'] . '/views/';
+            $return_blogurl = $blogurl_settings['content'] . '/views';
         }
         elseif( isset( $attributes['theme'] ) )
         {
