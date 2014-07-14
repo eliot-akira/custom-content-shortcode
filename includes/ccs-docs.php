@@ -173,7 +173,7 @@ function ccs_content_settings_page() {
 
 
 	$all_tabs = array( 'overview', 'content', 'loop', 'views', 'each',
-						'if', 'user', 'load', 'gallery', 'ACF', 'etc' );
+						'if', 'user', 'load', 'gallery', 'ACF', 'mobile', 'etc' );
 
 	?>
 		<div class="wrap">
@@ -198,7 +198,7 @@ function ccs_content_settings_page() {
 						<?php echo $tab_name; ?></a>
 				<?php
 
-				// if ($i==$middle) echo '<br>'; // Put section break
+				// if ($i==$middle) echo '<br>&nbsp;&nbsp;&nbsp;'; // Put section break
 			}
 		?>
 
