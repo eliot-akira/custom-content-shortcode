@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.9.1
-Stable tag: 0.9.9
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,11 @@ With other libraries:
 
 
 == Changelog ==
+
+= 1.0.0 =
+
+* [loop] - Sort by timestamp
+* [content field="title-link"] - Post title wrapped in a link to post
 
 = 0.9.9 =
 

@@ -378,13 +378,12 @@ class LoopShortcode {
 
 // Orderby
 
-		if( $orderby != '') {
-
+		if( !empty($orderby)) {
 				$query['orderby'] = $orderby;
 				if(in_array($orderby, array('meta_value', 'meta_value_num') )) {
 					$query['meta_key'] = $keyname;
 				}
-				if($order=='') {
+				if(empty($order)) {
 					if (($orderby=='meta_value_num') || ($orderby=='menu_order')
 						|| ($orderby=='title') || ($orderby=='name') )
 						$query['order'] = 'ASC';	

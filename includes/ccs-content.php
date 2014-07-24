@@ -15,6 +15,7 @@ class CustomContentShortcode {
 	function __construct() {
 
 		add_shortcode('content', array($this, 'custom_content_shortcode'));
+		add_shortcode('field', array($this, 'custom_field_shortcode'));
 	}
 
 	public static function custom_content_shortcode($atts) {
@@ -36,7 +37,7 @@ class CustomContentShortcode {
 			'row' => null, 'sub' => null,
 			'acf_gallery' => null,
 			'words' => null, 'len' => null, 'length' => null,
-			'date_format' => null,
+			'date_format' => null, 'timestamp' => null,
 			'taxonomy' => null, 'checkbox' => null, 'out' => null,
 			'status' => null,
 			'post' => null, 'page' => null,
@@ -431,9 +432,14 @@ class CustomContentShortcode {
 
 			switch($custom_field) {
 				case "id": $out = $custom_id; break;
-				case "edit-url": $out = get_edit_post_link( $custom_id ); break;
+				case "url": $out = post_permalink( $custom_id ); break;
+				case "edit-url":
+				case "edit-link":
+					$out = get_edit_post_link( $custom_id ); break;
 				case "slug": $this_post = get_post($custom_id); $out = $this_post->post_name; break;
 				case "title": $out = apply_filters( 'the_title', get_post($custom_id)->post_title ); break;
+				case "title-link": $out = '<a href="' . post_permalink( $custom_id ) . '">' . apply_filters( 'the_title', get_post($custom_id)->post_title ) . '</a>'; break;
+				case "title-link-out": $out = '<a target="_blank" href="' . post_permalink( $custom_id ) . '">' . apply_filters( 'the_title', get_post($custom_id)->post_title ) . '</a>'; break;
 				case "title-length": $out = strlen(apply_filters( 'the_title', get_post($custom_id)->post_title )); break;
 				case "author":
 					$this_post = get_post($custom_id);
@@ -486,7 +492,6 @@ class CustomContentShortcode {
 						$out = get_post_modified_time( get_option('date_format'), $gmt=false, $custom_id, $translate=true ); break;
 					}
 
-				case "url": $out = post_permalink( $custom_id ); break;
 				case "image": $out = get_the_post_thumbnail($custom_id, $size); break;
 				case "image-full": $out = get_the_post_thumbnail( $custom_id, 'full' ); break;
 				case "image-url": $out = wp_get_attachment_url(get_post_thumbnail_id($custom_id)); break;
@@ -530,12 +535,16 @@ class CustomContentShortcode {
 
 		}
 
+		if ($timestamp == "ms") {
+			$out = $out / 1000;
+		}
 		if (($date_format!='') && ($custom_field!="date") && ($custom_field!="modified")) {
 
 			// Date format for custom field
 
-			if ($in=="timestamp")
+			if ($in=="timestamp") {
 				$out = gmdate("Y-m-d H:i:s", $out);
+			}
 
 			if ($date_format=="true") {
 				$out = mysql2date(get_option('date_format'), $out);
@@ -656,6 +665,27 @@ class CustomContentShortcode {
 
 		return $out;
 	}
+
+
+	public static function custom_field_shortcode($atts) {
+		$out = null;
+		if (isset($atts) && !empty($atts[0])) {
+
+			if (count($atts)>1) {
+				$i=0; $rest="";
+				foreach ($atts as $key => $value) {
+					$rest .= " ";
+					if ($i) {
+						$rest .= $key.'="'.$value.'"';
+					}
+					$i++;
+				}
+			}
+			$out = do_shortcode('[content field="'.$atts[0].'"'.$rest.']');
+		}
+		return $out;
+	}
+
 
 }
 new CustomContentShortcode;
