@@ -78,58 +78,60 @@ With other libraries:
 
 = 1.0.0 =
 
-* [loop] - Sort by timestamp
+* [loop] - Test and improve sort by timestamp
 * [content field="title-link"] - Post title wrapped in a link to post
+* [field] - Shorter version of [content field=""] - for example, [field title]
+* [comment template] - Make sure to look in child theme first, if it exists
 
 = 0.9.9 =
 
-* Mobile detect - re-include module: back by demand
+* Mobile detect - Re-include module: back by demand
 
 = 0.9.8 =
 
-* **[if]** - add parameters: *type, slug, category, taxonomy, term, field, value*
-* **[load]** - improve loading CSS or JS from external site: either specify dir="web" or use `http://` in the file name
+* **[if]** - Add parameters: *type, slug, category, taxonomy, term, field, value*
+* **[load]** - Improve loading CSS or JS from external site: either specify dir="web" or use `http://` in the file name
 * Organize and simplify: remove mobile detect library
 
 = 0.9.6 =
 
-* **[loop]** - move wpautop filter back to before shortcode; will add an option if this solves formatting issue for some people
+* **[loop]** - Move wpautop filter back to before shortcode; will add an option if this solves formatting issue for some people
 
 = 0.9.5 =
 
-* **[if every]** - for every X number of posts: *every="3"*
-* **[if first]** - for the first post
-* **[if last]** - for the last post
-* **[loop]** - include sticky posts for parameter *count*
-* **[loop]** - reset query when [loop] is inside another loop
-* **[loop]** - process shortcode *before* wpautop filter to prevent unwanted formatting
+* **[if every]** - For every X number of posts: *every="3"*
+* **[if first]** - For the first post
+* **[if last]** - For the last post
+* **[loop]** - Include sticky posts for parameter *count*
+* **[loop]** - Reset query when [loop] is inside another loop
+* **[loop]** - Process shortcode *before* wpautop filter to prevent unwanted formatting
 
 = 0.9.4 =
 
-* **[for each]** - for each category/tag/taxonomy of current post: *current="true"*
+* **[for each]** - For each category/tag/taxonomy of current post: *current="true"*
 * Added a note in the documentation about using [loop] to create multiple Bootstrap carousels
 
 = 0.9.3 =
 
-* **[for each]** - for each child category, by parent slug; *each="category" parent="products"*
-* **[content field]** - added *edit-url*; only shows when user is logged in and can edit posts
+* **[for each]** - For each child category, by parent slug; *each="category" parent="products"*
+* **[content field]** - Add *edit-url*; only shows when user is logged in and can edit posts
 
 = 0.9.2 =
 
-* **[pass]** - correctly pass when field value is an array (for example, post IDs)
+* **[pass]** - Correctly pass when field value is an array (for example, post IDs)
 
 = 0.9.1 =
 
-* **[if empty]** - display something when there is no query result
-* **[url login], [url logout]** - updated *go* parameter; by default, return to the same page
+* **[if empty]** - Display something when there is no query result
+* **[url login], [url logout]** - Update *go* parameter; by default, return to the same page
 
 
 = 0.9.0 =
 
-* **[if flag]** - if a field has value, then display something
-* **[if no_flag]** - if a field is empty, then display something
-* **[for each]** - now able to use inside loop; display for each category, tag or taxonomy
-* Content Overview - display all taxonomy terms, even unused ones
+* **[if flag]** - If a field has value, then display something
+* **[if no_flag]** - If a field is empty, then display something
+* **[for each]** - Now able to use inside loop; display for each category, tag or taxonomy
+* Content Overview - Display all taxonomy terms, even unused ones
 
 = 0.8.8 =
 

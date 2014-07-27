@@ -90,7 +90,9 @@ You can also display the total comment count after a loop:
 
 By default, the comments list is displayed by <em>comments.php</em> in the theme directory. If you want to specify a different template:
 
-<code>[comment template="/short-comments.php"]</code>
+<code>[comment template="short-comments.php"]</code>
+
+WordPress will look for the comments template in the child theme first (if it exists), then in the parent theme.
 
 Here is an example of a comments list that shows when clicked, using Bootstrap accordion.
 

@@ -155,21 +155,42 @@ function ccs_return_comment_form() {
 function ccs_return_comments_template($file) {
 	ob_start();
 	comments_template($file);
-	$form = ob_get_contents();
-    ob_end_clean();
+	$form = ob_get_clean(); 
     return $form;
 }
 
-function custom_comment_shortcode( $atts, $content, $tag ) {
+function ccs_comment_shortcode( $atts, $content, $tag ) {
 
 	global $ccs_global_variable;
+
+	extract(shortcode_atts(array(
+		'template' => ''
+	), $atts));
 
 	if( is_array( $atts ) ) {
 		$atts = array_flip( $atts );
 	}
 
-	if( ($tag=='comments') || isset( $atts['template'] ) ) {
-		$content = ccs_return_comments_template($atts['template']);
+	if( ($tag=='comments') || isset( $atts['template'] ) || (!empty($template))) {
+
+		$dir = "";
+/*		if (isset($atts['dir'])) {
+			$dir = do_shortcode("[url ".$atts['dir']."]/");
+		}
+*/
+		if (empty($template)) $template = "/comments.php";
+		if (isset($template[0]) && ($template[0]!="/"))
+			$template = "/".$template;
+
+		$file = $dir.$template;
+/*
+		echo "file: ".$file."<br>";
+// filter 'comments_template' gets this value
+		echo "style: ".STYLESHEETPATH . $file."<br>";
+		echo "template: ".TEMPLATEPATH . $file ."<br>";
+*/
+		$content = ccs_return_comments_template($dir.$template);
+
 		return $content;
 	}
 
@@ -184,8 +205,8 @@ function custom_comment_shortcode( $atts, $content, $tag ) {
 		return $ccs_global_variable['total_comments'];
 	}
 }
-add_shortcode('comment', 'custom_comment_shortcode');
-add_shortcode('comments', 'custom_comment_shortcode');
+add_shortcode('comment', 'ccs_comment_shortcode');
+add_shortcode('comments', 'ccs_comment_shortcode');
 
 
 
@@ -271,7 +292,7 @@ function custom_blog_shortcode( $atts, $content ){
 
 	switch_to_blog($id);
 	$out = do_shortcode($out);
-	restore_current_blog();;
+	restore_current_blog();
 
 	return $out;
 }
