@@ -2,24 +2,14 @@
 
 This is a feature to create a loop for each category, tag, or taxonomy term.
 
-<h4>Display a loop for each category</h4>
-<code>[for each="category"]
-&nbsp;&nbsp;&nbsp;&nbsp;[each name]
-&nbsp;&nbsp;&nbsp;&nbsp;[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
-[/for]</code>
-It gets all existing terms of a given taxonomy, in this case <em>category</em>, and loops through each term.
-
-<h4>For each category, display 3 most recent post titles with links</h4>
+<h4>Display 3 most recent posts for each category</h4>
 <code>[for each="category"]
 &nbsp;&nbsp;&nbsp;&nbsp;Category: [each name]
 &nbsp;&nbsp;&nbsp;&nbsp;[loop type="post" count="3"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[content field='url']"&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title-link]
 &nbsp;&nbsp;&nbsp;&nbsp;[/loop]
 [/for]</code>
+It gets all existing terms of a given taxonomy, in this case <em>category</em>, and loops through each term.
 <br>
 <hr>
 <h3>Parameters</h3>
@@ -47,7 +37,7 @@ It's also possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
 
 <h4>Display a link for each category assigned to a post</h4>
 <code>[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
 &nbsp;&nbsp;&nbsp;&nbsp;[for each="category"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url]/category/[each slug]"&gt;[each name]&lt;/a&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;[/for]

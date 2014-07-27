@@ -9,10 +9,10 @@ Add all bicycles in the store as new entries, with featured image and other info
 Create a new page to display the bicycles. A basic template could be:
 
 <code>[loop type="bicycle"]
-&nbsp;&nbsp;&nbsp;&nbsp;[content field="image"]
-&nbsp;&nbsp;&nbsp;&nbsp;Model: [content field="model"]
-&nbsp;&nbsp;&nbsp;&nbsp;Price: [content field="price"]
-&nbsp;&nbsp;&nbsp;&nbsp;Description: [content field="description"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field image]
+&nbsp;&nbsp;&nbsp;&nbsp;Model: [field model]
+&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
+&nbsp;&nbsp;&nbsp;&nbsp;Description: [field description]
 [/loop]</code>
 
 Another page can display a list of bicycles in the<em> freestyle</em> category:
@@ -21,8 +21,8 @@ Another page can display a list of bicycles in the<em> freestyle</em> category:
 &lt;ul&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;[loop type="bicycle" category="freestyle"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href='[content field="url"]'&gt;[content field="title"]&lt;/a&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[content field="model"] - [content field="price"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title-link]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field model] - [field price]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;[/loop]
 &lt;/ul&gt;</code><br>

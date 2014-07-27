@@ -1,15 +1,16 @@
 <h3>Loop shortcode</h3>
-Here are examples of using the<b> [loop] </b>and<b> [content] </b>shortcodes.
-<h4>Display all posts</h4>
+Here are examples of using the<b> [loop] </b> shortcode.
+<h4>Display contents of all posts</h4>
 <code>[loop type="post"]
 &nbsp;&nbsp;&nbsp;&nbsp;[content]
 [/loop]</code>
 
-Note that inside a query loop, the <strong>[content]</strong> shortcode does not need <em>type</em> or <em>name </em>parameters, because it is targeting each post in the loop.
-<h4>Display fields from all posts of a custom post type, filtered by category</h4>
+The <strong>[content]</strong> shortcode targets each post in the loop.
+<h4>Display fields from posts of a custom post type, filtered by category</h4>
 <code>[loop type="apartment" category="suite"]
-&nbsp;&nbsp;&nbsp;&nbsp;Apartment: [content field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;Rent per day: [content field="rent-per-day"]
+&nbsp;&nbsp;&nbsp;&nbsp;Apartment: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;Rent per day: [field rent-per-day]
+&nbsp;&nbsp;&nbsp;&nbsp;Description: [content]
 [/loop]</code><br>
 <hr>
 <h3>Parameters</h3>
@@ -136,7 +137,7 @@ Use the <b>[if]</b> and <b>[flag]</b> shortcodes to display something only when 
 
 <code>[loop type="product"]
 &nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
@@ -146,7 +147,7 @@ The <em>flag</em> parameter specifies the field, and its value can be displayed 
 In addition, you can display something when a field is empty:
 
 <code>[loop type="product"]
-&nbsp;&nbsp;&nbsp;&nbsp;Product: [content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
 &nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
@@ -163,8 +164,8 @@ Use <b>[if empty]</b> to display something when there is no post matching the qu
 <h4>Display a message for no query result</h4>
 
 <code>[loop type="events" category="weekend"]
-&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;[content field="description"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[field description]
 &nbsp;&nbsp;&nbsp;&nbsp;[if empty]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no event for this category.
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
@@ -178,7 +179,7 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 <h4>Add an extra break line for every 3 posts</h4>
 
 <code>[loop type="post" count="9"]
-&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
 &nbsp;&nbsp;&nbsp;&nbsp;[if every="3"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;br&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
@@ -186,7 +187,7 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 
 <h4>Display something for the first or last post</h4>
 <code>[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;[content field="title"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
 &nbsp;&nbsp;&nbsp;&nbsp;[if first]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(first post)
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]

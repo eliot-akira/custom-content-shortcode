@@ -16,6 +16,7 @@ class CustomContentShortcode {
 
 		add_shortcode('content', array($this, 'custom_content_shortcode'));
 		add_shortcode('field', array($this, 'custom_field_shortcode'));
+		add_shortcode('taxonomy', array($this, 'custom_taxonomy_shortcode'));
 	}
 
 	public static function custom_content_shortcode($atts) {
@@ -165,8 +166,7 @@ class CustomContentShortcode {
 
 			ob_start();
 			if ( ! function_exists('dynamic_sidebar') || ! dynamic_sidebar($custom_area_name) ) {}
-			$back .= ob_get_contents();
-			ob_end_clean();
+			$back .= ob_get_clean();
 			$back .= "</div>";
 			return $back;
 		}
@@ -675,13 +675,29 @@ class CustomContentShortcode {
 				$i=0; $rest="";
 				foreach ($atts as $key => $value) {
 					$rest .= " ";
-					if ($i) {
-						$rest .= $key.'="'.$value.'"';
-					}
+					if ($i>0) $rest .= $key.'="'.$value.'"';
 					$i++;
 				}
 			}
 			$out = do_shortcode('[content field="'.$atts[0].'"'.$rest.']');
+		}
+		return $out;
+	}
+
+
+	public static function custom_taxonomy_shortcode($atts) {
+		$out = null;
+		if (isset($atts) && !empty($atts[0])) {
+
+			if (count($atts)>1) {
+				$i=0; $rest="";
+				foreach ($atts as $key => $value) {
+					$rest .= " ";
+					if ($i>0) $rest .= $key.'="'.$value.'"';
+					$i++;
+				}
+			}
+			$out = do_shortcode('[content taxonomy="'.$atts[0].'"'.$rest.']');
 		}
 		return $out;
 	}

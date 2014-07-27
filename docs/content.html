@@ -8,7 +8,7 @@ Here are some examples of using the <strong>[content]</strong> shortcode.
 <h4>Display a custom field from a custom post type</h4>
 <code>[content type="apartment" name="lux-suite-22" field="rent-per-day"]</code>
 <h4>Display fields from the current post</h4>
-<code>The Article &lt;b&gt;[content field="title"]&lt;/b&gt; by [content field="author"] was written on [content field="date"].</code><br>
+<code>The Article &lt;b&gt;[field title]&lt;/b&gt; by [field author] was written on [field date].</code><br>
 <hr>
 <h3>Parameters</h3>
 
@@ -20,12 +20,15 @@ The main parameters of the <strong>[content]</strong> shortcode are:
 
 	You can display custom fields as well as predefined fields: <em>id</em>,<em> url</em>,<em> edit-url</em>,<em> title</em>,<em> title-link</em> (title wrapped in a link to the post),<em> date</em>,<em> modified</em>,<em> author</em>,<em> author-id</em>,<em> author-url</em>,<em> avatar</em>,<em> image</em>,<em> image-url</em>,<em> thumbnail</em>, and<em> excerpt.</em></li>
 
-	You can also use [field <em>field_name</em>] instead of [content field="<em>field_name</em>"].
+	** <b>New</b>: You can use [field <em>field_name</em>] instead of [content field="<em>field_name</em>"].
 
 </ul>
 <h4>Other field types</h4>
 <ul>
 	<li><strong>taxonomy</strong> - display post taxonomy, such as: <em>category</em>, <em>post_tag</em>, or a custom taxonomy; to output the slug, add: <em>out="slug"</em></li>
+
+	** <b>New</b>: You can use [taxonomy <em>tax_name</em>] instead of [content taxonomy="<em>tax_name</em>"].
+
 	<li><strong>meta</strong> - display author meta: <em>field="author" meta="user_email"</em> - see: <a href="http://codex.wordpress.org/Function_Reference/get_the_author_meta" target="_blank">Codex: Author Meta</a></li>
 	<li><strong>out="label"</strong> - when displaying checkboxes or select fields made in ACF, this parameter displays their labels instead of values
 </ul>
