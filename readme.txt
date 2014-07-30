@@ -78,9 +78,9 @@ With other libraries:
 
 = 1.0.1 =
 
-* [content] - improve performance when in loop
-* [field title-link] - return correctly when limiting by number of character or word
-* [if not every="X"] - when the post is *not* every X in the loop
+* [field title-link] - Return correctly when limiting by word or length
+* [if not every="X"] - When the post is *not* every X in the loop
+* [content] - Make sure to minimize queries when inside loop
 
 = 1.0.0 =
 
