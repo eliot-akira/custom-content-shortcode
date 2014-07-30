@@ -76,6 +76,12 @@ With other libraries:
 
 == Changelog ==
 
+= 1.0.1 =
+
+* [content] - improve performance when in loop
+* [field title-link] - return correctly when limiting by number of character or word
+* [if not every="X"] - when the post is *not* every X in the loop
+
 = 1.0.0 =
 
 * [loop] - Test and improve sort by timestamp

@@ -22,6 +22,9 @@ class CustomContentShortcode {
 	public static function custom_content_shortcode($atts) {
 
 		global $ccs_global_variable;
+		global $post;
+
+		$current_post = $post;
 
 		extract(shortcode_atts(array(
 			'type' => null,
@@ -41,7 +44,8 @@ class CustomContentShortcode {
 			'date_format' => null, 'timestamp' => null,
 			'taxonomy' => null, 'checkbox' => null, 'out' => null,
 			'status' => null,
-			'post' => null, 'page' => null,
+//			'post' => null,
+			'page' => null,
 			'embed' => '',
 			'more' => '', 'dots' => '...',
 			'meta' => '',
@@ -54,13 +58,13 @@ class CustomContentShortcode {
 
 		$custom_post_type = $type;
 		$custom_post_name = $name;
-
-		if($post!='') {
+/*
+		if(!empty($post)) {
 			$custom_post_type = 'post';
 			$custom_post_name = $post;
 		}
-
-		if($page!='') {
+*/
+		if(!empty($page)) {
 			$custom_post_type = 'page';
 			$custom_post_name = $page;
 		}
@@ -73,7 +77,7 @@ class CustomContentShortcode {
 		$custom_gallery_type = $gallery;
 		$custom_gallery_name = $group;
 		$custom_area_name = $area;
-		if($len!='') $length=$len;
+		if(!empty($len)) $length=$len;
 		if ( ($taxonomy != '') && ($out != '') ) {
 			$taxonomy_out = $out;
 			$out = null;
@@ -83,7 +87,7 @@ class CustomContentShortcode {
 			$words="55";
 	*/
 
-		if ($checkbox != '')
+		if (!empty($checkbox))
 			$custom_field = $checkbox;
 
 		/* For displaying ACF labels for checkbox or select field */
@@ -96,11 +100,10 @@ class CustomContentShortcode {
 		}
 
 
-		if($status != null)
+		if(!empty($status))
 			$status = explode(",", $status);
 		else
 			$status = array("publish");
-
 
 
 		$native_gallery_options = array(
@@ -110,7 +113,8 @@ class CustomContentShortcode {
 			'size' => $size,
 			'link' => $link,
 			'include' => $include,
-			'exclude' => $exclude );
+			'exclude' => $exclude
+		);
 
 		$out = null;
 		if($image != null) {
@@ -165,7 +169,8 @@ class CustomContentShortcode {
 			$back .= '">';
 
 			ob_start();
-			if ( ! function_exists('dynamic_sidebar') || ! dynamic_sidebar($custom_area_name) ) {}
+			if ( function_exists('dynamic_sidebar') )
+				dynamic_sidebar($custom_area_name);
 			$back .= ob_get_clean();
 			$back .= "</div>";
 			return $back;
@@ -206,15 +211,20 @@ class CustomContentShortcode {
 
 			$my_posts = get_posts($args);
 			if( $my_posts ) {
-				$custom_id=$my_posts[0]->ID; }
-			else { return null; // No posts found by that name
+				$custom_id=$my_posts[0]->ID;
+				$current_post = $my_posts[0];
+			} else {
+				return null; // No posts found by that name
 			}
 		}
 		else {
 
-			// If no name or id, then current post
-
-			if($custom_id == '') { $custom_id = get_the_ID(); }
+			if(!empty($custom_id)) {
+				$current_post = get_post($custom_id); // Get post by ID
+			} else {
+				// If no name or id, then current post
+				$custom_id = get_the_ID();
+			}
 		}
 
 		// If repeater field loop then get sub field
@@ -417,8 +427,9 @@ class CustomContentShortcode {
 
 		    } else { // no field or taxonomy, then just return post content
 
-				$out = get_post( $custom_id );
-				$out = $out->post_content;
+//				$out = $current_post;
+//				$current_post = get_post( $custom_id );
+				$out = $current_post->post_content;
 				if($content_format=='')
 					$content_format = 'true';
 				if($embed=='')
@@ -426,7 +437,6 @@ class CustomContentShortcode {
 			}
 
 		} else { // else return specified field
-
 
 			// Predefined fields
 
@@ -436,14 +446,15 @@ class CustomContentShortcode {
 				case "edit-url":
 				case "edit-link":
 					$out = get_edit_post_link( $custom_id ); break;
-				case "slug": $this_post = get_post($custom_id); $out = $this_post->post_name; break;
-				case "title": $out = apply_filters( 'the_title', get_post($custom_id)->post_title ); break;
-				case "title-link": $out = '<a href="' . post_permalink( $custom_id ) . '">' . apply_filters( 'the_title', get_post($custom_id)->post_title ) . '</a>'; break;
-				case "title-link-out": $out = '<a target="_blank" href="' . post_permalink( $custom_id ) . '">' . apply_filters( 'the_title', get_post($custom_id)->post_title ) . '</a>'; break;
-				case "title-length": $out = strlen(apply_filters( 'the_title', get_post($custom_id)->post_title )); break;
+				case "slug": $out = $current_post->post_name; break;
+
+				case "title-link":
+				case "title-link-out":
+				case "title": $out = apply_filters( 'the_title', $current_post->post_title ); break;
+
+				case "title-length": $out = strlen(apply_filters( 'the_title', $current_post->post_title )); break;
 				case "author":
-					$this_post = get_post($custom_id);
-					$author_id = $this_post->post_author;
+					$author_id = $current_post->post_author;
 					$user = get_user_by( 'id', $author_id);
 
 					if ( !empty($meta) )
@@ -453,19 +464,16 @@ class CustomContentShortcode {
 
 				case "author-id":
 
-					$current_post = get_post( $custom_id );
 					$author_id = $current_post->post_author;
 					$out = $author_id; break;
 
 				case "author-url":
 
-					$current_post = get_post( $custom_id );
 					$author_id = $current_post->post_author;
 					$out = get_author_posts_url($author_id); break;
 
 				case "avatar": 
 
-					$current_post = get_post( $custom_id );
 					$author_id = $current_post->post_author;
 					if( $size=='' )
 						$out = get_avatar($author_id);
@@ -476,10 +484,10 @@ class CustomContentShortcode {
 				case "date":
 
 					if($date_format!='') {
-						$out = mysql2date($date_format, get_post($custom_id)->post_date); break;
+						$out = mysql2date($date_format, $current_post->post_date); break;
 					}
 					else { // Default date format under Settings -> General
-						$out = mysql2date(get_option('date_format'), get_post($custom_id)->post_date); break;
+						$out = mysql2date(get_option('date_format'), $current_post->post_date); break;
 					}
 
 
@@ -511,10 +519,10 @@ class CustomContentShortcode {
 
 				case 'excerpt' :
 
-					$out = get_post($custom_id);
+					$out = $current_post;
 
 					// Get excerpt
-					$excerpt = get_post($custom_id)->post_excerpt;
+					$excerpt = $current_post->post_excerpt;
 					if( ($excerpt=='') || (is_wp_error($excerpt)) ) {
 						$out = $out->post_content;
 						if(($words=='') && ($length==''))
@@ -612,6 +620,20 @@ class CustomContentShortcode {
 			$out = mb_substr($the_excerpt, 0, $length, 'UTF-8');
 		}
 
+
+		/*========================================================================
+		 *
+		 * If wrapping title in link, do it after word/length parameter
+		 *
+		 *=======================================================================*/
+
+		switch ($custom_field) {
+			case "title-link":
+				$out = '<a href="' . post_permalink( $custom_id ) . '">' . $out . '</a>'; break;
+			case "title-link-out":
+				$out = '<a target="_blank" href="' . post_permalink( $custom_id ) . '">' . $out . '</a>'; break;
+		}		
+		
 		if ($class!='')
 			$out = '<div class="' . $class . '">' . $out . '</div>';
 
@@ -668,11 +690,11 @@ class CustomContentShortcode {
 
 
 	public static function custom_field_shortcode($atts) {
-		$out = null;
+		$out = null; $rest="";
 		if (isset($atts) && !empty($atts[0])) {
 
 			if (count($atts)>1) {
-				$i=0; $rest="";
+				$i=0;
 				foreach ($atts as $key => $value) {
 					$rest .= " ";
 					if ($i>0) $rest .= $key.'="'.$value.'"';
@@ -686,7 +708,7 @@ class CustomContentShortcode {
 
 
 	public static function custom_taxonomy_shortcode($atts) {
-		$out = null;
+		$out = null; $rest="";
 		if (isset($atts) && !empty($atts[0])) {
 
 			if (count($atts)>1) {

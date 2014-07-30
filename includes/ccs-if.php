@@ -82,6 +82,10 @@ class IfShortcode {
 					$condition = ($every==0) ? false : (($count % $every)==0);
 				}
 
+				if (isset($atts['not'])) {
+					$condition = !$condition;
+				}
+
 				if ($condition) {
 					$out = do_shortcode( $content );
 				}
