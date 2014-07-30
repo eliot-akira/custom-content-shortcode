@@ -18,6 +18,7 @@ class CCSGlobal {
 		 *=======================================================================*/
 
 		global $ccs_global_variable;
+		global $ccs_content_template_loader;
 
 		$ccs_global_variable = array(
 			'is_loop' => 'false',
@@ -50,19 +51,3 @@ class CCSGlobal {
 	}
 }
 new CCSGlobal;
-
-
-/*========================================================================
- *
- * Helper functions
- *
- *=======================================================================*/
-
-function comma_list_to_array( $string ) {
-
-	// Explode comma-separated list and trim white space
-
-	return array_map("trim", explode(",", $string));
-}
-
-

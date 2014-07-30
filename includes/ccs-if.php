@@ -157,7 +157,7 @@ class IfShortcode {
 				$post_tax_array[] = $term_object->slug;
 			}
 
-			$terms = comma_list_to_array($term);
+			$terms = self::comma_list_to_array($term);
 
 //			echo "Find $term in ";
 //			print_r($post_tax_array);
@@ -189,7 +189,7 @@ class IfShortcode {
 			$check = get_post_meta( $current_post_id, $field, true );
 			if (!is_array($check)) $check = array($check);
 
-			$values = comma_list_to_array($value);
+			$values = self::comma_list_to_array($value);
 
 			foreach ($values as $this_value) {
 
@@ -210,12 +210,12 @@ class IfShortcode {
 		 *=======================================================================*/
 
 		if (!empty($type)) {
-			$types = comma_list_to_array($types); // Enable comma-separated list
+			$types = self::comma_list_to_array($types); // Enable comma-separated list
 			$condition = in_array($current_post_type, $types) ? true : false;
 		}
 
 		if (!empty($name)) {
-			$names = comma_list_to_array($name);
+			$names = self::comma_list_to_array($name);
 			$condition = in_array($current_post_name, $names) ? true : false;
 		}
 
@@ -240,6 +240,15 @@ class IfShortcode {
 		global $ccs_global_variable;
 		return $ccs_global_variable['if_flag'];
 	}
+
+
+	function comma_list_to_array( $string ) {
+
+		// Explode comma-separated list and trim white space
+
+		return array_map("trim", explode(",", $string));
+	}
+
 
 }
 new IfShortcode;
