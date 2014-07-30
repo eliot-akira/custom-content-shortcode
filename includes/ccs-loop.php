@@ -107,13 +107,13 @@ class LoopShortcode {
 		if (!isset($custom_field))
 			$custom_field = "";
 
-		if( $type == '' ) $type = 'any';
+		if( empty($type) ) $type = 'any';
 		$custom_value = $value;
-		if($key!='') $keyname=$key;
-		if($offset!='') $post_offset=$offset;
-		if($strip!='') $strip_tags=$strip;
-		if($allow!='') $strip_tags=$allow;
-		if($status != null)
+		if(!empty($key)) $keyname=$key;
+		if(!empty($offset)) $post_offset=$offset;
+		if(!empty($strip)) $strip_tags=$strip;
+		if(!empty($allow)) $strip_tags=$allow;
+		if(!empty($status))
 			$status = explode(",", $status);
 		else
 			$status = array("publish");
@@ -121,7 +121,7 @@ class LoopShortcode {
 		if(!isset($query_field)) $query_field='';
 
 		$current_name = $name;
-		if ($var!='') $variable=$var;
+		if (!empty($var)) $variable=$var;
 
 
 		/*
@@ -1152,6 +1152,14 @@ class LoopShortcode {
 		} /* End: attachment or gallery field */
 
 	} /* End of function the_loop_shortcode */ 
+
+
+
+/*========================================================================
+ *
+ * Helper functions
+ *
+ *=======================================================================*/
 
 	/*
 	 * Replaces {VAR} with $parameters['var'];
