@@ -15,7 +15,7 @@ class urlShortcode
 
         $blogurl_settings['home'] = get_option( 'home' );
         $blogurl_settings['wordpress'] = get_option( 'siteurl' );
-        $blogurl_settings['content'] = get_option( 'siteurl' ) . '/' . 'wp-content';
+        $blogurl_settings['content'] = content_url();
         $blogurl_settings['templateurl'] = get_bloginfo( 'template_directory' );
         $blogurl_settings['childtemplateurl'] = get_bloginfo( 'stylesheet_directory' );
         

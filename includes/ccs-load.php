@@ -13,7 +13,6 @@ function custom_css_wrap($atts, $content = null) {
     $result .= '</style>';
     return $result;
 }
-
 add_shortcode('css', 'custom_css_wrap');
 
 function custom_js_wrap( $atts, $content = null ) {
@@ -22,7 +21,6 @@ function custom_js_wrap( $atts, $content = null ) {
     $result .= '</script>';
     return $result;
 }
-
 add_shortcode('js', 'custom_js_wrap');
 
 
@@ -46,8 +44,10 @@ function custom_load_script_file( $atts ) {
 	$root_path = ABSPATH;
 
 //	$root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
-	$path = $root_path . '/';
-	$site_url = get_site_url();
+	$path = trailingslashit( $root_path );
+	$site_url = trailingslashit( get_site_url() );
+	$content_url = trailingslashit( content_url() );
+	$content_path = trailingslashit( WP_CONTENT_DIR );
 
 	if (
 		(strpos($file, "http://") !== false) ||
@@ -61,27 +61,36 @@ function custom_load_script_file( $atts ) {
 
 	switch($dir) {
 		case 'web' : $path = ""; break;
-        case 'site' : $dir = home_url() . '/'; break; /* Site address */
-		case 'wordpress' : $dir =  $site_url . '/'; break; /* WordPress directory */
+        case 'site' : $dir = trailingslashit( home_url() ); break; /* Site address */
+		case 'wordpress' : $dir =  $site_url; break; /* WordPress directory */
 		case 'content' :
-			$dir = $site_url . '/wp-content/';
-			$path = $root_path . '/wp-content/';
+			$dir = $content_url;
+			$path = $content_path;
 			break;
 		case 'layout' :
-			$dir = $site_url . '/wp-content/layout/';
-			$path = $root_path . '/wp-content/layout/';
+			$dir = $content_url . 'layout/';
+			$path = $content_path . 'layout/';
 		break;
 		case 'views' :
-			$dir = $site_url . '/wp-content/views/';
-			$path = $root_path . '/wp-content/views/';
+			$dir = $content_url . 'views/';
+			$path = $content_path . 'views/';
 			break;
-		case 'child' : $dir = get_stylesheet_directory_uri() . '/'; break;
+		case 'child' :
+			$dir = trailingslashit(get_stylesheet_directory_uri());
+			$path = trailingslashit(get_stylesheet_directory());
+			break;
 		default:
 
 			if(($dir=='theme')||($dir=='template')) {
-				$dir = get_template_directory_uri() . '/';
+
+				$dir = trailingslashit(get_template_directory_uri());
+				$path = trailingslashit(get_template_directory());
+
 			} else {
-				$dir = get_template_directory_uri() . '/';
+
+				$dir = trailingslashit(get_stylesheet_directory_uri());
+				$path = trailingslashit(get_stylesheet_directory());
+
 				if($css != '') {
 					$dir .= 'css/';
 				}
@@ -92,6 +101,8 @@ function custom_load_script_file( $atts ) {
 	}
 
 	$out = '';
+
+//	echo "LOAD: $dir$file$css$js ($path$file$css$js)  $gfonts<br>";
 
 	if($css != '') {
 
@@ -141,16 +152,17 @@ function custom_load_script_file( $atts ) {
 			ob_start();
 			@include($path . $file);
 			$output = ob_get_clean();
-
+/*
 			if (empty($output)) {
 				// Try again
-				$output = @file_get_contents($path . $file);
+//				$output = @file_get_contents($path . $file);
 				if (empty($output)) {
 					// Try again
-					$output = @file_get_contents($dir . $file);
+//					$output = @file_get_contents($dir . $file);
 
 				}
 			}
+*/
 		} else {
 
 			// get external file
@@ -212,34 +224,22 @@ add_shortcode('load', 'custom_load_script_file');
 
 function do_shortcode_file( $file, $dir = "" ) {
 
-	$root_dir_soft = ABSPATH;
-//	$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
+	$content_url = trailingslashit( content_url() );
+	$content_path = trailingslashit( WP_CONTENT_DIR );
 
 	switch($dir) {
 		case 'root' : 
-		case 'wordpress' : $dir = $root_dir_soft . '/'; break; /* WordPress directory */
-		case 'content' : $dir = $root_dir_soft . '/wp-content/'; break;
-		case 'layout' : $dir = $root_dir_soft . '/wp-content/layout/'; break;
-		case 'views' : $dir = $root_dir_soft . '/wp-content/views/'; break;
-		case 'child' : $dir = get_bloginfo('template_url') . '/'; break;
+		case 'wordpress' : $path = trailingslashit( ABSPATH ); break; /* WordPress directory */
+		case 'content' : $path = $content_path; break;
+		case 'layout' : $path = $content_path . 'layout/'; break;
+		case 'views' : $path = $content_path . 'views/'; break;
+		case 'child' : $path = trailingslashit(get_stylesheet_directory()); break;
+			
 		default:
-			$dir = get_bloginfo('template_url') . '/';
+			$path = trailingslashit(get_template_directory());
 	}
-/*
-	switch($dir) {
-		case 'web' : $dir = "http://"; break;
-        case 'site' : $dir = home_url() . '/'; break;
-		case 'wordpress' : $dir = get_site_url() . '/'; break;
-		case 'content' : $dir = get_site_url() . '/wp-content/'; break;
-		case 'layout' : $dir = get_site_url() . '/wp-content/layout/'; break;
-		case 'views' : $dir = get_site_url() . '/wp-content/views/'; break;
-		case 'child' : $dir = get_stylesheet_directory_uri() . '/'; break;
-		default:
-			$dir = get_template_directory_uri() . '/';
-	}
-*/
 
-	$file = $dir . $file . '.html';
+	$file = $path . $file . '.html';
 
 /*	$output = @file_get_contents( $file ); */
 
@@ -281,17 +281,21 @@ function load_custom_css() {
 	if(isset($wp_query->post)) {
 		$custom_css = get_post_meta( $wp_query->post->ID, "css", $single=true );
 
-	/*	if($custom_css == '') { */
+	/*	if($custom_css == '') { 
+
+		if ( ($ccs_content_template_loader == true)  { ... }
+			$root_dir_soft = ABSPATH;
+
 			$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/';
-			$default_layout_dir = $root_dir_soft . 'wp-content/layout/';
+			$default_layout_dir = content_url() . '/layout/';
 			$default_css = $default_layout_dir . 'style.css';
 
 			if(file_exists($default_css))
 				$custom_css .= '[load css="style.css" dir="layout"]';
-	/*	} */
+		} */
 
 		$custom_css = do_shortcode( $custom_css );
-		if( $custom_css != '' ) {
+		if( !empty($custom_css) ) {
 			echo $custom_css;
 		}
 	}
@@ -305,18 +309,21 @@ function load_custom_js() {
 	if(isset($wp_query->post)) {
 		$custom_js = get_post_meta( $wp_query->post->ID, "js", $single=true );
 
-	/*	if($custom_js == '') { */
+	/*	if($custom_js == '') { 
 
+		if ( ($ccs_content_template_loader == true)  { ... }
+
+			$root_dir_soft = ABSPATH;
 			$root_dir_soft = dirname(dirname(dirname(dirname(__FILE__)))) . '/';
-			$default_layout_dir = $root_dir_soft . 'wp-content/layout/';
+			$default_layout_dir = content_url() . '/layout/';
 			$default_js = $default_layout_dir . 'scripts.js';
 
 			if(file_exists($default_js))
 				$custom_js .= '[load js="scripts.js" dir="layout"]';
-	/*	} */
+		} */
 
 		$custom_js = do_shortcode( $custom_js );
-		if( $custom_js != '' ) {
+		if( !empty($custom_js) ) {
 			echo $custom_js;
 		}
 	}
@@ -347,7 +354,7 @@ function load_custom_html($content) {
 		$root_dir_soft = ABSPATH . '/';
 //		$root_dir_soft = dirname(dirname(dirname(dirname(dirname(__FILE__))))) . '/';
 
-		$default_layout_dir = $root_dir_soft . 'wp-content/layout/';
+		$default_layout_dir = content_url() . '/layout/';
 
 		$default_header = 'header.html';
 
