@@ -147,8 +147,7 @@ function ccs_return_comment_form() {
 			
 		'comment_notes_after' => ''
 	));
-	$form = ob_get_contents();
-    ob_end_clean();
+	$form = ob_get_clean();
     return $form;
 }
 

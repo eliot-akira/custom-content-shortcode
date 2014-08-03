@@ -35,7 +35,7 @@ Available parameters for the <strong>[loop]</strong> shortcode are:
 	<li><strong>status</strong> - filter posts by status: <em>any</em>, <em>publish</em>, <em>pending</em>, <em>draft</em>, <em>future</em>, <em>private</em>; the default is <em>publish</em> - multiple values possible, i.e., <em>status="publish, pending"</em></li>
 </ul>
 
-<h4>Date</h4>
+<h4>Published date</h4>
 <ul>
 	<li><strong>year, month, day</strong> - filter posts by specific year, month, day; you can use <em>today</em> as a value, for example <em>month="today"</em> will show posts from this month</li>
 </ul>
@@ -51,9 +51,23 @@ Available parameters for the <strong>[loop]</strong> shortcode are:
 
 <h4>Custom field value</h4>
 <ul>
-	<li><strong>field, compare, value</strong> - display posts according to custom field value; where <em>compare</em> is <em>EQUAL</em> (default) or <em>NOT</em></li>
+	<li><strong>field, compare, value</strong> - display posts according to custom field value, where <em>compare</em> is <em>EQUAL</em> (default) or <em>NOT</em>. If it's a number, also "&gt;" (greater than) or "&lt;" (less than)</li>
 	<li><strong>relation, field_2, compare_2, value_2</strong> - additional query for custom field value, where <em>relation</em> is <em>AND</em> (default) or <em>OR</em></li>
 </ul>
+
+<h4>Custom date field</h4>
+
+By default, it's assumed that the field is stored as a UNIX timestamp.
+
+<ul>
+	<li><strong>field, compare, value</strong> - query by custom field value (see above)</li>
+	<li><strong>value="now"</strong> - compare to now</li>
+	<li><strong>in="string"</strong> - if the date field is stored as string, for example: 2014-08-15</li>
+<!--	<li><strong>date_format</strong> - instead of using <em>in="string"</em>, you can set a date format, for example: "Y-m-d h:i A"</li>
+-->
+</ul>
+
+Please refer to the example section below.
 
 <h4>Sorting and series</h4>
 <ul>
@@ -110,6 +124,22 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 <code>[loop type="books" series="1,2,3,7-15,50-60" key="serial_number"]</code>
 <br>
 <hr>
+<h3>Query by custom date field</h3>
+
+<h4>Show future events</h4>
+
+<code>[loop type="events" field="event_date" compare=">" value="now"]</code>
+
+<h4>Show past events, when the field is stored as a string</h4>
+
+<code>[loop type="events" field="event_date" compare="<" value="now" in="string"]</code>
+
+<h4>Show past events in descending order</h4>
+
+<code>[loop type="events" field="event_date" compare="<" value="now" orderby="meta_value_num" key="event_date" order="DESC"]</code>
+
+<br>
+<hr>
 <h3>Query for checkbox values</h3>
 
 <h4>Single checkbox</h4>
@@ -127,71 +157,3 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 <h4>Two checkboxes..</h4>
 
 <code>[loop type="movies" checkbox="genre" compare="AND" value="comedy, drama" checkbox_2="in-stock" value_2="current, pending"]</code>
-<br>
-<hr>
-<h3>Conditional: if a field value exists</h3>
-
-Use the <b>[if]</b> and <b>[flag]</b> shortcodes to display something only when a field has a value.
-
-<h4>Display only products that have serial numbers</h4>
-
-<code>[loop type="product"]
-&nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-[/loop]</code>
-
-The <em>flag</em> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
-
-In addition, you can display something when a field is empty:
-
-<code>[loop type="product"]
-&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-&nbsp;&nbsp;&nbsp;&nbsp;[if no_flag="serial_number"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Serial Number
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-[/loop]</code>
-<br>
-<hr>
-<h3>Conditional: if there is no query result</h3>
-
-Use <b>[if empty]</b> to display something when there is no post matching the query.
-
-<h4>Display a message for no query result</h4>
-
-<code>[loop type="events" category="weekend"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[field description]
-&nbsp;&nbsp;&nbsp;&nbsp;[if empty]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no event for this category.
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-[/loop]</code>
-
-If there's no post found, the loop displays only what's inside <b>[if empty]</b>.
-<br>
-<hr>
-<h3>Conditional: for every X number of posts</h3>
-
-<h4>Add an extra break line for every 3 posts</h4>
-
-<code>[loop type="post" count="9"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if every="3"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;br&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-[/loop]</code>
-
-<h4>Display something for the first or last post</h4>
-<code>[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if first]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(first post)
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-&nbsp;&nbsp;&nbsp;&nbsp;[if last]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(last post)
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-[/loop]</code>

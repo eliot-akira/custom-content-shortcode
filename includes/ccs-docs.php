@@ -172,8 +172,8 @@ function ccs_content_settings_page() {
 	$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'overview';
 
 
-	$all_tabs = array( 'overview', 'content', 'loop', 'views', 'each',
-						'if', 'user', 'load', 'gallery', 'ACF', 'mobile', 'etc' );
+	$all_tabs = array( 'overview', 'content', 'loop', 'views', 'if', 'each',
+						'user', 'load', 'gallery', 'ACF', 'mobile', 'etc' );
 
 	?>
 		<div class="wrap">
@@ -286,13 +286,9 @@ function ccs_plugin_settings_link( $links, $file ) {
 function ccs_dashboard_content_overview() {
 
 	?>
-		<div class="wrap">
-	<?php
-
-		include('ccs-content-overview.php');
-
-	?>
-		</div>
+	<div class="wrap">
+	<?php include('ccs-content-overview.php'); ?>
+	</div>
 	<?php
 
 

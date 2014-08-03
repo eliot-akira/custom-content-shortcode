@@ -40,10 +40,78 @@ You can pass multiple values, for example: <i>category="sci-fi,comedy"</i>. This
 </ul>
 <h4>Other conditions</h4>
 <ul>
+	<li><strong>empty</strong> - if the loop is empty (no post found)</li>
+	<li><strong>first, last</strong> - if it's the first or last post found</li>
 	<li><strong>every</strong> - for every X post in the loop</li>
+	<li><strong>flag</strong> - if custom field value exists; for example: <em>flag="field_name"</em></li>
 	<li><strong>not</strong> - when the condition is not met</li>
 </ul>
+<br>
+<hr>
+<h3>Conditional: if there is no query result</h3>
 
+Use <b>[if empty]</b> to display something when there is no post matching the query.
+
+<h4>Display a message for no query result</h4>
+
+<code>[loop type="events" category="weekend"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[field description]
+&nbsp;&nbsp;&nbsp;&nbsp;[if empty]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no event for this category.
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
+If there's no post found, the loop displays only what's inside <b>[if empty]</b>.
+<br>
+<hr>
+<h3>Conditional: for every X number of posts</h3>
+
+<h4>Add an extra break line for every 3 posts</h4>
+
+<code>[loop type="post" count="9"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[if every="3"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;br&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
+<h4>Display something for the first or last post</h4>
+<code>[loop type="post"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[if first]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(first post)
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;&nbsp;&nbsp;[if last]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(last post)
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+<br>
+<hr>
+<h3>Conditional: if a field value exists</h3>
+
+<h4>Display only products that have serial numbers</h4>
+
+<code>[loop type="product"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
+The <em>flag</em> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
+
+In addition, you can display something when a field is empty:
+
+<code>[loop type="product"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;&nbsp;&nbsp;[if not flag="serial_number"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Serial Number
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
 
 <br>
 <hr>

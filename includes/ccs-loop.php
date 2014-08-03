@@ -64,7 +64,7 @@ class LoopShortcode {
 			'acf_gallery' => '',
 			'id' => '',
 			'name' => '',
-			'field' => '', 'value' => '', 'compare' => '',
+			'field' => '', 'value' => '', 'compare' => '', 'in' => '', 'date_format' => '',
 			'f' => '', 'v' => '', 'c' => '', 
 			'field_2' => '', 'value_2' => '', 'compare_2' => '', 'relation' => '',
 			'f2' => '', 'v2' => '', 'c2' => '', 'r' => '', 
@@ -433,11 +433,30 @@ class LoopShortcode {
 
 
 			if( ($query_field!='') && ($query_value!='') ) {
-
+/*
 				$query_value = html_entity_decode($query_value);
 				$value_2 = html_entity_decode($value_2);
+*/
+
+				if (( isset($in) && ($in == "string") ) || (!empty($date_format)) ){
+					if (empty($date_format)) {
+						if ($query_value == "today")
+							$date_format = "Y-m-d"; // Y-m-d h:i A
+						if ($query_value == "now")
+							$date_format = "Y-m-d h:i A"; 
+					}
+
+					if (($query_value == "today") || ($query_value == "now")){
+						$query_value = date($date_format,time());
+					}
+				} else {
+					if (($query_value == "today") || (($query_value == "now"))){
+						$query_value = time();
+					}
+				}
 
 				$compare = strtoupper($compare);
+
 				switch ($compare) {
 					case '':
 					case 'EQUAL': $compare = "LIKE"; break;
