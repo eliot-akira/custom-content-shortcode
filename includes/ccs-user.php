@@ -1,212 +1,54 @@
 <?php
 
-/*====================================================================================================
+/*========================================================================
  *
- * Relative URL shortcodes - [url site/theme/child/views/content/uploads]
+ * Shortcodes:
+ * 
+ * user, is/isnt
+ * list_shortcodes, search_form, blog
  *
- *====================================================================================================*/
+ *=======================================================================*/
 
 
-class urlShortcode
-{
-    public static function userSettings()
-    {
-        $blogurl_settings = array();
+function custom_user_shortcode( $atts, $content ) {
 
-        $blogurl_settings['home'] = get_option( 'home' );
-        $blogurl_settings['wordpress'] = get_option( 'siteurl' );
-        $blogurl_settings['content'] = content_url();
-        $blogurl_settings['templateurl'] = get_bloginfo( 'template_directory' );
-        $blogurl_settings['childtemplateurl'] = get_bloginfo( 'stylesheet_directory' );
-        
-        $blogurl_settings['insertslash'] = false;
-        
-        return $blogurl_settings;
-    }
-    
-    public static function custom_url( $attributes )
-    {
-        $blogurl_settings = urlShortcode::getSettings();
-
-		extract(shortcode_atts(array(
-			'login' => '',
-			'logout' => '',
-			'go' => '',
-		), $attributes));
-
-        if ( is_array( $attributes ) ) {
-            $attributes = array_flip( $attributes );
-        }
-
-		if ( ($go=='here') || (isset($attributes['logout']) && empty($go)) ) {
-			global $wp;
-			$go = home_url( $wp->request );
-		} elseif($go!='') {
-			if($go=='home')
-				$go = $blogurl_settings['home'];
-			elseif( (isset( $attributes['login'] )) || (isset( $attributes['logout'] )) )
-				if( !strpos ($go,"." ) )
-					$go = do_shortcode('[content name="'.$go.'" field="url"]');
-		}
-
-
-        if( isset( $attributes['wordpress'] ) )
-        {
-            $return_blogurl = $blogurl_settings['wordpress'];
-        }
-        elseif( isset( $attributes['uploads'] ) )
-        {
-            $return_blogurl = $blogurl_settings['uploads'];
-        }
-        elseif( isset( $attributes['content'] ) )
-        {
-            $return_blogurl = $blogurl_settings['content'];
-        }
-        elseif( isset( $attributes['layout'] ) )
-        {
-            $return_blogurl = $blogurl_settings['content'] . '/layout';
-        }
-        elseif( isset( $attributes['views'] ) )
-        {
-            $return_blogurl = $blogurl_settings['content'] . '/views';
-        }
-        elseif( isset( $attributes['theme'] ) )
-        {
-            $return_blogurl = $blogurl_settings['templateurl'];
-        }
-        elseif( isset( $attributes['child'] ) )
-        {
-            $return_blogurl = $blogurl_settings['childtemplateurl'];
-        }
-        elseif( isset( $attributes['login'] ) )
-        {
-        	$return_blogurl = wp_login_url( $go );
-        }
-        elseif( isset( $attributes['logout'] ) )
-        {
-			$return_blogurl = wp_logout_url( $go );
-        }
-        else
-        {
-            $return_blogurl = $blogurl_settings['home'];
-        }
-
-        if( isset( $attributes['slash'] ) || ( $blogurl_settings['insertslash'] && !isset( $attributes['noslash'] ) ) )
-        {
-            $return_blogurl .= '/';
-        }
-
-        return $return_blogurl;
-    }
-    
-    public static function getSettings()
-    {
-        $blogurl_settings = urlShortcode::userSettings();
-        $upload_dir = wp_upload_dir();
-        
-        if( !$upload_dir['error'] )
-        {
-            $blogurl_settings['uploads'] = $upload_dir['baseurl'];
-        }
-        elseif( '' != get_option( 'upload_url_path' ) )
-        {
-            // Prior to WordPress 3.5, this was set in Settings > Media > Full URL path to files
-            // In WordPress 3.5+ this is now hidden
-            $blogurl_settings['uploads'] = get_option( 'upload_url_path' );
-        }
-        else
-        {
-            $blogurl_settings['uploads'] = $blogurl_settings['wordpress'] . '/' . get_option( 'upload_path' );
-        }
-
-        return $blogurl_settings;
-    }
-}
-
-add_shortcode( 'url', array( 'urlShortcode', 'custom_url' ) );
-
-
-/*====================================================================================================
- *
- * Comment shortcodes - [comment form] form/template/count
- *
- *====================================================================================================*/
-
-
-function ccs_return_comment_form() {
-	ob_start();
-	comment_form( $args = array(
-		'id_form'           => 'commentform',  // that's the wordpress default value! delete it or edit it ;)
-		'id_submit'         => 'commentsubmit',
-		'title_reply'       => __( '' ),  // Leave a Reply - that's the wordpress default value! delete it or edit it ;)
-		'title_reply_to'    => __( '' ),  // Leave a Reply to %s - that's the wordpress default value! delete it or edit it ;)
-		'cancel_reply_link' => __( 'Cancel Reply' ),  // that's the wordpress default value! delete it or edit it ;)
-		'label_submit'      => __( 'Post Comment' ),  // that's the wordpress default value! delete it or edit it ;)
-			
-		'comment_field' =>  '<p><textarea placeholder="" id="comment" class="form-control" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>', 
-			
-		'comment_notes_after' => ''
-	));
-	$form = ob_get_clean();
-    return $form;
-}
-
-function ccs_return_comments_template($file) {
-	ob_start();
-	comments_template($file);
-	$form = ob_get_clean(); 
-    return $form;
-}
-
-function ccs_comment_shortcode( $atts, $content, $tag ) {
-
-	global $ccs_global_variable;
+	global $current_user;
+	get_currentuserinfo();
 
 	extract(shortcode_atts(array(
-		'template' => ''
+		'field' => '',
+		'meta' => ''
 	), $atts));
 
-	if( is_array( $atts ) ) {
+	if(!empty($meta))
+		$field=$meta;
+
+	$out = null;
+
+	if (!empty($field)) {
+		return get_user_meta( $current_user->ID, $field, true );
+	}
+
+	if( is_array( $atts ) )
 		$atts = array_flip( $atts );
-	}
 
-	if( ($tag=='comments') || isset( $atts['template'] ) || (!empty($template))) {
+	if( isset( $atts['name'] ) )
+		return $current_user->user_login;
 
-		$dir = "";
-/*		if (isset($atts['dir'])) {
-			$dir = do_shortcode("[url ".$atts['dir']."]/");
-		}
-*/
-		if (empty($template)) $template = "/comments.php";
-		if (isset($template[0]) && ($template[0]!="/"))
-			$template = "/".$template;
+	if( isset( $atts['id'] ) )
+		return $current_user->ID;
 
-		$file = $dir.$template;
-/*
-		echo "file: ".$file."<br>";
-// filter 'comments_template' gets this value
-		echo "style: ".STYLESHEETPATH . $file."<br>";
-		echo "template: ".TEMPLATEPATH . $file ."<br>";
-*/
-		$content = ccs_return_comments_template($dir.$template);
+	if( isset( $atts['email'] ) )
+		return $current_user->user_email;
 
-		return $content;
-	}
+	if( isset( $atts['fullname'] ) )
+		return $current_user->display_name;
 
-	if( isset( $atts['form'] ) ) {
-		$content = ccs_return_comment_form();
-		return $content;
-	}
-	if( isset( $atts['count'] ) ) {
-		return get_comments_number();
-	}
-	if( isset( $atts['total'] ) ) {
-		return $ccs_global_variable['total_comments'];
-	}
+	if( isset( $atts['avatar'] ) )
+		return get_avatar( $current_user->ID );
+
 }
-add_shortcode('comment', 'ccs_comment_shortcode');
-add_shortcode('comments', 'ccs_comment_shortcode');
-
+add_shortcode('user', 'custom_user_shortcode');
 
 
 /*========================================================================
@@ -296,46 +138,6 @@ function custom_blog_shortcode( $atts, $content ){
 	return $out;
 }
 add_shortcode('blog', 'custom_blog_shortcode');
-
-function custom_user_shortcode( $atts, $content ) {
-
-	global $current_user;
-	get_currentuserinfo();
-
-	extract(shortcode_atts(array(
-		'field' => '',
-		'meta' => ''
-	), $atts));
-
-	if(!empty($meta))
-		$field=$meta;
-
-	$out = null;
-
-	if (!empty($field)) {
-		return get_user_meta( $current_user->ID, $field, true );
-	}
-
-	if( is_array( $atts ) )
-		$atts = array_flip( $atts );
-
-	if( isset( $atts['name'] ) )
-		return $current_user->user_login;
-
-	if( isset( $atts['id'] ) )
-		return $current_user->ID;
-
-	if( isset( $atts['email'] ) )
-		return $current_user->user_email;
-
-	if( isset( $atts['fullname'] ) )
-		return $current_user->display_name;
-
-	if( isset( $atts['avatar'] ) )
-		return get_avatar( $current_user->ID );
-
-}
-add_shortcode('user', 'custom_user_shortcode');
 
 
 

@@ -173,18 +173,20 @@ function ccs_content_settings_page() {
 
 
 	$all_tabs = array( 'overview', 'content', 'loop', 'views', 'if', 'each',
-						'user', 'load', 'gallery', 'ACF', 'mobile', 'etc' );
+						'comment',
+						// 'widget',
+						'user', 'load', 'gallery',
+						// 'ACF', 'mobile',
+						'etc' );
 
 	?>
 		<div class="wrap">
 		<h2 class="plugin-title">Custom Content Shortcode</h2>
 		<br>
 
-
 		<div class="doc-style">
 
 		<h2 class="nav-tab-wrapper">  
-		
 		<?php
 			$i = 0; $middle = intval(count($all_tabs)/2);
 			foreach ($all_tabs as $tab) {
@@ -201,11 +203,8 @@ function ccs_content_settings_page() {
 				// if ($i==$middle) echo '<br>&nbsp;&nbsp;&nbsp;'; // Put section break
 			}
 		?>
-
-		</h2>  
-
-
-			<?php
+		</h2>
+		<?php
 
 			/*--- Show the doc file for active tab ---*/
 
@@ -217,52 +216,34 @@ function ccs_content_settings_page() {
 
 			if ( $active_tab == 'overview' ) {
 
-			 	/* Footnote */
-
+			 	// Add footnote
 			 	?>
 				<br><hr><br>
-
 				<div align="center">
 					<img src="<?php echo plugins_url();?>/custom-content-shortcode/docs/logo/logo.png"><br><br>
 					<b>Custom Content Shortcode</b> is developed by Eliot Akira.<br><br>
 					For general questions, please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">WordPress plugin support forum</a>.<br>
 					For commercial support and other inquiries, contact <a href="mailto:me@eliotakira.com">me@eliotakira.com</a><br>
 				</div>
-
 				<?php
-
 			}
 
-	?>
-
-
-	<?php
-
 			if ( $active_tab == 'your site' ) {
-
 				?>
-
 				</div>
 				<br><hr>
-
 				<?php include('ccs-docs-site-overview.php');
-
 			} else {
-
-
 				?>
-					</div>
+				</div>
 				<?php
 
 			/*-- End of .doc-style --*/
-
-			 }
+			}
 	?>
 	</div>
 	<?php
-
-				/*-- End of .wrap --*/
-
+	/*-- End of .wrap --*/
 }
 
 

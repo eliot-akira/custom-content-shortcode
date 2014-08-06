@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.9.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,21 +20,22 @@ From a single field to entire pages, Custom Content Shortcode is a set of comman
 
 The **[content]** shortcode displays any of the following: *posts, pages, custom post types, custom fields, files, images, attachments, menus,* or *widget areas*.
 
-The **[loop]** shortcode performs query loops. It can display, for example, available products in a category, or excerpts from the 5 most recent posts. You can query by parameters such as: *date, category, tags, taxonomy,* and *custom field values*.
+The **[loop]** shortcode performs query loops. It can display, for example, available products in a category, or excerpts from the 5 most recent posts. You can query by parameters such as: *post type, category, custom taxonomy, date, * and *custom field values*.
 
-There is a reference page under *Settings -> Custom Content*, as well as an overview of your site's content structure.
+There is a reference page under *Settings -> Custom Content*.
 
 
 = Included =  
 <br />
 You'll find many useful features:
 
+* **Overview** of your site's content structure
+* Simple **gallery field** for any post type
+* Include **HTML/PHP/CSS/JavaScript** files
 * **Relative URLs** for links and images
 * Display content for **admin, specific user, login status**
 * User name, ID, **login/logout links** with redirect
 * **Comments** list, input form or comment count
-* Include **HTML/PHP/CSS/JavaScript** files
-* Simple **gallery field** for any post type
 * Display content based on mobile detect
 
 With other libraries:
@@ -75,6 +76,11 @@ With other libraries:
 
 
 == Changelog ==
+
+= 1.0.3 =
+
+* **[comments]** - Loop through recent comments, and display comment fields
+* **[if comment]** - If current post in a query loop has any comments
 
 = 1.0.2 =
 

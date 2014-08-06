@@ -219,17 +219,17 @@ class IfShortcode {
 			$condition = in_array($current_post_name, $names) ? true : false;
 		}
 
-
-
 		/*========================================================================
 		 *
 		 * Template: home, archive, single..
+		 * [if comment] - current post has comment
 		 *
 		 *=======================================================================*/
 		
 		$condition = isset($atts['home']) ? is_front_page() : $condition;
 		$condition = isset($atts['archive']) ? is_archive() : $condition;
 		$condition = isset($atts['single']) ? is_single() : $condition;
+		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : $condition;
 
 		$condition = isset($atts['not']) ? !$condition : $condition;
 

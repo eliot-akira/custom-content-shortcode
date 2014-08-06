@@ -74,36 +74,3 @@ Please note that the destination URL is not a parameter, it is wrapped inside. T
 </code>
 
 The <b>[redirect]</b> shortcode can be placed anywhere, but the best place is in a custom field named <em>css</em>, so it can run at the beginning of the page.
-<br>
-<hr><a id="comments"></a>
-<h3>Comments</h3>
-
-For displaying comments of the current post, or in a query loop, use the <strong>[comment] </strong>shortcode.
-<h4>Display comment count, input form, or comments list</h4>
-<code>Comment count: [comment count]
-Comment input form: [comment form]
-Comments list: [comment template] or [comments]</code>
-
-You can also display the total comment count after a loop:
-
-<code>Total number of comments: [comment total]</code>
-
-By default, the comments list is displayed by <em>comments.php</em> in the theme directory. If you want to specify a different template:
-
-<code>[comment template="short-comments.php"]</code>
-
-WordPress will look for the comments template in the child theme first (if it exists), then in the parent theme.
-
-Here is an example of a comments list that shows when clicked, using Bootstrap accordion.
-
-<code>&lt;a class="accordion-toggle" data-toggle="collapse"
-&nbsp;&nbsp;&nbsp;&nbsp;data-parent="accordion" href="#comments-area"&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comments ([comment count])
-&lt;/a&gt;
-&lt;div id="comments-area" class="panel-collapse collapse"&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;[comments]
-&lt;/div&gt;</code><br>
-<hr>
-<h3>Search form</h3>
-
-Display a search form using the <b>[search_form]</b> shortcode.

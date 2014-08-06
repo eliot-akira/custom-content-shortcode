@@ -1,0 +1,79 @@
+<h3>Comments</h3>
+
+Use the <strong>[comments] </strong>shortcode to display recent comments, or those of the current post.
+
+<h4>Display the 5 most recent comments</h4>
+<code>[comments count="5"]
+&nbsp;&nbsp;&nbsp;&nbsp;[comment content] by [comment author]
+[/comments]
+</code><br>
+<h3>Parameters</h3>
+Available parameters for the <strong>[comments] </strong>shortcode are:
+
+<ul>
+	<li><em>count</em> - number of comments to show, or set to <em>all</em></li>
+	<li><em>id</em> - set to <em>this</em> to display comments from the current post only</li>
+	<li><em>format</em> - set to <em>false</em> to prevent formatting comment content</li>
+	<li><em>words/length</em> - trim by number of words or characters (for comment content or post title)</li>
+	<li><em>date_format</em> - format the comment date, e.g., "Y-m-d". <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Codex: Formatting Date and Time</a></li>
+</ul>
+<h3>Fields</h3>
+
+Available <b>[comment]</b> fields:
+
+<ul>
+	<li><em>content</em> - content of the comment</li>
+	<li><em>date</em> - date of comment</li>
+</ul><ul>
+	<li><em>title</em> - title of the post where the comment is</li>
+	<li><em>url</em> - URL of the post</li>
+	<li><em>title-link</em> - post title with link to the post</li>
+</ul><ul>
+	<li><em>author</em> - author name</li>
+	<li><em>author-url</em> - author URL</li>
+	<li><em>author-link</em> - author name with link to URL; if no URL, then displays just name</li>
+</ul>
+
+<br>
+<hr>
+<h3>Comment list, input form and total count</h3>
+
+You can also display comments of the current post using the theme's comment template.
+
+<h4>Display comment list using template</h4>
+<code>Comment list: [comment template] or [comments]</code>
+
+By default, the comments list is displayed by <em>comments.php</em> in the theme directory. If you want to specify a different template:
+
+<code>[comment template="short-comments.php"]</code>
+
+WordPress will look for the comments template in the child theme first (if it exists), then in the parent theme.
+
+<h4>Display comment input form</h4>
+
+<code>[comment form]</code>
+
+<h4>Display number of comments for the current post</h4>
+
+<code>Number of comments: [comment count]</code>
+
+You can also display the total comment count <em>after</em> a loop is finished:
+
+<code>Total number of comments: [comment total]</code>
+<br>
+<hr>
+<h3>Conditional: if current post has comment</h3>
+
+Use <b>[if comment]</b> to display something if the current post has any comments or not.
+
+<h4>Display comment count if the post has comment</h4>
+
+<code>[loop type="post" category="news"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if comment]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[comment count]
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;&nbsp;&nbsp;[if not comment]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No comment yet.
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]
+</code>
