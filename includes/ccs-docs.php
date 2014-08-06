@@ -162,7 +162,7 @@ function ccs_content_settings_page() {
 		<h2>Form title</h2>
 		<form method="post" action="options.php">
 		    <?php settings_fields( 'ccs_content_settings_field' ); ?>
-		    <?php do_settings_sections( 'ccs_content_settings_section_page_name' ); ?>
+		    <?php do_settings_sections( 'ccs_content_settings_section_page' ); ?>
 		    <?php submit_button(); ?>
 		</form>
 		</div>

@@ -226,6 +226,7 @@ function do_shortcode_file( $file, $dir = "" ) {
 
 	$content_url = trailingslashit( content_url() );
 	$content_path = trailingslashit( WP_CONTENT_DIR );
+	$output = null;
 
 	switch($dir) {
 		case 'root' : 
@@ -243,9 +244,12 @@ function do_shortcode_file( $file, $dir = "" ) {
 
 /*	$output = @file_get_contents( $file ); */
 
-	ob_start();
-	@include($file);
-	$output = ob_get_clean();
+
+	if (@file_exists($file)) {
+		ob_start();
+		@include($file);
+		$output = ob_get_clean();
+	}
 
 	if ( !empty($output) ) {
 
