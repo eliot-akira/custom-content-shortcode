@@ -1,24 +1,22 @@
 <h3>Gallery field</h3>
 
-In the admin menu, under <em>Settings -&gt; Gallery Fields</em>, there is an option to enable a simple gallery field for any post type. Images can be added, removed, and ordered.
+In the admin menu, under <a href="options-general.php?page=custom-gallery"><em>Settings -&gt; Gallery Fields</em></a>, there is an option to enable a simple gallery field for any post type. Images can be added, removed, and ordered.
 
-The <strong>[loop]</strong> shortcode handles the gallery field just like attachments. For each image, the<b> [content] </b>or <b>[field]</b> shortcode can display these fields: <em>id</em>, <em>title</em>, <em>image</em>, <em>image-url</em>, <em>caption</em>, <em>description</em>,<em> thumbnail</em>, and<em> thumbnail-url</em>.
-
-This could be useful if you want to show captions, link the thumbnails to their full-size images, add a lightbox, etc.
 <h4>Display image details from the gallery field of a specific post</h4>
 <code>[loop field="gallery" name="hello-world"]
 &nbsp;&nbsp;&nbsp;&nbsp;Title: [field title]
 &nbsp;&nbsp;&nbsp;&nbsp;Full-size image: [field image]
 &nbsp;&nbsp;&nbsp;&nbsp;Caption: [field caption]
 [/loop]</code>
+The <strong>[loop]</strong> shortcode handles the gallery field just like attachments. For each image, the<b> [content] </b>or <b>[field]</b> shortcode can display these fields: <em>id</em>, <em>title</em>, <em>image</em>, <em>image-url</em>, <em>caption</em>, <em>description</em>,<em> thumbnail</em>, and<em> thumbnail-url</em>.
 
-The content shortcode can display individual images of the gallery field, or all images in a gallery layout.
+The <b>[content]</b> shortcode can display individual images of the gallery field.
 <h4>Display the 3rd image in the gallery field</h4>
-<code>[content field="gallery" num="3"]</code>
-
+<code>[content field="gallery" num="3"]
 ..or..
+[field gallery num="3"]</code>
 
-<code>[field gallery num="3"]</code>
+It can also display all images in the field using a native or Bootstrap gallery.
 
 <h4>Display the images in a native gallery or a Bootstrap carousel</h4>
 <code>[content gallery="native"]

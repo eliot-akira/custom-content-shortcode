@@ -493,6 +493,9 @@ function custom_gallery_admin_page() {
             <?php do_settings_sections( 'custom-gallery-settings' ); ?>
             <?php submit_button(); ?>
         </form>
+	<div style="padding-left:5px;">
+		<a href="options-general.php?page=ccs_content_shortcode_help&tab=gallery"><em>Reference: Custom Content Shortcode</em></a>
+	</div>
 
     </div>
 <?php
