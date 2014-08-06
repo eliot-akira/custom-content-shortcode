@@ -143,7 +143,7 @@ class CommentShortcodes {
 				'user_id' => '',
 			);
 
-			$args = [];
+			$args = array();
 			foreach ($defaults as $key => $value) {
 				if (!empty($atts[$key])) {
 					$args[$key] = $atts[$key];

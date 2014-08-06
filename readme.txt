@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: custom post type, custom field, shortcode, query, loop
 Requires at least: 3.6
 Tested up to: 3.9.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,7 +77,7 @@ With other libraries:
 
 == Changelog ==
 
-= 1.0.3 =
+= 1.0.4 =
 
 * **[comments]** - Loop through recent comments, and display comment fields
 * **[if comment]** - If current post in a query loop has any comments

@@ -443,9 +443,9 @@ class CustomContentShortcode {
 			switch($custom_field) {
 				case "id": $out = $custom_id; break;
 				case "url": $out = post_permalink( $custom_id ); break;
-				case "edit-url":
-				case "edit-link":
-					$out = get_edit_post_link( $custom_id ); break;
+				case "edit-url": $out = get_edit_post_link( $custom_id ); break;
+				case "edit-link": $out = apply_filters( 'the_title', $current_post->post_title ); break;
+					
 				case "slug": $out = $current_post->post_name; break;
 
 				case "title-link":
@@ -628,6 +628,8 @@ class CustomContentShortcode {
 		 *=======================================================================*/
 
 		switch ($custom_field) {
+			case "edit-link":
+				$out = '<a target="_blank" href="' . get_edit_post_link( $custom_id ) . '">' . $out . '</a>'; break;
 			case "title-link":
 				$out = '<a href="' . post_permalink( $custom_id ) . '">' . $out . '</a>'; break;
 			case "title-link-out":
