@@ -83,7 +83,7 @@ With other libraries:
 
 = 1.0.6 =
 
-* New plugin settings: enable/disable non-essential modules; move wp_autop filter to *after* shortcode, to avoid unwanted formatting
+* **New plugin settings** - Enable/disable non-essential modules; option to move wp_autop filter to *after* shortcodes, to avoid unwanted formatting
 * **[if flag]** - Enable outside loop
 
 = 1.0.4 =
