@@ -263,10 +263,8 @@ function do_shortcode_file( $file, $dir = "" ) {
 	}
 }
 
-
-function do_short( $content )
-{
-	echo do_shortcode( $content );
+if (!function_exists('do_short')) {
+	function do_short( $content ) { echo do_shortcode( $content ); }
 }
 
 

@@ -86,7 +86,11 @@
 				}
 
 				$all_supports = array();
-				$support_types = array('title', 'author', 'thumbnail', 'excerpt');
+				$support_types = array(
+					'title',
+					'author',
+					'thumbnail',
+					'excerpt');
 
 				foreach ($support_types as $support_type) {
 					if (post_type_supports($post_type, $support_type))
@@ -243,13 +247,13 @@
 			$default_supports = array('id', 'date', 'url', 'slug', );
 
 			$all_supports = array_merge($default_supports, $all_supports);
-
+/*
 			if (in_array('author', $all_supports)) {
-				$add_supports = array('avatar'); 
-/*				$add_supports = array('author-id', 'author-url', 'avatar'); */
+//				$add_supports = array('avatar'); 
+//				$add_supports = array('author-id', 'author-url', 'avatar');
 				$all_supports = array_merge($add_supports, $all_supports);
 			}
-
+*/
 			if (in_array('thumbnail', $all_supports)) {
 				$add_supports = array('image'); 
 /*				$add_supports = array('image', 'image-url', 'thumbnail-url'); */

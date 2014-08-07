@@ -72,14 +72,6 @@ function ccs_content_settings_field() {
 	?>
 	<tr>
 		<td width="760px">
-			<input type="checkbox" value="on" name="ccs_content_settings[move_wpautop]"
-				<?php checked( $move_wpautop, 'on' ); ?>
-			/>
-			&nbsp;&nbsp;Move post content formatting (wp_autop) to AFTER shortcodes
-		</td>
-	</tr>
-	<tr>
-		<td width="760px">
 			<input type="checkbox" value="on" name="ccs_content_settings[load_acf_module]"
 				<?php checked( $load_acf_module, 'on' ); ?>
 			/>
@@ -115,6 +107,14 @@ function ccs_content_settings_field() {
 				<?php checked( $load_mobile_detect, 'on' ); ?>
 			/>
 			&nbsp;&nbsp;Load <b>Mobile Detect</b> and shortcodes
+		</td>
+	</tr>
+	<tr>
+		<td width="760px">
+			<input type="checkbox" value="on" name="ccs_content_settings[move_wpautop]"
+				<?php checked( $move_wpautop, 'on' ); ?>
+			/>
+			&nbsp;&nbsp;Move post content formatting (wp_autop) to <em>after</em> shortcodes
 		</td>
 	</tr>
 <?php

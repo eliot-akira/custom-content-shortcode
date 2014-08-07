@@ -43,6 +43,7 @@ require_once (CCS_PATH.'/includes/ccs-docs.php');			// Documentation under Setti
 	if ($settings === false ) {
 		// Default settings
 
+		$settings['move_wpautop'] = 'off';
 		$settings['load_acf_module'] = 'on';
 		$settings['load_bootstrap_module'] = 'on';
 		$settings['load_file_loader'] = 'on';

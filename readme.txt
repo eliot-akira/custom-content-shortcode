@@ -60,6 +60,10 @@ With other libraries:
 
 == Frequently Asked Questions ==
 
+**Q:** How do I remove unwanted formatting inside shortcodes?
+
+**A:** WordPress auto-formats the post content using the wp_autop filter. This can cause unwanted `<p>` and `<br>` tags around line breaks. To prevent this, go to Settings -> Custom Content, and under the settings tab, enable: Move wp_autop to *after* shortcodes.
+
 **Q:** Switching from text to visual editor breaks my HTML.
 
 **A:** The visual editor (TinyMCE) sometimes misinterprets HTML code placed in the text editor. There are several ways to address this issue.
@@ -79,7 +83,7 @@ With other libraries:
 
 = 1.0.5 =
 
-* Added performance improvement options in the Settings page: enable/disable non-essential modules; move wp_autop filter to *after* shortcode, to avoid unwanted formatting
+* New plugin settings: enable/disable non-essential modules; move wp_autop filter to *after* shortcode, to avoid unwanted formatting
 
 = 1.0.4 =
 
