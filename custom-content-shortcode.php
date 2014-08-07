@@ -38,24 +38,18 @@ require_once (CCS_PATH.'/includes/ccs-docs.php');			// Documentation under Setti
  *
  *=======================================================================*/
 
-	register_activation_hook( __FILE__, 'ccs_on_plugin_activation' );
-	function ccs_on_plugin_activation() {
-
-		$settings = get_option('ccs_content_settings');
-
-		if ($settings === false ) {
-			// Default settings
-
-			$settings['load_acf_module'] = 'on';
-			$settings['load_bootstrap_module'] = 'on';
-			$settings['load_file_loader'] = 'on';
-			$settings['load_gallery_field'] = 'on';
-			$settings['load_mobile_detect'] = 'on';
-			update_option( 'ccs_content_settings', $settings );
-		}
-	}
-
 	$settings = get_option('ccs_content_settings');
+
+	if ($settings === false ) {
+		// Default settings
+
+		$settings['load_acf_module'] = 'on';
+		$settings['load_bootstrap_module'] = 'on';
+		$settings['load_file_loader'] = 'on';
+		$settings['load_gallery_field'] = 'on';
+		$settings['load_mobile_detect'] = 'on';
+		update_option( 'ccs_content_settings', $settings );
+	}
 
 	$load_acf_module = isset( $settings['load_acf_module'] ) ?
 		esc_attr( $settings['load_acf_module'] ) : 'off';
