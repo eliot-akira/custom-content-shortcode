@@ -22,20 +22,25 @@ class LoopShortcode {
 		add_shortcode( 'loop-count', array( $this, 'loop_count_shortcode' ) );
 
 		add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize') );
-/*
-		// move wpautop filter to AFTER shortcode is processed
-		remove_filter( 'the_content', 'wpautop' );
-		add_filter( 'the_content', 'wpautop' , 99);
-		add_filter( 'the_content', 'shortcode_unautop',100 );
-*/
+
+		// Get setting
+
+		$settings = get_option( 'ccs_content_settings' );
+		$move_wpautop = isset( $settings['move_wpautop'] ) ?
+			esc_attr( $settings['move_wpautop'] ) : 'off';
+
+		if ($move_wpautop == "on") {
+			// move wpautop filter to AFTER shortcodes are processed
+			remove_filter( 'the_content', 'wpautop' );
+			add_filter( 'the_content', 'wpautop' , 99);
+			add_filter( 'the_content', 'shortcode_unautop',100 );
+		}
 	}
 
 	function shortcodes_to_exempt_from_wptexturize($shortcodes){
 		$shortcodes[] = 'loop';
 		return $shortcodes;
 	}
-
-
 
 	function the_loop_shortcode( $atts, $template = null, $shortcode_name ) {
 

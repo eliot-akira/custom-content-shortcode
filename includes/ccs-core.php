@@ -49,5 +49,6 @@ class CCSGlobal {
 		$ccs_content_template_loader = false; // Set true to enable template loader (under development)
 
 	}
+
 }
 new CCSGlobal;

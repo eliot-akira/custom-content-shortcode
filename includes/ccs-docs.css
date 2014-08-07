@@ -42,9 +42,12 @@
 	.doc-style h3 {
 		font-size: 1.2em;
 	}
-	.doc-style, .doc-style p {
+	.doc-style, .doc-style p, .doc-style .form-table td {
 		font-size: 16px;
 		line-height: 1.4em; 
+	}
+	.doc-style .remove-height {
+		margin-bottom: -50px;
 	}
 	.doc-style a {
 		text-decoration: none;

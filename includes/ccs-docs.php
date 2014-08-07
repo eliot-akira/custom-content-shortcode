@@ -19,42 +19,107 @@ function ccs_content_settings_create_menu() {
 }
 
 
+global $ccs_settings_saved;
+$ccs_settings_saved = false;
 
+/** Remove "Settings saved" message on admin page **/
 
-add_action( 'admin_init', 'ccs_content_settings_register_settings' );
-function ccs_content_settings_register_settings() {
-	register_setting( 'ccs_content_settings_field', 'ccs_content_settings', 'ccs_content_settings_field_validate' );
-	add_settings_section('ccs_content_settings_section', '', 'ccs_content_settings_section_page', 'ccs_content_settings_section_page_name');
-	add_settings_field('ccs_content_settings_field_string', 'Custom content settings field', 'ccs_content_settings_field_input', 'ccs_content_settings_section_page_name', 'ccs_content_settings_section');
+add_action( 'admin_notices', 'ccs_validation_notice');
+
+function ccs_validation_notice(){
+	global $pagenow;
+	global $ccs_settings_saved;
+	if ($pagenow == 'options-general.php' && $_GET['page'] ==
+		'ccs_content_shortcode_help') { 
+
+		if ( (isset($_GET['updated']) && $_GET['updated'] == 'true') ||
+			(isset($_GET['settings-updated']) && $_GET['settings-updated'] == 'true') ) {
+	      //this will clear the update message "Settings Saved" totally
+			unset($_GET['settings-updated']);
+			$ccs_settings_saved = true;
+		}
+	}
 }
+
+
 
 function ccs_content_settings_section_page() {
-/*	echo '<p>Main description</p>';  */
+	/* echo '<p>Main description</p>'; */
 }
 
+function ccs_content_settings_field() {
 
+	$settings = get_option( 'ccs_content_settings' );
 
-function ccs_content_settings_field_input() {
-/*
+	$move_wpautop = isset( $settings['move_wpautop'] ) ?
+		esc_attr( $settings['move_wpautop'] ) : 'off'; // If no setting, then default
 
-	$settings = get_option( 'ccs_content_settings');
+	$load_acf_module = isset( $settings['load_acf_module'] ) ?
+		esc_attr( $settings['load_acf_module'] ) : 'off'; // If no setting, then default
 
-		$registration_enabled = isset( $settings['registration'] ) ?
-			esc_attr( $settings['registration'] ) : 'on'; // If no setting, then default
+	$load_bootstrap_module = isset( $settings['load_bootstrap_module'] ) ?
+		esc_attr( $settings['load_bootstrap_module'] ) : 'off'; // If no setting, then default
+
+	$load_file_loader = isset( $settings['load_file_loader'] ) ?
+		esc_attr( $settings['load_file_loader'] ) : 'off'; // If no setting, then default
+
+	$load_gallery_field = isset( $settings['load_gallery_field'] ) ?
+		esc_attr( $settings['load_gallery_field'] ) : 'off'; // If no setting, then default
+
+	$load_mobile_detect = isset( $settings['load_mobile_detect'] ) ?
+		esc_attr( $settings['load_mobile_detect'] ) : 'off'; // If no setting, then default
+
 	?>
-
 	<tr>
-		<td width="200px">
-			<input type="checkbox" name="ccs_content_settings[registration]"
-				<?php checked( $settings['registration'], 'on' ); ?>
+		<td width="760px">
+			<input type="checkbox" value="on" name="ccs_content_settings[move_wpautop]"
+				<?php checked( $move_wpautop, 'on' ); ?>
 			/>
-
-			<?php echo '&nbsp;&nbsp;Nová registrace'; ?>
+			&nbsp;&nbsp;Move post content formatting (wp_autop) to AFTER shortcodes
 		</td>
 	</tr>
+	<tr>
+		<td width="760px">
+			<input type="checkbox" value="on" name="ccs_content_settings[load_acf_module]"
+				<?php checked( $load_acf_module, 'on' ); ?>
+			/>
+			&nbsp;&nbsp;Load <b>ACF</b> shortcodes
+		</td>
+	</tr>
+	<tr>
+		<td width="760px">
+			<input type="checkbox" value="on" name="ccs_content_settings[load_bootstrap_module]"
+				<?php checked( $load_bootstrap_module, 'on' ); ?>
+			/>
+			&nbsp;&nbsp;Load <b>Bootstrap</b> shortcodes
+		</td>
+	</tr>
+	<tr>
+		<td width="760px">
+			<input type="checkbox" value="on" name="ccs_content_settings[load_file_loader]"
+				<?php checked( $load_file_loader, 'on' ); ?>
+			/>
+			&nbsp;&nbsp;Load <b>File Loader</b> module
+		</td>
+	</tr>
+	<tr>
+		<td width="760px">
+			<input type="checkbox" value="on" name="ccs_content_settings[load_gallery_field]"
+				<?php checked( $load_gallery_field, 'on' ); ?>
+			/>
+			&nbsp;&nbsp;Load <b>Gallery Field</b> module
+		</td>
+	</tr>	<tr>
+		<td width="760px">
+			<input type="checkbox" value="on" name="ccs_content_settings[load_mobile_detect]"
+				<?php checked( $load_mobile_detect, 'on' ); ?>
+			/>
+			&nbsp;&nbsp;Load <b>Mobile Detect</b> and shortcodes
+		</td>
+	</tr>
+<?php
 
-<?php 
-
+/*
 	<tr>
 		<td width="200px">
 			<input type="checkbox" name="ccs_content_settings[option2]"
@@ -79,8 +144,6 @@ function ccs_content_settings_field_input() {
 			<input type="radio" value="menu_order" name="ampl_settings[orderby][<?php echo $key; ?>]" <?php checked( 'menu_order', $post_orderby ); ?>/>
 			<?php echo 'menu&nbsp;&nbsp;'; ?>
 		</td>
- ?>
-
 	<?php
 */
 }
@@ -152,22 +215,16 @@ function ccs_get_all_fields_from_post_type( $post_type ) {
     return $customfields;
 }
 
+add_action( 'admin_init', 'ccs_content_settings_register_settings' );
+function ccs_content_settings_register_settings() {
+	register_setting( 'ccs_content_settings_group', 'ccs_content_settings', 'ccs_content_settings_field_validate' );
+	add_settings_section('ccs-settings-section', '<div class="remove-height"></div>', 'ccs_content_settings_section_page', 'ccs_content_settings_section_page_name');
+	add_settings_field('ccs-settings', '', 'ccs_content_settings_field', 'ccs_content_settings_section_page_name', 'ccs-settings-section');
+}
+
 
 
 function ccs_content_settings_page() {
-
-	/* -- For later, in case an option form is needed
-	?>
-		<div class="wrap">
-		<h2>Form title</h2>
-		<form method="post" action="options.php">
-		    <?php settings_fields( 'ccs_content_settings_field' ); ?>
-		    <?php do_settings_sections( 'ccs_content_settings_section_page' ); ?>
-		    <?php submit_button(); ?>
-		</form>
-		</div>
-	<?php
-	*/
 
 	$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'overview';
 
@@ -177,7 +234,7 @@ function ccs_content_settings_page() {
 						// 'widget',
 						'user', 'load', 'gallery',
 						// 'ACF', 'mobile',
-						'etc' );
+						'etc', 'settings' );
 
 	?>
 		<div class="wrap">
@@ -206,13 +263,33 @@ function ccs_content_settings_page() {
 		</h2>
 		<?php
 
-			/*--- Show the doc file for active tab ---*/
+			if ( $active_tab == 'settings' ) {
 
-			echo wpautop(
-				@file_get_contents(
-						dirname(dirname(__FILE__)) .'/docs/' . strtolower($active_tab) . '.html'
-					)
-			);
+				// Settings Page
+
+				?>
+				<h3>Settings</h3>
+				<form method="post" action="options.php">
+				    <?php settings_fields( 'ccs_content_settings_group' ); ?>
+				    <?php do_settings_sections( 'ccs_content_settings_section_page_name' ); ?>
+				    <?php submit_button(); ?>
+				</form>
+				<?php
+				global $ccs_settings_saved;
+				if ($ccs_settings_saved) {
+					echo '<div class="remove-height"></div><br><br>Settings saved.';
+				}
+
+			} else {
+
+				/*--- Show the doc file for active tab ---*/
+
+				echo wpautop(
+					@file_get_contents(
+							dirname(dirname(__FILE__)) .'/docs/' . strtolower($active_tab) . '.html'
+						)
+				);
+			}
 
 			if ( $active_tab == 'overview' ) {
 
@@ -239,6 +316,7 @@ function ccs_content_settings_page() {
 				<?php
 
 			/*-- End of .doc-style --*/
+
 			}
 	?>
 	</div>
