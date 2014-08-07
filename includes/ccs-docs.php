@@ -106,7 +106,7 @@ function ccs_content_settings_field() {
 			<input type="checkbox" value="on" name="ccs_content_settings[load_mobile_detect]"
 				<?php checked( $load_mobile_detect, 'on' ); ?>
 			/>
-			&nbsp;&nbsp;Load <b>Mobile Detect</b> and shortcodes
+			&nbsp;&nbsp;Load <b>Mobile Detect</b> module
 		</td>
 	</tr>
 	<tr>
