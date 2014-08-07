@@ -92,25 +92,6 @@ class IfShortcode {
 
 				return $out;
 
-			} elseif (!empty($flag)) {
-
-				/*========================================================================
-				 *
-				 * Check field as condition [if flag="field"]
-				 *
-				 *=======================================================================*/
-
-				$current_id = $ccs_global_variable['current_loop_id'];
-				$check = get_post_meta( $current_id, $flag, true );
-
-				if ((!empty($check)) && (!empty($no_flag))) return;
-				if ((empty($check)) && (empty($no_flag))) return;
-				else {
-					$ccs_global_variable['if_flag'] = $check;
-					$out = do_shortcode( $content );
-					$ccs_global_variable['if_flag'] = '';
-					return $out;
-				}
 			}
 
 		} // End [loop] only conditions
@@ -128,6 +109,31 @@ class IfShortcode {
 		$current_post_type = isset($post->post_type) ? $post->post_type : null;
 		$current_post_name = isset($post->post_name) ? $post->post_name : null;
 		$current_post_id = isset($post->ID) ? $post->ID : null;
+
+		if (!empty($flag)) {
+
+			/*========================================================================
+			 *
+			 * Check field as condition [if flag="field"]
+			 *
+			 *=======================================================================*/
+
+			if ($ccs_global_variable['is_loop']=="true") {
+				$current_id = $ccs_global_variable['current_loop_id'];
+			} else {
+				$current_id = $current_post_id;
+			}
+			$check = get_post_meta( $current_id, $flag, true );
+
+			if ((!empty($check)) && (!empty($no_flag))) return;
+			if ((empty($check)) && (empty($no_flag))) return;
+			else {
+				$ccs_global_variable['if_flag'] = $check;
+				$out = do_shortcode( $content );
+				$ccs_global_variable['if_flag'] = '';
+				return $out;
+			}
+		}
 
 
 		/*========================================================================
