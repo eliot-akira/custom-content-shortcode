@@ -3,7 +3,7 @@ Contributors: miyarakira
 Author: Eliot Akira
 Author URI: eliotakira.com
 Plugin URI: wordpress.org/plugins/custom-content-shortcode/
-Tags: custom post type, custom field, shortcode, query, loop
+Tags: loop, query, content, shortcode, post type, field, taxonomy, images, comments, attachments
 Requires at least: 3.6
 Tested up to: 3.9.2
 Stable tag: 1.0.6
@@ -20,7 +20,7 @@ From a single field to entire pages, Custom Content Shortcode is a set of comman
 
 The **[content]** shortcode displays any of the following: *posts, pages, custom post types, custom fields, files, images, attachments, menus,* or *widget areas*.
 
-The **[loop]** shortcode performs query loops. It can display, for example, available products in a category, or excerpts from the 5 most recent posts. You can query by parameters such as: *post type, category, custom taxonomy, date, * and *custom field values*.
+The **[loop]** shortcode performs query loops. It can display, for example, available products in a category, or excerpts from the 5 most recent posts. You can query by parameters such as: *post type, category, custom taxonomy, date,* and *custom field values*.
 
 There is a reference page under *Settings -> Custom Content*.
 

@@ -157,17 +157,13 @@ function ccs_content_settings_field_validate($input) {
 
 
 function ccs_is_current_plugin_screen() {
-
 	global $ccs_settings_page_hook;
-
 	$screen = get_current_screen();
-
 	if (is_object($screen) && $screen->id == $ccs_settings_page_hook) {  
         return true;  
     } else {  
         return false;  
     }  
-
 }
 
 function ccs_docs_admin_css() {
@@ -343,12 +339,9 @@ function ccs_plugin_settings_link( $links, $file ) {
 
 
 function ccs_dashboard_content_overview() {
-
 	?>
 	<div class="wrap">
 	<?php include('ccs-content-overview.php'); ?>
 	</div>
 	<?php
-
-
 }
