@@ -117,13 +117,18 @@ class CommentShortcodes {
 		}
 
 		// Start a comments loop?
-		if ($count=="all") $count = 999;
-		if ( isset($count) && ($count>0) ) {
+		if ( !empty($count) || !empty($id) ||
+			 ( ($tag=="comments") && !empty($content) ) ) {
+
 			$out = "";
 			$ccs_global_variable['comments_loop'] = true;
+			if ((empty($count)) || ($count=="all")) $count = 999;
 			$atts['number'] = $count;
-			if ($id=="this")
+			if ($id=="this") {
 				$atts['post_id'] = get_the_id();
+			} elseif (!empty($id)) {
+				$atts['post_id'] = $id;
+			}
 
 			// Pass arguments
 			$defaults = array(
@@ -168,7 +173,11 @@ class CommentShortcodes {
 
 		// Comments template?
 
-		if( ($tag=='comments') || isset( $atts['template'] ) || (!empty($template))) {
+		if ( ( ($tag=='comments') || isset( $atts['template'] ) || (!empty($template)))
+			&& (empty($id))
+			)
+
+		{
 
 			$dir = "";
 	/*		if (isset($atts['dir'])) {
