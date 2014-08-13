@@ -3,7 +3,7 @@ Contributors: miyarakira
 Author: Eliot Akira
 Author URI: eliotakira.com
 Plugin URI: wordpress.org/plugins/custom-content-shortcode/
-Tags: loop, query, content, shortcode, post type, field, taxonomy, images, comments, attachments
+Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 3.9.2
 Stable tag: 1.0.7
