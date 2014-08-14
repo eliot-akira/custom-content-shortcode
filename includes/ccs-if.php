@@ -123,7 +123,10 @@ class IfShortcode {
 			} else {
 				$current_id = $current_post_id;
 			}
-			$check = get_post_meta( $current_id, $flag, true );
+			if ($flag!="image")
+				$check = get_post_meta( $current_id, $flag, true );
+			else
+				$check = has_post_thumbnail( $current_id );
 
 			if ((!empty($check)) && (!empty($no_flag))) return;
 			if ((empty($check)) && (empty($no_flag))) return;

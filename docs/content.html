@@ -23,15 +23,6 @@ The main parameters of the <strong>[content]</strong> shortcode are:
 	** <b>New</b>: You can use <b>[field <em>field_name</em>]</b> instead of [content field="<em>field_name</em>"]
 
 </ul>
-<h4>Other field types</h4>
-<ul>
-	<li><strong>taxonomy</strong> - display post taxonomy, such as: <em>category</em>, <em>post_tag</em>, or a custom taxonomy; to output the slug, add: <em>out="slug"</em></li>
-
-	** <b>New</b>: You can use <b>[taxonomy <em>tax_name</em>]</b> instead of [content taxonomy="<em>tax_name</em>"]
-
-	<li><strong>meta</strong> - display author meta: <em>field="author" meta="user_email"</em> - see: <a href="http://codex.wordpress.org/Function_Reference/get_the_author_meta" target="_blank">Codex: Author Meta</a></li>
-	<li><strong>out="label"</strong> - when displaying checkboxes or select fields made in ACF, this parameter displays their labels instead of values
-</ul>
 <h4>Formatting</h4>
 <ul>
 	<li><strong>words</strong> or <strong>length</strong> - limit number of words or characters</li>
@@ -53,9 +44,18 @@ The main parameters of the <strong>[content]</strong> shortcode are:
 <em>Image field</em>
 <ul>
 	<li><strong>image</strong> - display an image field
-	<li><strong>size</strong> -  size of image to get: <em>thumbnail</em>, <em>middle</em>, <em>large</em>, <em>full</em> (default) or custom defined size
+	<li><strong>size</strong> -  size of image to get: <em>thumbnail</em>, <em>medium</em>, <em>large</em>, <em>full</em> (default) or custom defined size
 	<li><strong>in</strong> - type of image field: <em>id</em> (default), <em>url</em>, or <em>object</em>
 
+</ul>
+<h4>Other field types</h4>
+<ul>
+	<li><strong>taxonomy</strong> - display post taxonomy, such as: <em>category</em>, <em>post_tag</em>, or a custom taxonomy; to output the slug, add: <em>out="slug"</em></li>
+
+	** <b>New</b>: You can use <b>[taxonomy <em>tax_name</em>]</b> instead of [content taxonomy="<em>tax_name</em>"]
+
+	<li><strong>meta</strong> - display author meta: <em>field="author" meta="user_email"</em> - see: <a href="http://codex.wordpress.org/Function_Reference/get_the_author_meta" target="_blank">Codex: Author Meta</a></li>
+	<li><strong>out="label"</strong> - when displaying checkboxes or select fields made in ACF, this parameter displays their labels instead of values
 </ul>
 <em>Other content types</em>
 <ul>

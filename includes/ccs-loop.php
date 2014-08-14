@@ -294,14 +294,17 @@ class LoopShortcode {
 
 		} elseif ( $parent != '') {
 
-			// Parent post by name
+			// Parent post by name or ID
 
-			$posts = get_posts( array('name' => $parent, 'post_type' => $type) );
-
-			if ( $posts ) $parent_id = $posts[0]->ID;
+			if (is_numeric($parent))
+				$parent_id = intval($parent);
 			else {
-				$ccs_global_variable['is_loop']='false';
-				return;
+				$posts = get_posts( array('name' => $parent, 'post_type' => $type) );
+				if ( $posts ) $parent_id = $posts[0]->ID;
+				else {
+					$ccs_global_variable['is_loop']='false';
+					return;
+				}
 			}
 
 			$query['post_parent'] = $parent_id; $query['post_type'] = $type;

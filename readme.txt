@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 3.9.2
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,9 +81,14 @@ With other libraries:
 
 == Changelog ==
 
+= 1.0.8 =
+
+* **[loop]** - Parent page by ID: *parent="2"*
+* **[if flag]** - Check if featured image exists: *flag="image"*
+
 = 1.0.7 =
 
-* [comments] - Fix loop with *id* parameter
+* **[comments]** - Fix comment loop with *id* parameter
 
 = 1.0.6 =
 

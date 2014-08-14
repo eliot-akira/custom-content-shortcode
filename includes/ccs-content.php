@@ -76,6 +76,7 @@ class CustomContentShortcode {
 		$shortcode_option = $shortcode;
 		$custom_gallery_type = $gallery;
 		$custom_gallery_name = $group;
+		if ($size=="middle") $size = "medium";
 		$custom_area_name = $area;
 		if(!empty($len)) $length=$len;
 		if ( ($taxonomy != '') && ($out != '') ) {
