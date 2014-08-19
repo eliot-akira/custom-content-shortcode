@@ -76,6 +76,7 @@ class UserShortcodes {
 			'format' => 'false',
 			'shortcode' => 'true',
 			'role' => '',
+			'capable' => '',
 			'compare' => 'OR',
 		), $atts));
 
@@ -87,10 +88,12 @@ class UserShortcodes {
 			$user_array = explode(",", $user);
 
 			foreach ($user_array as $this_user) {
+				$this_user = trim($this_user);
+
 				if ( $this_user == ($current_user->user_login) )
 					$condition = true;
 				if ( ( $this_user == ($current_user->ID) ) &&
-					ctype_digit($this_user) ) // $user is a number?
+					is_numeric($this_user) ) // $user is a number?
 						$condition = true;
 			}
 		}
@@ -114,6 +117,24 @@ class UserShortcodes {
 			}
 
 		}
+
+		if (!empty($capable)) {
+
+			$capables = explode(",", $capable);
+
+			foreach ($capables as $capability) {
+
+				$check_capable = trim($capability);
+
+				if (current_user_can( $check_capable )) {
+					$condition = true;
+				}
+				elseif ($compare == "AND") {
+					$condition = false;
+				}
+			}
+		}
+
 
 		if (is_array($atts)) $atts = array_flip( $atts );
 

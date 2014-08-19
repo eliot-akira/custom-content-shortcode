@@ -84,6 +84,7 @@ With other libraries:
 = 1.1.0 =
 
 * **[is role]** - Display something based on user role
+* **[is capable]** - Display something based on user capability
 * **[user role]** - Display user role
 * **[field image]** - *image_class* - add class to the `<img>` tag
 * **[loop]** - Improve query by date field value; *value="future"* or *"past"*

@@ -17,8 +17,7 @@ class CCS_Docs {
 		// Create custom user settings menu
 		add_action('admin_menu', array($this, 'content_settings_create_menu'));
 
-		/* Add settings link on plugin page */
-
+		// Add settings link on plugin page
 		add_filter( "plugin_action_links", array($this, 'plugin_settings_link'), 10, 4 );
 
 		// Remove "Settings saved" message on admin page
@@ -183,7 +182,7 @@ class CCS_Docs {
 
 
 
-	function ccs_content_settings_field_validate($input) {
+	function content_settings_field_validate($input) {
 		// Validate somehow
 		return $input;
 	}
