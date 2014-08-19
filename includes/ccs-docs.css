@@ -7,7 +7,7 @@
 	}
 	h2 .nav-tab {
 		font-size: 12px; line-height: 16px;
-		margin-right: 2px;
+		margin-right: 1px;
     	padding: 4px 6px;
 	}
 	.doc-style {
@@ -65,6 +65,8 @@
 	.doc-style h4 {
 		font-weight:normal;
 		font-style:italic;
+		font-size: 16px;
+		color: #777;
 	}
 	.doc-style ul {
 		list-style:disc; padding-left:40px;

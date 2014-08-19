@@ -235,10 +235,24 @@ class IfShortcode {
 		 *
 		 *=======================================================================*/
 		
-		$condition = isset($atts['home']) ? is_front_page() : $condition;
-		$condition = isset($atts['archive']) ? is_archive() : $condition;
-		$condition = isset($atts['single']) ? is_single() : $condition;
-		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : $condition;
+		$condition = isset($atts['home']) ? is_front_page() : false;
+		$condition = isset($atts['archive']) ? is_archive() : false;
+		$condition = isset($atts['single']) ? is_single() : false;
+		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : false;
+
+		if (isset($atts['attached'])) {
+
+			// Does the current post have any attachments?
+
+			$current_id = get_the_ID();
+			$posts = get_posts( array (
+				'post_parent' => $current_id,
+				'post_type' => 'attachment',
+				'post_status' => 'any'
+				) );
+			if (!empty($posts)) $condition = true;
+			else $condition = false;
+		}
 
 		$condition = isset($atts['not']) ? !$condition : $condition;
 

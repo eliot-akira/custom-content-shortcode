@@ -5,26 +5,34 @@ User ID: [user id]
 User e-mail: [user email]
 User full name: [user fullname]
 User avatar: [user avatar]
+User role(s): [user role]
 Custom user field: [user field="twitter"]</code><br>
 <hr>
 <h3>User status</h3>
 
-The <strong>[is]</strong> shortcode is used to display content if the user is an admin, non-admin, a specific user, or logged in/out.
+The <strong>[is]</strong> shortcode is used to display content based on user status.
+
 <h4>Display user status</h4>
 <code>[is admin]You are an administrator.[/is]
 [is login]You are logged in.[/is]
 [is logout]You are logged out.[/is]
 [is user="john"]You are John.[/is]
+[is role="subscriber"]You are a subscriber.[/is]
 </code>
 
 Available parameters:
 <ul>
-	<li><em>admin</em> - administrator</li>
-	<li><em>login</em> - logged in</li>
-	<li><em>logout</em> - logged out</li>
+	<li><em>admin</em> - user has admin capability (manage options)</li>
+	<li><em>login</em> - user is logged in</li>
+	<li><em>logout</em> - user is logged out</li>
 	<li><em>user</em> - user name or ID - multiple values are possible: "1,3,22"</li>
+	<li><em>role</em> - user role - default roles are <i>administrator</i>, <i>editor</i>, <i>author</i>, <i>contributor</i>, or <i>subscriber</i>. 
+
+	Multiple values are possible: "admin, subscriber" will be true if the user is <i>admin</i> or <i>subscriber</i>.
+	See the list of available user roles under <a href="index.php?page=content_overview#user-roles">Dashboard -> Content -> User Roles</a>.
+	</li>
 </ul>
-You can also use the <strong>[isnt]</strong> shortcode, to see if the user is not admin, etc.
+You can also use <strong>[is not]</strong> to display something when the condition is not true.
 <br>
 <hr>
 <a id="login-out"></a>
@@ -61,9 +69,9 @@ Here is an example using both [is] and [url] to show a login/logout link based o
 To redirect users to a different URL according to user status, device type, etc., use the <b>[redirect]</b> shortcode. As soon as it is executed, the user will be taken to another page.
 
 <h4>Redirect if visitor is not logged in</h4>
-<code>[isnt login]
+<code>[is not login]
 &nbsp;&nbsp;&nbsp;&nbsp;[redirect]http://example.com/guest/[/redirect]
-[/isnt]
+[/is]
 </code>
 
 Please note that the destination URL is not a parameter, it is wrapped inside. This is to allow relative links such as:

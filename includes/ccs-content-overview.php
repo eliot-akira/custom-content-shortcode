@@ -6,31 +6,39 @@
 	<div style="height:10px"></div>
 
 	<hr>
+<?php
 
-	<h3 style="padding-left:10px">Post types and fields</h3>
+/*========================================================================
+ *
+ * Post types and fields
+ *
+ *=======================================================================*/
+
+?>
+	<h3 style="padding-left:10px;font-size:20px;">Post types and fields</h3>
 	<div style="height:10px"></div>
 
 	<table class="wp-list-table widefat fixed posts">
 		<thead>
 			<tr>
-				<th><b>Post type</b></th>
-				<th><b></b></th>
-				<th><b>Taxonomy</b></th>
-				<th><b></b></th>
-				<th><b>Default</b></th>
-				<th><b>Fields</b></th>
-				<th class="column-author"><b>Count</b></th>
+				<th width="12%">Post type</th>
+				<th width="12%"></th>
+				<th width="12%">Taxonomy</th>
+				<th width="12%"></th>
+				<th width="15%">Fields</th>
+				<th>Default</th>
+				<th width="7%">Count</th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
-				<th><b>Post type</b></th>
-				<th><b></b></th>
-				<th><b>Taxonomy</b></th>
-				<th><b></b></th>
-				<th><b>Default</b></th>
-				<th><b>Fields</b></th>
-				<th class="column-author"><b>Count</b></th>
+				<th>Post type</th>
+				<th></th>
+				<th>Taxonomy</th>
+				<th></th>
+				<th>Fields</th>
+				<th>Default</th>
+				<th>Count</th>
 			</tr>
 		</tfoot>
 		<tbody id="the-list">
@@ -241,8 +249,27 @@
 
 
 		<td style="vertical-align:top">
+			<?php
+				if ( empty( $all_fields) ) {
+					echo '<br>'; // Prevent cell from collapsing
+				} else {
 
+					ksort( $all_fields );
+
+					foreach ( $all_fields as $key => $value ) {
+						echo $key . '<br>';
+					}
+				}
+/*
+			echo implode(', ', array_keys($all_fields) );
+*/			?>
+		</td>
+
+		<td style="vertical-align:top">
 		<?php
+
+// Default fields
+
 
 			$default_supports = array('id', 'date', 'url', 'slug', );
 
@@ -276,25 +303,6 @@
 
 
 		</td>
-		<td style="vertical-align:top">
-			<?php
-				if ( empty( $all_fields) ) {
-					echo '<br>'; // Prevent cell from collapsing
-				} else {
-
-					ksort( $all_fields );
-
-					foreach ( $all_fields as $key => $value ) {
-						echo $key . '<br>';
-					}
-				}
-/*
-			echo implode(', ', array_keys($all_fields) );
-*/			?>
-		
-		</td>
-
-
 
 		<td style="vertical-align:top;" class="column-author">
 
@@ -320,25 +328,34 @@
 
 	<div style="height:40px"></div>
 	<hr>
-	<h3 style="padding-left:10px">Taxonomies</h3>
+<?php
+
+/*========================================================================
+ *
+ * Taxonomies
+ *
+ *=======================================================================*/
+
+?>
+	<h3 style="padding-left:10px;font-size:20px;">Taxonomies</h3>
 	<div style="height:10px"></div>
 
 	<div style="max-width:960px;">
 	<table class="wp-list-table widefat fixed posts">
 		<thead>
 			<tr>
-				<th><b>Taxonomy</b></th>
-				<th><b></b></th>
-				<th><b>Terms</b></th>
-				<th><b></b></th>
+				<th width="15%">Taxonomy</th>
+				<th width="35%"></th>
+				<th>Terms</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
-				<th><b>Taxonomy</b></th>
-				<th><b></b></th>
-				<th><b>Terms</b></th>
-				<th><b></b></th>
+				<th>Taxonomy</th>
+				<th></th>
+				<th>Terms</th>
+				<th></th>
 			</tr>
 		</tfoot>
 		<tbody id="the-list">
@@ -354,7 +371,7 @@
 
 			        foreach ($taxonomies as $row => $taxonomy) {
 
-			        	if ( ! in_array($taxonomy, $done) ) {	// Duplicate?
+			        	if (( !in_array($taxonomy, $done) ) && ($taxonomy!="post_format") ) { // Duplicate?
 
 			        	$done[] = $taxonomy;
 						$alternate = ( $alternate == '' ) ? 'class="alternate"' : '';
@@ -362,15 +379,18 @@
 						?>
 						<tr <?php echo $alternate; ?>>
 
-							<td style="vertical-align:top">
+							<td style="vertical-align:top" class="row-title">
 
 								<?php
 
-						        	$the_tax = get_taxonomy( $taxonomy );
+						        	$the_tax = get_taxonomy( $taxonomy, 'hide_empty=0' );
 
-									echo '<a class="row-title" href="' . admin_url( 'edit-tags.php?taxonomy=' . $taxonomy ) . '">';
-									echo $the_tax->labels->name . '</a><br>';
-
+						        	if (($taxonomy=="category")||($taxonomy=="post_tag")) {
+										echo '<a href="' . admin_url( 'edit-tags.php?taxonomy=' . $taxonomy ) . '">';
+										echo $the_tax->labels->name . '</a><br>';
+						        	} else {
+										echo $the_tax->labels->name . '<br>';
+						        	}
 								?>
 
 							</td>
@@ -378,7 +398,7 @@
 
 								<?php
 
-						        	$the_tax = get_taxonomy( $taxonomy, 'hide_empty=0' );
+//						        	$the_tax = get_taxonomy( $taxonomy, 'hide_empty=0' );
 
 									echo $taxonomy . '<br>';
 
@@ -419,9 +439,20 @@
 	</table>
 	</div>
 
+
 	<div style="height:40px"></div>
+	<a href="#" id="user-roles"></a>
 	<hr>
-	<h3 style="padding-left:10px">Registered shortcodes</h3>
+<?php
+
+/*========================================================================
+ *
+ * User roles and capabilities
+ *
+ *=======================================================================*/
+
+?>
+	<h3 style="padding-left:10px;font-size:20px;">User roles</h3>
 	<div style="height:10px"></div>
 
 	<div style="max-width:960px;">
@@ -429,18 +460,119 @@
 	<table class="wp-list-table widefat fixed posts">
 		<thead>
 			<tr>
-				<th><b>Shortcode</b></th>
-				<th><b>Function</b></th>
-				<th><b>Shortcode</b></th>
-				<th><b>Function</b></th>
+				<th width="15%">Role</th>
+				<th width="15%"></th>
+				<th>Capabilities</th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
-				<th><b>Shortcode</b></th>
-				<th><b>Function</b></th>
-				<th><b>Shortcode</b></th>
-				<th><b>Function</b></th>
+				<th>Role</th>
+				<th></th>
+				<th>Capabilities</th>
+			</tr>
+		</tfoot>
+		<tbody id="the-list">
+
+				<?php
+
+				// Show all roles
+
+				global $wp_roles;
+				 
+				// get a role based on role name, does the same thing as get_role()
+
+				$roles = $wp_roles->roles;
+/*
+				echo '<pre>';
+				print_r($wp_roles);
+				echo '</pre>';
+*/
+//				ksort($roles); // Alphabetical sort
+
+
+				$row_num = 0;
+				$alternate = '';
+
+				foreach ( $roles as $role_slug => $role ) {
+
+					if ($row_num % 2 == 0) {
+						$alternate = ( $alternate == '' ) ? 'class="alternate"' : '';
+					}
+					echo '<tr ' . $alternate . '>';
+
+					?>
+						<td style="vertical-align:top" class="row-title">
+								<?php
+									echo $role['name'] . '<br>';
+								?>
+						</td>
+						<td style="vertical-align:top;text-align:left;">
+								<?php
+									echo $role_slug . '<br>';
+								?>
+						</td>
+
+						<td style="vertical-align:top">
+							<?php
+
+							$capabilities = array();
+							$capabilities_list = $role['capabilities'];
+							ksort($capabilities_list);
+
+							foreach ($capabilities_list as $capability => $value) {
+								$capabilities[] = $capability;
+							}
+
+							echo implode(", ", $capabilities) . '<br>';
+
+							?>
+						</td>
+
+					<?php
+
+					echo '</tr>';
+
+					$row_num++;
+				}	// Each shortcode
+
+				?>
+
+		</tbody>
+	</table>
+	</div>
+
+	<div style="height:40px"></div>
+	<hr>
+<?php
+
+/*========================================================================
+ *
+ * Registered shortcodes
+ *
+ *=======================================================================*/
+
+?>
+	<h3 style="padding-left:10px;font-size:20px;">Registered shortcodes</h3>
+	<div style="height:10px"></div>
+
+	<div style="max-width:960px;">
+
+	<table class="wp-list-table widefat fixed posts">
+		<thead>
+			<tr>
+				<th>Shortcode</th>
+				<th>Function</th>
+				<th>Shortcode</th>
+				<th>Function</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th>Shortcode</th>
+				<th>Function</th>
+				<th>Shortcode</th>
+				<th>Function</th>
 			</tr>
 		</tfoot>
 		<tbody id="the-list">
@@ -463,9 +595,9 @@
 					}
 
 					?>
-						<td style="vertical-align:top">
+						<td style="vertical-align:top" class="row-title">
 								<?php
-									echo '<a class="row-title">[' . $key . ']</a><br>';
+									echo '[' . $key . ']<br>';
 								?>
 						</td>
 
@@ -519,6 +651,7 @@
 		</tbody>
 	</table>
 	</div>
+
 	<div style="height:40px"></div>
 
 	<div style="padding-left:5px;">

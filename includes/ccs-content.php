@@ -4,11 +4,10 @@
  *
  * Content shortcode
  *
+ * Get a field or content
+ *
  *====================================================================================================*/
 
-/*
- * Get a field or content from a post type
- */
 
 class CustomContentShortcode {
 
@@ -38,6 +37,7 @@ class CustomContentShortcode {
 			'area' => null, 'sidebar' => null, 
 			'align' => null, 'class' => null, 'height' => null,
 			'num' => null, 'image' => null, 'in' => null, 'return' => null,
+			'image_class' => null, 
 			'row' => null, 'sub' => null,
 			'acf_gallery' => null,
 			'words' => null, 'len' => null, 'length' => null,
@@ -77,6 +77,7 @@ class CustomContentShortcode {
 		$custom_gallery_type = $gallery;
 		$custom_gallery_name = $group;
 		if ($size=="middle") $size = "medium";
+		if (!isset($image_class)) $image_class = "";
 		$custom_area_name = $area;
 		if(!empty($len)) $length=$len;
 		if ( ($taxonomy != '') && ($out != '') ) {
@@ -126,12 +127,23 @@ class CustomContentShortcode {
 			$custom_post_type = 'any';
 		}
 
-		// If we're in a gallery field or attachments loop, return requested field
+
+
+
+/*========================================================================
+ *
+ * In an attachment or gallery loop
+ *
+ *=======================================================================*/
 
 		if( ( $ccs_global_variable['is_gallery_loop'] == "true") || 
 			( $ccs_global_variable['is_attachment_loop'] == "true" ) || 
 			 ( $ccs_global_variable['is_acf_gallery_loop'] == "true" ) ) {
+
+			if (empty($custom_field)) $custom_field = "image"; // show attachment image by default
+
 			switch($custom_field) {
+
 				case "image":
 					if (empty($size)) {
 						$out = $ccs_global_variable['current_image']['full'];
@@ -151,7 +163,12 @@ class CustomContentShortcode {
 				case "alt": $out = $ccs_global_variable['current_image_alt']; break;
 				case "count": $out = $ccs_global_variable['current_row']; break;
 			}
-			if($class!='')
+
+			if (!empty($image_class)) {
+				$out = str_replace('class="', 'class="'.$image_class.' ', $out);
+			}
+
+			if (!empty($class))
 				return '<div class="' . $class . '">' . $out . '</div>';
 			else return $out;
 		}
@@ -164,7 +181,7 @@ class CustomContentShortcode {
 		}
 		if( $custom_area_name != '') {
 			$back =  '<div id="' . str_replace( " ", "_", $custom_area_name ) . '" class="sidebar';
-			if($class!='')
+			if(!empty($class))
 				$back .=  ' ' . $class;
 
 			$back .= '">';
@@ -192,7 +209,7 @@ class CustomContentShortcode {
 
 			$output = wp_nav_menu( $menu_args );
 
-			if( $class == '') {
+			if(empty($class)) {
 				return $output;
 			} else {
 				return '<div class="' . $class . '">' . $output . '</div>';
@@ -255,9 +272,9 @@ class CustomContentShortcode {
 			}
 			if(($class!='') || ($align!='')) {
 				$pre = '<div';
-				if($class!='')
+				if(!empty($class))
 					$pre .= ' class="' . $class . '"';
-				if($align!='')
+				if(!empty($align))
 					$pre .= ' align="' . $align . '"';
 				$pre .= '>' . $out . '</div>';
 				return $pre;
@@ -281,7 +298,7 @@ class CustomContentShortcode {
 					}
 				}
 			}
-			if(($class!='') || ($align!='')) {
+			if ( (!empty($class)) || (!empty($align)) ) {
 				$pre = '<div';
 				if($class!='')
 					$pre .= ' class="' . $class . '"';
@@ -294,7 +311,12 @@ class CustomContentShortcode {
 		}
 
 
-		// Gallery types - native or carousel
+
+		/*========================================================================
+		 *
+		 * Gallery types - native or carousel
+		 *
+		 *=======================================================================*/
 
 		if( $custom_gallery_type == "carousel") {
 			$out = '[gallery type="carousel" ';
@@ -315,7 +337,7 @@ class CustomContentShortcode {
 			}
 			$out .= '" ]';
 
-			if($class!='')
+			if(!empty($class))
 				$out = '<div class="' . $class . '">' . $out . '</div>';
 			
 			return do_shortcode( $out );
@@ -354,15 +376,20 @@ class CustomContentShortcode {
 				}
 
 				$out .= ']';
-				if($class!='')
+				if(!empty($class))
 					$out = '<div class="' . $class . '">' . $out . '</div>';
 				return do_shortcode( $out );
 			}	
 		}
 
-		// Image field
 
-		if($image != null) {
+		/*========================================================================
+		 *
+		 * Image field
+		 *
+		 *=======================================================================*/
+
+		if (!empty($image)) {
 
 			$image_field = get_post_meta( $custom_id, $image, true );
 
@@ -391,14 +418,19 @@ class CustomContentShortcode {
 				$image_return = $out;
 	/*
 				$image_return = wp_get_attachment_image( $image_id, 'full' );
-	*/			if($class!='')
+	*/			if(!empty($class))
 					$image_return = '<div class="' . $class . '">' . $image_return . '</div>';
 
 				return $image_return;
 			}
 		}
 
-		// If no field is specified..
+
+		/*========================================================================
+		 *
+		 * If no field is specified..
+		 *
+		 *=======================================================================*/
 
 		if($custom_field == '') { 
 
@@ -439,7 +471,11 @@ class CustomContentShortcode {
 
 		} else { // else return specified field
 
-			// Predefined fields
+			/*========================================================================
+			 *
+			 * Predefined fields
+			 *
+			 *=======================================================================*/
 
 			switch($custom_field) {
 				case "id": $out = $custom_id; break;
@@ -501,7 +537,7 @@ class CustomContentShortcode {
 						$out = get_post_modified_time( get_option('date_format'), $gmt=false, $custom_id, $translate=true ); break;
 					}
 
-				case "image": $out = get_the_post_thumbnail($custom_id, $size); break;
+				case "image": $out = get_the_post_thumbnail($custom_id, $size ); break;
 				case "image-full": $out = get_the_post_thumbnail( $custom_id, 'full' ); break;
 				case "image-url": $out = wp_get_attachment_url(get_post_thumbnail_id($custom_id)); break;
 				case "thumbnail": $out = get_the_post_thumbnail( $custom_id, 'thumbnail' ); break;
@@ -540,6 +576,10 @@ class CustomContentShortcode {
 					$out = get_post_meta($custom_id, $custom_field, $single=true);
 					break;
 
+			}
+
+			if (!empty($image_class)) {
+				$out = str_replace('class="', 'class="'.$image_class.' ', $out);
 			}
 
 		}
@@ -637,7 +677,7 @@ class CustomContentShortcode {
 				$out = '<a target="_blank" href="' . post_permalink( $custom_id ) . '">' . $out . '</a>'; break;
 		}		
 		
-		if ($class!='')
+		if (!empty($class))
 			$out = '<div class="' . $class . '">' . $out . '</div>';
 
 		if ($shortcode_option != 'false') {		// Shortcode

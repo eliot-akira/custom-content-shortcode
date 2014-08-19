@@ -19,7 +19,7 @@ Available parameters for the <strong>[loop]</strong> shortcode are:
 
 <h4>Post Type</h4>
 <ul>
-	<li><strong>type</strong> - which post type to query: <em>post</em>, <em>page</em>, <em>custom post type</em>, or <em>attachment</em> - if empty, the default is <em>any post type</em></li>
+	<li><strong>type</strong> - which post type to query: <em>post</em>, <em>page</em>, or <em>custom post type</em>; if empty, the default is <em>any</em></li>
 </ul>
 
 <h4>Post ID</h4>
@@ -57,22 +57,28 @@ Available parameters for the <strong>[loop]</strong> shortcode are:
 
 <h4>Custom date field</h4>
 
+<ul>
+
 By default, it's assumed that the field is stored as a UNIX timestamp.
 
-<ul>
-	<li><strong>field, compare, value</strong> - query by custom field value (see above)</li>
+	<li><strong>field</strong> - field slug</li>
+	<li><strong>compare</strong> - <i>compare="&gt;"</i> (greater than), <i>"&lt;"</i> (less than), <i>"="</i> (equal)</li>
+	<li><strong>value</strong> - field value</li>
 	<li><strong>value="now"</strong> - compare to now</li>
+	<li><strong>value="future"</strong> or <strong>"past"</strong> - query future or past values; no need to set <i>compare</i> parameter</li>
+</ul><ul>
 	<li><strong>in="string"</strong> - if the date field is stored as string, for example: 2014-08-15</li>
 <!--	<li><strong>date_format</strong> - instead of using <em>in="string"</em>, you can set a date format, for example: "Y-m-d h:i A"</li>
 -->
-</ul>
 
 Please refer to the example section below.
+
+</ul>
 
 <h4>Sorting and series</h4>
 <ul>
 	<li><strong>parent</strong> - display all children of a parent, specified by ID or slug</li>
-	<li><strong>orderby</strong> - order by<em> ID</em>,<em> author</em>,<em> title</em>,<em> name</em>,<em> date</em>,<em> rand</em> (randomized),<em> modified</em>,<em> menu_order</em>,<em> parent</em>,<em> meta_value</em> (custom field value: string), or<em> meta_value_num</em> (custom field value: number)</li>
+	<li><strong>orderby</strong> - order by<em> ID</em>,<em> author</em>,<em> title</em>,<em> name</em>,<em> date</em>,<em> rand</em> (randomized),<em> modified</em>,<em> menu_order</em>,<em> parent</em>,<em> field</em> (field value: string), or<em> field_num</em> (field value: number)</li>
 	<li><strong>key</strong> - when ordering by<em> meta_value</em> or<em> meta_value_num</em>, you need to specify<strong> key</strong> as the name of the custom field to order by</li>
 	<li><strong>order</strong> - ASC (ascending/alphabetical) or DESC (descending/from most recent date) when using the <em>orderby</em> parameter</li>
 	<li><strong>series</strong>, <strong>key</strong> - order posts by a series of custom field values, where <em>key</em> is the name of the field - the series can include ranges, for example: <em>1-15,30-40,42,44</em>.</li>

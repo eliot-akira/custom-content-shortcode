@@ -1,6 +1,6 @@
 <h3>Gallery field</h3>
 
-In the admin menu, under <a href="options-general.php?page=custom-gallery"><em>Settings -&gt; Gallery Fields</em></a>, there is an option to enable a simple gallery field for any post type. Images can be added, removed, and ordered.
+You can enable a simple gallery field for any post type, under <a href="options-general.php?page=custom-gallery"><em>Settings -&gt; Gallery Fields</em></a>. Images can be added, ordered, and removed.
 
 <h4>Display image details from the gallery field of a specific post</h4>
 <code>[loop field="gallery" name="hello-world"]
@@ -8,7 +8,9 @@ In the admin menu, under <a href="options-general.php?page=custom-gallery"><em>
 &nbsp;&nbsp;&nbsp;&nbsp;Full-size image: [field image]
 &nbsp;&nbsp;&nbsp;&nbsp;Caption: [field caption]
 [/loop]</code>
-The <strong>[loop]</strong> shortcode handles the gallery field just like attachments. For each image, the<b> [content] </b>or <b>[field]</b> shortcode can display these fields: <em>id</em>, <em>title</em>, <em>image</em>, <em>image-url</em>, <em>caption</em>, <em>description</em>,<em> thumbnail</em>, and<em> thumbnail-url</em>.
+For each image, these fields can be displayed: <em>id</em>, <em>title</em>, <em>image</em>, <em>image-url</em>, <em>caption</em>, <em>description</em>,<em> thumbnail</em>, and<em> thumbnail-url</em>.
+
+<hr>
 
 The <b>[content]</b> shortcode can display individual images of the gallery field.
 <h4>Display the 3rd image in the gallery field</h4>
@@ -24,32 +26,9 @@ It can also display all images in the field using a native or Bootstrap gallery.
 
 You can pass the following parameters to the native gallery: <em>orderby</em>, <em>order</em>, <em>columns</em>, <em>size</em>, <em>link</em>, <em>include</em>, <em>exclude</em>. For details, please refer to <a href="http://codex.wordpress.org/Gallery_Shortcode" target="_blank">the Codex: Gallery Shortcode</a>.
 
+<hr>
+
 When using the <b>[loop]</b> to generate multiple Bootstrap carousels, the following will put images from each post in its own carousel.
 
 <code>[content gallery="carousel" group="gallery-{ID}"]</code>
-
-<hr>
-<h3>Attachments</h3>
-
-For post attachments such as images, you can query the post type <em>attachment</em> and display the necessary fields.
-
-<h4>Display details on all the attachments of the current post</h4>
-
-<code>[loop type="attachment"]
-&nbsp;&nbsp;&nbsp;&nbsp;Attachment ID: [field id]
-&nbsp;&nbsp;&nbsp;&nbsp;Title: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;Full-size image: [field image]
-&nbsp;&nbsp;&nbsp;&nbsp;Full-size image URL: [field image-url]
-&nbsp;&nbsp;&nbsp;&nbsp;Caption: [field caption]
-&nbsp;&nbsp;&nbsp;&nbsp;Description: [field description]
-&nbsp;&nbsp;&nbsp;&nbsp;Thumbnail: [field thumbnail]
-&nbsp;&nbsp;&nbsp;&nbsp;Thumbnail URL: [field thumbnail-url]
-[/loop]</code>
-
-<h4>Display attachment thumbnails of all posts in the category <b>tree</b>, linked to full-sized images in a lightbox</h4>
-
-<code>[loop type="attachment" category="tree"]
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href='[field image-url]' rel="lightbox"&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;img src='[field thumbnail-url]'&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;
-[/loop]</code>
+<br>

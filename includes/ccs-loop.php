@@ -2,7 +2,9 @@
 
 /*====================================================================================================
  *
- * Query loop shortcode
+ * Loop shortcode
+ *
+ * Set up a query loop
  *
  *====================================================================================================*/
 
@@ -21,9 +23,10 @@ class LoopShortcode {
 
 		add_shortcode( 'loop-count', array( $this, 'loop_count_shortcode' ) );
 
+		// To do: confirm that this filter is working
 		add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize') );
 
-		// Get setting
+		// Get settings
 
 		$settings = get_option( 'ccs_content_settings' );
 		$move_wpautop = isset( $settings['move_wpautop'] ) ?
@@ -120,8 +123,12 @@ class LoopShortcode {
 		if(!empty($allow)) $strip_tags=$allow;
 		if(!empty($status))
 			$status = explode(",", $status);
-		else
-			$status = array("publish");
+		else {
+			if ($type=="attachment")
+				$status = array("any");
+			else
+				$status = array("publish");
+		}
 
 		if(!isset($query_field)) $query_field='';
 
@@ -384,10 +391,18 @@ class LoopShortcode {
 		if($order!='')
 			$query['order'] = $order;
 
-// Orderby
+		/*========================================================================
+		 *
+		 * Order by field value
+		 *
+		 *=======================================================================*/
 
 		if( !empty($orderby)) {
+				if ($orderby=="field") $orderby = 'meta_value';
+				if ($orderby=="field_num") $orderby = 'meta_value_num';
+
 				$query['orderby'] = $orderby;
+
 				if(in_array($orderby, array('meta_value', 'meta_value_num') )) {
 					$query['meta_key'] = $keyname;
 				}
@@ -445,6 +460,14 @@ class LoopShortcode {
 				$query_value = html_entity_decode($query_value);
 				$value_2 = html_entity_decode($value_2);
 */
+
+				if ($query_value=="future") {
+					$query_value = "now";
+					$compare = ">";
+				} elseif ($query_value=="past") {
+					$query_value = "now";
+					$compare = "<";
+				}
 
 				if (( isset($in) && ($in == "string") ) || (!empty($date_format)) ){
 					if (empty($date_format)) {
@@ -927,7 +950,7 @@ class LoopShortcode {
 
 			$ccs_global_variable['is_loop'] = "false";
 			if (!empty($blog)) {
-				restore_current_blog();;
+				restore_current_blog();
 			}
 
 			return ob_get_clean();
@@ -937,40 +960,76 @@ class LoopShortcode {
 
 /*========================================================================
  *
- * Attachment Loop
+ * Attachment loop: for backwards compatibility
+ *
+ * Replaced by [attached] shortcode
  *
  *=======================================================================*/
 
-			if( $type == 'attachment' ) {
+			if ( $type == 'attachment' ) {
 
 				$output = array();
+				$attachment_ids = "";
 				ob_start();
 
 				$current_id = get_the_ID();
 
 				if($category == '') {
-					$posts =& get_children( array (
-					'post_parent' => $current_id,
-					'post_type' => 'attachment',
-					'post_status' => $status
-					) );
+
+					$posts = get_posts( array (
+						'post_parent' => $current_id,
+						'post_type' => 'attachment',
+						'post_status' => $status
+						) );
+
+					foreach( $posts as $post ) {
+						$attachment_id = $post->ID;
+						$attachment_ids .= $attachment_id . " ";
+					}
+
+/*					$posts =& get_children( array (
+						'post_parent' => $current_id,
+						'post_type' => 'attachment',
+						'post_status' => $status
+						) );
 
 					foreach( $posts as $attachment_id => $attachment ) {
 						$attachment_ids .= $attachment_id . " ";
 					}
+*/
 
 				} else { // Fetch posts by category, then attachments
 
-					$my_query = new WP_Query( array(
-				    	'cat' => get_category_by_slug($category)->term_id, 
-						'post_type' => $status,
-					));
-					if( $my_query->have_posts() ) {
+// To do: allow other queries for attachments
+
+					$cat = get_category_by_slug($category);
+
+					if (isset($cat->term_id)) {
+						$my_query = new WP_Query( array(
+							'cat' => $cat->term_id, 
+							'post_type' => $status,
+						));
+
 						$posts = array('');
+
 						while ( $my_query->have_posts() ) {
+
 							$my_query->the_post();
 
-							$new_children =& get_children( array (
+							$current_id = get_the_ID();
+
+							$posts = get_posts( array (
+								'post_parent' => $current_id,
+								'post_type' => 'attachment',
+								'post_status' => $status
+								) );
+
+							foreach( $posts as $post ) {
+								$attachment_id = $post->ID;
+								$attachment_ids .= $attachment_id . " ";
+							}
+
+/*							$new_children = get_children( array (
 								'post_parent' => get_the_ID(),
 								'post_type' => 'attachment',
 								'post_status' => $status
@@ -979,80 +1038,84 @@ class LoopShortcode {
 							foreach( $new_children as $attachment_id => $attachment ) {
 								$attachment_ids .= $attachment_id . " ";
 							}
+*/
 						}
 					}
+
 				} // End fetch attachments by category
 
-				if( empty($posts) ) {
-					$output = null;
-				} else {
+
+				if ((!empty($posts)) && ($attachment_ids)) { 
 
 					$attachment_ids = explode(" ", trim( $attachment_ids ) );
+					$ccs_global_variable['is_attachment_loop'] = "true";
 
-					if ( $attachment_ids ) { 
+					foreach ( $attachment_ids as $attachment_id ) {
+					// get original image
 
-						$ccs_global_variable['is_attachment_loop'] = "true";
+						$ccs_global_variable['current_attachment_id'] = $attachment_id;
 
-						foreach ( $attachment_ids as $attachment_id ) {
-						// get original image
+						$image_link	= wp_get_attachment_image_src( $attachment_id, "full" );
+						$image_link	= $image_link[0];	
+										
+						$ccs_global_variable['current_image']['full'] = wp_get_attachment_image( $attachment_id, "full" );
 
-							$ccs_global_variable['current_attachment_id'] = $attachment_id;
+						$image_sizes = get_intermediate_image_sizes();
 
-							$image_link	= wp_get_attachment_image_src( $attachment_id, "full" );
-							$image_link	= $image_link[0];	
-											
-							$ccs_global_variable['current_image']['full'] = wp_get_attachment_image( $attachment_id, "full" );
+						foreach ($image_sizes as $image_size) {
+							$ccs_global_variable['current_image'][$image_size] = wp_get_attachment_image( $attachment_id, $image_size );
+						}
 
-							$image_sizes = get_intermediate_image_sizes();
+						$ccs_global_variable['current_image_url'] = $image_link;
+						$ccs_global_variable['current_attachment_link'] = get_attachment_link($attachment_id);
+						$ccs_global_variable['current_image_thumb'] = wp_get_attachment_image( $attachment_id, 'thumbnail', '', array( 'alt' => trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) ) ) );
+						$ccs_global_variable['current_image_thumb_url'] = wp_get_attachment_thumb_url( $attachment_id, 'thumbnail' ) ;
+						$ccs_global_variable['current_image_caption'] = get_post( $attachment_id )->post_excerpt ? get_post( $attachment_id )->post_excerpt : '';
+						$ccs_global_variable['current_image_title'] = get_post( $attachment_id )->post_title;
+						$ccs_global_variable['current_image_description'] = get_post( $attachment_id )->post_content;
+						$ccs_global_variable['current_image_alt'] = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
 
-							foreach ($image_sizes as $image_size) {
-								$ccs_global_variable['current_image'][$image_size] = wp_get_attachment_image( $attachment_id, $image_size );
-							}
+						$ccs_global_variable['current_image_ids'] = implode(" ", $attachment_ids);
+						$ccs_global_variable['current_attachment_ids'] = $ccs_global_variable['current_image_ids'];
+/*
+			$keywords = apply_filters( 'query_shortcode_keywords', array(
+				'URL' => get_permalink( $attachment_id ),
+				'ID' => $attachment_id,
+				'TITLE' => get_post( $attachment_id )->post_title,
+				'CONTENT' => get_post( $attachment_id )->post_content,
+				'CAPTION' => get_post( $attachment_id )->post_excerpt,
+				'DESCRIPTION' => get_post( $attachment_id )->post_content,
+				'IMAGE' => $ccs_global_variable['current_image'],
+				'IMAGE_URL' => $ccs_global_variable['current_image_url'],
+				'ALT' => $ccs_global_variable['current_image_alt'],
+				'THUMBNAIL' => $ccs_global_variable['current_image_thumb'],
+				'THUMBNAIL_URL' => $ccs_global_variable['current_image_thumb_url'],
+				'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
+				'FIELD' => get_post_meta( $current_id, $custom_field, $single=true ),
+				'IDS' => get_post_meta( $current_id, '_custom_gallery', true ),
+			) );
 
-							$ccs_global_variable['current_image_url'] = $image_link;
-							$ccs_global_variable['current_attachment_link'] = get_attachment_link($attachment_id);
-							$ccs_global_variable['current_image_thumb'] = wp_get_attachment_image( $attachment_id, 'thumbnail', '', array( 'alt' => trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) ) ) );
-							$ccs_global_variable['current_image_thumb_url'] = wp_get_attachment_thumb_url( $attachment_id, 'thumbnail' ) ;
-							$ccs_global_variable['current_image_caption'] = get_post( $attachment_id )->post_excerpt ? get_post( $attachment_id )->post_excerpt : '';
-							$ccs_global_variable['current_image_title'] = get_post( $attachment_id )->post_title;
-							$ccs_global_variable['current_image_description'] = get_post( $attachment_id )->post_content;
-							$ccs_global_variable['current_image_alt'] = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+						$output[] = do_shortcode( $this->get_block_template( $template, $keywords ) );
+*/
+						$output[] = do_shortcode( $template );
 
-							$ccs_global_variable['current_image_ids'] = implode(" ", $attachment_ids);
-							$ccs_global_variable['current_attachment_ids'] = $ccs_global_variable['current_image_ids'];
+					} /** End for each attachment **/
 
-				$keywords = apply_filters( 'query_shortcode_keywords', array(
-					'URL' => get_permalink( $attachment_id ),
-					'ID' => $attachment_id,
-					'TITLE' => get_post( $attachment_id )->post_title,
-					'CONTENT' => get_post( $attachment_id )->post_content,
-					'CAPTION' => get_post( $attachment_id )->post_excerpt,
-					'DESCRIPTION' => get_post( $attachment_id )->post_content,
-					'IMAGE' => $ccs_global_variable['current_image'],
-					'IMAGE_URL' => $ccs_global_variable['current_image_url'],
-					'ALT' => $ccs_global_variable['current_image_alt'],
-					'THUMBNAIL' => $ccs_global_variable['current_image_thumb'],
-					'THUMBNAIL_URL' => $ccs_global_variable['current_image_thumb_url'],
-					'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
-					'FIELD' => get_post_meta( $current_id, $custom_field, $single=true ),
-					'IDS' => get_post_meta( $current_id, '_custom_gallery', true ),
-				) );
+				} // End: not empty post and attachments exist
+				else $output = null;
 
-							$output[] = do_shortcode( $this->get_block_template( $template, $keywords ) );
-						} /** End for each attachment **/
-					}
-					$ccs_global_variable['is_attachment_loop'] = "false";
-					// wp_reset_query(); not necessary
-					wp_reset_postdata();
+				$ccs_global_variable['is_attachment_loop'] = "false";
+				// wp_reset_query(); not necessary
+				wp_reset_postdata();
 
-					echo implode( "", $output );
-					$ccs_global_variable['is_loop'] = "false";
-					if (!empty($blog)) {
-						restore_current_blog();;
-					}
-
-					return ob_get_clean();
+				echo implode("", $output );
+				$ccs_global_variable['is_loop'] = "false";
+				if (!empty($blog)) {
+					restore_current_blog();;
 				}
+
+				return ob_get_clean();
+
 			} // End type="attachment"
 
 			else {
@@ -1279,8 +1342,6 @@ class LoopShortcode {
 		}
 
 	}
-
-
 
 }
 

@@ -12,6 +12,7 @@ With the <strong>[if]</strong> shortcode, you can display content based on cert
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
 <hr>
+
 <h3>Parameters</h3>
 
 The available parameters are:
@@ -40,10 +41,13 @@ You can pass multiple values, for example: <i>category="sci-fi,comedy"</i>. This
 </ul>
 <h4>Other conditions</h4>
 <ul>
+	<li><strong>flag</strong> - if custom field value exists; for example: <em>flag="field_name"</em></li>
+	<li><strong>attached</strong> - if the post has any attachments</li>
+</ul><ul>
 	<li><strong>empty</strong> - if the loop is empty (no post found)</li>
 	<li><strong>first, last</strong> - if it's the first or last post found</li>
 	<li><strong>every</strong> - for every X post in the loop</li>
-	<li><strong>flag</strong> - if custom field value exists; for example: <em>flag="field_name"</em></li>
+</ul><ul>
 	<li><strong>not</strong> - when the condition is not met</li>
 </ul>
 <br>
