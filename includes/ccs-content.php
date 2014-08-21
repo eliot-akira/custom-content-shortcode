@@ -150,10 +150,14 @@ class CustomContentShortcode {
 					} else {
 						$out = $ccs_global_variable['current_image'][$size];
 					}
-
 					break;
 				case "image-url": $out = $ccs_global_variable['current_image_url']; break;
-				case "attach-link": $out = $ccs_global_variable['current_attachment_link']; break;
+				case "url":
+					$out = $ccs_global_variable['current_attachment_file_url']; break;
+				case "page-url":
+					$out = $ccs_global_variable['current_attachment_page_url']; break;
+				case "attach-link":
+					$out = $ccs_global_variable['current_attachment_link']; break;
 				case "thumbnail": $out = $ccs_global_variable['current_image_thumb']; break;
 				case "thumbnail-url": $out = $ccs_global_variable['current_image_thumb_url']; break;
 				case "caption": $out = $ccs_global_variable['current_image_caption']; break;

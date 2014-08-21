@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 3.9.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,11 @@ With other libraries:
 
 
 == Changelog ==
+
+= 1.1.1 =
+
+* **[attached]** - Display URL to attachment file: [field url]
+* **[attached]** - Display link to attachment page: [field page-url]
 
 = 1.1.0 =
 

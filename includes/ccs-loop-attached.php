@@ -55,7 +55,8 @@ class AttachedShortcode {
 				}
 
 				$ccs_global_variable['current_image_url'] = $image_link;
-				$ccs_global_variable['current_attachment_link'] = get_attachment_link($attachment_id);
+				$ccs_global_variable['current_attachment_file_url'] = wp_get_attachment_url($attachment_id);
+				$ccs_global_variable['current_attachment_page_url'] = get_attachment_link($attachment_id);
 				$ccs_global_variable['current_image_thumb'] = wp_get_attachment_image( $attachment_id, 'thumbnail', '', array( 'alt' => trim( strip_tags( get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ) ) ) );
 				$ccs_global_variable['current_image_thumb_url'] = wp_get_attachment_thumb_url( $attachment_id, 'thumbnail' ) ;
 				$ccs_global_variable['current_image_caption'] = get_post( $attachment_id )->post_excerpt ? get_post( $attachment_id )->post_excerpt : '';
