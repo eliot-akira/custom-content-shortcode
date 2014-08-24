@@ -34,6 +34,8 @@ class IfShortcode {
 			'term' => '',
 			'compare' => 'OR',
 
+			'parent' => '',
+
 			'field' => '',
 			'value' => '',
 
@@ -209,7 +211,7 @@ class IfShortcode {
 					if (!$condition) break; // Every term must be found
 				}
 			}
-		}		
+		}
 
 
 		/*========================================================================
@@ -228,6 +230,50 @@ class IfShortcode {
 			$condition = in_array($current_post_name, $names) ? true : false;
 		}
 
+
+		/*========================================================================
+		 *
+		 * Post parent
+		 *
+		 *=======================================================================*/
+		
+		if (!empty($parent)) {
+
+			$current_post_parent = isset($post->post_parent) ? $post->post_parent : 0;
+
+			if ($current_post_parent == 0) {
+				// Current post has no parent
+				$condition = false;
+			} else {
+
+				$current_post_parent_slug = self::slug_from_id($current_post_parent);
+				$parents = self::comma_list_to_array($parent);
+
+				foreach ($parents as $check_parent) {
+
+					if (is_numeric($check_parent)) {
+						// compare to parent id
+
+						if ($compare == "OR") {
+							$condition = ($check_parent==$current_post_parent) ? true : $condition;
+						} else { // AND
+							$condition = ($check_parent==$current_post_parent) ? true : false;
+							if (!$condition) break; // Every term must be found
+						}
+					} else {
+						// compare to parent slug
+
+						if ($compare == "OR") {
+							$condition = ($check_parent==$current_post_parent_slug) ? true : $condition;
+						} else { // AND
+							$condition = ($check_parent==$current_post_parent_slug) ? true : false;
+							if (!$condition) break; // Every term must be found
+						}
+					}
+				}
+			}
+		}
+		
 		/*========================================================================
 		 *
 		 * Template: home, archive, single..
@@ -235,10 +281,10 @@ class IfShortcode {
 		 *
 		 *=======================================================================*/
 		
-		$condition = isset($atts['home']) ? is_front_page() : false;
-		$condition = isset($atts['archive']) ? is_archive() : false;
-		$condition = isset($atts['single']) ? is_single() : false;
-		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : false;
+		$condition = isset($atts['home']) ? is_front_page() : $condition;
+		$condition = isset($atts['archive']) ? is_archive() : $condition;
+		$condition = isset($atts['single']) ? is_single() : $condition;
+		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : $condition;
 
 		if (isset($atts['attached'])) {
 
@@ -272,6 +318,12 @@ class IfShortcode {
 		return array_map("trim", explode(",", $string));
 	}
 
+	function slug_from_id( $id ) {
+		$post_data = get_post($id);
+		if (!empty($post_data)) {
+			return isset($post_data->post_name) ? $post_data->post_name : null;
+		} else return null;
+	}
 
 }
 new IfShortcode;
