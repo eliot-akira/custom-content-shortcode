@@ -3,28 +3,38 @@
 Use the <b>[attached]</b> shortcode to loop through attachments.
 
 <h4>Display all attachments of the current post</h4>
-<code>[attached]
+<code>[attached orderby="title"]
 &nbsp;&nbsp;&nbsp;&nbsp;[field title]
 &nbsp;&nbsp;&nbsp;&nbsp;[field image] or [content]
 &nbsp;&nbsp;&nbsp;&nbsp;[field caption]
 [/attached]
 </code>
 
+<h3>Parameters</h3>
+<ul>
+	<li><b>count</b> - number of posts to show - default is <em>all</em></li>
+	<li><b>offset</b> - offset the loop by a number of posts, for example: skip the first 3 attachments</li>
+	<li><b>orderby</b> - <i>date</i> (default), <i>title</i>, <i>rand</i> (random)</li>
+	<li><b>order</b> - ASC (ascending/alphabetical) or DESC (descending/from most recent date)</li>
+</ul>
+
+<h3>Fields</h3>
+
 The following fields are available for each attachment.
 
 <ul>
-	<li><i>id</i> - ID</li>
-	<li><i>title</i> - title</li>
-	<li><i>caption</i> - caption</li>
-	<li><i>description</i> - description</li>
+	<li><b>id</b> - ID</li>
+	<li><b>title</b> - title</li>
+	<li><b>caption</b> - caption</li>
+	<li><b>description</b> - description</li>
 </ul><ul>
-	<li><i>url</i> - URL to attachment file</li>
-	<li><i>page-url</i> - URL to attachment page</li>
+	<li><b>url</b> - URL to attachment file</li>
+	<li><b>page-url</b> - URL to attachment page</li>
 </ul><ul>
-	<li><i>image</i> - display image: <i>&lt;img src="~"&gt;</i></li>
-	<li><i>size</i> - image size: <em>thumbnail</em>, <em>medium</em>, <em>large</em>, <em>full</em> (default) or custom defined size</li>
-	<li><i>thumbnail</i> - thumbnail</li>
-	<li><i>thumbnail-url</i> - thumbnail URL</li>
+	<li><b>image</b> - display image: <i>&lt;img src="~"&gt;</i></li>
+	<li><b>size</b> - image size: <em>thumbnail</em>, <em>medium</em>, <em>large</em>, <em>full</em> (default) or custom defined size</li>
+	<li><b>thumbnail</b> - thumbnail</li>
+	<li><b>thumbnail-url</b> - thumbnail URL</li>
 </ul><br>
 <hr>
 

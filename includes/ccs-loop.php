@@ -979,7 +979,8 @@ class LoopShortcode {
 					$posts = get_posts( array (
 						'post_parent' => $current_id,
 						'post_type' => 'attachment',
-						'post_status' => $status
+						'post_status' => $status,
+						'posts_per_page' => '-1' // Get all attachments
 						) );
 
 					foreach( $posts as $post ) {
@@ -1021,7 +1022,9 @@ class LoopShortcode {
 							$posts = get_posts( array (
 								'post_parent' => $current_id,
 								'post_type' => 'attachment',
-								'post_status' => $status
+								'post_status' => $status,
+								'posts_per_page' => '-1' // Get all attachments
+
 								) );
 
 							foreach( $posts as $post ) {

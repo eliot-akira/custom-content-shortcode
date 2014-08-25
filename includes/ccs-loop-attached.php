@@ -15,6 +15,16 @@ class AttachedShortcode {
 
 	function attached_shortcode($atts, $content) {
 
+		$args = array(
+			'orderby' => '',
+			'order' => '',
+			'category' => '',
+			'count' => '',
+			'offset' => '',
+		);
+		extract( shortcode_atts( $args , $atts, true ) );		
+
+
 		global $ccs_global_variable;
 
 		ob_start();
@@ -23,13 +33,26 @@ class AttachedShortcode {
 		$out = array();
 		$current_id = get_the_ID();
 
-		// Get attachments for current post
-
-		$posts = get_posts( array (
+		$attach_args = array (
 			'post_parent' => $current_id,
 			'post_type' => 'attachment',
-			'post_status' => 'any'
-			) );
+			'post_status' => 'any',
+			'posts_per_page' => '-1' // Get all attachments
+			);
+
+		if (empty($orderby)) $orderby = "date";
+		$attach_args['orderby'] = $orderby;
+		if (($orderby=="title")&&(empty($order)))
+			$order="ASC"; // default for titles
+
+		if (!empty($order)) $attach_args['order'] = $order;
+		if (!empty($category)) $attach_args['category'] = $category;
+		if (!empty($count)) $attach_args['posts_per_page'] = $count;
+		if (!empty($offset)) $attach_args['offset'] = $offset;
+
+		// Get attachments for current post
+
+		$posts = get_posts($attach_args);
 
 		foreach( $posts as $post ) {
 			$attachment_id = $post->ID;
