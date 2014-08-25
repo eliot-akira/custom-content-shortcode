@@ -4,11 +4,10 @@ With the <strong>[if]</strong> shortcode, you can display content based on cert
 
 <code>[loop type="films"]
 &nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if not category="drama"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[content taxonomy="category"]
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
 &nbsp;&nbsp;&nbsp;&nbsp;[if category="drama"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DRAMA!!
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DRAMA!
+&nbsp;&nbsp;&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[taxonomy category]
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
 <hr>
@@ -23,12 +22,16 @@ The available parameters are:
 
 <h4>Category, tag, taxonomy</h4>
 <ul>
-	<li><strong>category</strong> - if post has category</li>
-	<li><strong>tag</strong> - if post has tag
+	<li><strong>category</strong> - if post is in category</li>
+	<li><strong>tag</strong> - if post has tag(s)
 </ul>
 <ul>
 	<li><strong>taxonomy</strong> - name of taxonomy to query
 	<li><strong>term</strong> - if post has term(s) in the specified taxonomy
+</ul>
+<h4>Parent</h4>
+<ul>
+	<li><strong>parent</strong> - slug or ID of parent</li>
 </ul>
 <h4>Field value</h4>
 <ul>
@@ -39,7 +42,7 @@ You can pass multiple values, for example: <i>category="sci-fi, comedy"</i>. Thi
 
 </ul>
 <ul>
-	<li><strong>compare</strong> - Set compare="AND" to query for <i>all</i> terms.
+	<li><strong>compare</strong> - Set compare="AND" to query for <i>all</i> terms
 </ul>
 <h4>Other conditions</h4>
 <ul>
@@ -52,6 +55,22 @@ You can pass multiple values, for example: <i>category="sci-fi, comedy"</i>. Thi
 </ul><ul>
 	<li><strong>not</strong> - when the condition is not met</li>
 </ul>
+<br>
+<hr>
+<h3>If/else</h3>
+
+Use the <b>[else]</b> shortcode to display something when the condition is not met.
+
+<code>[loop type="product"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
+&nbsp;&nbsp;&nbsp;&nbsp;[if tag="discount"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;On Sale!
+&nbsp;&nbsp;&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Regular Price
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
 <br>
 <hr>
 <h3>Conditional: if there is no query result</h3>
@@ -106,18 +125,6 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 [/loop]</code>
 
 The <em>flag</em> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
-
-In addition, you can display something when a field is empty:
-
-<code>[loop type="product"]
-&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-&nbsp;&nbsp;&nbsp;&nbsp;[if not flag="serial_number"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No Serial Number
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-[/loop]</code>
 
 <br>
 <hr>

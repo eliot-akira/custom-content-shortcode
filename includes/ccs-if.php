@@ -50,10 +50,19 @@ class IfShortcode {
 		if ((isset($atts['empty'])) || (isset($atts['last'])) ) return; // [if empty] [if last] is processed by [loop]
 */
 		if (!empty($no_flag)) $flag = $no_flag;
-		$compare = strtoupper($compare);
 
 		$out = '';
 		$condition = false;
+		$compare = strtoupper($compare);
+
+		// Get [else] if it exists
+		$content_array = explode("[else]", $content);
+		$content = $content_array[0];
+		if (count($content_array)>1) {
+			$else = $content_array[1];
+		} else {
+			$else = null;
+		}
 
 		/*========================================================================
 		 *
@@ -84,16 +93,6 @@ class IfShortcode {
 					$condition = ($every==0) ? false : (($count % $every)==0);
 				}
 
-				if (isset($atts['not'])) {
-					$condition = !$condition;
-				}
-
-				if ($condition) {
-					$out = do_shortcode( $content );
-				}
-
-				return $out;
-
 			}
 
 		} // End [loop] only conditions
@@ -106,7 +105,7 @@ class IfShortcode {
 
 		global $post;
 
-		if (empty($post)) return; // Make sure post exists
+//		if (empty($post)) return; // Make sure post exists
 
 		$current_post_type = isset($post->post_type) ? $post->post_type : null;
 		$current_post_name = isset($post->post_name) ? $post->post_name : null;
@@ -130,13 +129,11 @@ class IfShortcode {
 			else
 				$check = has_post_thumbnail( $current_id );
 
-			if ((!empty($check)) && (!empty($no_flag))) return;
-			if ((empty($check)) && (empty($no_flag))) return;
+			if ((!empty($check)) && (!empty($no_flag))) $condition = false;
+			if ((empty($check)) && (empty($no_flag))) $condition = false;
 			else {
+				$condition = true;
 				$ccs_global_variable['if_flag'] = $check;
-				$out = do_shortcode( $content );
-				$ccs_global_variable['if_flag'] = '';
-				return $out;
 			}
 		}
 
@@ -302,7 +299,11 @@ class IfShortcode {
 
 		$condition = isset($atts['not']) ? !$condition : $condition;
 
-		return $condition ? do_shortcode( $content ) : null;
+		$out = $condition ? do_shortcode( $content ) : do_shortcode( $else );
+
+		$ccs_global_variable['if_flag'] = '';
+
+		return $out;
 	}
 
 	function flag_shortcode() {
