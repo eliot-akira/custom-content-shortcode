@@ -338,14 +338,14 @@ add_action('the_content', 'load_custom_html');
 function load_custom_html($content) {
 
 	global $ccs_global_variable;
+	global $wp_query;
 
 	if(( $ccs_global_variable['is_loop'] == "false" ) &&
-		!is_admin() ) {
+		!is_admin() && !empty($wp_query->post)) {
 
 		/*--- Template loader ---*/
 
 		global $ccs_content_template_loader;
-		global $wp_query;
 
 		$html_field = get_post_meta( $wp_query->post->ID, "html", $single=true );
 
