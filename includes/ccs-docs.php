@@ -83,23 +83,26 @@ class CCS_Docs {
 
 		$settings = get_option( 'ccs_content_settings' );
 
-		$move_wpautop = isset( $settings['move_wpautop'] ) ?
-			esc_attr( $settings['move_wpautop'] ) : 'off'; // If no setting, then default
-
 		$load_acf_module = isset( $settings['load_acf_module'] ) ?
-			esc_attr( $settings['load_acf_module'] ) : 'off'; // If no setting, then default
+			esc_attr( $settings['load_acf_module'] ) : 'off';
 
 		$load_bootstrap_module = isset( $settings['load_bootstrap_module'] ) ?
-			esc_attr( $settings['load_bootstrap_module'] ) : 'off'; // If no setting, then default
+			esc_attr( $settings['load_bootstrap_module'] ) : 'off';
 
 		$load_file_loader = isset( $settings['load_file_loader'] ) ?
-			esc_attr( $settings['load_file_loader'] ) : 'off'; // If no setting, then default
+			esc_attr( $settings['load_file_loader'] ) : 'off';
 
 		$load_gallery_field = isset( $settings['load_gallery_field'] ) ?
-			esc_attr( $settings['load_gallery_field'] ) : 'off'; // If no setting, then default
+			esc_attr( $settings['load_gallery_field'] ) : 'off';
 
 		$load_mobile_detect = isset( $settings['load_mobile_detect'] ) ?
-			esc_attr( $settings['load_mobile_detect'] ) : 'off'; // If no setting, then default
+			esc_attr( $settings['load_mobile_detect'] ) : 'off';
+
+		$shortcodes_in_widget = isset( $settings['shortcodes_in_widget'] ) ?
+			esc_attr( $settings['shortcodes_in_widget'] ) : 'off';
+
+		$move_wpautop = isset( $settings['move_wpautop'] ) ?
+			esc_attr( $settings['move_wpautop'] ) : 'off';
 
 		?>
 		<tr>
@@ -143,10 +146,20 @@ class CCS_Docs {
 		</tr>
 		<tr>
 			<td width="760px">
+				<hr class="setting-section">
 				<input type="checkbox" value="on" name="ccs_content_settings[move_wpautop]"
 					<?php checked( $move_wpautop, 'on' ); ?>
 				/>
 				&nbsp;&nbsp;Move post content formatting (wp_autop) to <em>after</em> shortcodes
+			</td>
+		</tr>
+		<tr>
+			<td width="760px">
+				<hr class="setting-section">
+				<input type="checkbox" value="on" name="ccs_content_settings[shortcodes_in_widget]"
+					<?php checked( $shortcodes_in_widget, 'on' ); ?>
+				/>
+				&nbsp;&nbsp;Enable shortcodes inside Text widget
 			</td>
 		</tr>
 	<?php
@@ -325,14 +338,14 @@ class CCS_Docs {
 
 				 	// Add footnote
 				 	?>
-					<br><hr><br>
-					<div align="center">
-						<img src="<?php echo plugins_url();?>/custom-content-shortcode/docs/logo/logo.png"><br><br>
-						<b>Custom Content Shortcode</b> is developed by Eliot Akira.<br><br>
+					<br><hr>
+					<div align="center" class="overview-logo-pad">
+						<img src="<?php echo plugins_url();?>/custom-content-shortcode/docs/logo/logo.png">
+						<div class="overview-logo-pad"><b>Custom Content Shortcode</b> is developed by Eliot Akira.</div>
 						Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">WordPress plugin support forum</a> for general questions.<br>
 						For commercial support and development, contact <a href="mailto:me@eliotakira.com">me@eliotakira.com</a><br>
 					</div>
-					<br><hr><br>
+					<hr><br>
 					<?php
 				}
 /*

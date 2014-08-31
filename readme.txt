@@ -3,10 +3,11 @@ Contributors: miyarakira
 Author: Eliot Akira
 Author URI: eliotakira.com
 Plugin URI: wordpress.org/plugins/custom-content-shortcode/
+Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
-Tested up to: 3.9.2
-Stable tag: 1.1.3
+Tested up to: 4.0
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +81,13 @@ With other libraries:
 
 
 == Changelog ==
+
+= 1.1.4 =
+
+* **Settings** - Enable shortcodes inside Text widget
+* Test compatibility with WordPress 4.0
+* Improve documentation
+* Add donate link on plugin page
 
 = 1.1.3 =
 

@@ -2,9 +2,7 @@
 
 Here is an example of how to create templates to display your content.
 
-Let's imagine a bicycle shop. We create a custom post type called <em>bicycle</em>, and add custom fields such as <em>model</em>, <em>price</em>, and <em>description</em>.
-
-Add all bicycles in the store as new entries, with featured image and other info in the fields.
+Let's imagine a bicycle shop. We create a custom post type called <em>bicycle</em>, and add custom fields such as <em>model</em>, <em>price</em>, and <em>description</em>. Add all bicycles in the store as new entries, with featured image and other info in the fields.
 
 Create a new page to display the bicycles. A basic template could be:
 
@@ -26,6 +24,24 @@ Another page can display a list of bicycles in the<em> freestyle</em> category:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;[/loop]
 &lt;/ul&gt;</code><br>
-
 <hr>
+<h3>Editing templates</h3>
+
+You can create and edit these templates inside the post itself, with the Text editor.
+
+There are a couple points to keep in mind:
+
+<ul>
+	<li>WordPress automatically formats post content, adding paragraph tags and break lines. If you find that there are unnecessary tags inserted inside the <b>[loop]</b>, try enabling <i>Move post content formatting</i> under <a href="options-general.php?page=ccs_content_shortcode_help&tab=settings">Settings</a>.</li>
+	<li>Don't switch to the Visual editor when using HTML, as the code can sometimes be wrongly interpreted. To solve this, you can selectively disable the visual editor with the plugin <a target="_blank" href="http://wordpress.org/plugins/raw-html/">Raw HTML</a>, or move the code outside the post content with one of the methods below.</li>
+</ul>
+
+The template can also be loaded from a number of places.
+
+<ul>
+	<li>Custom post type: [content type="template" name="home-page"]</li>
+	<li>Custom field: [content field="code_block"]</li>
+	<li>File: [load dir="views" file="recent-posts.html"]</li>
+	<li>Sidebar: <i>Enable shortcodes inside Text widget</i> in <a href="options-general.php?page=ccs_content_shortcode_help&tab=settings">Settings</a></li>
+</ul>
 

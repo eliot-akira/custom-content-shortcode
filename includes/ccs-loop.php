@@ -2,9 +2,7 @@
 
 /*====================================================================================================
  *
- * Loop shortcode
- *
- * Set up a query loop
+ * Loop shortcode: query posts and loop through it
  *
  *====================================================================================================*/
 
@@ -38,6 +36,13 @@ class LoopShortcode {
 			add_filter( 'the_content', 'wpautop' , 99);
 			add_filter( 'the_content', 'shortcode_unautop',100 );
 		}
+
+		$shortcodes_in_widget = isset( $settings['shortcodes_in_widget'] ) ?
+			esc_attr( $settings['shortcodes_in_widget'] ) : 'off';
+
+		if ($shortcodes_in_widget == "on") {
+			add_filter('widget_text', 'do_shortcode');
+		}
 	}
 
 	function shortcodes_to_exempt_from_wptexturize($shortcodes){
@@ -58,7 +63,7 @@ class LoopShortcode {
 		$ccs_global_variable['is_repeater_loop'] = "false";
 		$ccs_global_variable['total_comments'] = 0;
 
-		if( ! is_array( $atts ) ) return;
+		if( ! is_array( $atts ) ) return; // Avoid infinite loop
 
 		// non-wp_query arguments
 		$args = array(
@@ -140,24 +145,15 @@ class LoopShortcode {
 		 * Meta query parameters
 		 */
 
-			if($f!='')
-				$field = $f;
-			if($v!='')
-				$value = $v;
-			if($c!='')
-				$compare = $c;
-			if($f2!='')
-				$field_2 = $f2;
-			if($v!='')
-				$value_2 = $v2;
-			if($c!='')
-				$compare_2 = $c2;
-			if($r!='')
-				$relation = $r;
-/*			if($checkbox!='')
-				$field = $checkbox;
-			if($checkbox_2!='')
-				$field_2 = $checkbox_2;
+			if($f!='')	$field = $f;
+			if($v!='')	$value = $v;
+			if($c!='')	$compare = $c;
+			if($f2!='')	$field_2 = $f2;
+			if($v!='')	$value_2 = $v2;
+			if($c!='')	$compare_2 = $c2;
+			if($r!='')	$relation = $r;
+/*			if($checkbox!='') $field = $checkbox;
+			if($checkbox_2!='') $field_2 = $checkbox_2;
 */
 
 		if(( $field != 'gallery' ) && ($shortcode_name != 'pass') && ($value!='')) {
@@ -165,11 +161,19 @@ class LoopShortcode {
 			$query_field = $field;
 			$query_value = $value;
 
-		} else
+		} else {
 			$custom_field = $field;
+		}
 
 
-		if($x != '') { // Simple loop without query
+
+		/*========================================================================
+		 *
+		 * Parameter x: loop x times, without query
+		 *
+		 *=======================================================================*/
+
+		if($x != '') {
 
 			$count = 0; $max = $x;
 			$output = array();
@@ -199,7 +203,6 @@ class LoopShortcode {
 					if($middle) $out = str_replace($start.$middle.$end, $middle, $out);
 				}
 
-
 				if ($clean == 'true') {
 					$output[] = do_shortcode(custom_clean_shortcodes( $out ));
 				} else {
@@ -217,6 +220,15 @@ class LoopShortcode {
 
 			return ob_get_clean();
 		}
+
+
+
+
+		/*========================================================================
+		 *
+		 * Merge parameters into query
+		 *
+		 *=======================================================================*/
 
 		$query = array_merge( $atts, $all_args );
 
@@ -243,7 +255,6 @@ class LoopShortcode {
 		if ($shortcode_name=="pass") {
 			$id = get_the_ID();
 		}
-
 
 		if( $category != '' ) {
 			$query['category_name'] = $category;
@@ -415,7 +426,12 @@ class LoopShortcode {
 				}				
 		}
 
-// Get posts in a series
+
+		/*========================================================================
+		 *
+		 * Get posts in a series of field values
+		 *
+		 *=======================================================================*/
 
 		if($series!='') {
 
@@ -450,84 +466,85 @@ class LoopShortcode {
 		}
 
 
-		/*---------------------
-		 * Custom field query
-		 *--------------------*/
+		/*========================================================================
+		 *
+		 * Query by field value
+		 *
+		 *=======================================================================*/
 
+		if( ($query_field!='') && ($query_value!='') ) {
 
-			if( ($query_field!='') && ($query_value!='') ) {
-/*
-				$query_value = html_entity_decode($query_value);
-				$value_2 = html_entity_decode($value_2);
-*/
+			// Support for date values
 
-				if ($query_value=="future") {
-					$query_value = "now";
-					$compare = ">";
-				} elseif ($query_value=="past") {
-					$query_value = "now";
-					$compare = "<";
+			if ($query_value=="future") {
+				$query_value = "now";
+				$compare = ">";
+			} elseif ($query_value=="past") {
+				$query_value = "now";
+				$compare = "<";
+			}
+
+			if (( isset($in) && ($in == "string") ) || (!empty($date_format)) ){
+				if (empty($date_format)) {
+					if ($query_value == "today")
+						$date_format = "Y-m-d"; // Y-m-d h:i A
+					if ($query_value == "now")
+						$date_format = "Y-m-d h:i A"; 
 				}
 
-				if (( isset($in) && ($in == "string") ) || (!empty($date_format)) ){
-					if (empty($date_format)) {
-						if ($query_value == "today")
-							$date_format = "Y-m-d"; // Y-m-d h:i A
-						if ($query_value == "now")
-							$date_format = "Y-m-d h:i A"; 
-					}
-
-					if (($query_value == "today") || ($query_value == "now")){
-						$query_value = date($date_format,time());
-					}
-				} else {
-					if (($query_value == "today") || (($query_value == "now"))){
-						$query_value = time();
-					}
+				if (($query_value == "today") || ($query_value == "now")){
+					$query_value = date($date_format,time());
 				}
+			} else {
+				if (($query_value == "today") || (($query_value == "now"))){
+					$query_value = time();
+				}
+			}
 
-				$compare = strtoupper($compare);
+			$compare = strtoupper($compare);
 
-				switch ($compare) {
+			switch ($compare) {
+				case '':
+				case 'EQUAL': $compare = "LIKE"; break;
+				case 'NOT':
+				case 'NOT EQUAL': $compare = 'NOT LIKE'; break;
+				default: break;
+			}
+
+			$query['meta_query'][] =
+				array(
+						'key' => $query_field,
+						'value' => $query_value,
+						'compare' => $compare
+				);
+
+			// Additional query by field value
+
+			if( ($field_2!='') && ($value_2!='') ) {
+
+				if($relation!='')
+					$query['meta_query']['relation'] = strtoupper($relation);
+				else
+					$query['meta_query']['relation'] = 'AND';
+
+				$compare_2 = strtoupper($compare_2);
+
+				switch ($compare_2) {
 					case '':
-					case 'EQUAL': $compare = "LIKE"; break;
+					case 'EQUAL': $compare_2 = 'LIKE'; break;
 					case 'NOT':
-					case 'NOT EQUAL': $compare = 'NOT LIKE'; break;
+					case 'NOT EQUAL': $compare_2 = 'NOT LIKE'; break;
 					default: break;
 				}
 
 				$query['meta_query'][] =
 					array(
-							'key' => $query_field,
-							'value' => $query_value,
-							'compare' => $compare
-					);
-
-				if( ($field_2!='') && ($value_2!='') ) {
-
-					if($relation!='')
-						$query['meta_query']['relation'] = strtoupper($relation);
-					else
-						$query['meta_query']['relation'] = 'AND';
-
-					$compare_2 = strtoupper($compare_2);
-
-					switch ($compare_2) {
-						case '':
-						case 'EQUAL': $compare_2 = 'LIKE'; break;
-						case 'NOT':
-						case 'NOT EQUAL': $compare_2 = 'NOT LIKE'; break;
-						default: break;
-					}
-
-					$query['meta_query'][] =
-						array(
-							'key' => $field_2,
-							'value' => $value_2,
-							'compare' => $compare_2
-					);
-				}
+						'key' => $field_2,
+						'value' => $value_2,
+						'compare' => $compare_2
+				);
 			}
+		}
 
 
 
@@ -537,28 +554,26 @@ class LoopShortcode {
  * 
  *====================================================================================*/
 
-		/*--------------
-		 * Put a hook here?
-		 *-------------*/
-
 		if( ( $gallery!="true" ) && ( $type != "attachment") ) {
 
-			if( $custom_field == "gallery" ) {
+			// Last-minute adjustments
+			if( $custom_field == "gallery" )
 				$custom_field = "_custom_gallery";
-			}
-
 			$query['post_status'] = $status;
-
 			remove_all_filters('posts_orderby');
+
+
+			/*========================================================================
+			 *
+			 * Run the query
+			 *
+			 *=======================================================================*/
 
 			$output = array();
 			ob_start();
-
-/*			print_r($query); */
-
 			$posts = new WP_Query( $query );
 
-	// Re-order by series
+			// Re-order by series
 
 			if($series!='') {
 				usort($posts->posts, array($this, "custom_series_orderby_key"));
@@ -571,25 +586,29 @@ class LoopShortcode {
 			}
 
 			$total_comment_count = 0;
-
 			$current_count = 1;
 
-			/*====================================================================================
+			/*========================================================================
 			 *
 			 * For each post found
-			 * 
-			 */ 
+			 *
+			 *=======================================================================*/
 
 			if( $posts->have_posts() ) {
 
 				while( $posts->have_posts() ) : $posts->the_post();
 
-				$ccs_global_variable['total_comments']+=get_comments_number();
 				$current_id = get_the_ID();
 				$ccs_global_variable['current_loop_id']=$current_id;
 				$ccs_global_variable['current_loop_count']=$current_count;
+				$ccs_global_variable['total_comments']+=get_comments_number();
 
-				// Filter by checkbox..
+
+				/*========================================================================
+				 *
+				 * Filter posts by checkbox query
+				 *
+				 *=======================================================================*/
 
 				$skip_1 = false;
 				if ($checkbox!='') {
@@ -660,13 +679,17 @@ class LoopShortcode {
 					$skip = $skip_1;
 				}
 
+
 				if( ! $skip ) {
 
-				/*********
+				/*========================================================================
+				 *
 				 * Repeater field
-				 */
+				 *
+				 *=======================================================================*/
 
 				if($repeater != '') {
+
 					$ccs_global_variable['is_repeater_loop'] = "true";
 					$ccs_global_variable['current_loop_id'] = $current_id;
 
@@ -691,13 +714,17 @@ class LoopShortcode {
 					}
 
 					$ccs_global_variable['is_repeater_loop'] = "false";
+
 				} else {
 
-				/*********
-				 * ACF Gallery field
-				 */
+				/*========================================================================
+				 *
+				 * ACF gallery field
+				 *
+				 *=======================================================================*/
 
 				if($acf_gallery != '') {
+
 					$ccs_global_variable['is_acf_gallery_loop'] = "true";
 					$ccs_global_variable['current_loop_id'] = $current_id;
 
@@ -752,11 +779,14 @@ class LoopShortcode {
 
 					$ccs_global_variable['is_acf_gallery_loop'] = "false";
 
-				} else {
+				} else { // Not gallery field
 
-				// Not gallery field
 
-					// Attachments?
+					/*========================================================================
+					 *
+					 * Attachments..?
+					 *
+					 *=======================================================================*/
 
 					if($custom_field == "attachment") {
 						$attachments =& get_children( array(
@@ -775,11 +805,22 @@ class LoopShortcode {
 						}
 					} else {
 
-					// Normal custom fields
+						/*========================================================================
+						 *
+						 * Normal custom field
+						 *
+						 *=======================================================================*/
 
 						$custom_field_content = get_post_meta( $current_id, $custom_field, $single=true );
 						$attachment_ids = get_post_meta( $current_id, '_custom_gallery', true );
 					}
+
+
+					/*========================================================================
+					 *
+					 * Special tags: {TAG}
+					 *
+					 *=======================================================================*/
 
 					$keywords = apply_filters( 'query_shortcode_keywords', array(
 						'QUERY' => serialize($query), // DEBUG purpose
@@ -804,9 +845,12 @@ class LoopShortcode {
 						'IDS' => $attachment_ids,
 					) );
 
-					$total_comment_count += get_comments_number();
-
 					$out = $this->get_block_template( $template, $keywords ); // Process {KEYWORDS}
+
+
+
+
+					$total_comment_count += get_comments_number();
 
 					if ($strip_tags!='') {
 
@@ -826,7 +870,11 @@ class LoopShortcode {
 					} 
 
 
-// First post found?
+					/*========================================================================
+					 *
+					 * First post found
+					 *
+					 *=======================================================================*/
 
 					if ($current_count == 1) {
 
@@ -842,7 +890,12 @@ class LoopShortcode {
 
 					}
 
-// Last post found?
+
+					/*========================================================================
+					 *
+					 * Last post found
+					 *
+					 *=======================================================================*/
 
 					if ($current_count == $posts->post_count) {
 
@@ -870,19 +923,25 @@ class LoopShortcode {
 
 			$current_count++;
 
-			if($orderby=='rand') {
+			if ($orderby=='rand') {
 				if ($current_count > $count) break;
 			}
 
 			} /* Not skip */
 
-// End loop for each post found
+// End: loop for each post found
 
 			endwhile; $nothing_found = false;
 
-			} // End if post found
+			} // End: if post found
 
 			else {
+
+				/*========================================================================
+				 *
+				 * No post found
+				 *
+				 *=======================================================================*/
 
 				$nothing_found = true;
 
@@ -892,7 +951,7 @@ class LoopShortcode {
 				$end = '[/if]';
 
 				$middle = self::getBetween($start, $end, $template);
-				if($middle)
+				if ($middle)
 					echo do_shortcode($middle); // then do it	
 			}
 
@@ -900,8 +959,15 @@ class LoopShortcode {
 			wp_reset_postdata();
 
 			if (!$nothing_found) {
+
 				if (empty($if)) {
 
+					/*========================================================================
+					 *
+					 * Create simple columns
+					 *
+					 *=======================================================================*/
+					
 					if (!empty($columns)) { // Create simple columns
 
 						$col = 0;

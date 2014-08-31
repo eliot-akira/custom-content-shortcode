@@ -1,4 +1,4 @@
-
+	.wrap { margin-left: -5px; }
 	.wrap h2 {
 		margin-bottom: -10px;
 	}
@@ -28,16 +28,6 @@
 	.doc-style .nav-tab-wrapper a {
 		outline: 0; /* prevent dotted-line in Firefox */
 	}
-
-/*
-	.wrap .nav-tab {
-		background-color: #f1f1f1;
-	}
-
-	.wrap .nav-tab-active, .nav-tab-active:hover {
-		background-color: #e4e4e4;
-	}
-*/
 
 	.doc-style h3 {
 		font-size: 1.2em;
@@ -70,4 +60,11 @@
 	}
 	.doc-style ul {
 		list-style:disc; padding-left:40px;
+	}
+	.doc-style .overview-logo-pad {
+		margin: 15px auto;
+	}
+	.doc-style hr.setting-section {
+		margin-top: -10px;
+		padding-bottom: 10px;
 	}
