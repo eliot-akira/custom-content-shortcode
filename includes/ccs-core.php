@@ -44,6 +44,7 @@ class CCSGlobal {
 			'current_attachment_ids' => '',
 			'current_script' => '',
 			'current_post' => '',
+			'is_relationship_loop' => 'false',
 		);
 
 		$ccs_content_template_loader = false; // Set true to enable template loader (under development)

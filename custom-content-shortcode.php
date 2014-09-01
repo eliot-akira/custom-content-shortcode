@@ -3,7 +3,7 @@
 Plugin Name: Custom Content Shortcode
 Plugin URI: http://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 1.1.4
+Version: 1.1.5
 Author: Eliot Akira
 Author URI: eliotakira.com
 License: GPL2
@@ -38,31 +38,31 @@ require_once (CCS_PATH.'/includes/ccs-docs.php');			// Documentation under Setti
  *
  *=======================================================================*/
 
-$settings = get_option('ccs_content_settings');
+$ccs_settings = get_option('ccs_content_settings');
 
-if ($settings === false ) {
+if ($ccs_settings === false ) {
 	// Default settings
 
-	$settings['load_acf_module'] = 'on';
-	$settings['load_bootstrap_module'] = 'on';
-	$settings['load_file_loader'] = 'on';
-	$settings['load_gallery_field'] = 'on';
-	$settings['load_mobile_detect'] = 'on';
-	$settings['shortcodes_in_widget'] = 'on';
-	$settings['move_wpautop'] = 'off';
-	update_option( 'ccs_content_settings', $settings );
+	$ccs_settings['load_acf_module'] = 'on';
+	$ccs_settings['load_bootstrap_module'] = 'on';
+	$ccs_settings['load_file_loader'] = 'on';
+	$ccs_settings['load_gallery_field'] = 'on';
+	$ccs_settings['load_mobile_detect'] = 'on';
+	$ccs_settings['shortcodes_in_widget'] = 'on';
+	$ccs_settings['move_wpautop'] = 'off';
+	update_option( 'ccs_content_settings', $ccs_settings );
 }
 
-$load_acf_module = isset( $settings['load_acf_module'] ) ?
-	$settings['load_acf_module'] : 'off';
-$load_bootstrap_module = isset( $settings['load_bootstrap_module'] ) ?
-	$settings['load_bootstrap_module'] : 'off';
-$load_file_loader = isset( $settings['load_file_loader'] ) ?
-	$settings['load_file_loader'] : 'off';
-$load_gallery_field = isset( $settings['load_gallery_field'] ) ?
-	$settings['load_gallery_field'] : 'off';
-$load_mobile_detect = isset( $settings['load_mobile_detect'] ) ?
-	$settings['load_mobile_detect'] : 'off';
+$load_acf_module = isset( $ccs_settings['load_acf_module'] ) ?
+	$ccs_settings['load_acf_module'] : 'off';
+$load_bootstrap_module = isset( $ccs_settings['load_bootstrap_module'] ) ?
+	$ccs_settings['load_bootstrap_module'] : 'off';
+$load_file_loader = isset( $ccs_settings['load_file_loader'] ) ?
+	$ccs_settings['load_file_loader'] : 'off';
+$load_gallery_field = isset( $ccs_settings['load_gallery_field'] ) ?
+	$ccs_settings['load_gallery_field'] : 'off';
+$load_mobile_detect = isset( $ccs_settings['load_mobile_detect'] ) ?
+	$ccs_settings['load_mobile_detect'] : 'off';
 
 if ($load_gallery_field == "on")
 	require_once (CCS_PATH.'/includes/ccs-gallery.php');		// Simple gallery

@@ -130,11 +130,11 @@ class CustomContentShortcode {
 
 
 
-/*========================================================================
- *
- * In an attachment or gallery loop
- *
- *=======================================================================*/
+		/*========================================================================
+		 *
+		 * In an attachment or gallery loop
+		 *
+		 *=======================================================================*/
 
 		if( ( $ccs_global_variable['is_gallery_loop'] == "true") || 
 			( $ccs_global_variable['is_attachment_loop'] == "true" ) || 
@@ -175,10 +175,16 @@ class CustomContentShortcode {
 			if (!empty($class))
 				return '<div class="' . $class . '">' . $out . '</div>';
 			else return $out;
-		}
+
+		} // End attachment or gallery loop
 
 
-		// Display sidebar/widget area
+
+		/*========================================================================
+		 *
+		 * Sidebar/widget area
+		 *
+		 *=======================================================================*/
 
 		if( $sidebar != '') {
 			$custom_area_name = $sidebar;
@@ -199,11 +205,13 @@ class CustomContentShortcode {
 		}
 
 
-		// Display menu
+		/*========================================================================
+		 *
+		 * Menu
+		 *
+		 *=======================================================================*/
 
 		if( $custom_menu_name != '' ) {
-
-			// Simple menu list
 
 			$menu_args = array (
 				'menu' => $custom_menu_name,
@@ -218,6 +226,18 @@ class CustomContentShortcode {
 			} else {
 				return '<div class="' . $class . '">' . $output . '</div>';
 			}
+		}
+
+
+
+		/*========================================================================
+		 *
+		 * Get post ID
+		 *
+		 *=======================================================================*/
+
+		if ($ccs_global_variable['is_relationship_loop']=='true') {
+			$custom_id = $ccs_global_variable['relationship_id'];
 		}
 
 

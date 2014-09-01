@@ -23,6 +23,7 @@ class CustomShortCodes_For_ACF {
 		add_shortcode('layout', array($this, 'if_get_row_layout'));
 		add_shortcode('live-edit', array($this, 'call_live_edit'));
 
+		add_shortcode('related', array($this, 'loop_relationship_field'));
 	}
 
 	public static function sub_field( $atts ) {
@@ -248,6 +249,35 @@ class CustomShortCodes_For_ACF {
 		} else {
 			return do_shortcode($inside_content);
 		}
+	}
+
+	function loop_relationship_field( $atts, $content ) {
+
+		global $ccs_global_variable;
+
+		extract( shortcode_atts( array(
+			'field' => '',
+		), $atts ) );
+
+		if ( (!function_exists('get_field')) && (!empty($field)) )return;
+
+		$out = array();
+		$posts = get_field($field);
+
+		if ($posts) {
+
+			$ccs_global_variable['is_relationship_loop'] = 'true';
+
+			foreach ($posts as $post) { // must be named $post
+
+				$ccs_global_variable['relationship_id'] = $post->ID;
+//				setup_postdata( $post );
+				$out[] = do_shortcode($content);
+			}
+		}
+		$ccs_global_variable['is_relationship_loop'] = 'false';
+//		wp_reset_postdata();
+		return implode("", $out);
 	}
 
 }
