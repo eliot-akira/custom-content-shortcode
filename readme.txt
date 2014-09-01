@@ -85,9 +85,7 @@ With other libraries:
 = 1.1.5 =
 
 * **[related]** - Loop through ACF relationship field
-
-= 1.1.4 =
-
+* **[if image]** - If current post has a featured image
 * **Settings** - Enable shortcodes inside Text widget
 * Test compatibility with WordPress 4.0
 * Improve documentation
