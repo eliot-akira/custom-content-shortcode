@@ -14,12 +14,15 @@ With the <strong>[if]</strong> shortcode, you can display content based on cert
 
 <h3>Parameters</h3>
 
-The available parameters are:
+<h4>Post type and name</h4>
 <ul>
 	<li><strong>type</strong> - post type</li>
 	<li><strong>name</strong> - post name/slug</li>
 </ul>
-
+<h4>Parent</h4>
+<ul>
+	<li><strong>parent</strong> - slug or ID of parent</li>
+</ul>
 <h4>Category, tag, taxonomy</h4>
 <ul>
 	<li><strong>category</strong> - if post is in category</li>
@@ -29,31 +32,32 @@ The available parameters are:
 	<li><strong>taxonomy</strong> - name of taxonomy to query
 	<li><strong>term</strong> - if post has term(s) in the specified taxonomy
 </ul>
-<h4>Parent</h4>
-<ul>
-	<li><strong>parent</strong> - slug or ID of parent</li>
-</ul>
 <h4>Field value</h4>
 <ul>
 	<li><strong>field</strong> - name of field to query</li>
 	<li><strong>value</strong> - if post has value(s) in the specified field</li>
+<h4>Multiple values</h4>
 
-You can pass multiple values, for example: <i>category="sci-fi, comedy"</i>. This returns posts in <i>either</i> Sci-Fi or Comedy. If you want only posts matching <i>both</i> categories, use the <i>compare</i> parameter.
+For category, tag, taxonomy term or field value, you can query for multiple values, for example, <i>category="sci-fi, comedy"</i>. This returns posts in <i>either</i> Sci-Fi or Comedy. If you want posts matching <i>both</i> categories, use the <i>compare</i> parameter.
 
+	<li><strong>compare</strong> - Set compare="AND" to query for <i>all</i> values
 </ul>
+<h4>If something exists</h4>
 <ul>
-	<li><strong>compare</strong> - Set compare="AND" to query for <i>all</i> terms
-</ul>
-<h4>Other conditions</h4>
-<ul>
-	<li><strong>flag</strong> - if custom field value exists; for example: <em>flag="field_name"</em></li>
 	<li><strong>attached</strong> - if the post has any attachments</li>
-</ul><ul>
+	<li><strong>comment</strong> - if the post has any comments</li>
+	<li><strong>image</strong> - if the post has a featured image</li>
+	<li><strong>flag</strong> - if custom field value exists; for example: <em>flag="field_name"</em></li>
+</ul>
+<h4>Loop conditions</h4>
+<ul>
 	<li><strong>empty</strong> - if the loop is empty (no post found)</li>
 	<li><strong>first, last</strong> - if it's the first or last post found</li>
 	<li><strong>every</strong> - for every X post in the loop</li>
-</ul><ul>
-	<li><strong>not</strong> - when the condition is not met</li>
+</ul>
+<h4>Other</h4>
+<ul>
+	<li><strong>not</strong> - when the condition is not met, for example: [if not first]</li>
 </ul>
 <br>
 <hr>
@@ -127,18 +131,3 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 The <em>flag</em> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
 
 <br>
-<hr>
-<h3>Current template</h3>
-
-You can also display something depending on current template. For now, there is only:
-
-<ul>
-	<li><strong>home</strong> - front page (recent posts or static page)</li>
-</ul>
-
-It's used without parameter value.
-
-<code>[if home]
-&nbsp;&nbsp;&nbsp;&nbsp;Home sweet home.
-[/if]
-</code>

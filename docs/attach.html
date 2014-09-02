@@ -12,8 +12,8 @@ Use the <b>[attached]</b> shortcode to loop through attachments.
 
 <h3>Parameters</h3>
 <ul>
-	<li><b>count</b> - number of posts to show - default is <em>all</em></li>
-	<li><b>offset</b> - offset the loop by a number of posts, for example: skip the first 3 attachments</li>
+	<li><b>count</b> - number of attachments to show - default is <em>all</em></li>
+	<li><b>offset</b> - offset the loop by a number, for example: skip the first 3 attachments</li>
 	<li><b>orderby</b> - <i>date</i> (default), <i>title</i>, <i>rand</i> (random)</li>
 	<li><b>order</b> - ASC (ascending/alphabetical) or DESC (descending/from most recent date)</li>
 </ul>
@@ -61,8 +61,7 @@ Use <b>[if attached]</b> to display something if the post has any attachments.
 &nbsp;&nbsp;&nbsp;&nbsp;[if attached]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This post has attachments:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[attached][field thumbnail][/attached]
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-&nbsp;&nbsp;&nbsp;&nbsp;[if not attached]
+&nbsp;&nbsp;&nbsp;&nbsp;[else]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This post has no attachments.
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]
