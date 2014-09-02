@@ -26,44 +26,54 @@ class CustomContentShortcode {
 		$current_post = $post;
 
 		extract(shortcode_atts(array(
+
 			'type' => null,
 			'name' => null,
 			'field' => null,
 			'id' => null,
-			'menu' => null, 'ul' => null,
-			'format' => null, 'shortcode' => null,
-			'gallery' => 'false',
-			'group' => null,
-			'area' => null, 'sidebar' => null, 
+
+			'page' => null,
+			'status' => null,
+
 			'align' => null, 'class' => null, 'height' => null,
-			'num' => null, 'image' => null, 'in' => null, 'return' => null,
-			'image_class' => null, 
-			'row' => null, 'sub' => null,
-			'acf_gallery' => null,
+			'taxonomy' => null, 'checkbox' => null, 'out' => null,
 			'words' => null, 'len' => null, 'length' => null,
 			'date_format' => null, 'timestamp' => null,
-			'taxonomy' => null, 'checkbox' => null, 'out' => null,
-			'status' => null,
-//			'post' => null,
-			'page' => null,
-			'embed' => '',
+			'num' => null, 'image' => null, 'in' => null, 'return' => null,
+			'image_class' => null, 
 			'more' => '', 'dots' => '...',
-			'meta' => '',
+			'meta' => '', // User meta?
+
+			'embed' => null, 'format' => null, 'shortcode' => null,
+
+			'area' => null, 'sidebar' => null, 
+			'menu' => null, 'ul' => null,
+
+			'row' => null, 'sub' => null,
+			'acf_gallery' => null,
+
+			'gallery' => 'false',
+			'group' => null,
+
+			'url' => null, // Optional for image-link
 
 			/* Native gallery options: orderby, order, columns, size, link, include, exclude */
 
 			'orderby' => null, 'order' => null, 'columns' => null, 'size' => 'full',
 			'link' => null, 'include' => null, 'exclude' => null
+
 		), $atts));
+
+
+		/*========================================================================
+		 *
+		 * Set up query
+		 *
+		 *=======================================================================*/
 
 		$custom_post_type = $type;
 		$custom_post_name = $name;
-/*
-		if(!empty($post)) {
-			$custom_post_type = 'post';
-			$custom_post_name = $post;
-		}
-*/
+
 		if(!empty($page)) {
 			$custom_post_type = 'page';
 			$custom_post_name = $page;
@@ -126,8 +136,6 @@ class CustomContentShortcode {
 		if( $custom_post_type == '' ) { // If no post type is specified, then default is any
 			$custom_post_type = 'any';
 		}
-
-
 
 
 		/*========================================================================
@@ -269,8 +277,13 @@ class CustomContentShortcode {
 			}
 		}
 
-		// If repeater field loop then get sub field
 
+		/*========================================================================
+		 *
+		 * If ACF repeater field loop then get sub field
+		 *
+		 *=======================================================================*/
+		
 		if($ccs_global_variable['is_repeater_loop'] != 'false') {
 
 			$custom_id = $ccs_global_variable['current_loop_id'];
@@ -418,10 +431,13 @@ class CustomContentShortcode {
 			$image_field = get_post_meta( $custom_id, $image, true );
 
 			switch($in) {
-				case 'object' : if(is_array( $image_field )) {
-					$image_id = $image_field['id'];
-					$out = wp_get_attachment_image( $image_id , $size );
-				}
+
+				case 'object' :
+					if(is_array( $image_field )) {
+						$image_id = $image_field['id'];
+						$out = wp_get_attachment_image( $image_id , $size );
+					}
+					break;
 				case 'url' : $out = '<img src="' . $out . '">'; break;
 				case 'id' : 
 				default :
@@ -452,7 +468,7 @@ class CustomContentShortcode {
 
 		/*========================================================================
 		 *
-		 * If no field is specified..
+		 * If no field is specified
 		 *
 		 *=======================================================================*/
 
@@ -514,14 +530,17 @@ class CustomContentShortcode {
 				case "title": $out = apply_filters( 'the_title', $current_post->post_title ); break;
 
 				case "title-length": $out = strlen(apply_filters( 'the_title', $current_post->post_title )); break;
+
 				case "author":
+
 					$author_id = $current_post->post_author;
 					$user = get_user_by( 'id', $author_id);
 
 					if ( !empty($meta) )
 						$out = get_the_author_meta( $meta, $author_id );
 					else
-						$out = $user->display_name; break;
+						$out = $user->display_name;
+					break;
 
 				case "author-id":
 
@@ -551,7 +570,6 @@ class CustomContentShortcode {
 						$out = mysql2date(get_option('date_format'), $current_post->post_date); break;
 					}
 
-
 				case "modified":
 
 					if($date_format!='') {
@@ -561,12 +579,25 @@ class CustomContentShortcode {
 						$out = get_post_modified_time( get_option('date_format'), $gmt=false, $custom_id, $translate=true ); break;
 					}
 
-				case "image": $out = get_the_post_thumbnail($custom_id, $size ); break;
+				case "image":				// image
+				case "image-link":			// image with link to post
+				case "image-link-self":		// image with link to attachment page
+
+					$out = get_the_post_thumbnail( $custom_id, $size ); break;
+
 				case "image-full": $out = get_the_post_thumbnail( $custom_id, 'full' ); break;
 				case "image-url": $out = wp_get_attachment_url(get_post_thumbnail_id($custom_id)); break;
-				case "thumbnail": $out = get_the_post_thumbnail( $custom_id, 'thumbnail' ); break;
+
+				case "thumbnail":			// thumbnail
+				case "thumbnail-link":		// thumbnail with link to post
+				case "thumbnail-link-self":	// thumbnail with link to attachment page
+
+					$out = get_the_post_thumbnail( $custom_id, 'thumbnail' ); break;
+
 				case "thumbnail-url": $res = wp_get_attachment_image_src( get_post_thumbnail_id($custom_id), 'thumbnail' ); $out = $res['0']; break;
+
 				case "tags": $out = implode(' ', wp_get_post_tags( $custom_id, array( 'fields' => 'names' ) ) ); break;
+
 				case 'gallery' :
 
 					// Get specific image from gallery field
@@ -695,10 +726,25 @@ class CustomContentShortcode {
 		switch ($custom_field) {
 			case "edit-link":
 				$out = '<a target="_blank" href="' . get_edit_post_link( $custom_id ) . '">' . $out . '</a>'; break;
-			case "title-link":
+
+			case "image-link":				// Link image to post
+			case "thumbnail-link":			// Link thumbnail to post
+			case "title-link":				// Link title to post
+
 				$out = '<a href="' . post_permalink( $custom_id ) . '">' . $out . '</a>'; break;
-			case "title-link-out":
+
+			case "image-post-link-out":		// Link image to post
+			case "thumbnail-post-link-out":	// Link thumbnail to post
+			case "title-link-out": 			// Open link in new tab
+
 				$out = '<a target="_blank" href="' . post_permalink( $custom_id ) . '">' . $out . '</a>'; break;
+
+			case "image-link-self":
+			case "thumbnail-link-self": // Link to image attachment page
+				$url = get_attachment_link( get_post_thumbnail_id($custom_id) );
+//				$url = wp_get_attachment_url( get_post_thumbnail_id($custom_id) );
+				$out = '<a href="' . $url . '">' . $out . '</a>'; break;
+
 		}		
 		
 		if (!empty($class))

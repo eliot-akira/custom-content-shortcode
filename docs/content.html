@@ -1,24 +1,57 @@
-<h3>Basic Examples</h3>
+<h3>Content shortcode</h3>
+Use <b>[content]</b> to display post content or a field.
 
-Here are some examples of using the <strong>[content]</strong> shortcode.
 <h4>Display post content by name</h4>
 <code>[content name="hello-world"]</code>
 <h4>Display the featured image of a page</h4>
 <code>[content type="page" name="about-me" field="image"]</code>
-<h4>Display a custom field from a custom post type</h4>
+<h4>Display a field from a custom post type</h4>
 <code>[content type="apartment" name="lux-suite-22" field="rent-per-day"]</code>
+<hr>
+
+The <b>[field]</b> shortcode is a shorter way to display a field from the current post.
+
 <h4>Display fields from the current post</h4>
 <code>The Article &lt;b&gt;[field title]&lt;/b&gt; by [field author] was written on [field date].</code><br>
 <hr>
 <h3>Parameters</h3>
 
-The main parameters of the <strong>[content]</strong> shortcode are:
-<ul>
-	<li><strong>type</strong> - which post type to target: <em>post</em>, <em>page</em>, or <em>custom post type</em> - the default is <em>any post type</em></li>
-	<li><strong>name</strong>, <strong>title</strong>, or <strong>id</strong> -  which post to target: <em>name/slug</em>, <em>title</em>, or <em>ID</em> - the default is the <em>current post</em></li>
-	<li><strong>field</strong> - which field to display - the default is the <em>main content</em> of the post
+<h4>Post</h4>
 
-	You can display custom fields as well as predefined fields: <em>id</em>,<em> url</em>,<em> edit-url</em>,<em> title</em>,<em> title-link</em> (title wrapped in the post's link),<em> date</em>,<em> modified</em>,<em> author</em>,<em> author-id</em>,<em> author-url</em>,<em> avatar</em>,<em> image</em>,<em> image-url</em>,<em> thumbnail</em>, and<em> excerpt.</em></li>
+<ul>
+	<li><strong>type</strong> - post type: <em>post</em>, <em>page</em>, or <em>custom post type</em> - default is <em>any</em></li>
+	<li><strong>name</strong>, <strong>title</strong>, or <strong>id</strong> -  get post by <em>name/slug</em>, <em>title</em>, or <em>ID</em> - default is <em>current post</em></li>
+</ul>
+<h4>Fields</h4>
+<ul>
+	<li><strong>field</strong> - name of field to display - if empty, the default is the <em>post content</em></li>
+
+You can display custom fields as well as predefined fields:
+
+	<ul>
+		<li><i>id</i> - post ID</li>
+		<li><i>url</i> - post URL</li>
+		<li><i>edit-url</i> - post edit URL</li>
+	</ul><ul>
+		<li><i>title</i> - post title</li>
+		<li><i>title-link</i> - post title with link to the post</li>
+		<li><i>excerpt</i> - post excerpt</li>
+	</ul><ul>
+		<li><i>date</i> - published date</li>
+		<li><i>modified</i> - last modified date</li>
+	</ul><ul>
+		<li><i>image</i> - featured image</li>
+		<li><i>image-url</i> - featured image URL</li>
+		<li><i>image-link</i> - featured image with link to the post</li>
+	</ul><ul>
+		<li><i>thumbnail</i> - featured image thumbnail</li>
+		<li><i>thumbnail-link</i> - featured image thumbnail with link to the post</li>
+	</ul><ul>
+		<li><i>author</i> - post author</li>
+		<li><i>author-id</i> - post author ID</li>
+		<li><i>author-url</i> - post author URL</li>
+		<li><i>avatar</i> - post author avatar</li>
+	</ul>
 
 	Also, you can use <b>[field <em>field_name</em>]</b> instead of [content field="<em>field_name</em>"]
 

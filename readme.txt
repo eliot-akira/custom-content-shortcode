@@ -84,8 +84,10 @@ With other libraries:
 
 = 1.1.6 =
 
-* **[loop id]** - preserve post ID order if multiple values given
-* **[loop columns]** - skip empty columns
+* **[field image-link]** - Featured image with link to post
+* **[field thumbnail-link]** - Featured image thumbnail with link to post
+* **[loop id]** - Preserve post ID order if multiple values given
+* **[loop columns]** - Skip empty columns
 
 = 1.1.5 =
 
@@ -93,8 +95,8 @@ With other libraries:
 * **[if image]** - If current post has a featured image
 * **Settings** - Enable shortcodes inside Text widget
 * Test compatibility with WordPress 4.0
-* Improve documentation
 * Add donate link on plugin page
+* Improve documentation
 
 = 1.1.3 =
 
