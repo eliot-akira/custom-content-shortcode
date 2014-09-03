@@ -1,0 +1,51 @@
+<h3>WCK Fields and Post Types</h3>
+<hr>
+
+Use <b>[wck-field]</b> to display a field from a metabox.
+
+<h4>Display fields</h4>
+<code>[wck-field meta="metabox_name" name="field_name"]
+[wck-field meta="another_metabox" name="another_field"]
+</code>
+
+<h3>Parameters</h3>
+
+<ul>
+	<li><b>meta</b> - name of metabox</li>
+	<li><b>name</b> - name of field</li>
+	<li><b>id</b> - post id (default is current post)</li>
+</ul><br>
+
+<hr>
+<h3>Repeater</h3>
+
+Use <b>[wck-repeat]</b> to go through repeater fields.
+
+<h4>Display repeater fields</h4>
+<code>[wck-repeat meta="metabox_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;[wck-field name="field_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;[wck-field name="another_field"]
+[/wck-repeat]
+</code><br>
+
+<h3>Parameters</h3>
+
+<ul>
+	<li><b>meta</b> - name of metabox</li>
+	<li><b>id</b> - post id (default is current post)</li>
+</ul><br>
+
+<hr>
+<h3>Loop</h3>
+
+You can use these inside <b>[loop]</b> to display fields from multiple posts.
+
+<h4>Display repeater fields from five recent posts</h4>
+<code>[loop type="post_type" count="5"]
+&nbsp;&nbsp;&nbsp;&nbsp;Post Title: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[wck-repeat meta="metabox_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[wck-field name="field_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[wck-field name="another_field"]
+&nbsp;&nbsp;&nbsp;&nbsp;[/wck-repeat]
+[/loop]
+</code>
