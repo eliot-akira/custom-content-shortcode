@@ -25,8 +25,10 @@ class CCSGlobal {
 			'for_loop' => 'false',
 			'is_gallery_loop' => 'false',
 			'is_attachment_loop' => 'false',
+
 			'is_repeater_loop' => 'false',
 			'is_acf_gallery_loop' => 'false',
+
 			'current_loop_id' => '',
 			'current_row' => '',
 			'current_image' => '',
@@ -44,7 +46,13 @@ class CCSGlobal {
 			'current_attachment_ids' => '',
 			'current_script' => '',
 			'current_post' => '',
+
 			'is_relationship_loop' => 'false',
+
+			'is_wck_repeater' => 'false',
+			'is_wck_repeater_id' => 0,
+			'is_wck_repeater_meta' => '',
+			'is_wck_repeater_key' => '',
 		);
 
 		$ccs_content_template_loader = false; // Set true to enable template loader (under development)

@@ -3,7 +3,7 @@
 Plugin Name: Custom Content Shortcode
 Plugin URI: http://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 1.1.6
+Version: 1.1.7
 Author: Eliot Akira
 Author URI: eliotakira.com
 License: GPL2
@@ -66,12 +66,13 @@ $load_mobile_detect = isset( $ccs_settings['load_mobile_detect'] ) ?
 
 if ($load_gallery_field == "on")
 	require_once (CCS_PATH.'/includes/ccs-gallery.php');		// Simple gallery
-if ($load_bootstrap_module == "on")
-	require_once (CCS_PATH.'/includes/ccs-bootstrap.php');		// Bootstrap support
 if ($load_acf_module == "on")
 	require_once (CCS_PATH.'/includes/ccs-acf.php');			// Advanced Custom Fields support
 if ($load_file_loader == "on")
 	require_once (CCS_PATH.'/includes/ccs-load.php');			// Load HTML, CSS, JS fields
 if ($load_mobile_detect == "on")
 	require_once (CCS_PATH.'/includes/ccs-mobile.php'); 		// Mobile detect shortcodes
+if ($load_bootstrap_module == "on")
+	require_once (CCS_PATH.'/includes/ccs-bootstrap.php');		// Bootstrap support
 
+	require_once (CCS_PATH.'/includes/ccs-wck.php'); 			// WCK support (it detects if WCK exists)

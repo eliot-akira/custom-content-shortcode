@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,7 @@ The **[content]** shortcode displays any of the following: *posts, pages, custom
 
 The **[loop]** shortcode performs query loops. It can display, for example, available products in a category, or excerpts from the 5 most recent posts. You can query by parameters such as: *post type, category, custom taxonomy, date,* and *custom field values*.
 
-There is a reference page under *Settings -> Custom Content*.
+There is a reference page under Settings -> Custom Content.
 
 
 = Included =  
@@ -39,10 +39,11 @@ You'll find many useful features:
 * **Comments** list, input form or comment count
 * Display content based on mobile detect
 
-With other libraries:
+Support for other plugins:
 
-* Display [Advanced Custom Fields](http://wordpress.org/plugins/advanced-custom-fields/) - **image**, **gallery**, **repeater**, **flexible content**
-* Display [Bootstrap](http://getbootstrap.com/) **carousel**, **navbar menu**, **pills**, **stacked**
+* [Advanced Custom Fields](http://wordpress.org/plugins/advanced-custom-fields/) - Image, relationship, gallery, repeater, flexible content
+* [WCK Fields and Post Types](http://wordpress.org/plugins/wck-custom-fields-and-custom-post-types-creator/) - Text, select, checkbox, radio, upload, repeater
+* [Bootstrap](http://getbootstrap.com/) Carousel, navbar menu, pills, stacked
 
 
 == Installation ==
@@ -81,6 +82,11 @@ With other libraries:
 
 
 == Changelog ==
+
+
+= 1.1.7 =
+
+* Support WCK Fields/Post Types if installed: **[wck-field], [wck-repeat]**
 
 = 1.1.6 =
 

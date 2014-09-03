@@ -977,7 +977,9 @@ class LoopShortcode {
 
 						foreach ($output as $each) {
 
-							if ( !empty( trim($each) ) ) {
+							$trimmed = trim($each);
+
+							if ( !empty( $trimmed ) ) {
 								$col++;
 								echo '<div class="column-1_of_'.$columns.'" style="width:'.$percent.'%;float:left;">';
 

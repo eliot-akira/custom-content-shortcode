@@ -802,6 +802,12 @@ class CustomContentShortcode {
 	}
 
 
+	/*========================================================================
+	 *
+	 * [field]
+	 *
+	 *=======================================================================*/
+
 	public static function custom_field_shortcode($atts) {
 		$out = null; $rest="";
 		if (isset($atts) && !empty($atts[0])) {
@@ -820,6 +826,12 @@ class CustomContentShortcode {
 	}
 
 
+	/*========================================================================
+	 *
+	 * [taxonomy]
+	 *
+	 *=======================================================================*/
+
 	public static function custom_taxonomy_shortcode($atts) {
 		$out = null; $rest="";
 		if (isset($atts) && !empty($atts[0])) {
@@ -836,7 +848,6 @@ class CustomContentShortcode {
 		}
 		return $out;
 	}
-
 
 }
 new CustomContentShortcode;
