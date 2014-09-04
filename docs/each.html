@@ -1,4 +1,4 @@
-<h3>For/each loop</h3>
+<h3>For/each</h3>
 
 This is a feature to create a loop for each category, tag, or taxonomy term.
 
@@ -16,11 +16,15 @@ It gets all existing terms of a given taxonomy, in this case <em>category</em>, 
 
 Available parameters for the <strong>[for]</strong> shortcode are:
 <ul>
-	<li><strong>each</strong> - <em>category</em>, <em>tag</em>, or custom taxonomy slug</li>
-	<li><strong>orderby</strong> - order by <em>name</em> (default), <em>count</em> (post count), <em>id</em>, or <em>slug</em></li>
-	<li><strong>order</strong> - <em>ASC</em> (ascending - default), or <em>DESC</em> (descending)</li>
+	<li><strong>each</strong> - <em>category</em>, <em>tag</em>, or custom taxonomy</li>
+</ul><ul>
 	<li><strong>count</strong> - limit number of terms: <em>count="3"</em></li>
 	<li><strong>parent</strong> - get child categories by parent slug</li>
+</ul><ul>
+	<li><strong>orderby</strong> - order by <em>name</em> (default), <em>count</em> (post count), <em>id</em>, or <em>slug</em></li>
+	<li><strong>order</strong> - <em>ASC</em> (ascending - default), or <em>DESC</em> (descending)</li>
+</ul><ul>
+	<li><b>trim</b> - set <i>true</i> to trim space or comma at the end</li>
 </ul>
 
 Available parameters for the <strong>[each]</strong> shortcode are:
@@ -31,9 +35,9 @@ Available parameters for the <strong>[each]</strong> shortcode are:
 </ul>
 <br>
 <hr>
-<h3>Category/tag/taxonomy of each post in a loop</h3>
+<h3>Loop</h3>
 
-It's also possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
+It's possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
 
 <h4>Display a link for each category assigned to a post</h4>
 <code>[loop type="post"]
@@ -44,12 +48,28 @@ It's also possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
 [/loop]</code>
 <br>
 <hr>
-<h3>Category/tag/taxonomy of current post</h3>
+<h3>Current post</h3>
 
-When used outside the loop, set <em>current="true"</em> to display category/tag/taxonomy assigned to the current post only.
+Outside the loop, use the <em>current</em> parameter to display category/tag/taxonomy of the current post only. Otherwise, <b>[for]</b> displays all terms that exist.
 
 <h4>Display a link for each category assigned to the current post</h4>
 <code>[for each="category" current="true"]
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url]/category/[each slug]"&gt;[each name]&lt;/a&gt;
 [/for]
 </code>
+<br>
+<hr>
+<h3>List</h3>
+
+You can use the <i>trim</i> parameter to create a list of terms. It removes extra space or comma at the end.
+
+<h4>Display a list of categories</h4>
+<code>[for each="category" trim="true"]
+&nbsp;&nbsp;&nbsp;&nbsp;[each name], 
+[/for]</code>
+
+<h4>Trim other characters</h4>
+<code>[for each="category" trim="/"]
+&nbsp;&nbsp;&nbsp;&nbsp;[each name] / 
+[/for]</code>
+

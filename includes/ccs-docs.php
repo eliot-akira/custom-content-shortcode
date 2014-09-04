@@ -42,7 +42,8 @@ class CCS_Docs {
 	function validation_notice(){
 		global $pagenow;
 		global $ccs_settings_saved;
-		if ($pagenow == 'options-general.php' && $_GET['page'] ==
+		$page = isset($_GET['page']) ? $_GET['page'] : null;
+		if ($pagenow == 'options-general.php' && $page ==
 			'ccs_content_shortcode_help') { 
 
 			if ( (isset($_GET['updated']) && $_GET['updated'] == 'true') ||

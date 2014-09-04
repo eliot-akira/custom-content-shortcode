@@ -36,7 +36,8 @@ class ForShortcode {
 			'order' => '',
 			'count' => '',
 			'parent' => '',
-			'current' => ''
+			'current' => '',
+			'trim' => ''
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -112,6 +113,13 @@ class ForShortcode {
 				$out .= do_shortcode($content);
 
 			}
+		}
+
+		// Trim final output
+
+		if (!empty($trim)) {
+			if ($trim=='true') $trim = null;
+			$out = trim($out, " \t\n\r\0\x0B,".$trim);
 		}
 
 		$ccs_global_variable['for_loop'] = 'false';

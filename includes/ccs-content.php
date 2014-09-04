@@ -2,9 +2,9 @@
 
 /*====================================================================================================
  *
- * Content shortcode
+ * [content] shortcode
  *
- * Get a field or content
+ * Get a field or post content
  *
  *====================================================================================================*/
 
@@ -18,7 +18,7 @@ class CustomContentShortcode {
 		add_shortcode('taxonomy', array($this, 'custom_taxonomy_shortcode'));
 	}
 
-	public static function custom_content_shortcode($atts) {
+	public static function custom_content_shortcode( $atts ) {
 
 		global $ccs_global_variable;
 		global $post;
@@ -33,16 +33,18 @@ class CustomContentShortcode {
 			'id' => null,
 
 			'page' => null,
-			'status' => null,
+//			'status' => null,
+
+			'taxonomy' => null, 'checkbox' => null, 'out' => null,
 
 			'align' => null, 'class' => null, 'height' => null,
-			'taxonomy' => null, 'checkbox' => null, 'out' => null,
 			'words' => null, 'len' => null, 'length' => null,
 			'date_format' => null, 'timestamp' => null,
-			'num' => null, 'image' => null, 'in' => null, 'return' => null,
+			'image' => null, 'in' => null, 'return' => null,
 			'image_class' => null, 
 			'more' => '', 'dots' => '...',
-			'meta' => '', // User meta?
+
+			'meta' => '', // Author meta
 
 			'embed' => null, 'format' => null, 'shortcode' => null,
 
@@ -50,10 +52,9 @@ class CustomContentShortcode {
 			'menu' => null, 'ul' => null,
 
 			'row' => null, 'sub' => null,
-			'acf_gallery' => null,
+			'acf_gallery' => null, 'num' => null,
 
-			'gallery' => 'false',
-			'group' => null,
+			'gallery' => 'false', 'group' => null,
 
 			'url' => null, // Optional for image-link
 
@@ -67,7 +68,7 @@ class CustomContentShortcode {
 
 		/*========================================================================
 		 *
-		 * Set up query
+		 * Set up query parameters
 		 *
 		 *=======================================================================*/
 
@@ -116,17 +117,6 @@ class CustomContentShortcode {
 			$status = explode(",", $status);
 		else
 			$status = array("publish");
-
-
-		$native_gallery_options = array(
-			'orderby' => $orderby,
-			'order' => $order,
-			'columns' => $columns,
-			'size' => $size,
-			'link' => $link,
-			'include' => $include,
-			'exclude' => $exclude
-		);
 
 		$out = null;
 		if($image != null) {
@@ -398,17 +388,22 @@ class CustomContentShortcode {
 				}
 				$out .= '"';
 
-				/* Add other options: orderby, order, columns, size, link, include, exclude */
+				/* Additional parameters */
 
-				$native_gallery_options_list = array('orderby', 'order', 'columns',
-					'size', 'link', 'include', 'exclude');
+				$native_gallery_options = array(
+					'orderby' => $orderby,
+					'order' => $order,
+					'columns' => $columns,
+					'size' => $size,
+					'link' => $link,
+					'include' => $include,
+					'exclude' => $exclude
+				);
 
-				foreach ($native_gallery_options_list as $each_option) {
+				foreach ($native_gallery_options as $option => $value) {
 
-					if ($native_gallery_options[$each_option] != '') {
-
-						$out .= ' ' . $each_option . '="' . $native_gallery_options[$each_option] . '"';
-
+					if (!empty($value)) {
+						$out .= ' ' . $option . '="' . $value . '"';
 					}
 				}
 
@@ -689,23 +684,15 @@ class CustomContentShortcode {
 			$out = implode(", ", $out);
 		}
 
+
+		/*========================================================================
+		 *
+		 * Trim by words or characters
+		 *
+		 *=======================================================================*/
+
 		if($words!='') {
 			$out = wp_trim_words( $out, $words );
-	/*
-			$excerpt_length = $words;
-			$the_excerpt = $out;
-
-			$the_excerpt = strip_tags(strip_shortcodes($the_excerpt)); //Strips tags and images
-			$words = explode(' ', $the_excerpt, $excerpt_length + 1);
-
-			if(count($words) > $excerpt_length) :
-				array_pop($words);
-	//			array_push($words, '…');
-				$the_excerpt = implode(' ', $words);
-			endif;
-
-			$out = $the_excerpt;
-	*/
 		}
 
 		if($length!='') {
@@ -713,13 +700,14 @@ class CustomContentShortcode {
 			$the_excerpt = $out;
 			$the_excerpt = strip_tags(strip_shortcodes($the_excerpt)); //Strips tags and images
 
+			// Support multi-byte character code
 			$out = mb_substr($the_excerpt, 0, $length, 'UTF-8');
 		}
 
 
 		/*========================================================================
 		 *
-		 * If wrapping title in link, do it after word/length parameter
+		 * If wrapping title in link, do it after word/length trim
 		 *
 		 *=======================================================================*/
 
@@ -765,6 +753,12 @@ class CustomContentShortcode {
 			$out = wpautop( $out );
 		}
 
+		/*========================================================================
+		 *
+		 * Read more tag
+		 *
+		 *=======================================================================*/
+
 		if (!empty($more)) {
 
 			$until_pos = strpos($out, '<!--more-->');
@@ -791,12 +785,13 @@ class CustomContentShortcode {
 			}
 		}
 
+		/* Not needed? Loop handles post status already
 		if ( $status!=array("any") ) {
 			$post_status = get_post_status($custom_id);
 			if ( ! in_array($post_status, $status) ) {
 				$out = null;
 			}
-		}
+		} */
 
 		return $out;
 	}
@@ -809,8 +804,16 @@ class CustomContentShortcode {
 	 *=======================================================================*/
 
 	public static function custom_field_shortcode($atts) {
+
 		$out = null; $rest="";
-		if (isset($atts) && !empty($atts[0])) {
+
+		if (isset($atts) && ( !empty($atts[0]) || !empty($atts['image'])) ) {
+
+			if (!empty($atts['image'])) {
+				$field_param = 'image="'.$atts['image'].'"';
+			} else {
+				$field_param = 'field="'.$atts[0].'"';
+			}
 
 			if (count($atts)>1) {
 				$i=0;
@@ -820,8 +823,11 @@ class CustomContentShortcode {
 					$i++;
 				}
 			}
-			$out = do_shortcode('[content field="'.$atts[0].'"'.$rest.']');
+
+			// Pass it to [content]
+			$out = do_shortcode('[content '.$field_param.$rest.']');
 		}
+
 		return $out;
 	}
 

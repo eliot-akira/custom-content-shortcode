@@ -41,11 +41,14 @@ class WCKFieldShortcode {
 			'meta' => '',
 			'name' => '',
 			'id' => '',
+			'shortcode' => 'false',
 		), $atts ) );
 
 		/* Inside repeater? */
 
 		if ( $ccs_global_variable['is_wck_repeater']=='true' ) {
+
+			// Get meta key
 
 			if (empty($meta))
 				$meta = $ccs_global_variable['wck_repeater_meta'];
@@ -59,6 +62,11 @@ class WCKFieldShortcode {
 		if ( (!empty($meta)) && (!empty($name)) ) {
 
 			ob_start(); // Store output of the_cfc_field in buffer
+
+			// Remove nl2br formatting if shortcode is enabled
+			if ($shortcode == 'true') {
+				remove_filter( 'wck_output_get_field_textarea', 'wck_preprocess_field_textarea');
+			}
 
 			if ($ccs_global_variable['is_wck_repeater']=='true') {
 
@@ -75,7 +83,15 @@ class WCKFieldShortcode {
 				else the_cfc_field( $meta, $name );
 			}
 
-			$out = ob_get_clean();
+			if ($shortcode == 'true') {
+				$out = do_shortcode(ob_get_clean());
+
+				// Put back nl2br formatting
+				add_filter( 'wck_output_get_field_textarea', 'wck_preprocess_field_textarea', 10);
+			}
+			else {
+				$out = ob_get_clean();
+			}
 		}
 		return $out;
 	}
@@ -128,5 +144,3 @@ class WCKFieldShortcode {
 
 }
 new WCKFieldShortcode;
-
-

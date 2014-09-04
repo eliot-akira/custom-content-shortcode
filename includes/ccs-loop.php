@@ -16,26 +16,34 @@ class LoopShortcode {
 	}
 
 	function register() {
-		add_shortcode( 'loop', array( $this, 'the_loop_shortcode' ) );
-		add_shortcode( 'pass', array( $this, 'pass_shortcode' ) );
 
+		add_shortcode( 'loop', array( $this, 'the_loop_shortcode' ) );
+
+		add_shortcode( 'pass', array( $this, 'pass_shortcode' ) );
 		add_shortcode( 'loop-count', array( $this, 'loop_count_shortcode' ) );
 
-		// To do: confirm that this filter is working
-		add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize') );
+		/*========================================================================
+		 *
+		 * Set up WP filters
+		 *
+		 *=======================================================================*/
 
 		// Get settings
 
 		$settings = get_option( 'ccs_content_settings' );
+
+		// Move wpautop filter?
+
 		$move_wpautop = isset( $settings['move_wpautop'] ) ?
 			esc_attr( $settings['move_wpautop'] ) : 'off';
 
 		if ($move_wpautop == "on") {
-			// move wpautop filter to AFTER shortcodes are processed
 			remove_filter( 'the_content', 'wpautop' );
 			add_filter( 'the_content', 'wpautop' , 99);
 			add_filter( 'the_content', 'shortcode_unautop',100 );
 		}
+
+		// Enable shortcodes in widget?
 
 		$shortcodes_in_widget = isset( $settings['shortcodes_in_widget'] ) ?
 			esc_attr( $settings['shortcodes_in_widget'] ) : 'off';
@@ -43,6 +51,10 @@ class LoopShortcode {
 		if ($shortcodes_in_widget == "on") {
 			add_filter('widget_text', 'do_shortcode');
 		}
+
+		// Exempt [loop] from wptexturize()
+
+		add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize') );
 	}
 
 	function shortcodes_to_exempt_from_wptexturize($shortcodes){
@@ -50,9 +62,21 @@ class LoopShortcode {
 		return $shortcodes;
 	}
 
+
+
+	/*========================================================================
+	 *
+	 * Main function for [loop]
+	 * 
+	 * To do: organize into a group of functions, with filters
+	 *
+	 *=======================================================================*/
+
 	function the_loop_shortcode( $atts, $template = null, $shortcode_name ) {
 
 		global $ccs_global_variable;
+
+		if( ! is_array( $atts ) ) return; // Needs at least one parameter
 
 		$ccs_global_variable['is_loop'] = "true";
 		$ccs_global_variable['current_loop_count'] = 0;
@@ -63,45 +87,59 @@ class LoopShortcode {
 		$ccs_global_variable['is_repeater_loop'] = "false";
 		$ccs_global_variable['total_comments'] = 0;
 
-		if( ! is_array( $atts ) ) return; // Avoid infinite loop
+		// Non WP_Query arguments
 
-		// non-wp_query arguments
 		$args = array(
-			'type' => '',
-			'category' => '',
-			'count' => '',
+			'type' => '', 'name' => '',
+
+			'id' => '', 'exclude' => '',
+			'status' => '', 'parent' => '', 
+			'count' => '', 'offset' => '',
+			'year' => '', 'month' => '', 'day' => '',
+
+			// Taxonomy, field value, or checkbox
+
+			'taxonomy' => '', 'tax' => '',
+			'category' => '', 'tag' => '', 
+			'field' => '', 'value' => '', 'compare' => '', 'in' => '',
+			'field_2' => '', 'value_2' => '', 'compare_2' => '', 'relation' => '',
+				'f' => '', 'v' => '', 'c' => '', 'f2' => '', 'v2' => '', 'c2' => '', 'r' => '', 
+			'checkbox' => '', 'checkbox_2' => '', 
+
+			// Sort
+
+			'orderby' => '', 'order' => '',
+			'series' => '', 'key' => '',
+
+			// Format
+
+			'date_format' => '',
+			'columns' => '', 'pad' => '',
+			'strip_tags' => '', 'strip' => '', 'allow' => '',
+			'clean' => 'false', 'trim' => '',
+
+			// Gallery
+
+			'gallery' => '', 'acf_gallery' => '',
+			'repeater' => '', // ACF repeater
+			
+			// Other
+
+			'fields' => '', 'custom_fields' => '', // CSV list of custom field names to expand
+			'blog' => '', // Multi-site (not tested)
+			'x' => '', // Just loop X times, no query
+
+			// ?
+			'if' => '', 'list' => '', 'posts_separator' => '',
+			'variable' => '', 'var' => '',
 			'content_limit' => 0,
 			'thumbnail_size' => 'thumbnail',
-			'posts_separator' => '',
-			'gallery' => '',
-			'acf_gallery' => '',
-			'id' => '',
-			'name' => '',
-			'field' => '', 'value' => '', 'compare' => '', 'in' => '', 'date_format' => '',
-			'f' => '', 'v' => '', 'c' => '', 
-			'field_2' => '', 'value_2' => '', 'compare_2' => '', 'relation' => '',
-			'f2' => '', 'v2' => '', 'c2' => '', 'r' => '', 
-			'repeater' => '',
-			'x' => '',
-			'taxonomy' => '', 'tax' => '', 'value' => '',
-			'orderby' => '', 'keyname' => '', 'order' => '',
-			'series' => '', 'key' => '',
-			'post_offset' => '', 'offset' => '',
-			'strip_tags' => '', 'strip' => '',
-			'clean' => 'false',
-			'title' => '', 'if' => '',
-			'variable' => '', 'var' => '',
-			'year' => '', 'month' => '', 'day' => '',
-			'list' => '',
-			'allow' => '', 'checkbox' => '', 'checkbox_2' => '', 
-			'status' => '', 'parent' => '', 'exclude' => '',
-			'columns' => '', 'tag' => '', 'pad' => '',
-			'blog' => ''
+			'title' => '', 'post_offset' => '',
+			'keyname' => '', 
 		);
 
 		$all_args = shortcode_atts( $args , $atts, true );
 		extract( $all_args );
-
 
 /*========================================================================
  *
@@ -142,7 +180,7 @@ class LoopShortcode {
 
 
 		/*
-		 * Meta query parameters
+		 * Aliases
 		 */
 
 			if($f!='')	$field = $f;
@@ -152,9 +190,7 @@ class LoopShortcode {
 			if($v!='')	$value_2 = $v2;
 			if($c!='')	$compare_2 = $c2;
 			if($r!='')	$relation = $r;
-/*			if($checkbox!='') $field = $checkbox;
-			if($checkbox_2!='') $field_2 = $checkbox_2;
-*/
+			if (!empty($fields)) $custom_fields = $fields; // Alias
 
 		if(( $field != 'gallery' ) && ($shortcode_name != 'pass') && ($value!='')) {
 
@@ -379,12 +415,15 @@ class LoopShortcode {
 
 			if (!empty($compare)) {
 
-				$compare = strtoupper($compare);
-				if ($compare=='NOT')
-					$compare = 'NOT IN';
+				if ( $compare=='=' ) $operator = 'IN';
+				elseif ( $compare=='!=' ) $operator = 'NOT IN';
+				else {
+					$compare = strtoupper($compare);
+					if ( $compare == 'NOT' )
+						$compare = 'NOT IN';
+					$operator = $compare;
 
-				$operator = $compare;
-
+				}
 			} else {
 				$operator = 'IN';
 			}
@@ -506,8 +545,10 @@ class LoopShortcode {
 
 			switch ($compare) {
 				case '':
+				case '=':
 				case 'EQUAL': $compare = "LIKE"; break;
 				case 'NOT':
+				case '!=':
 				case 'NOT EQUAL': $compare = 'NOT LIKE'; break;
 				default: break;
 			}
@@ -532,8 +573,10 @@ class LoopShortcode {
 
 				switch ($compare_2) {
 					case '':
+					case '=':
 					case 'EQUAL': $compare_2 = 'LIKE'; break;
 					case 'NOT':
+					case '!=':
 					case 'NOT EQUAL': $compare_2 = 'NOT LIKE'; break;
 					default: break;
 				}
@@ -616,7 +659,7 @@ class LoopShortcode {
 					$values = explode(",", $query_value);
 					$check_field = get_post_meta( $current_id, $checkbox, $single=true );
 
-					if(empty($compare)) $compare="or";
+					if (empty($compare)) $compare="or";
 					elseif (empty($checkbox_2)) $compare = strtolower($compare);
 					else $compare="or";
 
@@ -806,24 +849,50 @@ class LoopShortcode {
 						}
 					} else {
 
-						/*========================================================================
-						 *
-						 * Normal custom field
-						 *
-						 *=======================================================================*/
+					/*========================================================================
+					 *
+					 * Normal custom field
+					 *
+					 *=======================================================================*/
 
-						$custom_field_content = get_post_meta( $current_id, $custom_field, $single=true );
+						$custom_field_content = get_post_meta( $current_id, $custom_field, true );
 						$attachment_ids = get_post_meta( $current_id, '_custom_gallery', true );
 					}
 
+
+				/*========================================================================
+				 *
+				 * Special tags: {FIELD}
+				 *
+				 *=======================================================================*/
+
+					/* prepare custom fields to expand */
+					/* post_meta fetching needs to be optimized? */
+					$extra_keywords = array();
+					if (!empty($fields)) {
+						$ks = array_map("trim", array_filter(explode(',', $custom_fields))); // parse CSV to field keys
+						$pm = get_post_meta($current_id);
+						$extra_keywords =
+							array_map(
+								function($v){ return is_array($v) ? $v[0] : $v; }, // Flatten the values ( Array > Value )
+								array_change_key_case( // upper-case the keys for expansion later
+									array_intersect_key( // include only specified fields' keys
+										array_merge(
+											array_fill_keys($ks, ''), // default value for non-existent fields
+											$pm),
+										array_change_key_case( // assume all field names are lower case
+											array_flip($ks),
+											CASE_LOWER)),
+									CASE_UPPER));
+					}
 
 					/*========================================================================
 					 *
 					 * Special tags: {TAG}
 					 *
 					 *=======================================================================*/
+					$keywords = apply_filters( 'query_shortcode_keywords', array_merge($extra_keywords, array(
 
-					$keywords = apply_filters( 'query_shortcode_keywords', array(
 						'QUERY' => serialize($query), // DEBUG purpose
 						'COUNT' => $current_count,
 						'URL' => get_permalink(),
@@ -839,20 +908,25 @@ class LoopShortcode {
 						'COMMENT_COUNT' => get_comments_number(),
 						'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
 						'IMAGE' => get_the_post_thumbnail(),
+						'IMAGE_ID' => get_post_thumbnail_id($current_id),
 						'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id($current_id)),
 						'FIELD' => $custom_field_content,
 						'VAR' => $variable,
 						'VARIABLE' => $variable,
 						'IDS' => $attachment_ids,
-					) );
+					)) );
 
 					$out = $this->get_block_template( $template, $keywords ); // Process {KEYWORDS}
 
-
-
-
 					$total_comment_count += get_comments_number();
 
+
+					/*========================================================================
+					 *
+					 * Strip tags
+					 *
+					 *=======================================================================*/
+					
 					if ($strip_tags!='') {
 
 						if ($strip_tags=='true') {
@@ -956,7 +1030,6 @@ class LoopShortcode {
 					echo do_shortcode($middle); // then do it	
 			}
 
-			// wp_reset_query(); not necessary
 			wp_reset_postdata();
 
 			if (!$nothing_found) {
@@ -1008,8 +1081,16 @@ class LoopShortcode {
  *
  *=======================================================================*/
 
-						echo implode( "", $output );
+						$output = implode( "", $output );
 
+						// Trim final output
+
+						if (!empty($trim)) {
+							if ($trim=='true') $trim = null;
+							$output = trim($output, " \t\n\r\0\x0B,".$trim);
+						}
+
+						echo $output; // to buffer
 					}
 
 				} else {
@@ -1031,9 +1112,7 @@ class LoopShortcode {
 
 /*========================================================================
  *
- * Attachment loop: for backwards compatibility
- *
- * Replaced by [attached] shortcode
+ * Attachment loop: replaced by [attached] shortcode
  *
  *=======================================================================*/
 
@@ -1071,8 +1150,6 @@ class LoopShortcode {
 */
 
 				} else { // Fetch posts by category, then attachments
-
-// To do: allow other queries for attachments
 
 					$cat = get_category_by_slug($category);
 

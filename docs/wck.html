@@ -11,11 +11,16 @@ Use <b>[wck-field]</b> to display a field from a metabox.
 <h3>Parameters</h3>
 
 <ul>
+	<li><b>id</b> - post id (default is current post)</li>
 	<li><b>meta</b> - name of metabox</li>
 	<li><b>name</b> - name of field</li>
-	<li><b>id</b> - post id (default is current post)</li>
-</ul><br>
-
+</ul>
+<h4>Shortcode in field</h4>
+<ul>
+	<li><b>shortcode</b> - set <i>true</i> to enable shortcodes in the field</li>
+</ul>
+Usually WCK processes a text area to create break lines, but it doesn't work well with shortcodes. When shortcodes are enabled, you'll need to insert &lt;br&gt; tags manually.
+<br>
 <hr>
 <h3>Repeater</h3>
 

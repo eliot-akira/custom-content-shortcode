@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,9 +84,16 @@ Support for other plugins:
 == Changelog ==
 
 
+= 1.1.8 =
+
+* **[loop], [for]** - Add *trim* parameter to remove space or comma at the end
+* **[loop fields]** - Expand a list of fields to replace {FIELD} tags
+* **[field image]** - Display image field: *image="field_name"*
+* **[wck-field]** - Enable shortcodes in field
+
 = 1.1.7 =
 
-* Support WCK Fields/Post Types if installed: **[wck-field], [wck-repeat]**
+* **[wck-field], [wck-repeat]** - Support WCK Fields/Post Types
 
 = 1.1.6 =
 
