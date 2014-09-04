@@ -166,5 +166,12 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 
 <h3>Special tags</h3>
 
-This is a feature to expand a list of fields to special tags. It's a shorter way to insert field values in the loop.
+This is a feature to expand a list of fields to {FIELD} tags.
 
+<code>[loop type="post" fields="field_1, field_2"]
+&nbsp;&nbsp;&nbsp;&nbsp;Display {FIELD_1} and {FIELD_2}
+[/loop]</code>
+
+It's a shorter way to insert field values in a loop. Isn't that neat? Thanks, k8n!
+
+Please note that the tags are uppercase version of the field names. There are also predefined tags: COUNT, URL, ID, TITLE, AUTHOR, AUTHOR_URL, DATE, THUMBNAIL, THUMBNAIL_URL, CONTENT, EXCERPT, COMMENT_COUNT, TAGS, IMAGE, IMAGE_ID, IMAGE_URL.

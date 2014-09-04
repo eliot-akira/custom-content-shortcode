@@ -18,7 +18,6 @@ class LoopShortcode {
 	function register() {
 
 		add_shortcode( 'loop', array( $this, 'the_loop_shortcode' ) );
-
 		add_shortcode( 'pass', array( $this, 'pass_shortcode' ) );
 		add_shortcode( 'loop-count', array( $this, 'loop_count_shortcode' ) );
 
