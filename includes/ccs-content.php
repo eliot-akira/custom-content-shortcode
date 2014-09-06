@@ -239,7 +239,7 @@ class CustomContentShortcode {
 		}
 
 
-		// If post name/slug is defined, get its ID
+		// If post name/slug is defined, find its ID
 
 		if($custom_post_name != '') {
 			$args=array(
@@ -250,16 +250,16 @@ class CustomContentShortcode {
 	  		);
 
 			$my_posts = get_posts($args);
-			if( $my_posts ) {
+			if ( $my_posts ) {
 				$custom_id=$my_posts[0]->ID;
 				$current_post = $my_posts[0];
 			} else {
-				return null; // No posts found by that name
+				return null; // No post found by that name
 			}
 		}
 		else {
 
-			if(!empty($custom_id)) {
+			if (!empty($custom_id)) {
 				$current_post = get_post($custom_id); // Get post by ID
 			} else {
 				// If no name or id, then current post
@@ -277,6 +277,7 @@ class CustomContentShortcode {
 		if($ccs_global_variable['is_repeater_loop'] != 'false') {
 
 			$custom_id = $ccs_global_variable['current_loop_id'];
+			if (empty($size)) $size='full';
 
 			if($custom_field=='row') {
 				return $ccs_global_variable['current_row'];
@@ -285,13 +286,15 @@ class CustomContentShortcode {
 
 				$out = get_sub_field($custom_field, $custom_id);
 				switch($in) {
-					case 'id' : $out = wp_get_attachment_image( $out, 'full' ); break;
+					case 'id' : $out = wp_get_attachment_image( $out, $size ); break;
 					case 'url' : $out = '<img src="' . $out . '">'; break;
-					default : if(is_array($out)) {
-						$out = wp_get_attachment_image( $out['id'], 'full' );
+					default : if (is_array($out)) {
+						$out = wp_get_attachment_image( $out['id'], $size );
+					} else {
+						$out = wp_get_attachment_image( $out, $size ); 
 					}
 				}
-				if($custom_field == 'id') {
+				if ($custom_field == 'id') {
 					$out = $ccs_global_variable['current_loop_id'];
 				}
 			} else {
@@ -314,14 +317,17 @@ class CustomContentShortcode {
 		if($sub != '') {
 			$out = null;
 			if( function_exists('get_field') ) {
+				if (empty($size)) $size='full';
 				$rows = get_field($custom_field, $custom_id); // Get all rows
 				$row = $rows[$row-1]; // Get the specific row (first, second, ...)
 				$out = $row[$sub]; // Get the subfield
 				switch($in) {
-					case 'id' : $out = wp_get_attachment_image( $out, 'full' ); break;
+					case 'id' : $out = wp_get_attachment_image( $out, $size ); break;
 					case 'url' : $out = '<img src="' . $out . '">'; break;
-					default : if(is_array($out)) {
-						$out = wp_get_attachment_image( $out['id'], 'full' );
+					default : if (is_array($out)) {
+						$out = wp_get_attachment_image( $out['id'], $size );
+					} else {
+						$out = wp_get_attachment_image( $out, $size ); 
 					}
 				}
 			}
@@ -379,7 +385,7 @@ class CustomContentShortcode {
 				}
 				$out .= 'ids="';
 
-				if($acf_gallery!='') {
+				if ($acf_gallery!='') {
 					if( function_exists('get_field') ) {
 						$out .= implode(',', get_field($acf_gallery, $custom_id, false));
 					}
@@ -428,10 +434,12 @@ class CustomContentShortcode {
 			switch($in) {
 
 				case 'object' :
-					if(is_array( $image_field )) {
+					if (is_array( $image_field )) {
 						$image_id = $image_field['id'];
-						$out = wp_get_attachment_image( $image_id , $size );
+					} else {
+						$image_id = $image_field; // Assume it's ID
 					}
+					$out = wp_get_attachment_image( $image_id , $size );
 					break;
 				case 'url' : $out = '<img src="' . $out . '">'; break;
 				case 'id' : 
@@ -815,11 +823,11 @@ class CustomContentShortcode {
 				$field_param = 'field="'.$atts[0].'"';
 			}
 
-			if (count($atts)>1) {
+			if (count($atts)>1) { // Combine additional parameters
 				$i=0;
 				foreach ($atts as $key => $value) {
 					$rest .= " ";
-					if ($i>0) $rest .= $key.'="'.$value.'"';
+					if ($i>0) $rest .= $key.'="'.$value.'"'; // Skip the first parameter
 					$i++;
 				}
 			}

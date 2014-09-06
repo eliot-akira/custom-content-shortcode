@@ -873,7 +873,7 @@ class LoopShortcode {
 						$pm = get_post_meta($current_id);
 						$extra_keywords =
 							array_map(
-								function($v){ return is_array($v) ? $v[0] : $v; }, // Flatten the values ( Array > Value )
+								array($this,'array_flat'), // Flatten the values ( Array > Value )
 								array_change_key_case( // upper-case the keys for expansion later
 									array_intersect_key( // include only specified fields' keys
 										array_merge(
@@ -1492,6 +1492,8 @@ class LoopShortcode {
 		}
 
 	}
+
+	function array_flat($v){ return is_array($v) ? $v[0] : $v; }
 
 }
 

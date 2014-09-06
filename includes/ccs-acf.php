@@ -48,8 +48,10 @@ class CustomShortCodes_For_ACF {
 					case 'id' : $output = wp_get_attachment_image( $output, $size ); break;
 					case 'url' : $output = '<img src="' . $output . '">'; break;
 					default : /* image object */
-						if(is_array($output)) {
+						if (is_array($output)) {
 							$output = wp_get_attachment_image( $output['id'], $size );
+						} else {
+							$output = wp_get_attachment_image( $output, $size ); // Assume it's ID
 						}
 				}
 			}

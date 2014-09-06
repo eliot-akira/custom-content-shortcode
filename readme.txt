@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.1.8
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,13 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.2.0 =
+
+* **[field image]** - Check with ACF 5
+
+= 1.1.9 =
+
+* Fix compatibility with older versions of PHP (<5.3)
 
 = 1.1.8 =
 
