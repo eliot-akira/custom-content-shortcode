@@ -18,7 +18,7 @@ class CCS_Docs {
 		add_action('admin_menu', array($this, 'content_settings_create_menu'));
 
 		// Add settings link on plugin page
-		add_filter( "plugin_action_links", array($this, 'plugin_settings_link'), 10, 4 );
+		add_filter( 'plugin_action_links', array($this, 'plugin_settings_link'), 10, 4 );
 
 		// Remove "Settings saved" message on admin page
 		add_action( 'admin_notices', array($this, 'validation_notice'));
@@ -105,6 +105,10 @@ class CCS_Docs {
 		$move_wpautop = isset( $settings['move_wpautop'] ) ?
 			esc_attr( $settings['move_wpautop'] ) : 'off';
 
+		$shortcode_unautop = isset( $settings['shortcode_unautop'] ) ?
+			esc_attr( $settings['shortcode_unautop'] ) : 'off';
+
+
 		?>
 		<tr>
 			<td width="760px">
@@ -154,6 +158,15 @@ class CCS_Docs {
 				&nbsp;&nbsp;Move post content formatting (wp_autop) to <em>after</em> shortcodes
 			</td>
 		</tr>
+		<tr>
+			<td>
+				<input type="checkbox" value="on" name="ccs_content_settings[shortcode_unautop]"
+					<?php checked( $shortcode_unautop, 'on' ); ?>
+				/>
+				&nbsp;&nbsp;Use <i>shortcode unautop</i> to remove &lt;p&gt; tags around shortcodes
+			</td>
+		</tr>
+
 		<tr>
 			<td width="760px">
 				<hr class="setting-section">

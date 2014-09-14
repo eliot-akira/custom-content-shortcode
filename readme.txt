@@ -85,6 +85,7 @@ Support for other plugins:
 
 = 1.2.0 =
 
+* **Settings** - Enable *shortcode unautop* to remove `<p>` tags around shortcodes
 * **[field image]** - Check with ACF 5
 
 = 1.1.9 =

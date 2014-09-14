@@ -53,6 +53,7 @@ if ($ccs_settings === false ) {
 	$ccs_settings['load_mobile_detect'] = 'on';
 	$ccs_settings['shortcodes_in_widget'] = 'on';
 	$ccs_settings['move_wpautop'] = 'off';
+	$ccs_settings['shortcode_unautop'] = 'off';
 	update_option( 'ccs_content_settings', $ccs_settings );
 }
 
@@ -66,6 +67,8 @@ $load_gallery_field = isset( $ccs_settings['load_gallery_field'] ) ?
 	$ccs_settings['load_gallery_field'] : 'off';
 $load_mobile_detect = isset( $ccs_settings['load_mobile_detect'] ) ?
 	$ccs_settings['load_mobile_detect'] : 'off';
+$load_shortcode_unautop = isset( $ccs_settings['shortcode_unautop'] ) ?
+	$ccs_settings['shortcode_unautop'] : 'off';
 
 if ($load_gallery_field == "on")
 	require_once (CCS_PATH.'/includes/ccs-gallery.php');		// Simple gallery
@@ -77,3 +80,6 @@ if ($load_mobile_detect == "on")
 	require_once (CCS_PATH.'/includes/ccs-mobile.php'); 		// Mobile detect shortcodes
 if ($load_bootstrap_module == "on")
 	require_once (CCS_PATH.'/includes/ccs-bootstrap.php');		// Bootstrap support
+
+if ($load_shortcode_unautop == "on")
+	require_once (CCS_PATH.'/includes/ccs-unautop.php');		// Shortcode unautop
