@@ -1,0 +1,39 @@
+
+#content-overview-page {
+	max-width:960px;
+}
+
+.text-left {
+	text-align: left;
+}
+
+.wrap h2 {
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+.wrap h3 {
+	margin-left: 10px;
+	margin-bottom: 20px;
+	font-size:20px;
+}
+
+.wrap table {
+	margin-bottom: 40px;
+}
+
+.wrap td {
+	vertical-align:top;
+}
+
+.dropdown-action {
+	cursor: pointer;
+}
+
+.dropdown-action:hover {
+	color: #0074a2;
+}
+
+.dropdown-body {
+	display: none;
+}

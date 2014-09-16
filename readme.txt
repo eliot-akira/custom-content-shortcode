@@ -85,6 +85,7 @@ Support for other plugins:
 
 = 1.2.0 =
 
+* **Content Overview** - Show available user meta fields
 * **Settings** - Enable *shortcode unautop* to remove `<p>` tags around shortcodes
 * **[field image]** - Check with ACF 5
 

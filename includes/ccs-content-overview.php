@@ -1,11 +1,10 @@
 
-<div style="max-width:960px;">
+<div id="content-overview-page">
 
-	<h2  style="padding-left:10px">Content Overview</h2>
-
-	<div style="height:10px"></div>
+	<h2>Content Overview</h2>
 
 	<hr>
+
 <?php
 
 /*========================================================================
@@ -15,8 +14,7 @@
  *=======================================================================*/
 
 ?>
-	<h3 style="padding-left:10px;font-size:20px;">Post types and fields</h3>
-	<div style="height:10px"></div>
+	<h3>Post types and fields</h3>
 
 	<table class="wp-list-table widefat fixed posts">
 		<thead>
@@ -112,7 +110,7 @@
 					<tr <?php echo $alternate; ?>>
 
 
-						<td style="vertical-align:top;" class="column-title">
+						<td class="column-title">
 
 							<?php
 
@@ -149,7 +147,7 @@
 
 						</td>
 
-						<td style="vertical-align:top">
+						<td>
 
 							<?php  echo $post_type . '<br>'; ?>
 
@@ -220,7 +218,7 @@
 
 
 
-		<td style="vertical-align:top">
+		<td>
 				<?php
 			        $taxonomies = get_object_taxonomies($post_type);
 
@@ -234,7 +232,7 @@
 					/*		echo implode(', ', $taxonomies ); */
 				?>
 		</td>
-		<td style="vertical-align:top">
+		<td>
 				<?php
 			        foreach ($taxonomies as $row => $taxonomy) {
 
@@ -248,7 +246,7 @@
 
 
 
-		<td style="vertical-align:top">
+		<td>
 			<?php
 				if ( empty( $all_fields) ) {
 					echo '<br>'; // Prevent cell from collapsing
@@ -265,7 +263,7 @@
 */			?>
 		</td>
 
-		<td style="vertical-align:top">
+		<td>
 		<?php
 
 // Default fields
@@ -304,7 +302,7 @@
 
 		</td>
 
-		<td style="vertical-align:top;" class="column-author">
+		<td class="column-author">
 
 		<?php
 			echo $post_count[ $post_type ] . '<br>';
@@ -326,7 +324,6 @@
 	</tbody>
 	</table>
 
-	<div style="height:40px"></div>
 	<hr>
 <?php
 
@@ -337,10 +334,8 @@
  *=======================================================================*/
 
 ?>
-	<h3 style="padding-left:10px;font-size:20px;">Taxonomies</h3>
-	<div style="height:10px"></div>
+	<h3>Taxonomies</h3>
 
-	<div style="max-width:960px;">
 	<table class="wp-list-table widefat fixed posts">
 		<thead>
 			<tr>
@@ -379,7 +374,7 @@
 						?>
 						<tr <?php echo $alternate; ?>>
 
-							<td style="vertical-align:top" class="row-title">
+							<td class="row-title">
 
 								<?php
 
@@ -394,7 +389,7 @@
 								?>
 
 							</td>
-							<td style="vertical-align:top">
+							<td>
 
 								<?php
 
@@ -405,7 +400,7 @@
 								?>
 
 							</td>
-							<td style="vertical-align:top">
+							<td>
 								<?php
 
 								$terms = get_terms( $taxonomy );
@@ -415,7 +410,7 @@
 								}
 								?>
 							</td>
-							<td style="vertical-align:top">
+							<td>
 								<?php
 
 								foreach ( $terms as $term ) {
@@ -437,11 +432,62 @@
 
 		</tbody>
 	</table>
+
+	<a href="#" id="user-roles"></a>
+	<hr>
+<?php
+
+/*========================================================================
+ *
+ * User meta
+ *
+ *=======================================================================*/
+
+?>
+	<h3 class="dropdown-action" data-id="user-meta-table">User meta</h3>
+
+	<div id="user-meta-table" class="dropdown-body">
+
+	<table class="wp-list-table widefat fixed posts">
+		<thead>
+			<tr>
+				<th>Fields</th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody id="the-list">
+
+			<?php
+
+			// Show all user fields
+
+			$all_meta = get_user_meta( 1 );
+			ksort($all_meta);
+
+			echo '<tr>';
+			$count = 0;
+			$max = count($all_meta);
+			$break = round($max / 4);
+
+			foreach ($all_meta as $key => $value) {
+
+				$count++;
+
+				if ($count % $break == 1) echo '<td>';
+				echo $key.'<br>';
+				if ($count % $break == 0) echo '</td>';
+			}
+
+			if ($count % $break != 0) echo '</td>';
+			echo '</tr>';
+
+			?>
+		</tbody>
+	</table>
 	</div>
 
-
-	<div style="height:40px"></div>
-	<a href="#" id="user-roles"></a>
 	<hr>
 <?php
 
@@ -452,10 +498,9 @@
  *=======================================================================*/
 
 ?>
-	<h3 style="padding-left:10px;font-size:20px;">User roles</h3>
-	<div style="height:10px"></div>
+	<h3 class="dropdown-action" data-id="user-roles-table">User roles</h3>
 
-	<div style="max-width:960px;">
+	<div id="user-roles-table" class="dropdown-body">
 
 	<table class="wp-list-table widefat fixed posts">
 		<thead>
@@ -502,18 +547,18 @@
 					echo '<tr ' . $alternate . '>';
 
 					?>
-						<td style="vertical-align:top" class="row-title">
+						<td class="row-title">
 								<?php
 									echo $role['name'] . '<br>';
 								?>
 						</td>
-						<td style="vertical-align:top;text-align:left;">
+						<td class="text-left">
 								<?php
 									echo $role_slug . '<br>';
 								?>
 						</td>
 
-						<td style="vertical-align:top">
+						<td>
 							<?php
 
 							$capabilities = array();
@@ -542,7 +587,6 @@
 	</table>
 	</div>
 
-	<div style="height:40px"></div>
 	<hr>
 <?php
 
@@ -553,10 +597,9 @@
  *=======================================================================*/
 
 ?>
-	<h3 style="padding-left:10px;font-size:20px;">Registered shortcodes</h3>
-	<div style="height:10px"></div>
+	<h3 class="dropdown-action" data-id="registered-shortcodes-table">Registered shortcodes</h3>
 
-	<div style="max-width:960px;">
+	<div id="registered-shortcodes-table" class="dropdown-body">
 
 	<table class="wp-list-table widefat fixed posts">
 		<thead>
@@ -651,10 +694,30 @@
 		</tbody>
 	</table>
 	</div>
+<hr>
 
-	<div style="height:40px"></div>
-
-	<div style="padding-left:5px;">
+	<div style="margin:20px 0 0 5px;">
 		<a href="options-general.php?page=ccs_content_shortcode_help"><em>Reference: Custom Content Shortcode</em></a>
 	</div>
 </div>
+<script type="text/javascript">
+	
+// Dropdown action
+
+jQuery(document).ready(function($){
+
+	$('.dropdown-action').on('click',function(){
+		var dropID = $(this).data('id');
+		$('#'+dropID).slideToggle('fast');
+
+		var $toggled = $(this).children('.toggled');
+
+		if ($toggled.html()==' + ')
+			$toggled.html(' - ');
+		else if ($toggled.html()==' - ')
+			$toggled.html(' + ');
+	});
+
+});
+
+</script>
