@@ -94,7 +94,7 @@ Support for other plugins:
 
 = 1.1.9 =
 
-* Fix compatibility with old versions of PHP (<5.3)
+* Fix compatibility for PHP older than 5.3
 
 = 1.1.8 =
 
