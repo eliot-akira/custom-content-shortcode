@@ -40,7 +40,7 @@ There are special fields that are automatically loaded into the page.
 <h3>Head - CSS</h3>
 Create a custom field named <em>css</em>, and the field will be included in the document head.
 <h4>Load a page-specific stylesheet</h4>
-<code>[load css="landing-page.min.css"]</code>
+<code>[load css="landing-page.css"]</code>
 
 By default, it looks for the stylesheet in the <i>css</i> folder of the current theme directory.
 
@@ -48,7 +48,7 @@ By default, it looks for the stylesheet in the <i>css</i> folder of the current 
 
 <code>[load dir="content" css="includes/css/font-awesome.min.css"]</code>
 
-<h4>Wrapping CSS script</h4>
+<h4>Wrapping CSS style</h4>
 <code>[css]
 &nbsp;&nbsp;&nbsp;&nbsp;.entry-content {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;background-color: black;
@@ -73,11 +73,11 @@ This should be placed in the <i>css</i> field.
 <h3>Foot - JS</h3>
 Create a custom field named <em>js</em>, and the field will be included at the foot of document body.
 <h4>Load a JavaScript file</h4>
-<code>[load js="slider.min.js"]</code>
+<code>[load js="slider.js"]</code>
 
 By default, it looks for the file in the <i>js</i> folder of the current theme directory.
 
-<h4>Wrapping JS script</h4>
+<h4>Wrapping script</h4>
 <code>[js]
 &nbsp;&nbsp;&nbsp;&nbsp;jQuery(document).ready(function($){
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
@@ -91,6 +91,6 @@ You can also load the script in the header, by placing the command in the <em>cs
 <h3>HTML</h3>
 Create a custom field named <em>html</em>, and the field will be displayed <em>instead of</em> the post content.
 
-This can be useful for pulling the post content into a layout.
+This can be useful for pulling the post editor's content into a layout.
 
 

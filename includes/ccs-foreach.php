@@ -17,13 +17,13 @@ class ForShortcode {
 		global $ccs_global_variable;
 		$ccs_global_variable['for_loop'] = 'false';
 
-		add_action( 'init', array( &$this, 'register' ) );
+		add_action( 'init', array( $this, 'register' ) );
 	}
 
 	function register() {
-		add_shortcode( 'for', array( &$this, 'for_shortcode' ) );
-		add_shortcode( 'each', array( &$this, 'each_shortcode' ) );
-		add_shortcode( 'for-loop', array( &$this, 'for_loop_status' ) );
+		add_shortcode( 'for', array( $this, 'for_shortcode' ) );
+		add_shortcode( 'each', array( $this, 'each_shortcode' ) );
+		add_shortcode( 'for-loop', array( $this, 'for_loop_status' ) );
 	}
 
 	function for_shortcode( $atts, $content = null, $shortcode_name ) {
@@ -143,10 +143,10 @@ class ForShortcode {
 
         if (isset( $atts['id'] ))
         	$out = $ccs_global_variable['for_each']['id'];
-        if (isset( $atts['name'] ))
-        	$out = $ccs_global_variable['for_each']['name'];
-        if (isset( $atts['slug'] ))
+        elseif (isset( $atts['slug'] ))
         	$out = $ccs_global_variable['for_each']['slug'];
+        else /* if (isset( $atts['name'] )) */
+        	$out = $ccs_global_variable['for_each']['name'];
 
         return $out;
 	}

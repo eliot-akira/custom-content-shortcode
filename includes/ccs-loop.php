@@ -295,7 +295,13 @@ class LoopShortcode {
 			$query['category_name'] = $category;
 		}
 		if( $tag != '' ) {
-			$query['tag'] = $tag;
+
+ 			// Clean up extra spaces
+			$tags = array_map("trim", array_filter(explode(',', $tag)));
+			$tags = implode(",", $tags);
+
+			$query['tag'] = $tags;
+
 		}
 		if( $count != '' ) {
 
@@ -1558,7 +1564,7 @@ class LoopShortcode {
 			if (!empty($field_values)) {
 
 				if (!is_array($field_values))
-					$field_values = array_map("trim", array_filter(explode(',', $field_values)));
+					$field_values = array_map("trim", array_filter(explode(',', $field_values))); // Clean up extra spaces
 
 				if ( empty($fields) )
 					$default_keywords = self::get_default_field_keywords();

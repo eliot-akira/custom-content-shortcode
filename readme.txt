@@ -83,6 +83,12 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.2.2 =
+
+* [each] - Assume *name* by default
+* [loop tag] - Clean up any extra spaces in tag list
+
+
 = 1.2.1 =
 
 * **[pass]** - Add *fields* parameter: pass multiple fields
