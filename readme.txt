@@ -87,9 +87,9 @@ Support for other plugins:
 
 * **[pass]** - Add *fields* parameter: pass multiple fields
 * **[pass]** - Add *field_loop* parameter: loop through a comma-separated list stored in a field
+* **[field image]** - Check with ACF 5
 * **Settings** - Enable *shortcode unautop* to remove `<p>` tags around shortcodes
 * **Content Overview** - Show available user meta fields
-* **[field image]** - Check with ACF 5
 * Improve documentation
 
 = 1.1.9 =

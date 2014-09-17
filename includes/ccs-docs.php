@@ -115,7 +115,7 @@ class CCS_Docs {
 				<input type="checkbox" value="on" name="ccs_content_settings[load_acf_module]"
 					<?php checked( $load_acf_module, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Load <b>ACF</b> shortcodes
+				&nbsp;&nbsp;<b>ACF</b> shortcodes
 			</td>
 		</tr>
 		<tr>
@@ -123,7 +123,7 @@ class CCS_Docs {
 				<input type="checkbox" value="on" name="ccs_content_settings[load_bootstrap_module]"
 					<?php checked( $load_bootstrap_module, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Load <b>Bootstrap</b> shortcodes
+				&nbsp;&nbsp;<b>Bootstrap</b> shortcodes
 			</td>
 		</tr>
 		<tr>
@@ -131,7 +131,7 @@ class CCS_Docs {
 				<input type="checkbox" value="on" name="ccs_content_settings[load_file_loader]"
 					<?php checked( $load_file_loader, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Load <b>File Loader</b> module
+				&nbsp;&nbsp;<b>File Loader</b> module
 			</td>
 		</tr>
 		<tr>
@@ -139,14 +139,14 @@ class CCS_Docs {
 				<input type="checkbox" value="on" name="ccs_content_settings[load_gallery_field]"
 					<?php checked( $load_gallery_field, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Load <b>Gallery Field</b> module
+				&nbsp;&nbsp;<b>Gallery Field</b> module
 			</td>
 		</tr>	<tr>
 			<td width="760px">
 				<input type="checkbox" value="on" name="ccs_content_settings[load_mobile_detect]"
 					<?php checked( $load_mobile_detect, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Load <b>Mobile Detect</b> module
+				&nbsp;&nbsp;<b>Mobile Detect</b> module
 			</td>
 		</tr>
 		<tr>
@@ -155,7 +155,7 @@ class CCS_Docs {
 				<input type="checkbox" value="on" name="ccs_content_settings[move_wpautop]"
 					<?php checked( $move_wpautop, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Move post content formatting (wp_autop) to <em>after</em> shortcodes
+				&nbsp;&nbsp;Move <i>wp_autop</i> (post content formatting) to <em>after</em> shortcodes
 			</td>
 		</tr>
 		<tr>
