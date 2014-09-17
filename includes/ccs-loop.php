@@ -189,7 +189,7 @@ class LoopShortcode {
 			if($v!='')	$value_2 = $v2;
 			if($c!='')	$compare_2 = $c2;
 			if($r!='')	$relation = $r;
-			if (!empty($fields)) $custom_fields = $fields; // Alias
+			if (!empty($custom_fields)) $fields = $custom_fields;
 
 		if(( $field != 'gallery' ) && ($shortcode_name != 'pass') && ($value!='')) {
 
@@ -563,8 +563,16 @@ class LoopShortcode {
 
 			if( ($field_2!='') && ($value_2!='') ) {
 
-				if($relation!='')
-					$query['meta_query']['relation'] = strtoupper($relation);
+				if($relation!='') {
+
+					$relation = strtoupper($relation);
+					switch ($relation) {
+						case '&': $relation = 'AND'; break;
+						case '|': $relation = 'OR'; break;
+					}
+
+					$query['meta_query']['relation'] = $relation;
+				}
 				else
 					$query['meta_query']['relation'] = 'AND';
 
@@ -603,7 +611,7 @@ class LoopShortcode {
 			if( $custom_field == "gallery" )
 				$custom_field = "_custom_gallery";
 			$query['post_status'] = $status;
-			remove_all_filters('posts_orderby');
+			remove_all_filters('posts_orderby'); // ??
 
 
 			/*========================================================================
@@ -766,7 +774,7 @@ class LoopShortcode {
 				 *
 				 *=======================================================================*/
 
-				if($acf_gallery != '') {
+				if ($acf_gallery != '') {
 
 					$ccs_global_variable['is_acf_gallery_loop'] = "true";
 					$ccs_global_variable['current_loop_id'] = $current_id;
@@ -780,7 +788,7 @@ class LoopShortcode {
 
 							$ccs_global_variable['current_image_ids'] = implode(',', get_field($acf_gallery, $current_id, false));
 
-							if($shortcode_name == 'pass') {
+							if ($shortcode_name == 'pass') {
 
 								// Pass details onto content shortcode
 
@@ -846,6 +854,7 @@ class LoopShortcode {
 							$attachment_ids = trim($attachment_ids, ",");
 							$custom_field_content = $attachment_ids;
 						}
+
 					} else {
 
 					/*========================================================================
@@ -858,67 +867,8 @@ class LoopShortcode {
 						$attachment_ids = get_post_meta( $current_id, '_custom_gallery', true );
 					}
 
-
-				/*========================================================================
-				 *
-				 * Special tags: {FIELD}
-				 *
-				 *=======================================================================*/
-
-					/* prepare custom fields to expand */
-					/* post_meta fetching needs to be optimized? */
-					$extra_keywords = array();
-					if (!empty($fields)) {
-						$ks = array_map("trim", array_filter(explode(',', $custom_fields))); // parse CSV to field keys
-						$pm = get_post_meta($current_id);
-						$extra_keywords =
-							array_map(
-								array($this,'array_flat'), // Flatten the values ( Array > Value )
-								array_change_key_case( // upper-case the keys for expansion later
-									array_intersect_key( // include only specified fields' keys
-										array_merge(
-											array_fill_keys($ks, ''), // default value for non-existent fields
-											$pm),
-										array_change_key_case( // assume all field names are lower case
-											array_flip($ks),
-											CASE_LOWER)),
-									CASE_UPPER));
-					}
-
-					/*========================================================================
-					 *
-					 * Special tags: {TAG}
-					 *
-					 *=======================================================================*/
-					$keywords = apply_filters( 'query_shortcode_keywords', array_merge($extra_keywords, array(
-
-						'QUERY' => serialize($query), // DEBUG purpose
-						'COUNT' => $current_count,
-						'URL' => get_permalink(),
-						'ID' => $current_id,
-						'TITLE' => get_the_title(),
-						'AUTHOR' => get_the_author(),
-						'AUTHOR_URL' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
-						'DATE' => get_the_date(),
-						'THUMBNAIL' => get_the_post_thumbnail( null, $thumbnail_size ),
-						'THUMBNAIL_URL' => wp_get_attachment_url(get_post_thumbnail_id($current_id)),
-						'CONTENT' => ( $content_limit ) ? wp_trim_words( get_the_content(), $content_limit ) : get_the_content(),
-						'EXCERPT' => get_the_excerpt(),
-						'COMMENT_COUNT' => get_comments_number(),
-						'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
-						'IMAGE' => get_the_post_thumbnail(),
-						'IMAGE_ID' => get_post_thumbnail_id($current_id),
-						'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id($current_id)),
-						'FIELD' => $custom_field_content,
-						'VAR' => $variable,
-						'VARIABLE' => $variable,
-						'IDS' => $attachment_ids,
-					)) );
-
-					$out = $this->get_block_template( $template, $keywords ); // Process {KEYWORDS}
-
+					$out = $template;
 					$total_comment_count += get_comments_number();
-
 
 					/*========================================================================
 					 *
@@ -985,11 +935,67 @@ class LoopShortcode {
 
 					}
 
-					if ($clean == 'true') {
-						$output[] = do_shortcode(custom_clean_shortcodes( $out ));
+
+					if ($clean == 'true')
+						$out = custom_clean_shortcodes( $out );
+
+					if ( has_shortcode( $out, 'pass' ) ) {
+
+						// If there's a [pass] shortcode, do it now
+
+						$out = do_shortcode($out);
+						$do_shortcode_later = false;
+
 					} else {
-						$output[] = do_shortcode($out);
+
+						// or else do it later, after {FIELD} tags are replaced
+
+						$do_shortcode_later = true;
 					}
+
+
+				/*========================================================================
+				 *
+				 * Process field tags: {FIELD}
+				 *
+				 *=======================================================================*/
+
+					// Expand fields=".., .."
+
+					$extra_keywords = $this->get_field_keywords($fields);
+
+					$keywords = apply_filters( 'query_shortcode_keywords', array_merge( array(
+
+						'QUERY' => serialize($query), // DEBUG purpose
+						'COUNT' => $current_count,
+						'URL' => get_permalink(),
+						'ID' => $current_id,
+						'TITLE' => get_the_title(),
+						'AUTHOR' => get_the_author(),
+						'AUTHOR_URL' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
+						'DATE' => get_the_date(),
+						'THUMBNAIL' => get_the_post_thumbnail( null, $thumbnail_size ),
+						'THUMBNAIL_URL' => wp_get_attachment_url(get_post_thumbnail_id($current_id)),
+						'CONTENT' => ( $content_limit ) ? wp_trim_words( get_the_content(), $content_limit ) : get_the_content(),
+						'EXCERPT' => get_the_excerpt(),
+						'COMMENT_COUNT' => get_comments_number(),
+						'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
+						'IMAGE' => get_the_post_thumbnail(),
+						'IMAGE_ID' => get_post_thumbnail_id($current_id),
+						'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id($current_id)),
+						'FIELD' => $custom_field_content,
+						'VAR' => $variable,
+						'VARIABLE' => $variable,
+						'IDS' => $attachment_ids,
+					), $extra_keywords) );
+
+					$out = $this->get_block_template( $out, $keywords ); // Process {KEYWORDS}
+
+					if ($do_shortcode_later) {
+						$out = do_shortcode($out);
+					}
+
+					$output[] = $out;
 
 				} // End of not gallery field (just attachment or normal field)
 
@@ -1421,16 +1427,65 @@ class LoopShortcode {
 		return $string;
 	}
 
+	public static function get_default_field_keywords() {
+
+		$keywords = array(
+			'URL' => get_permalink(),
+			'ID' => get_the_ID(),
+			'TITLE' => get_the_title(),
+			'AUTHOR' => get_the_author(),
+			'AUTHOR_URL' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
+			'DATE' => get_the_date(),
+			'THUMBNAIL' => get_the_post_thumbnail( null, 'thumbnail' ),
+			'THUMBNAIL_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
+			'CONTENT' => get_the_content(),
+			'EXCERPT' => get_the_excerpt(),
+			'COMMENT_COUNT' => get_comments_number(),
+			'TAGS' => strip_tags( get_the_tag_list('',', ','') ),
+			'IMAGE' => get_the_post_thumbnail(),
+			'IMAGE_ID' => get_post_thumbnail_id(get_the_ID()),
+			'IMAGE_URL' => wp_get_attachment_url(get_post_thumbnail_id(get_the_ID())),
+		);
+
+		return $keywords;
+	}
+
+
+	public static function get_field_keywords( $fields ) {
+
+		/* prepare custom fields to expand */
+
+		$keywords = array();
+
+		if (!empty($fields)) {
+			$ks = array_map("trim", array_filter(explode(',', $fields))); // parse CSV to field keys
+			$pm = get_post_meta(get_the_ID());
+			$keywords =
+				array_map(
+					array(__CLASS__,'array_flat'), // Flatten the values ( Array > Value )
+					array_change_key_case( // upper-case the keys for expansion later
+						array_intersect_key( // include only specified fields' keys
+							array_merge(
+								array_fill_keys($ks, ''), // default value for non-existent fields
+								$pm),
+							array_change_key_case( // assume all field names are lower case
+								array_flip($ks),
+								CASE_LOWER)),
+						CASE_UPPER));
+		}
+		return $keywords;
+	}
+
 	public static function getBetween($start, $end, $text) {
 
-				$middle = explode($start, $text);
-				if (isset($middle[1])){
-					$middle = explode($end, $middle[1]);
-					$middle = $middle[0];
-					return $middle;
-				} else {
-					return false;
-				}
+		$middle = explode($start, $text);
+		if (isset($middle[1])){
+			$middle = explode($end, $middle[1]);
+			$middle = $middle[0];
+			return $middle;
+		} else {
+			return false;
+		}
 	}
 
 
@@ -1459,22 +1514,71 @@ class LoopShortcode {
 	public static function pass_shortcode( $atts, $content ) {
 
 		$args = array(
-			'field' => ''
+			'field' => '',
+			'fields' => '',
+			'field_loop' => '', // Field is array or comma-separated list
 			);
+
 		extract( shortcode_atts( $args , $atts, true ) );
 
-		if (!empty($field)) {
-			$post_id = get_the_id();
+
+		if ( !empty($fields) ) {
+
+			$keywords = self::get_field_keywords( $fields );
+
+			$default_keywords = self::get_default_field_keywords();
+			$content = self::get_block_template( $content, array_merge($keywords, $default_keywords) );
+		} 
+
+		if ( !empty($field) ) {
+
+			$post_id = get_the_ID();
+
+			if ($field=='gallery') $field = '_custom_gallery'; // Support gallery field
+
 			$field_value = get_post_meta( $post_id, $field, true );
 			if (is_array($field_value))
 				$field_value = implode(",", $field_value);
 
-			$replace = array(
-				'ID' => $post_id,
+			$keywords = array(
 				'FIELD' => $field_value,
 				);
 
-			$content = self::get_block_template( $content, $replace );
+			if ( empty($fields) ) {
+				$default_keywords = self::get_default_field_keywords();
+				$keywords = array_merge($keywords, $default_keywords);
+			}
+			$content = self::get_block_template( $content, $keywords );
+
+		} elseif (!empty($field_loop)) {
+
+			$post_id = get_the_ID();
+			$field_values = get_post_meta( $post_id, $field_loop, true );
+
+			if (!empty($field_values)) {
+
+				if (!is_array($field_values))
+					$field_values = array_map("trim", array_filter(explode(',', $field_values)));
+
+				if ( empty($fields) )
+					$default_keywords = self::get_default_field_keywords();
+
+				$contents = null;
+
+				foreach ($field_values as $field_value) {
+
+					$keywords = array(
+						'FIELD' => $field_value,
+					);
+
+					if ( empty($fields) ) {
+						$keywords = array_merge($default_keywords, $keywords);
+					}
+
+					$contents[] = self::get_block_template( $content, $keywords );
+				}
+				$content = implode("", $contents);
+			}
 		}
 
 		return do_shortcode( $content );
@@ -1493,7 +1597,7 @@ class LoopShortcode {
 
 	}
 
-	function array_flat($v){ return is_array($v) ? $v[0] : $v; }
+	public static function array_flat($v){ return is_array($v) ? $v[0] : $v; }
 
 }
 
@@ -1521,15 +1625,8 @@ $loop_shortcode = new LoopShortcode;
 	function custom_strip_tag_list( $content, $tags ) {
 
 		$tags = implode("|", $tags);
-
 		$out = preg_replace('!<\s*('.$tags.').*?>((.*?)</\1>)?!is', '\3', $content); 
 
-/*
-		foreach ($tags as $tag) {
-			$out = preg_replace('/<\/?' . $tag . '(.|\s)*?>/', '', $content);
-//			$out = preg_replace('#</?'.$tag.'[^>]*>#is', '--', $content);
-		}
-*/
 		return $out;
 	}
 

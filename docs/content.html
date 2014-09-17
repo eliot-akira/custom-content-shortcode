@@ -1,4 +1,6 @@
-<h3>Content shortcode</h3>
+<h3 align="center">Content shortcode</h3>
+<hr>
+
 Use <b>[content]</b> to display post content or a field.
 
 <h4>Display post content by name</h4>
@@ -6,15 +8,10 @@ Use <b>[content]</b> to display post content or a field.
 <h4>Display the featured image of a page</h4>
 <code>[content type="page" name="about-me" field="image"]</code>
 <h4>Display a field from a custom post type</h4>
-<code>[content type="apartment" name="lux-suite-22" field="rent-per-day"]</code>
-<hr>
+<code>[content type="apartment" name="lux-suite-22" field="rent-per-day"]</code><br>
 
-The <b>[field]</b> shortcode is a shorter way to display a field from the current post.
-
-<h4>Display fields from the current post</h4>
-<code>The Article &lt;b&gt;[field title]&lt;/b&gt; by [field author] was written on [field date].</code><br>
 <hr>
-<h3>Parameters</h3>
+<h3>Basic parameters</h3>
 
 <h4>Post</h4>
 
@@ -52,10 +49,9 @@ You can display custom fields as well as predefined fields:
 		<li><i>author-url</i> - post author URL</li>
 		<li><i>avatar</i> - post author avatar</li>
 	</ul>
-
-	Also, you can use <b>[field <em>field_name</em>]</b> instead of [content field="<em>field_name</em>"]
-
 </ul>
+<hr>
+<h3>More parameters</h3>
 <h4>Formatting</h4>
 <ul>
 	<li><strong>words</strong> or <strong>length</strong> - limit output by number of words or characters</li>
@@ -83,10 +79,11 @@ You can display custom fields as well as predefined fields:
 </ul>
 <h4>Other field types</h4>
 <ul>
-	<li><strong>taxonomy</strong> - display post taxonomy, such as: <em>category</em>, <em>post_tag</em>, or a custom taxonomy; to output the slug, add: <em>out="slug"</em></li>
+	<li><strong>taxonomy</strong> - display <em>category</em>, <em>post_tag</em>, or a custom taxonomy of the post</li>
 
-	Also, you can use <b>[taxonomy <em>tax_name</em>]</b> instead of [content taxonomy="<em>tax_name</em>"]
+	You can also use <b>[taxonomy <em>tax_name</em>]</b>.
 
+	<li><b>out="slug"</b> - display the taxonomy term slug, not label</li>
 	<li><strong>meta</strong> - display author meta: <em>field="author" meta="user_email"</em> - see: <a href="http://codex.wordpress.org/Function_Reference/get_the_author_meta" target="_blank">Codex: Author Meta</a></li>
 	<li><strong>out="label"</strong> - when displaying checkboxes or select fields made in ACF, this parameter displays their labels instead of values
 </ul>
@@ -95,5 +92,24 @@ You can display custom fields as well as predefined fields:
 	<li><strong>area</strong> or <strong>sidebar</strong> - display a widget area/sidebar by <em>title</em></li>
 	<li><strong>menu</strong> - display a menu list by <em>name/slug</em>, <em>title</em>, or <em>ID</em>.
 
-	Use the <em>ul</em> parameter for Bootstrap <em>nav-tabs, nav-pills and nav-pills-stacked</em>. For a Bootstrap navbar menu, please see the section for the <strong>[navbar]</strong> shortcode, under <b>Etc</b>.</li>
-</ul>
+	Also see: <a href="options-general.php?page=ccs_content_shortcode_help&tab=etc#bootstrap-navbar">Bootstrap tabs and navbar</a>.
+
+</ul><br>
+<h3 align="center">Field shortcode</h3>
+<hr>
+
+Use <b>[field]</b> as a shorter way to display a field from the current post.
+
+<h4>Display fields</h4>
+<code>The Article &lt;b&gt;[field title]&lt;/b&gt; by [field author] was written on [field date].</code>
+
+Instead of [content field="<em>field_name</em>"] you can write <b>[field <em>field_name</em>]</b>.
+
+<h4>Additional parameters</h4>
+
+<code>[field title words="10"]</code>
+
+<h4>Display an image field</h4>
+
+<code>[field image="image_field" size="thumbnail"]</code>
+

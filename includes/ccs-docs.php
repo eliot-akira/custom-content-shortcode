@@ -303,7 +303,7 @@ class CCS_Docs {
 
 		?>
 			<div class="wrap">
-			<h2 class="plugin-title">Custom Content Shortcode</h2>
+			<h1 class="plugin-title">Custom Content Shortcode</h1>
 			<br>
 
 			<div class="doc-style">
@@ -333,7 +333,8 @@ class CCS_Docs {
 					// Settings Page
 
 					?>
-					<h3>Settings</h3>
+					<h3 align="center">Settings</h3>
+					<hr>
 					<form method="post" action="options.php">
 					    <?php settings_fields( 'ccs_content_settings_group' ); ?>
 					    <?php do_settings_sections( 'ccs_content_settings_section_page_name' ); ?>
@@ -365,7 +366,7 @@ class CCS_Docs {
 						<img src="<?php echo plugins_url();?>/custom-content-shortcode/docs/logo/logo.png">
 						<div class="overview-logo-pad"><b>Custom Content Shortcode</b> is developed by Eliot Akira.</div>
 						Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">WordPress plugin support forum</a> for general questions.<br>
-						Here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>, if you'd like to contribute to this plugin.<br>
+						If you'd like to contribute to this plugin, here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>.<br>
 						For commercial development, contact <a href="mailto:me@eliotakira.com">me@eliotakira.com</a><br>
 					</div>
 					<hr><br>

@@ -1,15 +1,14 @@
-<h3>Conditionals</h3>
+<h3 align="center">If</h3>
+<hr>
 
-With the <strong>[if]</strong> shortcode, you can display content based on certain conditions.
+Use the <strong>[if]</strong> shortcode to display content based on certain conditions.
 
 <code>[loop type="films"]
 &nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if category="drama"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DRAMA!
-&nbsp;&nbsp;&nbsp;&nbsp;[else]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[taxonomy category]
+&nbsp;&nbsp;&nbsp;&nbsp;[if category="recommend"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Recommended)
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
-[/loop]</code>
+[/loop]</code><br>
 <hr>
 
 <h3>Parameters</h3>
@@ -36,9 +35,8 @@ With the <strong>[if]</strong> shortcode, you can display content based on cert
 <ul>
 	<li><strong>field</strong> - name of field to query</li>
 	<li><strong>value</strong> - if post has value(s) in the specified field</li>
-<h4>Multiple values</h4>
 
-For category, tag, taxonomy term or field value, you can query for multiple values, for example, <i>category="sci-fi, comedy"</i>. This returns posts in <i>either</i> Sci-Fi or Comedy. If you want posts matching <i>both</i> categories, use the <i>compare</i> parameter.
+For category, tag, taxonomy term or field value, you can query for multiple values: for example, <i>category="sci-fi, comedy"</i>. This returns posts in <i>either</i> Sci-Fi or Comedy. If you want posts matching <i>both</i> categories, use the <i>compare</i> parameter.
 
 	<li><strong>compare</strong> - Set compare="AND" to query for <i>all</i> values
 </ul>
@@ -60,10 +58,11 @@ For category, tag, taxonomy term or field value, you can query for multiple valu
 	<li><strong>not</strong> - when the condition is not met, for example: [if not first]</li>
 </ul>
 <br>
-<hr>
-<h3>If/else</h3>
 
-Use the <b>[else]</b> shortcode to display something when the condition is not met.
+<h3 align="center">Else</h3>
+<hr>
+
+Use the <b>[else]</b> shortcode to display something else when the condition is false.
 
 <code>[loop type="product"]
 &nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
@@ -76,8 +75,9 @@ Use the <b>[else]</b> shortcode to display something when the condition is not m
 [/loop]</code>
 
 <br>
+<h3 align="center">Other conditions</h3>
 <hr>
-<h3>Conditional: if there is no query result</h3>
+<h3>If there is no loop result</h3>
 
 Use <b>[if empty]</b> to display something when there is no post matching the query.
 
@@ -94,7 +94,7 @@ Use <b>[if empty]</b> to display something when there is no post matching the qu
 If there's no post found, the loop displays only what's inside <b>[if empty]</b>.
 <br>
 <hr>
-<h3>Conditional: for every X number of posts</h3>
+<h3>For every X number of posts</h3>
 
 <h4>Add an extra break line for every 3 posts</h4>
 
@@ -114,10 +114,9 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 &nbsp;&nbsp;&nbsp;&nbsp;[if last]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(last post)
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
-[/loop]</code>
-<br>
+[/loop]</code><br>
 <hr>
-<h3>Conditional: if a field value exists</h3>
+<h3>If a field value exists</h3>
 
 <h4>Display only products that have serial numbers</h4>
 

@@ -1,4 +1,5 @@
-<h3>Attachments</h3>
+<h3 align="center">Attachments</h3>
+<hr>
 
 Use the <b>[attached]</b> shortcode to loop through attachments.
 
@@ -8,7 +9,8 @@ Use the <b>[attached]</b> shortcode to loop through attachments.
 &nbsp;&nbsp;&nbsp;&nbsp;[field image] or [content]
 &nbsp;&nbsp;&nbsp;&nbsp;[field caption]
 [/attached]
-</code>
+</code><br>
+<hr>
 
 <h3>Parameters</h3>
 <ul>
@@ -16,7 +18,8 @@ Use the <b>[attached]</b> shortcode to loop through attachments.
 	<li><b>offset</b> - offset the loop by a number, for example: skip the first 3 attachments</li>
 	<li><b>orderby</b> - <i>date</i> (default), <i>title</i>, <i>rand</i> (random)</li>
 	<li><b>order</b> - ASC (ascending/alphabetical) or DESC (descending/from most recent date)</li>
-</ul>
+</ul><br>
+<hr>
 
 <h3>Fields</h3>
 
@@ -56,7 +59,7 @@ Use <b>[attached]</b> inside a query loop to display attachments of specific pos
 
 Use <b>[if attached]</b> to display something if the post has any attachments.
 
-<code>[loop type="post" category="special"]
+<code>[loop type="post"]
 &nbsp;&nbsp;&nbsp;&nbsp;Post title: [field title]
 &nbsp;&nbsp;&nbsp;&nbsp;[if attached]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This post has attachments:

@@ -1,6 +1,7 @@
-<h3>Relative URL</h3>
+<h3 align="center">Relative URL</h3>
+<hr>
 
-Use the <strong>[url]</strong> shortcode to generate relative URLs for links and images.
+Use the <strong>[url]</strong> shortcode to generate relative links and image URLs.
 <h4>Display an image from a relative location</h4>
 <code>&lt;img src='[url uploads]/assets/logo.png'&gt;</code>
 
@@ -16,34 +17,67 @@ Available parameters:
 	<li><em>child</em> - <em>/wp-content/child_theme</em> - child theme directory</li>
 </ul>
 <br>
+<h3 align="center">Pass field values</h3>
+<a href="#" id="field-as-parameter" name="field-as-parameter"></a>
 <hr>
 <h3>Field as parameter</h3>
-To use a field content as a parameter to another shortcode, use the <strong>[pass] </strong>shortcode.
+
+Use the <strong>[pass] </strong>shortcode to pass a field value to another shortcode.
+
 <h4>Display a map according to the address entered in a custom field</h4>
+
 <code>[pass field="address"]
 &nbsp;&nbsp;&nbsp;&nbsp;[google_map address="{FIELD}"]
 [/pass]</code>
-<h4>Display images in the gallery field using another shortcode</h4>
+
+<h4>Pass image IDs in the gallery field</h4>
+
 <code>[pass field="gallery"]
 &nbsp;&nbsp;&nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
+[/pass]</code><br>
+<hr>
+<h3>Field loop</h3>
+
+You can loop through a comma-separated list stored in a field, and pass each item.
+
+<h4>Display products from a list of serial numbers</h4>
+
+<code>[pass field_loop="serial_numbers"]
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="product" field="serial_number" value="{FIELD}"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+[/pass]</code><br>
+<hr>
+
+<h3>Multiple fields</h3>
+
+Pass values from multiple fields using the <i>fields</i> parameter.
+
+<code>[pass fields="post_type_field, category_field"]
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="{POST_TYPE_FIELD}" category="{CATEGORY_FIELD}"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
 [/pass]</code>
 
-This is necessary because a shortcode cannot be used as a parameter to another shortcode.
+This works in the same way as <a href="options-general.php?page=ccs_content_shortcode_help&tab=loop#field-tags">field tags</a> for the <b>[loop]</b> shortcode.
+
+
 <br>
+<h3 align="center">Other notes</h3>
 <hr>
 <h3>Search form</h3>
 
 To display a search form, use the <b>[search_form]</b> shortcode.
 <br>
-<hr>
-<h3>List all shortcodes</h3>
+<hr><a href="#" id="bootstrap-navbar" name="bootstrap-navbar"></a>
+<h3>Bootstrap tabs or navbar</h3>
 
-Use <b>[list_shortcodes]</b> to display all registered shortcodes and their function names.
-<br>
-<hr><a id="bootstrap"></a>
-<h3>Bootstrap navbar</h3>
+<h4>Display a menu in Bootstrap nav-tabs, nav-pills or nav-pills-stacked</h4>
 
-To display a menu in a Bootstrap navbar with dropdown, use the <strong>[navbar]</strong> shortcode:
+<code>[content menu="Side Menu" ul="nav-pills-stacked"]</code>
+
+<h4>Display a menu in a Bootstrap navbar with dropdown</h4>
 
 <code>[navbar menu="Main Menu"]
 &nbsp;&nbsp;&nbsp;&nbsp;Brand
@@ -51,4 +85,4 @@ To display a menu in a Bootstrap navbar with dropdown, use the <strong>[navbar]<
 
 The <em>menu</em> parameter is the title of the menu to be displayed. You can put text or image for the brand/logo area.
 
-In addition, you can define the <em>navclass</em> parameter: <em>top-nav</em>, <em>navbar-fixed-top</em>, <em>navbar-fixed-bottom</em>, <em>navbar-static-top</em>. The default is <em>top-nav</em>. Please read the <a href="http://getbootstrap.com/components/#navbar" target="_blank">Bootstrap documentation</a> for the description of these navbar types.
+In addition, you can define the <em>navclass</em> parameter: <em>top-nav</em>, <em>navbar-fixed-top</em>, <em>navbar-fixed-bottom</em>, <em>navbar-static-top</em>. The default is <em>top-nav</em>. Please refer to the <a href="http://getbootstrap.com/components/#navbar" target="_blank">Bootstrap documentation</a> for details.

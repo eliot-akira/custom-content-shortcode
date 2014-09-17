@@ -1,4 +1,6 @@
-<h3>User info</h3>
+<h3 align="center">User info</h3>
+<hr>
+
 <h4>Display user info</h4>
 <code>User name: [user name]
 User ID: [user id]
@@ -7,9 +9,10 @@ User full name: [user fullname]
 User avatar: [user avatar]
 User role(s): [user role]
 Custom user field: [user field="twitter"]</code><br>
-<hr>
+
 <a id="user-status" href="#"></a>
-<h3>User status</h3>
+<h3 align="center">User status</h3>
+<hr>
 
 The <strong>[is]</strong> shortcode is used to display content based on user status.
 
@@ -32,14 +35,14 @@ Available parameters:
 	<li><em>capable</em> - user capability, for example: <i>capable="manage_options"</i></li>
 
 	Multiple values are possible: <i>role="admin, subscriber"</i> will be true if the user is <i>admin</i> or <i>subscriber</i>.
-
 	See the list of available user roles and capabilities under <a href="index.php?page=content_overview#user-roles">Dashboard -> Content -> User Roles</a>.
 </ul>
 You can also use <strong>[is not]</strong> to display something when the condition is not true.
 <br>
-<hr>
+
 <a id="login-out" href="#"></a>
-<h3>Login and logout</h3>
+<h3 align="center">Login and logout</h3>
+<hr>
 
 The <strong>[url]</strong> shortcode is also used to display login and logout links.
 <h4>Display a login link</h4>
@@ -51,11 +54,10 @@ Available parameters:
 <ul>
 	<li><em>login</em> - login link</li>
 	<li><em>logout</em> - logout link</li>
-	<li><em>go</em> - redirect user after login/logout</li>
+	<li><em>go</em> - redirect user after login/logout; use a full URL, or the name of a post or page; <i>go="home"</i> will return the user to the home page.
+</li>
 </ul>
-For the redirect link, you can either use a full URL (<em>www.example.com</em>) or the name/slug of any post or page. The slug <em>home</em> will return the user to the home page of your site.
-
-Here is an example using both [is] and [url] to show a login/logout link based on user status.
+Here is an example using both <b>[is]</b> and <b>[url]</b> to show a login/logout link based on user status.
 
 <code>[is logout]
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url login go='home']"&gt;
@@ -69,7 +71,7 @@ Here is an example using both [is] and [url] to show a login/logout link based o
 [/is]</code><br>
 <hr>
 <h3>Redirect users</h3>
-To redirect users to a different URL according to user status, device type, etc., use the <b>[redirect]</b> shortcode. As soon as it is executed, the user will be taken to another page.
+To redirect users to a different URL, use the <b>[redirect]</b> shortcode. As soon as it is executed, the user will be taken to another page.
 
 <h4>Redirect if visitor is not logged in</h4>
 <code>[is not login]
@@ -77,7 +79,7 @@ To redirect users to a different URL according to user status, device type, etc.
 [/is]
 </code>
 
-Please note that the destination URL is not a parameter, it is wrapped inside. This is to allow relative links such as:
+Note that the URL is not a parameter, it is wrapped inside. This is to allow relative links.
 
 <code>[is login]
 &nbsp;&nbsp;&nbsp;&nbsp;[redirect][url site]/user-area/[/redirect]

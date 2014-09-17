@@ -1,17 +1,18 @@
-<h3>Gallery field</h3>
+<h3 align="center">Gallery field</h3>
+<hr>
 
 Enable a simple gallery field for any post type, under <a href="options-general.php?page=custom-gallery">Settings -&gt; Gallery Fields</a>.<br>
 
 Images can be added, ordered, and removed.
 
 <h4>Display image details from the gallery field</h4>
-<code>[loop field="gallery" name="hello-world"]
+<code>[loop field="gallery"]
 &nbsp;&nbsp;&nbsp;&nbsp;Title: [field title]
 &nbsp;&nbsp;&nbsp;&nbsp;Full-size image: [field image]
 &nbsp;&nbsp;&nbsp;&nbsp;Caption: [field caption]
 [/loop]</code>
 For each image, these fields can be displayed: <em>id</em>, <em>title</em>, <em>image</em>, <em>image-url</em>, <em>caption</em>, <em>description</em>,<em> thumbnail</em>, and<em> thumbnail-url</em>.
-
+<br>
 <hr>
 <h3>Native or Bootstrap gallery</h3>
 
@@ -22,7 +23,7 @@ You can display all images in the gallery field using a native gallery or Bootst
 [content gallery="carousel"]</code>
 
 You can pass the following parameters to the native gallery: <em>orderby</em>, <em>order</em>, <em>columns</em>, <em>size</em>, <em>link</em>, <em>include</em>, <em>exclude</em>. For details, please refer to <a href="http://codex.wordpress.org/Gallery_Shortcode" target="_blank">the Codex: Gallery Shortcode</a>.
-
+<br>
 <hr>
 
 <h3>Individual image</h3>
@@ -31,10 +32,8 @@ The <b>[content]</b> shortcode can display individual images of the gallery fiel
 <h4>Display the 3rd image in the gallery field</h4>
 <code>[content field="gallery" num="3"]
 ..or..
-[field gallery num="3"]</code>
-
+[field gallery num="3"]</code><br>
 <hr>
-
 <h3>Group</h3>
 
 When using the <b>[loop]</b> to generate multiple Bootstrap carousels, the following will put images from each post in its own carousel.

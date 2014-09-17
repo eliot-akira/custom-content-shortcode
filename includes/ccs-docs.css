@@ -1,17 +1,28 @@
-	.wrap { margin-left: -5px; }
+	.wrap {
+		margin-left: -5px;
+		max-width: 760px; /*margin: 0 auto;*/
+		font-weight: 300;
+	}
+	.wrap .plugin-title {
+		font-size: 2.2em;
+		font-weight: 300;
+		margin: 1em 0 0;
+		text-align: center;
+	}
+	.wrap h1, .wrap h2, .wrap h3, .wrap h4, .wrap h5, .wrap h6 {
+		font-weight: 400;
+	}
 	.wrap h2 {
 		margin-bottom: -10px;
 	}
-	.wrap .plugin-title {
-		padding-left: 10px;
-	}
 	h2 .nav-tab {
-		font-size: 12px; line-height: 16px;
+		font-size: 12px;
+		line-height: 16px;
 		margin-right: 1px;
     	padding: 4px 6px;
+    	font-weight: 400;
 	}
 	.doc-style {
-		max-width: 760px; /*margin: 0 auto;*/
 		padding-top:10px;
 		padding-left:10px;
 	}
@@ -47,16 +58,17 @@
 		color: #000;
 	}
 	.doc-style code {
+		font-family: monospace,Consolas,Monaco;
 		font-size: 16px;
 		padding: 10px 15px;
 	    line-height: 24px;
 	    display: block;
 	}
 	.doc-style h4 {
-		font-weight:normal;
+		font-weight:300;
 		font-style:italic;
 		font-size: 16px;
-		color: #777777;
+		color: #555;
 	}
 	.doc-style ul {
 		list-style:disc;

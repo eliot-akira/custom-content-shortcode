@@ -1,21 +1,24 @@
-<h3>Loop shortcode</h3>
+<h3 align="center">Loop shortcode</h3>
+<hr>
 
 Use <b>[loop]</b> to get posts and loop through them.
 
-<h4>Display contents of all posts</h4>
-<code>[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;[content]
+<h4>Display five most recent posts</h4>
+<code>[loop type="post" count="5"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[field date]
+&nbsp;&nbsp;&nbsp;&nbsp;[field excerpt]
 [/loop]</code>
 
-<h4>Display fields from posts of a custom post type, filtered by category</h4>
+<h4>Display all posts in a custom post type and category</h4>
 <code>[loop type="apartment" category="suite"]
 &nbsp;&nbsp;&nbsp;&nbsp;Apartment: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;Rent per day: [field rent-per-day]
+&nbsp;&nbsp;&nbsp;&nbsp;Rent per day: [field price]
 &nbsp;&nbsp;&nbsp;&nbsp;Description: [content]
 [/loop]</code>
 
 The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop.
-
+<br>
 <hr>
 <h3>Parameters</h3>
 
@@ -26,20 +29,20 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 
 <h4>Post ID</h4>
 <ul>
-	<li><strong>id</strong> - show posts by id; <em>id="1,3,5,7"</em></li>
-	<li><strong>exclude</strong> - exclude posts by id; <em>exclude="1,3,5,7"</em></li>
+	<li><strong>id</strong> - show post by ID; <em>id="1,3,5,7"</em></li>
+	<li><strong>exclude</strong> - exclude post by ID; <em>exclude="1,3,5,7"</em></li>
 </ul>
 
 <h4>Post count and status</h4>
 <ul>
 	<li><strong>count</strong> - number of posts to show - default is <em>all</em></li>
-	<li><strong>offset</strong> - offset the loop by a number of posts, for example: skip the first 3 posts in the query</li>
-	<li><strong>status</strong> - filter posts by status: <em>any</em>, <em>publish</em>, <em>pending</em>, <em>draft</em>, <em>future</em>, <em>private</em>; the default is <em>publish</em> - multiple values possible, i.e., <em>status="publish, pending"</em></li>
+	<li><strong>offset</strong> - offset the loop by a number of posts, for example: skip the first 3 posts</li>
+	<li><strong>status</strong> - display posts by status: <em>any</em>, <em>publish</em>, <em>pending</em>, <em>draft</em>, <em>future</em>, <em>private</em>; the default is <em>publish</em> - multiple values possible, i.e., <em>status="publish, pending"</em></li>
 </ul>
 
 <h4>Published date</h4>
 <ul>
-	<li><strong>year, month, day</strong> - filter posts by specific year, month, day; you can use <em>today</em> as a value, for example <em>month="today"</em> will show posts from this month</li>
+	<li><strong>year, month, day</strong> - display posts by specific year, month, day; you can use <em>today</em> as a value, for example <em>month="today"</em> will show posts from this month</li>
 </ul>
 
 <h4>Category, tags and taxonomies</h4>
@@ -51,20 +54,22 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 	<li><strong>compare</strong> - optional for taxonomy query: use <em>compare="NOT"</em> for posts whose <em>taxonomy</em> is <b>not</b> <em>value</em>; use <em>compare="AND"</em> when you want posts whose <em>taxonomy</em> contains all values</li>
 </ul>
 
-<h4>Custom field value</h4>
+<h4>Field value</h4>
 <ul>
-	<li><strong>field, compare, value</strong> - display posts according to custom field value, where <em>compare</em> is <em>EQUAL</em> (default) or <em>NOT</em>. If it's a number, also "&gt;" (greater than) or "&lt;" (less than)</li>
-	<li><strong>relation, field_2, compare_2, value_2</strong> - additional query for custom field value, where <em>relation</em> is <em>AND</em> (default) or <em>OR</em></li>
+	<li><b>field</b> - field name</li>
+	<li><b>value</b> - value to search</li>
+	<li><b>compare</b> - <i>equal</i> (default), <i>not</i> (not equal), <i>&gt;</i> (greater than), <i>&lt;</i> (less than)</li>
+	<li><strong>relation, field_2, compare_2, value_2</strong> - query for additional field value, where <em>relation</em> is <em>AND</em> (default) or <em>OR</em></li>
 </ul>
 
-<h4>Custom date field</h4>
+<h4>Date field</h4>
 
 <ul>
-	<li><strong>field</strong> - field slug</li>
-	<li><strong>compare</strong> - <i>compare="&gt;"</i> (greater than), <i>"&lt;"</i> (less than), <i>"="</i> (equal)</li>
+	<li><strong>field</strong> - field name</li>
 	<li><strong>value</strong> - field value</li>
 	<li><strong>value="now"</strong> - compare to now</li>
 	<li><strong>value="future"</strong> or <strong>"past"</strong> - query future or past values; no need to set <i>compare</i> parameter</li>
+	<li><strong>compare</strong> - <i>equal</i> (default), <i>not</i> (not equal), <i>&gt;</i> (greater than), <i>&lt;</i> (less than)</li>
 </ul><ul>
 	<li><strong>in="string"</strong> - if the date field is stored as string, for example: 2014-08-15</li>
 <!--	<li><strong>date_format</strong> - instead of using <em>in="string"</em>, you can set a date format, for example: "Y-m-d h:i A"</li>
@@ -106,8 +111,10 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 	<li><strong>name</strong> - show one post by slug; can be used to display, for example, gallery or repeater fields from another post</li>
 	<li><strong>x</strong> - repeat the loop <em>x</em> times - no query</li>
 </ul><br>
+<h3 align="center">Examples</h3>
 <hr>
-<h3>Query for custom field values</h3>
+
+<h3>Query for field values</h3>
 
 <h4>Single field</h4>
 
@@ -127,9 +134,9 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 
 <h4>Series</h4>
 
-<code>[loop type="books" series="1,2,3,7-15,50-60" key="serial_number"]</code>
+<code>[loop type="books" series="1,2,3,7-15,50-60" key="serial_number"]</code><br>
 <hr>
-<h3>Query by custom date field</h3>
+<h3>Query by date field</h3>
 
 <h4>Show future events</h4>
 
@@ -141,8 +148,7 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 
 <h4>Show past events in descending order</h4>
 
-<code>[loop type="events" field="event_date" compare="&lt;" value="now" orderby="meta_value_num" key="event_date" order="DESC"]</code>
-
+<code>[loop type="events" field="event_date" compare="&lt;" value="now" orderby="meta_value_num" key="event_date" order="DESC"]</code><br>
 <hr>
 <h3>Query by checkbox values</h3>
 
@@ -160,18 +166,21 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 
 <h4>Two checkboxes..</h4>
 
-<code>[loop type="movies" checkbox="genre" compare="AND" value="comedy, drama" checkbox_2="in-stock" value_2="current, pending"]</code>
+<code>[loop type="movies" checkbox="genre" compare="AND" value="comedy, drama" checkbox_2="in-stock" value_2="current, pending"]</code><br>
 
+<a href="#" id="field-tags" name="field-tags"></a>
+<h3 align="center">Field tags</h3>
 <hr>
 
-<h3>Special tags</h3>
+This is a feature to expand a list of fields to their values.
 
-This is a feature to expand a list of fields to {FIELD} tags.
-
-<code>[loop type="post" fields="field_1, field_2"]
-&nbsp;&nbsp;&nbsp;&nbsp;Display {FIELD_1} and {FIELD_2}
+<code>[loop type="post" fields="custom_field, another_field"]
+&nbsp;&nbsp;&nbsp;&nbsp;Display {CUSTOM_FIELD} and {ANOTHER_FIELD}
 [/loop]</code>
 
-It's a shorter way to insert field values in a loop. Isn't that neat? Thanks, k8n!
+The {FIELD} tags are uppercase versions of the field names.
 
-Please note that the tags are uppercase version of the field names. There are also predefined tags: COUNT, URL, ID, TITLE, AUTHOR, AUTHOR_URL, DATE, THUMBNAIL, THUMBNAIL_URL, CONTENT, EXCERPT, COMMENT_COUNT, TAGS, IMAGE, IMAGE_ID, IMAGE_URL.
+There are also predefined tags: COUNT, URL, ID, TITLE, AUTHOR, AUTHOR_URL, DATE, THUMBNAIL, THUMBNAIL_URL, CONTENT, EXCERPT, COMMENT_COUNT, TAGS, IMAGE, IMAGE_ID, IMAGE_URL.
+
+If you want to pass field values to the loop shortcode itself, refer to: <a href="options-general.php?page=ccs_content_shortcode_help&tab=etc#field-as-parameter">Field as parameter</a>.
+

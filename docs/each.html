@@ -1,4 +1,5 @@
-<h3>For/each</h3>
+<h3 align="center">For each</h3>
+<hr>
 
 This is a feature to create a loop for each category, tag, or taxonomy term.
 
@@ -35,7 +36,7 @@ Available parameters for the <strong>[each]</strong> shortcode are:
 </ul>
 <br>
 <hr>
-<h3>Loop</h3>
+<h3>Inside loop</h3>
 
 It's possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
 
@@ -45,19 +46,17 @@ It's possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
 &nbsp;&nbsp;&nbsp;&nbsp;[for each="category"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url]/category/[each slug]"&gt;[each name]&lt;/a&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;[/for]
-[/loop]</code>
-<br>
+[/loop]</code><br>
 <hr>
 <h3>Current post</h3>
 
-Outside the loop, use the <em>current</em> parameter to display category/tag/taxonomy of the current post only. Otherwise, <b>[for]</b> displays all terms that exist.
+The <b>[for each]</b> loop displays all terms that exist. Use the <em>current</em> parameter to display category/tag/taxonomy assigned to the current post only. 
 
 <h4>Display a link for each category assigned to the current post</h4>
 <code>[for each="category" current="true"]
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url]/category/[each slug]"&gt;[each name]&lt;/a&gt;
 [/for]
-</code>
-<br>
+</code><br>
 <hr>
 <h3>List</h3>
 

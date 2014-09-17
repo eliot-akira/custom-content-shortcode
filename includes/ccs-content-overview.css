@@ -1,6 +1,7 @@
 
 #content-overview-page {
 	max-width:960px;
+	font-weight: 300;
 }
 
 .text-left {
@@ -10,12 +11,14 @@
 .wrap h2 {
 	margin-left: 10px;
 	margin-bottom: 10px;
+	font-weight: 300;
 }
 
 .wrap h3 {
 	margin-left: 10px;
 	margin-bottom: 20px;
 	font-size:20px;
+	font-weight: 400;
 }
 
 .wrap table {
@@ -24,6 +27,7 @@
 
 .wrap td {
 	vertical-align:top;
+	font-size: 15px;
 }
 
 .dropdown-action {
