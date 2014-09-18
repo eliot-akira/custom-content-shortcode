@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,7 +87,8 @@ Support for other plugins:
 
 * [each] - Assume *name* by default
 * [loop tag] - Clean up any extra spaces in tag list
-
+* [load view] - Load a template from *views* folder
+* [metabox] - 
 
 = 1.2.1 =
 

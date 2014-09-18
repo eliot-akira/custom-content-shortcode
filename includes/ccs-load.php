@@ -34,15 +34,59 @@ add_shortcode('js', 'custom_js_wrap');
 
 function custom_load_script_file( $atts ) {
 
+	global $post;
+
 	extract( shortcode_atts( array(
 		'css' => null, 'js' => null, 'dir' => null,
 		'file' => null,'format' => null, 'shortcode' => null,
 		'gfonts' => null, 'cache' => 'true',
 		'php' => 'true', 'debug' => 'false',
+		'view' => ''
 		), $atts ) );
 
-	$root_path = ABSPATH;
 
+		/*========================================================================
+		 *
+		 * Load view template?
+		 *
+		 *=======================================================================*/
+
+		if (isset($atts[0]) && $atts[0]=='view') {
+
+			$dir = 'views';
+
+			if (!empty($view)) {
+				$file = $view;
+				$out = do_shortcode_file($file,$dir,true);
+			} else {
+
+				$current_post_type = $post->post_type;
+				$current_post_slug = $post->post_name;
+
+				// Check post_type/post_slug.html first
+
+				$file = $current_post_type.'/'.$current_post_slug;
+				$out = do_shortcode_file($file,$dir,true);
+
+				if (!$out) {
+
+					// If not, try post_slug.html
+
+					$out = do_shortcode_file($current_post_slug,$dir,true);
+				}
+			}
+			return $out;
+		}
+
+
+
+	/*========================================================================
+	 *
+	 * Set up paths
+	 *
+	 *=======================================================================*/
+
+	$root_path = ABSPATH;
 //	$root_path = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
 	$path = trailingslashit( $root_path );
 	$site_url = trailingslashit( get_site_url() );
@@ -155,11 +199,10 @@ function custom_load_script_file( $atts ) {
 /*
 			if (empty($output)) {
 				// Try again
-//				$output = @file_get_contents($path . $file);
+				$output = @file_get_contents($path . $file);
 				if (empty($output)) {
-					// Try again
-//					$output = @file_get_contents($dir . $file);
-
+					// Try again with absolute path
+					$output = @file_get_contents($dir . $file);
 				}
 			}
 */
@@ -196,12 +239,6 @@ function custom_load_script_file( $atts ) {
 				$output = wpautop( $output );
 			}
 
-			/* Put safe_eval here for executing PHP inside template files */
-
-			if($php=='true') {
-/*				$output = ccs_safe_eval( $output ); */
-			}
-
 			if(($shortcode != 'false')||($shortcode != 'off')) { // Shortcode?
 				$output = do_shortcode( $output );
 			}
@@ -222,7 +259,7 @@ add_shortcode('load', 'custom_load_script_file');
  *====================================================================================================*/
 
 
-function do_shortcode_file( $file, $dir = "" ) {
+function do_shortcode_file( $file, $dir = "", $return = false ) {
 
 	$content_url = trailingslashit( content_url() );
 	$content_path = trailingslashit( WP_CONTENT_DIR );
@@ -253,11 +290,16 @@ function do_shortcode_file( $file, $dir = "" ) {
 
 	if ( !empty($output) ) {
 
-/*		$output = ccs_safe_eval( $output ); */
 		$output = do_shortcode( $output );
 
-		echo $output;
-		return true;
+		if (!$return) {
+			echo $output;
+			return true;
+		}
+		else {
+			return $output;
+		}
+
 	} else {
 		return false;
 	}
@@ -470,7 +512,7 @@ function load_custom_html($content) {
 	return $content;
 }
 
-
+/*
 
 function ccs_safe_eval($code) {
 	ob_start();
@@ -479,7 +521,7 @@ function ccs_safe_eval($code) {
 	return ob_get_clean();
 }
 
-	/* Content passed to the shortcode is after wptexturize, so we have to reverse it.. 
+Content passed to the shortcode is after wptexturize, so we have to reverse it.. 
 
 if ( ! function_exists('undo_wptexturize')) {
 	function undo_wptexturize($content) {

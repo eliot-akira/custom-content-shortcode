@@ -2,7 +2,7 @@
 
 /*====================================================================================================
  *
- * Loop shortcode: query posts and loop through it
+ * [loop] - Query posts and loop through each one
  *
  *====================================================================================================*/
 
@@ -17,32 +17,39 @@ class LoopShortcode {
 
 	function register() {
 
+		/*========================================================================
+		 *
+		 * Define shortcodes
+		 *
+		 *=======================================================================*/
+
 		add_shortcode( 'loop', array( $this, 'the_loop_shortcode' ) );
 		add_shortcode( 'pass', array( $this, 'pass_shortcode' ) );
 		add_shortcode( 'loop-count', array( $this, 'loop_count_shortcode' ) );
 
+
 		/*========================================================================
 		 *
-		 * Set up WP filters
+		 * Set up filters
 		 *
 		 *=======================================================================*/
 
-		// Get settings
+		// Get settings - To do: get it from CCS init
 
 		$settings = get_option( 'ccs_content_settings' );
 
-		// Move wpautop filter?
+		// Move wpautop filter
 
 		$move_wpautop = isset( $settings['move_wpautop'] ) ?
 			esc_attr( $settings['move_wpautop'] ) : 'off';
 
-		if ($move_wpautop == "on") {
+		if ($move_wpautop == 'on') {
 			remove_filter( 'the_content', 'wpautop' );
 			add_filter( 'the_content', 'wpautop' , 99);
 			add_filter( 'the_content', 'shortcode_unautop',100 );
 		}
 
-		// Enable shortcodes in widget?
+		// Enable shortcodes in widget
 
 		$shortcodes_in_widget = isset( $settings['shortcodes_in_widget'] ) ?
 			esc_attr( $settings['shortcodes_in_widget'] ) : 'off';
@@ -65,17 +72,19 @@ class LoopShortcode {
 
 	/*========================================================================
 	 *
-	 * Main function for [loop]
+	 * Main function
 	 * 
-	 * To do: organize into a group of functions, with filters
-	 *
 	 *=======================================================================*/
 
 	function the_loop_shortcode( $atts, $template = null, $shortcode_name ) {
 
-		global $ccs_global_variable;
+		/*========================================================================
+		 *
+		 * Initialize
+		 *
+		 *=======================================================================*/
 
-		if( ! is_array( $atts ) ) return; // Needs at least one parameter
+		global $ccs_global_variable;
 
 		$ccs_global_variable['is_loop'] = "true";
 		$ccs_global_variable['current_loop_count'] = 0;
@@ -86,9 +95,9 @@ class LoopShortcode {
 		$ccs_global_variable['is_repeater_loop'] = "false";
 		$ccs_global_variable['total_comments'] = 0;
 
-		// Non WP_Query arguments
 
 		$args = array(
+
 			'type' => '', 'name' => '',
 
 			'id' => '', 'exclude' => '',
@@ -140,6 +149,7 @@ class LoopShortcode {
 		$all_args = shortcode_atts( $args , $atts, true );
 		extract( $all_args );
 
+
 /*========================================================================
  *
  * Set up query based on parameters
@@ -147,40 +157,58 @@ class LoopShortcode {
  *=======================================================================*/
 
 
-		/*---------------
-		 * Parameters
-		 *-------------*/
+
+		/*========================================================================
+		 *
+		 * Merge parameters into query
+		 *
+		 *=======================================================================
+
+		$query = array_merge( $atts, $all_args );
+
+		// filter out non-wpquery arguments
+		foreach( $args as $key => $value ) {
+			unset( $query[$key] );
+		}
+		*/
+
+		$query = array();
+
+		// $this->set_up_query( $atts );
+
+
+		// Switch to blog on multi-site, restore at the end
+		// To do: test it
 
 		if (!empty($blog)) {
 			switch_to_blog($blog);
 		}
+
+
+
+
+
+		/*========================================================================
+		 *
+		 * Aliases - To do: clean these up
+		 *
+		 *=======================================================================*/
+
+
+		$current_name = $name;
+
 		if (!isset($custom_field))
 			$custom_field = "";
 
-		if( empty($type) ) $type = 'any';
 		$custom_value = $value;
+
 		if(!empty($key)) $keyname=$key;
 		if(!empty($offset)) $post_offset=$offset;
 		if(!empty($strip)) $strip_tags=$strip;
 		if(!empty($allow)) $strip_tags=$allow;
-		if(!empty($status))
-			$status = explode(",", $status);
-		else {
-			if ($type=="attachment")
-				$status = array("any");
-			else
-				$status = array("publish");
-		}
 
-		if(!isset($query_field)) $query_field='';
-
-		$current_name = $name;
+		if (!isset($query_field)) $query_field='';
 		if (!empty($var)) $variable=$var;
-
-
-		/*
-		 * Aliases
-		 */
 
 			if($f!='')	$field = $f;
 			if($v!='')	$value = $v;
@@ -191,8 +219,7 @@ class LoopShortcode {
 			if($r!='')	$relation = $r;
 			if (!empty($custom_fields)) $fields = $custom_fields;
 
-		if(( $field != 'gallery' ) && ($shortcode_name != 'pass') && ($value!='')) {
-
+		if (( $field != 'gallery' ) && ($shortcode_name != 'pass') && ($value!='')) {
 			$query_field = $field;
 			$query_value = $value;
 
@@ -201,20 +228,44 @@ class LoopShortcode {
 		}
 
 
-
 		/*========================================================================
 		 *
-		 * Parameter x: loop x times, without query
+		 * Post status
 		 *
 		 *=======================================================================*/
 
-		if($x != '') {
+		if (!empty($status)) {
+
+			$query['post_status'] = explode(",", $status); // To do: clean up extra spaces if any
+
+		} else {
+
+			// Default
+			if ($type=="attachment")
+				$query['post_status'] = array("any");
+			else
+				$query['post_status'] = array("publish");
+		}
+
+
+
+
+		/*========================================================================
+		 *
+		 * Parameter X: loop x times, without query
+		 * 
+		 * To do: in its own function
+		 *
+		 *=======================================================================*/
+
+		if ($x != '') {
 
 			$count = 0; $max = $x;
 			$output = array();
 			ob_start();
 
 			while($x > 0) {
+
 				$count++;
 				$ccs_global_variable['current_loop_count'] = $count;
 				$keywords = array(
@@ -246,12 +297,15 @@ class LoopShortcode {
 				$x--;
 			}
 
-			echo implode("", $output);
+			// End hook
 
 			$ccs_global_variable['is_loop'] = "false";
+
 			if (!empty($blog)) {
 				restore_current_blog();;
 			}
+
+			echo implode("", $output);
 
 			return ob_get_clean();
 		}
@@ -261,39 +315,37 @@ class LoopShortcode {
 
 		/*========================================================================
 		 *
-		 * Merge parameters into query
+		 * If inside a [for each] loop, get that taxonomy term
 		 *
 		 *=======================================================================*/
-
-		$query = array_merge( $atts, $all_args );
-
-		// filter out non-wpquery arguments
-		foreach( $args as $key => $value ) {
-			unset( $query[$key] );
-		}
-
-
-		/*---------------
-		 * In a foreach loop?
-		 *-------------*/
 
 		if (isset($ccs_global_variable['for_loop']) &&
 			($ccs_global_variable['for_loop']=='true')) {
 
 			if ($ccs_global_variable['for_each']['type']=='taxonomy') {
+
 				$taxonomy = $ccs_global_variable['for_each']['taxonomy'];
 				$custom_value = $ccs_global_variable['for_each']['slug'];
+
 			}
 		}
 
 
-		if ($shortcode_name=="pass") {
-			$id = get_the_ID();
-		}
+
+
+
+		/*========================================================================
+		 *
+		 * Category or tag
+		 *
+		 *=======================================================================*/
+
 
 		if( $category != '' ) {
 			$query['category_name'] = $category;
 		}
+
+
 		if( $tag != '' ) {
 
  			// Clean up extra spaces
@@ -303,7 +355,15 @@ class LoopShortcode {
 			$query['tag'] = $tags;
 
 		}
-		if( $count != '' ) {
+
+
+		/*========================================================================
+		 *
+		 * Post count
+		 *
+		 *=======================================================================*/
+
+		if ( $count != '' ) {
 
 			if ($orderby=='rand') {
 				$query['posts_per_page'] = '-1';
@@ -314,7 +374,7 @@ class LoopShortcode {
 
 		} else {
 
-			if($post_offset!='')
+			if ($post_offset!='')
 				$query['posts_per_page'] = '9999'; // Show all posts (to make offset work)
 			else
 				$query['posts_per_page'] = '-1'; // Show all posts (normal method)
@@ -324,18 +384,37 @@ class LoopShortcode {
 		if($post_offset!='')
 			$query['offset'] = $post_offset;
 
-		if( $type == '' ) {
+
+
+
+		/*========================================================================
+		 *
+		 * Post type
+		 *
+		 *=======================================================================*/
+
+		if ( empty($type) ) {
+
 			$query['post_type'] = 'any';
+
 		} else {
+
 			$query['post_type'] = $type;
-			if ( $custom_field != 'gallery' ){
-				$query['p'] = '';
-			}
 		}
+
+
+		/*========================================================================
+		 *
+		 * Post ID
+		 *
+		 *=======================================================================*/
 
 		if ( $id != '' ) {
 
-			$id_array = explode(",", $id); // Multiple IDs possible
+			// Multiple IDs possible
+			// To do: clean up extra space if any
+
+			$id_array = explode(",", $id);
 
 			$query['post__in'] = $id_array;
 			$query['orderby'] = 'post__in'; // Preserve ID order
@@ -348,51 +427,85 @@ class LoopShortcode {
 
 		} elseif ( $current_name != '') {
 
-			// Get ID from post slug
 
-			$query['name']=$current_name; $query['post_type'] = $type;
+			/*========================================================================
+			 *
+			 * Post name/slug
+			 *
+			 *=======================================================================*/
+
+			$query['name'] = $current_name; 
 
 		} elseif ( $parent != '') {
 
-			// Parent post by name or ID
+			/*========================================================================
+			 *
+			 * Parent by ID or slug
+			 *
+			 *=======================================================================*/
 
-			if (is_numeric($parent))
-				$parent_id = intval($parent);
+			if ( is_numeric($parent) )
+
+				$parent_id = intval( $parent );
+
 			else {
-				$posts = get_posts( array('name' => $parent, 'post_type' => $type) );
+
+				// Get parent by slug
+				// To do: get only 1 post by that name
+
+				$posts = get_posts( array('name' => $parent, 'post_type' => $type, 'posts_per_page' => 5,) );
+
 				if ( $posts ) $parent_id = $posts[0]->ID;
 				else {
+					// End action
 					$ccs_global_variable['is_loop']='false';
 					return;
 				}
 			}
 
-			$query['post_parent'] = $parent_id; $query['post_type'] = $type;
+			$query['post_parent'] = $parent_id;
 
 		} elseif (( $custom_field == 'gallery' ) && ($shortcode_name != 'pass') ){
+
+			/*========================================================================
+			 *
+			 * Gallery ID or name
+			 *
+			 *=======================================================================*/
 
 			$gallery = 'true';
 
 			if (!empty($current_name)) {
+
 				$query['name']=$current_name;
 				$ccs_global_variable['current_gallery_name'] = $current_name;
+
 			} else {
-				$query['p'] = get_the_ID(); $query['post_type'] = "any";
+
+				$query['p'] = get_the_ID();
+				$query['post_type'] = "any";
 			}
 
+			// To do: Is this necessary..?
+
 			$posts = get_posts( $query );
-			if( $posts ) { $ccs_global_variable['current_gallery_id'] = $posts[0]->ID;
+
+			if( $posts ) {
+				$ccs_global_variable['current_gallery_id'] = $posts[0]->ID;
 			}
 
 		}
 
-		if(!isset($custom_field)) $custom_field='';
-
-// Query by date
+		/*========================================================================
+		 *
+		 * Query: date
+		 *
+		 *=======================================================================*/
 
 		if ( ($year!='') || ($month!='') || ($day!='') ) {
 
 			$today = getdate();
+
 			if ($year=='today') $year=$today["year"];
 			if ($month=='today') $month=$today["mon"];
 			if ($day=='today') $day=$today["mday"];
@@ -413,56 +526,68 @@ class LoopShortcode {
 		 *
 		 *=======================================================================*/
 
-		if ( !empty($tax) ) $taxonomy = $tax;
+		if ( !empty($tax) ) $taxonomy = $tax; // Alias - To do: move to start
+
 		if ( !empty($taxonomy) ) {
+
+			// To do: clean up extra spaces if any
 
 			$terms = explode(",", $custom_value);
 
-			if (!empty($compare)) {
+			if ( !empty($compare) ) {
 
-				if ( $compare=='=' ) $operator = 'IN';
-				elseif ( $compare=='!=' ) $operator = 'NOT IN';
+				if ( $compare=='=' )
+					$operator = 'IN';
+				elseif ( $compare=='!=' )
+					$operator = 'NOT IN';
 				else {
 					$compare = strtoupper($compare);
 					if ( $compare == 'NOT' )
 						$compare = 'NOT IN';
 					$operator = $compare;
-
 				}
-			} else {
-				$operator = 'IN';
-			}
+
+			} else
+				$operator = 'IN'; // Default
 
 			$query['tax_query'] = array (
-					array(
+				array(
 					'taxonomy' => $taxonomy,
 					'field' => 'slug',
 					'terms' => $terms,
 					'operator' => $operator
-					)
-				);
+				)
+			);
 		}
-
-
-		if($order!='')
-			$query['order'] = $order;
 
 		/*========================================================================
 		 *
-		 * Order by field value
+		 * Orderby
 		 *
 		 *=======================================================================*/
 
-		if( !empty($orderby)) {
+		if ( !empty($order) ) {
+			
+			$query['order'] = $order;
+
+		}
+
+		if ( !empty($orderby) ) {
+
+				// Alias
 				if ($orderby=="field") $orderby = 'meta_value';
 				if ($orderby=="field_num") $orderby = 'meta_value_num';
 
 				$query['orderby'] = $orderby;
 
-				if(in_array($orderby, array('meta_value', 'meta_value_num') )) {
+				if (in_array($orderby, array('meta_value', 'meta_value_num') )) {
 					$query['meta_key'] = $keyname;
 				}
-				if(empty($order)) {
+
+				if (empty($order)) {
+
+					// Default order
+
 					if (($orderby=='meta_value_num') || ($orderby=='menu_order')
 						|| ($orderby=='title') || ($orderby=='name') )
 						$query['order'] = 'ASC';	
@@ -478,12 +603,12 @@ class LoopShortcode {
 		 *
 		 *=======================================================================*/
 
-		if($series!='') {
+		if (!empty($series)) {
 
 			// Remove white space
 			$series = str_replace(' ', '', $series);
 
-//			Expand range: 1-3 -> 1,2,3
+			// Expand range: 1-3 -> 1,2,3
 
 			/* PHP 5.3+
 				$series = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
@@ -496,18 +621,20 @@ class LoopShortcode {
 			$callback = create_function('$m', 'return implode(\',\', range($m[1], $m[2]));');
 			$series = preg_replace_callback('/(\d+)-(\d+)/', $callback, $series);
 
-			self::$sort_posts = explode(',', $series);
+			// Store posts ID and key
 
+			self::$sort_posts = explode(',', $series);
 			self::$sort_key = $keyname;
 
-				$query['meta_query'] = array(
-						array(
-							'key' => $keyname,
-							'value' => self::$sort_posts,
-							'compare' => 'IN'
-						)
-					);
+			// Get the posts to be sorted later
 
+			$query['meta_query'] = array(
+				array(
+					'key' => $keyname,
+					'value' => self::$sort_posts,
+					'compare' => 'IN'
+				)
+			);
 		}
 
 
@@ -517,7 +644,7 @@ class LoopShortcode {
 		 *
 		 *=======================================================================*/
 
-		if( ($query_field!='') && ($query_value!='') ) {
+		if( !empty($query_field) && !empty($query_value) ) {
 
 			// Support for date values
 
@@ -558,6 +685,8 @@ class LoopShortcode {
 				default: break;
 			}
 
+			// To do: shouldn't this be $query['meta_query']..?
+
 			$query['meta_query'][] =
 				array(
 						'key' => $query_field,
@@ -567,11 +696,13 @@ class LoopShortcode {
 
 			// Additional query by field value
 
-			if( ($field_2!='') && ($value_2!='') ) {
+			if ( !empty($field_2) && !empty($value_2) ) {
 
-				if($relation!='') {
+				if ($relation!='') {
 
 					$relation = strtoupper($relation);
+
+					// Alias
 					switch ($relation) {
 						case '&': $relation = 'AND'; break;
 						case '|': $relation = 'OR'; break;
@@ -611,49 +742,78 @@ class LoopShortcode {
  * 
  *====================================================================================*/
 
-		if( ( $gallery!="true" ) && ( $type != "attachment") ) {
+		// To do: do this more elegantly
+
+		if ( ( $gallery!="true" ) && ( $type != "attachment") ) {
 
 			// Last-minute adjustments
-			if( $custom_field == "gallery" )
+
+			if ( $custom_field == "gallery" )
 				$custom_field = "_custom_gallery";
-			$query['post_status'] = $status;
-			remove_all_filters('posts_orderby'); // ??
+
 
 
 			/*========================================================================
 			 *
-			 * Run the query
+			 * Get query results
 			 *
 			 *=======================================================================*/
 
-			$output = array();
-			ob_start();
 			$posts = new WP_Query( $query );
 
-			// Re-order by series
 
-			if($series!='') {
-				usort($posts->posts, array($this, "custom_series_orderby_key"));
-			}
-
-			if($orderby=='rand') {
-				shuffle($posts->posts);	// Randomize
-				if ($count == '')
-					$count = 9999;
-			}
-
-			$total_comment_count = 0;
-			$current_count = 1;
+	/*========================================================================
+	 *
+	 * Sort results
+	 *
+	 *=======================================================================*/
 
 			/*========================================================================
 			 *
-			 * For each post found
+			 * Sort posts by series
 			 *
 			 *=======================================================================*/
+			
+			if (!empty($series)) {
+
+				usort($posts->posts, array($this, "custom_series_orderby_key"));
+
+			}
+
+			/*========================================================================
+			 *
+			 * Randomize order
+			 *
+			 *=======================================================================*/
+
+			if($orderby=='rand') {
+
+				shuffle($posts->posts);
+				if ($count == '')
+					$count = 9999; // ??
+
+			}
+
+
+	/*========================================================================
+	 *
+	 * For each post found
+	 *
+	 *=======================================================================*/
 
 			if( $posts->have_posts() ) {
 
 				while( $posts->have_posts() ) : $posts->the_post();
+
+
+
+
+				/*========================================================================
+				 *
+				 * Store current post info
+				 *
+				 *=======================================================================*/
+
 
 				$current_id = get_the_ID();
 				$ccs_global_variable['current_loop_id']=$current_id;
@@ -668,7 +828,9 @@ class LoopShortcode {
 				 *=======================================================================*/
 
 				$skip_1 = false;
+
 				if ($checkbox!='') {
+
 					$values = explode(",", $query_value);
 					$check_field = get_post_meta( $current_id, $checkbox, $single=true );
 
@@ -745,7 +907,7 @@ class LoopShortcode {
 				 *
 				 *=======================================================================*/
 
-				if($repeater != '') {
+				if ($repeater != '') {
 
 					$ccs_global_variable['is_repeater_loop'] = "true";
 					$ccs_global_variable['current_loop_id'] = $current_id;
@@ -960,11 +1122,13 @@ class LoopShortcode {
 					}
 
 
-				/*========================================================================
-				 *
-				 * Process field tags: {FIELD}
-				 *
-				 *=======================================================================*/
+	/*========================================================================
+	 *
+	 * Process field tags: {FIELD}
+	 *
+	 *=======================================================================*/
+
+	// Optimize this!
 
 					// Expand fields=".., .."
 
@@ -1015,7 +1179,12 @@ class LoopShortcode {
 
 			} /* Not skip */
 
-// End: loop for each post found
+
+	/*========================================================================
+	 *
+	 * End: each post found
+	 *
+	 *=======================================================================*/
 
 			endwhile; $nothing_found = false;
 
@@ -1023,11 +1192,11 @@ class LoopShortcode {
 
 			else {
 
-				/*========================================================================
-				 *
-				 * No post found
-				 *
-				 *=======================================================================*/
+			/*========================================================================
+			 *
+			 * No post found
+			 *
+			 *=======================================================================*/
 
 				$nothing_found = true;
 
@@ -1041,7 +1210,12 @@ class LoopShortcode {
 					echo do_shortcode($middle); // then do it	
 			}
 
+
+
 			wp_reset_postdata();
+
+
+
 
 			if (!$nothing_found) {
 
@@ -1543,8 +1717,17 @@ class LoopShortcode {
 			if ($field=='gallery') $field = '_custom_gallery'; // Support gallery field
 
 			$field_value = get_post_meta( $post_id, $field, true );
-			if (is_array($field_value))
+
+			if (is_array($field_value)) {
+
 				$field_value = implode(",", $field_value);
+
+			} else {
+
+				// Clean extra spaces if it's a list
+				$field_value = array_map("trim", array_filter(explode(',', $field_value)));
+				$field_value = implode(",", $field_value);
+			}
 
 			$keywords = array(
 				'FIELD' => $field_value,
