@@ -89,6 +89,7 @@ Support for other plugins:
 * [loop tag] - Clean up any extra spaces in tag list
 * [load view] - Load a template from *views* folder
 * [metabox] - 
+* [loop] - Refactor for code organization and performance
 
 = 1.2.1 =
 
