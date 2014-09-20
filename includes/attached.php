@@ -7,7 +7,9 @@
  *
  *=======================================================================*/
 
-class AttachedShortcode {
+new CCS_Attached;
+
+class CCS_Attached {
 
 	function __construct() {
 		add_shortcode( 'attached', array( $this, 'attached_shortcode' ) );
@@ -26,8 +28,6 @@ class AttachedShortcode {
 
 
 		global $ccs_global_variable;
-
-		ob_start();
 
 		$attachment_ids = array();
 		$out = array();
@@ -101,11 +101,7 @@ class AttachedShortcode {
 
 		} // End: not empty post and attachments exist
 
-		echo implode("", $out);
-
-		return ob_get_clean();
+		return implode('', $out);
 	}
 
 }
-
-new AttachedShortcode;

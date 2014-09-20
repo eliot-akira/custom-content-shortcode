@@ -377,7 +377,7 @@ class CCS_Docs {
 	function dashboard_content_overview() {
 		?>
 		<div class="wrap">
-		<?php include('ccs-content-overview.php'); ?>
+		<?php include('content-overview.php'); ?>
 		</div>
 		<?php
 	}

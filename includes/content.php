@@ -8,8 +8,9 @@
  *
  *====================================================================================================*/
 
+new CCS_Content;
 
-class CustomContentShortcode {
+class CCS_Content {
 
 	function __construct() {
 
@@ -864,4 +865,3 @@ class CustomContentShortcode {
 	}
 
 }
-new CustomContentShortcode;

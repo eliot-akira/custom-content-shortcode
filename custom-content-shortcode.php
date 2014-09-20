@@ -24,6 +24,7 @@ class CCS_Plugin {
 		$this->load_settings();
 		$this->load_main_modules();
 		$this->load_optional_modules();
+		$this->setup_wp_filters();
 	}
 
 
@@ -118,8 +119,58 @@ class CCS_Plugin {
 
 		foreach ($optional_modules as $option => $module) {
 			if ( isset(self::$settings[ $option ]) && self::$settings[ $option ]=='on' )
-				require_once (CCS_PATH.'/includes/'.$module.'.php');		
+				$this->load_module( $module );
 		}
+	}
+
+
+	/*========================================================================
+	 *
+	 * Set up WP filters
+	 *
+	 *=======================================================================*/
+	
+	function setup_wp_filters() {
+
+		$settings = self::$settings;
+
+		/*========================================================================
+		 *
+		 * Move wpautop filter to after shortcode processing
+		 * 
+		 * No longer recommended - use [raw] or edit in file
+		 *
+		 *=======================================================================*/
+
+		if ( isset( $settings['move_wpautop'] ) &&
+			($settings['move_wpautop'] == "on") ) {
+
+			remove_filter( 'the_content', 'wpautop' );
+			add_filter( 'the_content', 'wpautop' , 99);
+			add_filter( 'the_content', 'shortcode_unautop',100 );
+		}
+
+
+		/*========================================================================
+		 *
+		 * Enable shortcodes in widget
+		 *
+		 *=======================================================================*/
+
+		if ( isset( $settings['shortcodes_in_widget'] ) &&
+			($settings['shortcodes_in_widget'] == "on") ) {
+				
+			add_filter('widget_text', 'do_shortcode');
+		}
+
+		// Exempt [loop] from wptexturize()
+
+		add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize') );
+	}
+
+	function shortcodes_to_exempt_from_wptexturize($shortcodes){
+		$shortcodes[] = 'loop';
+		return $shortcodes;
 	}
 	
 }

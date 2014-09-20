@@ -6,8 +6,12 @@
  *
  *====================================================================================================*/
 
-class CommentShortcodes {
+new CCS_Comments;
+
+class CCS_Comments {
+
 	function __construct() {
+
 		add_shortcode('comment', array($this, 'comment_shortcode') );
 		add_shortcode('comments', array($this, 'comment_shortcode') );
 	}
@@ -213,7 +217,9 @@ class CommentShortcodes {
 	}
 
 	function return_comment_form() {
+
 		ob_start();
+
 		comment_form( $args = array(
 			'id_form'           => 'commentform',  // that's the wordpress default value! delete it or edit it ;)
 			'id_submit'         => 'commentsubmit',
@@ -231,11 +237,10 @@ class CommentShortcodes {
 	}
 
 	function return_comments_template($file) {
+
 		ob_start();
 		comments_template($file);
-		$form = ob_get_clean(); 
-	    return $form;
+		return ob_get_clean(); 
 	}
 
 }
-new CommentShortcodes;

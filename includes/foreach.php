@@ -10,11 +10,14 @@
  *=======================================================================*/
 
 
-class ForShortcode {
+new CCS_ForEach;
+
+class CCS_ForEach {
+
+	private static $is_for_loop;
 
 	function __construct() {
 
-		global $ccs_global_variable;
 		$ccs_global_variable['for_loop'] = 'false';
 
 		add_action( 'init', array( $this, 'register' ) );
@@ -152,5 +155,4 @@ class ForShortcode {
 	}
 
 }
-new ForShortcode;
 

@@ -4,11 +4,14 @@
  *
  * Shortcodes for Advanced Custom Fields: gallery, repeater, flexible content
  *
- *
+ * To do: test with ACF 5
+ * 
  *====================================================================================================*/
 
 
-class CustomShortCodes_For_ACF {
+new CCS_To_ACF;
+
+class CCS_To_ACF {
 
 	function __construct() {
 
@@ -284,6 +287,5 @@ class CustomShortCodes_For_ACF {
 
 }
 
-new CustomShortCodes_For_ACF;
 
 

@@ -10,15 +10,26 @@ new CCS_Loop;
 
 class CCS_Loop {
 
-	private static $original_parameters;	// Shortcode parameters
-	private static $parameters;				// After merge with default
-
+	private static $args;
 	private static $query;
 
 	private static $state;			// Loop state
 	private static $variable;		// Loop variables
+/*
+	private static $sort_posts;
+	private static $sort_key;
+
+	private static $do_cache;
+	private static $cache_name;
+	private static $cache_expire;
+*/
 
 	function __construct() {
+
+		$this->define_shortcodes();
+		$this->add_filters_and_actions();
+	}
+
 
 	/*========================================================================
 	 *
@@ -40,99 +51,73 @@ class CCS_Loop {
 
 	/*========================================================================
 	 *
-	 * Loop shortcode
+	 * Set up loop filters and actions
+	 *
+	 *=======================================================================*/
+
+
+
+	function add_actions_and_filters() {
+
+	}
+
+
+
+	/*========================================================================
+	 *
+	 * Main function
 	 * 
 	 *=======================================================================*/
 
-	function the_loop_shortcode( $parameters, $template ) {
+	function the_loop_shortcode( $atts, $template ) {
 
-		// Merge arguments with defaults
-
-		self::$original_parameters = $parameters;
-		self::$parameters = $this->merge_with_default( $parameters );
 
 		// Initialize loop state and variables
 
-		$this->init_loop();
+		self::init_loop();
 
 		// Convert shortcode parameters to query
 
-		self::$query = $this->parameters_to_query( self::$parameters );
+		$query = self::atts_to_query( $atts );
 
-		// Check cache - if loaded, return result
+		// Check cache
 
-		if ($result = $this->check_cache( self::$query ) !== false)
+		$output = self::check_cache($query);
+		if ($output !== false) return $output;
 
-			return $result;
+		// Get results of query
 
-		// Get items from query
-
-		$items = $this->run_query( self::$query );
+		$posts = self::run_query($query);
 
 		// Loop through each post and compile template
 
-		$result = $this->compile_template( $items, $template );
-
-		$this->close_loop();
-
-		return $result;
 	}
-
 
 	function init_loop() {
 
 		self::$state['is_loop'] = 'true';
-		self::$state['do_cache'] = 'false';
+		self::$state['is_gallery_loop'] = 'false';
+		self::$state['is_attachment_loop'] = 'false';
+		self::$state['is_repeater_loop'] = 'false';
 
-
-		self::$variable['current_loop_count']	= 0;
-		self::$variable['total_comments']		= 0;
-
-
-		self::$state['is_attachment_loop']		= 'false';
-
-		self::$state['is_gallery_loop']			= 'false';
-		self::$variable['current_gallery_name']	= '';
-		self::$variable['current_gallery_id']	= '';
-
-		self::$state['is_acf_gallery_loop']		= 'false',
-		self::$state['is_repeater_loop']		= 'false';
-
-
-		// Should be stored in loop
-/*		$variable = array(
-			'current_loop_id' => '',
-			'current_row' => '',
-			'current_image' => '',
-			'current_image_url' => '',
-			'current_image_thumb' => '',
-			'current_image_thumb_url' => '',
-			'current_image_caption' => '',
-			'current_image_title' => '',
-			'current_image_description' => '',
-			'current_image_alt' => '',
-			'current_image_ids' => '',
-			'current_gallery_name' => '',
-			'current_gallery_id' => '',
-			'current_attachment_id' => '',
-			'current_attachment_ids' => '',
-			'current_script' => '',
-			'current_post' => '',
-		);
-*/
-
+		self::$variable['current_loop_count'] = 0;
+		self::$variable['current_gallery_name'] = '';
+		self::$variable['current_gallery_id'] = '';
+		self::$variable['total_comments'] = 0;
 	}
 
-	function close_loop(){
+	function check_cache( $query ) {
 
-		self::$state['is_loop'] = 'false';
-
+		return false;
 	}
 
+		/*========================================================================
+		 *
+		 * Get parameters
+		 *
+		 *=======================================================================*/
 
-	function merge_with_default( $parameters ){
-
-		$defaults = array(
+		$args = array(
 
 			'type' => '', 'name' => '',
 
@@ -186,68 +171,44 @@ class CCS_Loop {
 			'keyname' => '', 
 		);
 
-		return shortcode_atts($defaults, $parameters, true);
-	}
 
 
 
-	function args_to_query( $args ) {
+		extract( shortcode_atts($args, $atts, true) );
 
-		$query = array();
+		/*========================================================================
+		 *
+		 * If cache, try to get it
+		 *
+		 *=======================================================================*/
+		
+		if ($cache=='true') {
 
+			self::$do_cache = $cache;
+			self::$cache_expire = $expire;
 
+			$result = false;
 
-
-
-
-
-
-
-
-		return $query;
-	}
-
-
-
-	/*========================================================================
-	 *
-	 * If cache, try to get it
-	 *
-	 *=======================================================================*/
-
-	function check_cache( $query ) {
-
-		$parameters = self::$parameters;
-
-		$result = false;
-
-		if ($parameters['cache']=='true') {
-
-			self::$state['do_cache'] = 'true';
-
-			// Generate unique cache name from the original shortcode parameters
+			// Generate unique cache name from query parameters
 
 			$cache_name = null;
-
-			ksort(self::$original_parameters); // Alphabetical sort
-
-			foreach (self::$original_parameters as $key => $value) {
-
+			ksort($atts);
+			foreach ($atts as $key => $value) {
 				if ( ($key!='update') && ($key!='cache')) // skip these parameters
 					$cache_name .= $key.$value;
 			}
 
-//			$cache_num = substr($string, 0, 40); // Max number of characters
+			$cache_num = substr($string, 0, 40); // Max number of characters
 
-			self::$variable['cache_name'] = $cache_name;
+			self::$cache_name = $cache_name;
 
-			if ($parameters['update']!='true') {
-
-				$result = CCS_Cache::get_transient( $cache_name );
+			if ($update!='true') {
+				if (false !== ($result = CCS_Cache::get_transient($cache_name)))
+					return $result;
 			}
+		} else {
+
 		}
-		return $result;
-	}
 
 		/*========================================================================
 		 *
