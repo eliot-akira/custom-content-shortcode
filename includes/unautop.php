@@ -1,8 +1,8 @@
 <?php 
 
-new CCSShortcodeUnautop;
+new CCS_Shortcode_Unautop;
 
-class CCSShortcodeUnautop {
+class CCS_Shortcode_Unautop {
 
 	function __construct() {
 

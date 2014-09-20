@@ -4,6 +4,8 @@
  *
  * Widget shortcode
  *
+ * ** Core needs patch to prevent PHP notice for get_widget()
+ *
  *=======================================================================*/
 
 class WidgetShortcode {

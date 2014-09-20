@@ -102,16 +102,18 @@ class CCS_Docs {
 		$shortcodes_in_widget = isset( $settings['shortcodes_in_widget'] ) ?
 			esc_attr( $settings['shortcodes_in_widget'] ) : 'off';
 
-		$move_wpautop = isset( $settings['move_wpautop'] ) ?
-			esc_attr( $settings['move_wpautop'] ) : 'off';
+		$raw_shortcode = isset( $settings['raw_shortcode'] ) ?
+			esc_attr( $settings['raw_shortcode'] ) : 'off';
 
 		$shortcode_unautop = isset( $settings['shortcode_unautop'] ) ?
 			esc_attr( $settings['shortcode_unautop'] ) : 'off';
 
+		$move_wpautop = isset( $settings['move_wpautop'] ) ?
+			esc_attr( $settings['move_wpautop'] ) : 'off';
 
 		?>
 		<tr>
-			<td width="760px">
+			<td>
 				<input type="checkbox" value="on" name="ccs_content_settings[load_acf_module]"
 					<?php checked( $load_acf_module, 'on' ); ?>
 				/>
@@ -119,7 +121,7 @@ class CCS_Docs {
 			</td>
 		</tr>
 		<tr>
-			<td width="760px">
+			<td>
 				<input type="checkbox" value="on" name="ccs_content_settings[load_bootstrap_module]"
 					<?php checked( $load_bootstrap_module, 'on' ); ?>
 				/>
@@ -127,7 +129,7 @@ class CCS_Docs {
 			</td>
 		</tr>
 		<tr>
-			<td width="760px">
+			<td>
 				<input type="checkbox" value="on" name="ccs_content_settings[load_file_loader]"
 					<?php checked( $load_file_loader, 'on' ); ?>
 				/>
@@ -135,27 +137,38 @@ class CCS_Docs {
 			</td>
 		</tr>
 		<tr>
-			<td width="760px">
+			<td>
 				<input type="checkbox" value="on" name="ccs_content_settings[load_gallery_field]"
 					<?php checked( $load_gallery_field, 'on' ); ?>
 				/>
 				&nbsp;&nbsp;<b>Gallery Field</b> module
 			</td>
 		</tr>	<tr>
-			<td width="760px">
+			<td>
 				<input type="checkbox" value="on" name="ccs_content_settings[load_mobile_detect]"
 					<?php checked( $load_mobile_detect, 'on' ); ?>
 				/>
 				&nbsp;&nbsp;<b>Mobile Detect</b> module
 			</td>
 		</tr>
+
 		<tr>
-			<td width="760px">
+			<td>
 				<hr class="setting-section">
-				<input type="checkbox" value="on" name="ccs_content_settings[move_wpautop]"
-					<?php checked( $move_wpautop, 'on' ); ?>
+				<input type="checkbox" value="on" name="ccs_content_settings[shortcodes_in_widget]"
+					<?php checked( $shortcodes_in_widget, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Move <i>wp_autop</i> (post content formatting) to <em>after</em> shortcodes
+				&nbsp;&nbsp;Enable shortcodes inside Text widget
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<hr class="setting-section">
+				<input type="checkbox" value="on" name="ccs_content_settings[raw_shortcode]"
+					<?php checked( $raw_shortcode, 'on' ); ?>
+				/>
+				&nbsp;&nbsp;Enable <b>[raw]</b> shortcode - <i>Protect shortcode content from auto-formatting</i>
 			</td>
 		</tr>
 		<tr>
@@ -166,45 +179,17 @@ class CCS_Docs {
 				&nbsp;&nbsp;Use <i>shortcode unautop</i> to remove &lt;p&gt; tags around shortcodes
 			</td>
 		</tr>
-
 		<tr>
-			<td width="760px">
-				<hr class="setting-section">
-				<input type="checkbox" value="on" name="ccs_content_settings[shortcodes_in_widget]"
-					<?php checked( $shortcodes_in_widget, 'on' ); ?>
+			<td>
+				<input type="checkbox" value="on" name="ccs_content_settings[move_wpautop]"
+					<?php checked( $move_wpautop, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Enable shortcodes inside Text widget
-			</td>
-		</tr>
-	<?php
-
-	/*
-		<tr>
-			<td width="200px">
-				<input type="checkbox" name="ccs_content_settings[option2]"
-					<?php checked( $settings['option2'], 'on' ); ?>
-				/>
-
-				<?php echo '&nbsp;&nbsp;Něco dalšího'; ?>
+				&nbsp;&nbsp;Move <i>wp_autop</i> to after shortcodes - <i>No longer recommended</i></i>
 			</td>
 		</tr>
 
-			<td width="200px">
-				<input type="text" size="1"
-					id="ampl_settings_field_max_limit"
-					name="ampl_settings[max_limit][<?php echo $key; ?>]"
-					value="<?php echo $max_number; ?>" />
-			</td>
-			<td width="200px">
-				<input type="radio" value="date" name="ampl_settings[orderby][<?php echo $key; ?>]" <?php checked( 'date', $post_orderby ); ?>/>
-				<?php echo 'date&nbsp;&nbsp;'; ?>
-				<input type="radio" value="title" name="ampl_settings[orderby][<?php echo $key; ?>]" <?php checked( 'title', $post_orderby ); ?>/>
-				<?php echo 'title&nbsp;&nbsp;'; ?>
-				<input type="radio" value="menu_order" name="ampl_settings[orderby][<?php echo $key; ?>]" <?php checked( 'menu_order', $post_orderby ); ?>/>
-				<?php echo 'menu&nbsp;&nbsp;'; ?>
-			</td>
 		<?php
-	*/
+
 	}
 
 
@@ -213,6 +198,9 @@ class CCS_Docs {
 		// Validate somehow
 		return $input;
 	}
+
+
+
 
 
 	function is_current_plugin_screen( $hook = null ) {
@@ -235,9 +223,9 @@ class CCS_Docs {
 		global $ccs_content_overview_page_hook;
 
 		if ( $this->is_current_plugin_screen() ) {
-			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/ccs-docs.css");
+			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/docs.css");
 		} elseif ( $this->is_current_plugin_screen($ccs_content_overview_page_hook) ) {
-			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/ccs-content-overview.css");
+			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/content-overview.css");
 		}
 	}
 
@@ -348,7 +336,7 @@ class CCS_Docs {
 
 				} else {
 
-					/*--- Show the doc file for active tab ---*/
+					// Show the doc file for active tab
 
 					echo wpautop(
 						@file_get_contents(
@@ -372,14 +360,6 @@ class CCS_Docs {
 					<hr><br>
 					<?php
 				}
-/*
-				if ( $active_tab == 'your site' ) {
-					?>
-					</div>
-					<br><hr>
-					<?php include('ccs-docs-site-overview.php');
-				} else {
-*/
 					?>
 					</div>
 					<?php
