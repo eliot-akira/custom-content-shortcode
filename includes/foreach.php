@@ -14,7 +14,7 @@ new CCS_ForEach;
 
 class CCS_ForEach {
 
-	private static $is_for_loop;
+	private static $state; // is_for_loop
 
 	function __construct() {
 
