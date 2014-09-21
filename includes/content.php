@@ -14,14 +14,13 @@ class CCS_Content {
 
 	function __construct() {
 
-		add_shortcode('content', array($this, 'custom_content_shortcode'));
-		add_shortcode('field', array($this, 'custom_field_shortcode'));
-		add_shortcode('taxonomy', array($this, 'custom_taxonomy_shortcode'));
+		add_shortcode('content', array($this, 'content_shortcode'));
+		add_shortcode('field', array($this, 'field_shortcode'));
+		add_shortcode('taxonomy', array($this, 'taxonomy_shortcode'));
 	}
 
-	public static function custom_content_shortcode( $atts ) {
+	public static function content_shortcode( $atts ) {
 
-		global $ccs_global_variable;
 		global $post;
 
 		$current_post = $post;
@@ -135,11 +134,14 @@ class CCS_Content {
 		 *
 		 *=======================================================================*/
 
-		if( ( $ccs_global_variable['is_gallery_loop'] == "true") || 
-			( $ccs_global_variable['is_attachment_loop'] == "true" ) || 
-			 ( $ccs_global_variable['is_acf_gallery_loop'] == "true" ) ) {
+		// Get each field as requested
 
-			if (empty($custom_field)) $custom_field = "image"; // show attachment image by default
+/*
+		if( ( CCS_Loop::$state['is_gallery_loop'] == 'true') || 
+			( CCS_Loop::$state['is_attachment_loop'] == 'true' ) || 
+			 ( CCS_Loop::$state['is_acf_gallery_loop'] == 'true' ) ) {
+
+			if (empty($custom_field)) $custom_field = 'image'; // show attachment image by default [content]
 
 			switch($custom_field) {
 
@@ -176,8 +178,7 @@ class CCS_Content {
 			else return $out;
 
 		} // End attachment or gallery loop
-
-
+*/
 
 		/*========================================================================
 		 *
@@ -235,9 +236,14 @@ class CCS_Content {
 		 *
 		 *=======================================================================*/
 
-		if ($ccs_global_variable['is_relationship_loop']=='true') {
-			$custom_id = $ccs_global_variable['relationship_id'];
+
+		// Relationship loop
+
+		if (CCS_Loop::$state['is_relationship_loop']=='true') {
+			$custom_id = CCS_Loop::$state['relationship_id'];
 		}
+
+
 
 
 		// If post name/slug is defined, find its ID
@@ -266,6 +272,7 @@ class CCS_Content {
 				// If no name or id, then current post
 				$custom_id = get_the_ID();
 			}
+
 		}
 
 
@@ -273,9 +280,9 @@ class CCS_Content {
 		 *
 		 * If ACF repeater field loop then get sub field
 		 *
-		 *=======================================================================*/
+		 *=======================================================================
 		
-		if($ccs_global_variable['is_repeater_loop'] != 'false') {
+		if( CCS_Loop::$state['is_repeater_loop'] == 'true') {
 
 			$custom_id = $ccs_global_variable['current_loop_id'];
 			if (empty($size)) $size='full';
@@ -312,10 +319,10 @@ class CCS_Content {
 			}
 			else return $out;
 		}
-		
+	
 		// Repeater field subfield
 
-		if($sub != '') {
+		if ($sub != '') {
 			$out = null;
 			if( function_exists('get_field') ) {
 				if (empty($size)) $size='full';
@@ -343,7 +350,7 @@ class CCS_Content {
 			}
 			else return $out;
 		}
-
+		*/
 
 
 		/*========================================================================
@@ -467,6 +474,7 @@ class CCS_Content {
 
 				return $image_return;
 			}
+
 		}
 
 
@@ -476,7 +484,7 @@ class CCS_Content {
 		 *
 		 *=======================================================================*/
 
-		if($custom_field == '') { 
+		if ($custom_field == '') { 
 
 			if ($taxonomy != '') { // Taxonomy query?
 
@@ -515,11 +523,14 @@ class CCS_Content {
 
 		} else { // else return specified field
 
+
+
 			/*========================================================================
 			 *
 			 * Predefined fields
 			 *
 			 *=======================================================================*/
+
 
 			switch($custom_field) {
 				case "id": $out = $custom_id; break;
@@ -812,7 +823,7 @@ class CCS_Content {
 	 *
 	 *=======================================================================*/
 
-	public static function custom_field_shortcode($atts) {
+	public static function field_shortcode($atts) {
 
 		$out = null; $rest="";
 
@@ -847,7 +858,7 @@ class CCS_Content {
 	 *
 	 *=======================================================================*/
 
-	public static function custom_taxonomy_shortcode($atts) {
+	public static function taxonomy_shortcode($atts) {
 		$out = null; $rest="";
 		if (isset($atts) && !empty($atts[0])) {
 

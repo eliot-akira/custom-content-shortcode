@@ -10,10 +10,9 @@ new CCS_Cache;
 
 class CCS_Cache {
 
-	private static $start;			// From [timer start]
-	private static $total_start; 	// Time from beginning of plugin init
-	private static $mem;			// From [timer start]
-	private static $total_mem; 		// Memory from beginning of plugin init
+	private static $start;			// Time at [timer start]
+	private static $mem;			// Memory usage at [timer start]
+
 	private static $num_queries;	// Number of queries at init
 
 	private static $transient_prefix;
@@ -23,7 +22,7 @@ class CCS_Cache {
 		self::$transient_prefix = 'ccs_';
 		add_shortcode( 'cache', array( $this, 'cache_shortcode') );
 
-		self::set_total_start();
+		self::$num_queries = get_num_queries();
 		add_shortcode( 'timer', array( $this, 'timer_shortcode') );
 	}
 	
@@ -119,17 +118,6 @@ class CCS_Cache {
 		return $out;
 	}
 
-
-	function set_total_start() {
-
-		if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
-			self::$total_start = $_SERVER['REQUEST_TIME_FLOAT'];
-		}
-		else {
-			self::$total_start = microtime(TRUE);
-		}
-		self::$num_queries = get_num_queries();
-	}
 
 	function info() {
 		$now_queries = get_num_queries();

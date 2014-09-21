@@ -2,98 +2,93 @@
 
 /*====================================================================================================
  *
- * Mobile detection shortcodes
+ * Mobile detect shortcodes
+ *
+ * 
  *
  *====================================================================================================*/
 
+new CCS_Mobile_Detect;
 
-/*
- * Add device class to body
- *
- */
+class CCS_Mobile_Detect {
 
-if ( !is_admin() ) {	
-	add_filter('body_class','ccs_mobile_body_class');
+	public static $detect;
+	public static $device_type;
 
-	/**
-	 * Set up mobile detect library
-	 *
-	 */
+	function __construct() {
 
-	if (!class_exists('Mobile_Detect')) {
-		require_once (CCS_PATH.'/includes/Mobile_Detect.php');	
+		// Only on frontend
+
+		if ( !is_admin() ) {	
+
+			add_filter( 'body_class', array($this, 'mobile_body_class') );
+
+			/*========================================================================
+			 *
+			 * Set up mobile detect library
+			 *
+			 *=======================================================================*/
+
+			if (!class_exists('Mobile_Detect')) {
+				require_once (CCS_PATH.'/includes/Mobile_Detect.php');	
+			}
+
+			self::$detect = new Mobile_Detect();
+			self::$device_type = (self::$detect->isMobile() ? (self::$detect->isTablet() ? 'tablet' : 'phone') : 'computer');
+
+			add_shortcode( 'is_mobile', 'is_mobile' );
+			add_shortcode( 'is_phone', 'is_phone' );
+			add_shortcode( 'isnt_phone', 'isnt_phone' );
+			add_shortcode( 'is_tablet', 'is_tablet' );
+			add_shortcode( 'is_computer', 'is_computer' );
+		}
 	}
 
-	$detect = new Mobile_Detect();
-	$device_type = ($detect->isMobile() ? ($detect->isTablet() ? 'tablet' : 'phone') : 'computer');
+
+
+	/* .is_phone, .is_tablet, .is_mobile, .isnt_phone, .is_computer */
+
+	function mobile_body_class($classes) {
+
+		if ( ( self::$device_type=='phone' ) || ( self::$device_type=='tablet') )
+			$classes[] = 'is_mobile';
+		if ( self::$device_type!='phone' )
+			$classes[] = 'isnt_phone';
+		$classes[] = 'is_' . self::$device_type;
+
+		return $classes;
+	}
+
+	/* is_phone, is_tablet, is_mobile, isnt_phone, is_computer */
+
+	function is_mobile( $atts, $content ) {
+
+		if ( ( self::$device_type=='phone' ) || ( self::$device_type=='tablet') ) return do_shortcode($content);
+
+	}
+
+	function is_phone( $atts, $content ) {
+
+		if ( self::$device_type=='phone' ) return do_shortcode($content);
+
+	}
+
+	function isnt_phone( $atts, $content ) {
+
+		if ( self::$device_type!='phone' ) return do_shortcode($content);
+
+	}
+
+	function is_tablet( $atts, $content ) {
+
+		if ( self::$device_type=='tablet' ) return do_shortcode($content);
+
+	}
+
+	function is_computer( $atts, $content ) {
+
+		if ( self::$device_type=='computer' ) return do_shortcode($content);
+
+	}
+	
 }
-
-/* .is_phone, .is_tablet, .is_mobile, .isnt_phone, .is_computer */
-
-function ccs_mobile_body_class($classes) {
-
-	global $device_type;
-
-	if ( ( $device_type=='phone' ) || ( $device_type=='tablet') )
-		$classes[] = 'is_mobile';
-	if ( $device_type!='phone' )
-		$classes[] = 'isnt_phone';
-	$classes[] = 'is_' . $device_type;
-
-	return $classes;
-}
-
-/* is_phone, is_tablet, is_mobile, isnt_phone, is_computer */
-
-function ccs_is_mobile( $atts, $content ) {
-
-	global $device_type;
-
-	if ( ( $device_type=='phone' ) || ( $device_type=='tablet') ) return do_shortcode($content);
-
-}
-add_shortcode( 'is_mobile', 'ccs_is_mobile' );
-
-function ccs_is_phone( $atts, $content ) {
-
-	global $device_type;
-
-	if ( $device_type=='phone' ) return do_shortcode($content);
-
-}
-add_shortcode( 'is_phone', 'ccs_is_phone' );
-
-function ccs_isnt_phone( $atts, $content ) {
-
-	global $device_type;
-
-	if ( $device_type!='phone' ) return do_shortcode($content);
-
-}
-add_shortcode( 'isnt_phone', 'ccs_isnt_phone' );
-
-function ccs_is_tablet( $atts, $content ) {
-
-	global $device_type;
-
-	if ( $device_type=='tablet' ) return do_shortcode($content);
-
-}
-add_shortcode( 'is_tablet', 'ccs_is_tablet' );
-
-function ccs_is_computer( $atts, $content ) {
-
-	global $device_type;
-
-	if ( $device_type=='computer' ) return do_shortcode($content);
-
-}
-add_shortcode( 'is_computer', 'ccs_is_computer' );
-
-/* Redirect to another page - use inside mobile condition */
-
-function ccs_redirect( $atts, $content ) {
-	echo "<script> window.location = '" . strip_tags( do_shortcode($content) ) . "'; </script>";
-}
-add_shortcode( 'redirect', 'ccs_redirect' );
-

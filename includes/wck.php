@@ -6,7 +6,11 @@
  *
  *=======================================================================*/
 
-class WCKFieldShortcode {
+new CCS_To_WCK;
+
+class CCS_To_WCK {
+
+	public static $state;
 
 	function __construct() {
 
@@ -35,8 +39,6 @@ class WCKFieldShortcode {
 
 	function wck_field_shortcode( $atts ) {
 
-		global $ccs_global_variable;
-
 		extract( shortcode_atts( array(
 			'meta' => '',
 			'name' => '',
@@ -46,16 +48,16 @@ class WCKFieldShortcode {
 
 		/* Inside repeater? */
 
-		if ( $ccs_global_variable['is_wck_repeater']=='true' ) {
+		if ( self::$state['is_wck_repeater']=='true' ) {
 
 			// Get meta key
 
 			if (empty($meta))
-				$meta = $ccs_global_variable['wck_repeater_meta'];
+				$meta = self::$state['wck_repeater_meta'];
 		
-			$key = $ccs_global_variable['wck_repeater_key'];
-			if (!empty($ccs_global_variable['wck_repeater_id']))
-				$id = $ccs_global_variable['wck_repeater_id'];
+			$key = self::$state['wck_repeater_key'];
+			if (!empty(self::$state['wck_repeater_id']))
+				$id = self::$state['wck_repeater_id'];
 		}
 
 		$out = null;
@@ -68,7 +70,7 @@ class WCKFieldShortcode {
 				remove_filter( 'wck_output_get_field_textarea', 'wck_preprocess_field_textarea');
 			}
 
-			if ($ccs_global_variable['is_wck_repeater']=='true') {
+			if (self::$state['is_wck_repeater']=='true') {
 
 				// In a repeater loop
 
@@ -105,8 +107,6 @@ class WCKFieldShortcode {
 
 	function wck_repeater_shortcode( $atts, $content ) {
 
-		global $ccs_global_variable;
-
 		extract( shortcode_atts( array(
 			'meta' => '',
 			'id' => ''
@@ -115,16 +115,16 @@ class WCKFieldShortcode {
 		if (empty($meta)) return;
 
 		$out = null;
-		$ccs_global_variable['is_wck_repeater']='true';
+		self::$state['is_wck_repeater']='true';
 
-		$ccs_global_variable['wck_repeater_meta'] = $meta;
+		self::$state['wck_repeater_meta'] = $meta;
 
 		if (!empty($id)) {
-			$ccs_global_variable['wck_repeater_id'] = $id;
+			self::$state['wck_repeater_id'] = $id;
 			$metas = get_cfc_meta( $meta, $id );
 		}
 		else {
-			$ccs_global_variable['wck_repeater_id'] = 0;
+			self::$state['wck_repeater_id'] = 0;
 			$metas = get_cfc_meta( $meta );
 		}
 
@@ -132,15 +132,14 @@ class WCKFieldShortcode {
 
 		foreach ( $metas as $key => $value ) {
 
-			$ccs_global_variable['wck_repeater_key'] = $key;
+			self::$state['wck_repeater_key'] = $key;
 			$out[] = do_shortcode( $content );
 		}
 
-		$ccs_global_variable['is_wck_repeater']='false';
-		$ccs_global_variable['wck_repeater_id'] = 0;
+		self::$state['is_wck_repeater']='false';
+		self::$state['wck_repeater_id'] = 0;
 
 		return implode("", $out);
 	}
 
 }
-new WCKFieldShortcode;

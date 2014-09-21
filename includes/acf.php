@@ -2,16 +2,19 @@
 
 /*====================================================================================================
  *
- * Shortcodes for Advanced Custom Fields: gallery, repeater, flexible content
+ * Shortcodes for Advanced Custom Fields
+ * 
+ * gallery, repeater, flexible content
  *
  * To do: test with ACF 5
  * 
  *====================================================================================================*/
 
-
 new CCS_To_ACF;
 
 class CCS_To_ACF {
+
+	public static $state;
 
 	function __construct() {
 
@@ -27,6 +30,7 @@ class CCS_To_ACF {
 		add_shortcode('live-edit', array($this, 'call_live_edit'));
 
 		add_shortcode('related', array($this, 'loop_relationship_field'));
+		CCS_Loop::$state['is_relationship_loop'] = 'false';
 	}
 
 	public static function sub_field( $atts ) {
@@ -83,7 +87,7 @@ class CCS_To_ACF {
 		if ( get_field( $field ) /* && ( strpos($content, '[sub ') !== FALSE ) */ ) {
 
 			$index_now = 0;
-			if ( $start == '' ) $start="1";
+			if ( $start == '' ) $start='1';
 
 			while ( has_sub_field( $field ) ) {
 
@@ -110,8 +114,6 @@ class CCS_To_ACF {
 
 	public static function loop_through_acf_gallery_field( $atts, $content ) {
 
-		global $ccs_global_variable;
-
 		extract( shortcode_atts( array(
 			'field' => '',
 			'count' => '',
@@ -128,11 +130,11 @@ class CCS_To_ACF {
 		if ( $images ) {
 
 			$index_now = 0;
-			if ( $start == '' ) $start="1";
+			if ( $start == '' ) $start='1';
 
 			foreach ( $images as $image ) {
 
-				$ccs_global_variable['current_image'] = $image;
+				self::$state['current_image'] = $image;
 
 				$index_now++;
 
@@ -149,13 +151,11 @@ class CCS_To_ACF {
 		if( $output != null)
 			$output = implode( '', $output );
 
-		$ccs_global_variable['current_image'] = '';
+		self::$state['current_image'] = '';
 		return $output;
 	}
 
 	public static function get_image_details_from_acf_gallery( $atts ) {
-
-		global $ccs_global_variable;
 
 		extract(shortcode_atts(array(
 			'field' => '',
@@ -163,13 +163,13 @@ class CCS_To_ACF {
 		), $atts));
 
 		if ( $field!='' ) {
-				$output = $ccs_global_variable['current_image'][$field];
+				$output = self::$state['current_image'][$field];
 		} else {
 
 			if ($size=='') {
-				$image_url = $ccs_global_variable['current_image']['url'];
+				$image_url = self::$state['current_image']['url'];
 			} else {
-				$image_url = $ccs_global_variable['current_image']['sizes'][$size];
+				$image_url = self::$state['current_image']['sizes'][$size];
 			}
 
 			$output = '<img src="' . $image_url . '">';
@@ -191,13 +191,40 @@ class CCS_To_ACF {
 		}
 	}
 
+	function loop_relationship_field( $atts, $content ) {
+
+		extract( shortcode_atts( array(
+			'field' => '',
+		), $atts ) );
+
+		if ( (!function_exists('get_field')) && (!empty($field)) )return;
+
+		$out = array();
+		$posts = get_field($field);
+
+		if ($posts) {
+
+			CCS_Loop::$state['is_relationship_loop'] = 'true';
+
+			foreach ($posts as $post) { // must be named $post
+
+				CCS_Loop::$state['relationship_id'] = $post->ID;
+//				setup_postdata( $post );
+				$out[] = do_shortcode($content);
+			}
+		}
+
+		CCS_Loop::$state['is_relationship_loop'] = 'false';
+
+		return implode('', $out);
+	}
+
 
 	/*====================================================================================================
 	 *
-	 * Shortcode support for Live Edit
+	 * Live Edit shortcode (legacy)
 	 *
 	 *====================================================================================================*/
-
 
 	public static function call_live_edit($atts, $inside_content = null) {
 		extract(shortcode_atts(array(
@@ -211,7 +238,7 @@ class CCS_To_ACF {
 			'all' => '',
 		), $atts));
 
-		if( (function_exists('live_edit') && ( (current_user_can('edit_posts')) || ($all=="true") ) &&
+		if( (function_exists('live_edit') && ( (current_user_can('edit_posts')) || ($all=='true') ) &&
 			($edit!='off')) ){
 
 			$edit_field = '';
@@ -256,36 +283,5 @@ class CCS_To_ACF {
 		}
 	}
 
-	function loop_relationship_field( $atts, $content ) {
-
-		global $ccs_global_variable;
-
-		extract( shortcode_atts( array(
-			'field' => '',
-		), $atts ) );
-
-		if ( (!function_exists('get_field')) && (!empty($field)) )return;
-
-		$out = array();
-		$posts = get_field($field);
-
-		if ($posts) {
-
-			$ccs_global_variable['is_relationship_loop'] = 'true';
-
-			foreach ($posts as $post) { // must be named $post
-
-				$ccs_global_variable['relationship_id'] = $post->ID;
-//				setup_postdata( $post );
-				$out[] = do_shortcode($content);
-			}
-		}
-		$ccs_global_variable['is_relationship_loop'] = 'false';
-//		wp_reset_postdata();
-		return implode("", $out);
-	}
-
 }
-
-
 

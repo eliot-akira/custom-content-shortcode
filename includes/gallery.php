@@ -2,10 +2,11 @@
 
 /*====================================================================================================
  *
- * Simple gallery field
+ * Gallery field
  *
  *====================================================================================================*/
 
+new CCS_Gallery_Field;
 
 class CCS_Gallery_Field {
 
@@ -596,15 +597,15 @@ class CCS_Gallery_Field {
 
 	function get_image_ids() {
 
-		global $ccs_global_variable;
+		if( empty(self::$state['current_gallery_id']) ) {
 
-		if($ccs_global_variable['current_gallery_id'] == '') {
 			global $post;
 			if( ! isset( $post->ID) )
 				return;
 			$attachment_ids = get_post_meta( $post->ID, '_custom_gallery', true );
+
 		} else {
-			$attachment_ids = get_post_meta( $ccs_global_variable['current_gallery_id'], '_custom_gallery', true );
+			$attachment_ids = get_post_meta( self::$state['current_gallery_id'], '_custom_gallery', true );
 		}
 
 		$attachment_ids = explode( ',', $attachment_ids );
@@ -632,5 +633,3 @@ class CCS_Gallery_Field {
 
 
 }
-new CCS_Gallery_Field;
-

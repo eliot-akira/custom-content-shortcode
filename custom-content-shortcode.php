@@ -76,7 +76,6 @@ class CCS_Plugin {
 	function load_main_modules() {
 
 		$main_modules = array(
-			'core',			// Core functions
 			'content',		// Content shortcode
 			'loop',			// Loop shortcode
 			'attached',		// Attachment loop
@@ -88,10 +87,11 @@ class CCS_Plugin {
 			'docs',			// Documentation under Settings -> Custom Content
 			'cache',		// Cache shortcode
 			'wck',			// WCK support
-		//	'widget'		// Widget shortcode
+		//	'widget'		// Widget shortcode (not ready)
 		);
 
 		foreach ($main_modules as $module) {
+
 			$this->load_module( $module );
 		}
 	}
@@ -108,7 +108,7 @@ class CCS_Plugin {
 
 			// Option name => module name
 
-			'load_gallery_field'	=> 'gallery',		// Simple gallery
+			'load_gallery_field'	=> 'gallery',		// Gallery field
 			'load_acf_module'		=> 'acf',			// Advanced Custom Fields support
 			'load_file_loader'		=> 'load',			// Load HTML, CSS, JS fields
 			'load_mobile_detect'	=> 'mobile',		// Mobile detect shortcodes
@@ -118,8 +118,11 @@ class CCS_Plugin {
 		);
 
 		foreach ($optional_modules as $option => $module) {
-			if ( isset(self::$settings[ $option ]) && self::$settings[ $option ]=='on' )
+			if ( isset(self::$settings[ $option ]) && self::$settings[ $option ]=='on' ) {
+
 				$this->load_module( $module );
+
+			}
 		}
 	}
 
@@ -136,23 +139,6 @@ class CCS_Plugin {
 
 		/*========================================================================
 		 *
-		 * Move wpautop filter to after shortcode processing
-		 * 
-		 * No longer recommended - use [raw] or edit in file
-		 *
-		 *=======================================================================*/
-
-		if ( isset( $settings['move_wpautop'] ) &&
-			($settings['move_wpautop'] == "on") ) {
-
-			remove_filter( 'the_content', 'wpautop' );
-			add_filter( 'the_content', 'wpautop' , 99);
-			add_filter( 'the_content', 'shortcode_unautop',100 );
-		}
-
-
-		/*========================================================================
-		 *
 		 * Enable shortcodes in widget
 		 *
 		 *=======================================================================*/
@@ -164,8 +150,27 @@ class CCS_Plugin {
 		}
 
 		// Exempt [loop] from wptexturize()
-
 		add_filter( 'no_texturize_shortcodes', array( $this, 'shortcodes_to_exempt_from_wptexturize') );
+
+
+		/*========================================================================
+		 *
+		 * Move wpautop filter to after shortcode processing (legacy)
+		 * 
+		 * User feedback suggests some themes/plugins don't work well with the
+		 * filter moved, because they assume default priority. Instead, use [raw]
+		 * or edit code outside of post editor.
+		 *
+		 *=======================================================================*/
+
+		if ( isset( $settings['move_wpautop'] ) &&
+			($settings['move_wpautop'] == "on") ) {
+
+			remove_filter( 'the_content', 'wpautop' );
+			add_filter( 'the_content', 'wpautop' , 99);
+			add_filter( 'the_content', 'shortcode_unautop',100 );
+		}
+
 	}
 
 	function shortcodes_to_exempt_from_wptexturize($shortcodes){
@@ -174,3 +179,29 @@ class CCS_Plugin {
 	}
 	
 }
+
+
+/*========================================================================
+ *
+ * Global helper functions
+ *
+ *=======================================================================*/
+
+if (!function_exists('do_short')) {
+	function do_short($content) {
+		echo do_shortcode($content);
+	}
+}
+
+if (!function_exists('start_short')) {
+	function start_short() {
+		ob_start();
+	}
+}
+if (!function_exists('end_short')) {
+	function end_short() {
+		$out = ob_get_clean();
+		do_short($out);
+	}
+}
+

@@ -251,34 +251,8 @@ class CCS_Loop {
 
 
 
-		// Switch to blog on multi-site, restore at the end
-		// To do: test it
-
-		if (!empty($blog)) {
-			switch_to_blog($blog);
-		}
 
 
-
-
-		/*========================================================================
-		 *
-		 * Post status
-		 *
-		 *=======================================================================*/
-
-		if (!empty($status)) {
-
-			$query['post_status'] = $this->explode_list($status);
-
-		} else {
-
-			// Default
-			if ($type=="attachment")
-				$query['post_status'] = array("any");
-			else
-				$query['post_status'] = array("publish");
-		}
 
 
 
@@ -330,13 +304,12 @@ class CCS_Loop {
 				$x--;
 			}
 
-			// End hook
+
+
+			// Close loop
 
 			$ccs_global_variable['is_loop'] = "false";
 
-			if (!empty($blog)) {
-				restore_current_blog();;
-			}
 
 			return apply_filters( 'ccs_loop_final', $output_items );
 		}
@@ -365,138 +338,9 @@ class CCS_Loop {
 
 
 
-		/*========================================================================
-		 *
-		 * Category or tag
-		 *
-		 *=======================================================================*/
 
 
-		if( $category != '' ) {
-			$query['category_name'] = $category;
-		}
-
-
-		if( $tag != '' ) {
-
-			// Remove extra space in a list
-			$tags = $this->clean_list($tag);
-
-			$query['tag'] = $tags;
-
-		}
-
-
-		/*========================================================================
-		 *
-		 * Post count
-		 *
-		 *=======================================================================*/
-
-		if ( $count != '' ) {
-
-			if ($orderby=='rand') {
-				$query['posts_per_page'] = '-1';
-			} else {
-				$query['posts_per_page'] = $count;
-				$query['ignore_sticky_posts'] = true;
-			}
-
-		} else {
-
-			if ($post_offset!='')
-				$query['posts_per_page'] = '9999'; // Show all posts (to make offset work)
-			else
-				$query['posts_per_page'] = '-1'; // Show all posts (normal method)
-
-		}
-
-		if($post_offset!='')
-			$query['offset'] = $post_offset;
-
-
-
-
-		/*========================================================================
-		 *
-		 * Post type
-		 *
-		 *=======================================================================*/
-
-		if ( empty($type) ) {
-
-			$query['post_type'] = 'any';
-
-		} else {
-
-			$query['post_type'] = $type;
-		}
-
-
-		/*========================================================================
-		 *
-		 * Post ID
-		 *
-		 *=======================================================================*/
-
-		if ( $id != '' ) {
-
-			// Multiple IDs possible
-
-			$id_array = $this->explode_list($id);
-
-			$query['post__in'] = $id_array;
-			$query['orderby'] = 'post__in'; // Preserve ID order
-
-		} elseif ( $exclude != '' ) {
-
-			$id_array = $this->explode_list($exclude);
-
-			$query['post__not_in'] = $id_array;
-
-		} elseif ( $name != '') {
-
-
-			/*========================================================================
-			 *
-			 * Post name/slug
-			 *
-			 *=======================================================================*/
-
-			$query['name'] = $name; 
-
-		} elseif ( $parent != '') {
-
-			/*========================================================================
-			 *
-			 * Parent by ID or slug
-			 *
-			 *=======================================================================*/
-
-			if ( is_numeric($parent) )
-
-				$parent_id = intval( $parent );
-
-			else {
-
-				// Get parent by slug
-				// To do: get only 1 post by that name
-
-				$posts = get_posts( array('name' => $parent, 'post_type' => $type, 'posts_per_page' => 1,) );
-
-				if ( $posts ) $parent_id = $posts[0]->ID;
-				else {
-					// End action
-
-					$ccs_global_variable['is_loop']='false';
-
-					return;
-				}
-			}
-
-			$query['post_parent'] = $parent_id;
-
-		} elseif ( $field == 'gallery' ){
+ elseif ( $field == 'gallery' ){
 
 			/*========================================================================
 			 *
@@ -520,103 +364,17 @@ class CCS_Loop {
 
 		}
 
-		/*========================================================================
-		 *
-		 * Query: date
-		 *
-		 *=======================================================================*/
-
-		if ( ($year!='') || ($month!='') || ($day!='') ) {
-
-			$today = getdate();
-
-			if ($year=='today') $year=$today["year"];
-			if ($month=='today') $month=$today["mon"];
-			if ($day=='today') $day=$today["mday"];
-
-			$query['date_query'] = array(
-				array(
-					'year' => $year,
-					'month' => $month,
-					'day' => $day,
-				)
-			);
-		}
 
 
-		/*========================================================================
-		 *
-		 * Query: taxonomy
-		 *
-		 *=======================================================================*/
 
-		if ( !empty($tax) ) $taxonomy = $tax; // Alias - To do: move to start
 
-		if ( !empty($taxonomy) ) {
 
-			$terms = $this->explode_list($value);
 
-			if ( !empty($compare) ) {
 
-				if ( $compare=='=' )
-					$operator = 'IN';
-				elseif ( $compare=='!=' )
-					$operator = 'NOT IN';
-				else {
-					$compare = strtoupper($compare);
-					if ( $compare == 'NOT' )
-						$compare = 'NOT IN';
-					$operator = $compare;
-				}
 
-			} else
-				$operator = 'IN'; // Default
 
-			$query['tax_query'] = array (
-				array(
-					'taxonomy' => $taxonomy,
-					'field' => 'slug',
-					'terms' => $terms,
-					'operator' => $operator
-				)
-			);
-		}
 
-		/*========================================================================
-		 *
-		 * Orderby
-		 *
-		 *=======================================================================*/
 
-		if ( !empty($order) ) {
-			
-			$query['order'] = $order;
-
-		}
-
-		if ( !empty($orderby) ) {
-
-				// Alias
-				if ($orderby=="field") $orderby = 'meta_value';
-				if ($orderby=="field_num") $orderby = 'meta_value_num';
-
-				$query['orderby'] = $orderby;
-
-				if (in_array($orderby, array('meta_value', 'meta_value_num') )) {
-					$query['meta_key'] = $keyname;
-				}
-
-				if (empty($order)) {
-
-					// Default order
-
-					if (($orderby=='meta_value_num') || ($orderby=='menu_order')
-						|| ($orderby=='title') || ($orderby=='name') )
-						$query['order'] = 'ASC';	
-					else
-						$query['order'] = 'DESC';
-				}				
-		}
 
 
 		/*========================================================================
@@ -786,37 +544,12 @@ class CCS_Loop {
 			$posts = new WP_Query( $query );
 
 
-	/*========================================================================
-	 *
-	 * Sort results
-	 *
-	 *=======================================================================*/
 
-			/*========================================================================
-			 *
-			 * Sort posts by series
-			 *
-			 *=======================================================================*/
-			
-			if (!empty($series)) {
 
-				usort($posts->posts, array($this, "custom_series_orderby_key"));
 
-			}
 
-			/*========================================================================
-			 *
-			 * Randomize order
-			 *
-			 *=======================================================================*/
 
-			if($orderby=='rand') {
 
-				shuffle($posts->posts);
-				if ($count == '')
-					$count = 9999; // ??
-
-			}
 
 
 
@@ -862,9 +595,6 @@ class CCS_Loop {
 
 					$current_id = get_the_ID();
 					$ccs_global_variable['current_loop_id']=$current_id;
-					$ccs_global_variable['current_loop_count']=$current_count;
-
-					$ccs_global_variable['total_comments']+=get_comments_number();
 
 
 				// Filter: each_post
@@ -948,6 +678,23 @@ class CCS_Loop {
 
 
 			if ( !$skip ) {
+
+
+
+					$ccs_global_variable['current_loop_count']=$current_count;
+
+					$ccs_global_variable['total_comments']+=get_comments_number();
+
+
+
+
+
+
+
+
+
+
+/*--- Delete ---*/
 
 				/*========================================================================
 				 *
@@ -1104,10 +851,6 @@ class CCS_Loop {
 	 *
 	 *=======================================================================*/
 	
-
-			$total_comment_count += get_comments_number(); // This is stored globally..
-
-
 
 					/*========================================================================
 					 *
@@ -1810,16 +1553,6 @@ class CCS_Loop {
 		}
 	}
 
-	// Explode comma-separated list and remove extra space
-
-	public static function explode_list( $list ) {
-		return array_map("trim", array_filter(explode(',', $list)));
-	}
-
-	public static function clean_list( $list ) {
-		$list = self::explode_list($list);
-		return implode(',',$list);
-	}
 
 	function x_shortcode( $atts, $content ) {
 

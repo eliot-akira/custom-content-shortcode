@@ -89,7 +89,10 @@ Support for other plugins:
 
 = 1.3.0 =
 
-* Organize code and optimize for performance
+* Refactor all modules for better code organization and performance
+* [cache] - Cache page partials
+* [timer] - Tool to measure performance
+* Gallery field - Improve UI and gallery field loop
 
 = 1.2.2 =
 

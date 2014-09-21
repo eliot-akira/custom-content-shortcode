@@ -6,122 +6,132 @@
  *
  *====================================================================================================*/
 
+new CCS_URL;
 
-class urlShortcode
-{
-    public static function userSettings()
-    {
-        $blogurl_settings = array();
+class CCS_URL {
 
-        $blogurl_settings['home'] = get_option( 'home' );
-        $blogurl_settings['wordpress'] = get_option( 'siteurl' );
-        $blogurl_settings['content'] = content_url();
-        $blogurl_settings['templateurl'] = get_bloginfo( 'template_directory' );
-        $blogurl_settings['childtemplateurl'] = get_bloginfo( 'stylesheet_directory' );
-        
-        $blogurl_settings['insertslash'] = false;
-        
-        return $blogurl_settings;
-    }
+	public static $urls; // Store URLs
+
+	function __construct() {
+
+		self::$urls = array();
+
+		add_shortcode( 'url', array($this, 'url_shortcode') );
+		add_shortcode( 'redirect', array($this, 'redirect_shortcode') );
+	}
     
-    public static function custom_url( $attributes )
-    {
-        $blogurl_settings = urlShortcode::getSettings();
+    public static function url_shortcode( $atts ) {
+
+    	$urls = self::$urls;
+    	$url = null;
 
 		extract(shortcode_atts(array(
 			'login' => '',
 			'logout' => '',
 			'go' => '',
-		), $attributes));
+		), $atts));
 
-        if ( is_array( $attributes ) ) {
-            $attributes = array_flip( $attributes );
-        }
+		if (empty($atts)) $atts[0] = 'site';
 
-		if ( ($go=='here') || (isset($attributes['logout']) && empty($go)) ) {
-			global $wp;
-			$go = home_url( $wp->request );
-		} elseif($go!='') {
-			if($go=='home')
-				$go = $blogurl_settings['home'];
-			elseif( (isset( $attributes['login'] )) || (isset( $attributes['logout'] )) )
-				if( !strpos ($go,"." ) )
+		$arg = $atts[0];
+
+//        if ( is_array($atts ) ) $atts = array_flip( $atts ); // Allow checking empty parameters
+
+
+        // Find where to go after login/out
+
+		if ( ($go=='here') || (isset($atts['logout']) && empty($go)) ) {
+
+			global $wp; $go=home_url($wp->request); // Current page URL
+
+		} elseif ( !empty($go) ) {
+
+			if ($go=='home') {
+
+				$go = isset($urls['home']) ? $urls['home'] : ($urls['home'] = get_option('home'));
+
+			} elseif( ($arg=='login') || ($arg=='logout') ) {
+
+				if( !strpos ($go,"." ) ) {
+
+					// Go to page URL by slug
 					$go = do_shortcode('[content name="'.$go.'" field="url"]');
+				}
+			}
 		}
 
+		switch ($arg) {
 
-        if( isset( $attributes['wordpress'] ) )
-        {
-            $return_blogurl = $blogurl_settings['wordpress'];
-        }
-        elseif( isset( $attributes['uploads'] ) )
-        {
-            $return_blogurl = $blogurl_settings['uploads'];
-        }
-        elseif( isset( $attributes['content'] ) )
-        {
-            $return_blogurl = $blogurl_settings['content'];
-        }
-        elseif( isset( $attributes['layout'] ) )
-        {
-            $return_blogurl = $blogurl_settings['content'] . '/layout';
-        }
-        elseif( isset( $attributes['views'] ) )
-        {
-            $return_blogurl = $blogurl_settings['content'] . '/views';
-        }
-        elseif( isset( $attributes['theme'] ) )
-        {
-            $return_blogurl = $blogurl_settings['templateurl'];
-        }
-        elseif( isset( $attributes['child'] ) )
-        {
-            $return_blogurl = $blogurl_settings['childtemplateurl'];
-        }
-        elseif( isset( $attributes['login'] ) )
-        {
-        	$return_blogurl = wp_login_url( $go );
-        }
-        elseif( isset( $attributes['logout'] ) )
-        {
-			$return_blogurl = wp_logout_url( $go );
-        }
-        else
-        {
-            $return_blogurl = $blogurl_settings['home'];
-        }
+			case 'wordpress':
+				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = get_option('siteurl'));
+				break;
 
-        if( isset( $attributes['slash'] ) || ( $blogurl_settings['insertslash'] && !isset( $attributes['noslash'] ) ) )
-        {
-            $return_blogurl .= '/';
-        }
+			case 'content':
+				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = content_url());
+				break;
 
-        return $return_blogurl;
+			case 'parent': // Parent Theme
+			case 'theme':
+				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = get_bloginfo('template_directory'));
+				break;
+
+			case 'child':
+				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = get_bloginfo('stylesheet_directory'));
+				break;
+
+			case 'uploads':
+
+				if (isset($urls[$arg]))
+					$url = $urls[$arg];
+				else {
+
+					// Get uploads directory
+
+					$upload_dir = wp_upload_dir();
+					if( !$upload_dir['error'] ) {
+						$url = ($urls[$arg] = $upload_dir['baseurl']);
+					} elseif ( $url = get_option( 'upload_url_path' ) ) {
+						// Prior to WordPress 3.5, this was set in Settings > Media > Full URL path to files
+						// In WordPress 3.5+ this is now hidden
+						$urls[$arg] = $url;
+					} else {
+						$url = ($urls[$arg] = get_option('siteurl').'/'.get_option('upload_path') );
+					}
+				}
+				break;
+
+			case 'layout':
+			case 'views':
+				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = content_url().'/'.$arg);
+				break;
+
+			case 'login':
+				$url = wp_login_url( $go ); // Don't store this, as go parameter could be different
+				break;
+
+			case 'logout':
+				$url = wp_logout_url( $go );
+				break;
+
+
+			case 'home':
+			default:
+				$url = isset($urls['home']) ? $urls['home'] : get_option('home');
+				break;
+		}
+
+		self::$urls = $urls; // Store it for later
+
+        // unslash?
+
+        return untrailingslashit( $url );
     }
-    
-    public static function getSettings()
-    {
-        $blogurl_settings = urlShortcode::userSettings();
-        $upload_dir = wp_upload_dir();
-        
-        if( !$upload_dir['error'] )
-        {
-            $blogurl_settings['uploads'] = $upload_dir['baseurl'];
-        }
-        elseif( '' != get_option( 'upload_url_path' ) )
-        {
-            // Prior to WordPress 3.5, this was set in Settings > Media > Full URL path to files
-            // In WordPress 3.5+ this is now hidden
-            $blogurl_settings['uploads'] = get_option( 'upload_url_path' );
-        }
-        else
-        {
-            $blogurl_settings['uploads'] = $blogurl_settings['wordpress'] . '/' . get_option( 'upload_path' );
-        }
 
-        return $blogurl_settings;
-    }
+
+	/* Redirect to another page - use inside conditional statement */
+
+	function redirect_shortcode( $atts, $content ) {
+		echo "<script> window.location = '" . strip_tags( do_shortcode($content) ) . "'; </script>";
+	}
+
 }
-
-add_shortcode( 'url', array( 'urlShortcode', 'custom_url' ) );
-

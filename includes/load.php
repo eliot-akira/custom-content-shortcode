@@ -6,6 +6,8 @@
  *
  *====================================================================================================*/
 
+new CCS_Load;
+
 class CCS_Load {
 
 	function __construct() {
@@ -305,9 +307,8 @@ class CCS_Load {
 	function load_html_field( $content ) {
 
 		global $post;
-		global $ccs_global_variable;
 
-		if ( ($ccs_global_variable['is_loop']=='false') && !is_admin() && !empty($post) ) {
+		if ( (CCS_Loop::$state['is_loop']=='false') && !is_admin() && !empty($post) ) {
 
 			$html_field = get_post_meta( $post->ID, 'html', true );
 
@@ -337,7 +338,6 @@ class CCS_Load {
 	}
 	
 }
-new CCS_Load;
 
 
 

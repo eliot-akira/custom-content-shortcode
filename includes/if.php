@@ -1,12 +1,21 @@
 <?php
 
 
-class IfShortcode {
+/*========================================================================
+ *
+ * [if] - Display content based on conditions
+ *
+ *=======================================================================*/
+
+new CCS_If;
+
+class CCS_If {
+
+	public static $if_flag;
 
 	function __construct() {
 
-		global $ccs_global_variable;
-		$ccs_global_variable['if_flag'] = '';
+		self::$if_flag = '';
 
 		add_action( 'init', array( &$this, 'register' ) );
 	}
@@ -17,8 +26,6 @@ class IfShortcode {
 	}
 
 	function if_shortcode( $atts, $content = null, $shortcode_name ) {
-
-		global $ccs_global_variable;
 
 		$args = array(
 			'every' => '',
@@ -70,7 +77,7 @@ class IfShortcode {
 		 *
 		 *=======================================================================*/
 
-		if ($ccs_global_variable['is_loop']=="true") {
+		if (CCS_Loop::$state['is_loop']=="true") {
 
 			if (!empty($every)) {
 
@@ -80,7 +87,7 @@ class IfShortcode {
 				 *
 				 *=======================================================================*/
 
-				$count = $ccs_global_variable['current_loop_count'];
+				$count = CCS_Loop::$state['loop_count'];
 
 				if (substr($every,0,4)=='not ') {
 					$every = substr($every, 4); // Remove first 4 letters
@@ -119,8 +126,8 @@ class IfShortcode {
 			 *
 			 *=======================================================================*/
 
-			if ($ccs_global_variable['is_loop']=="true") {
-				$current_id = $ccs_global_variable['current_loop_id'];
+			if (CCS_Loop::$state['is_loop']=="true") {
+				$current_id = CCS_Loop::$state['current_post_id'];
 			} else {
 				$current_id = $current_post_id;
 			}
@@ -133,7 +140,7 @@ class IfShortcode {
 			if ((empty($check)) && (empty($no_flag))) $condition = false;
 			else {
 				$condition = true;
-				$ccs_global_variable['if_flag'] = $check;
+				self::$if_flag = $check;
 			}
 		}
 
@@ -284,7 +291,7 @@ class IfShortcode {
 		$condition = isset($atts['image']) ? has_post_thumbnail() : $condition;
 
 /* test these */
-		$condition = isset($atts['loop']) ? ($ccs_global_variable['is_loop']=='true') : $condition;
+		$condition = isset($atts['loop']) ? (CCS_Loop::$state['is_loop']=='true') : $condition;
 		$condition = isset($atts['archive']) ? is_archive() : $condition;
 		$condition = isset($atts['single']) ? is_single() : $condition;
 
@@ -309,14 +316,14 @@ class IfShortcode {
 
 		$out = $condition ? do_shortcode( $content ) : do_shortcode( $else );
 
-		$ccs_global_variable['if_flag'] = '';
+		self::$if_flag = '';
 
 		return $out;
 	}
 
 	function flag_shortcode() {
-		global $ccs_global_variable;
-		return $ccs_global_variable['if_flag'];
+
+		return self::$if_flag;
 	}
 
 
@@ -335,5 +342,4 @@ class IfShortcode {
 	}
 
 }
-new IfShortcode;
 

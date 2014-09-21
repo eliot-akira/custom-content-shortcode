@@ -10,15 +10,18 @@ new CCS_Comments;
 
 class CCS_Comments {
 
+	public static $state;
+
 	function __construct() {
 
 		add_shortcode('comment', array($this, 'comment_shortcode') );
 		add_shortcode('comments', array($this, 'comment_shortcode') );
+
+		self::$state['is_comments_loop'] = false;
+		self::$state['total_comments'] = 0;
 	}
 
 	function comment_shortcode( $atts, $content, $tag ) {
-
-		global $ccs_global_variable;
 
 		extract(shortcode_atts(array(
 			'template' => '',
@@ -33,13 +36,16 @@ class CCS_Comments {
 
 		// In a comments loop?
 
-		$in_loop = isset($ccs_global_variable['comments_loop']) ? $ccs_global_variable['comments_loop'] : false;
+		$in_loop = isset(self::$state['is_comments_loop']) ? self::$state['is_comments_loop'] : false;
+
 		if ( $in_loop ) {
 
 			// Display comment fields
 
-			$out = "";
-			$comment = $ccs_global_variable['current_comment'];
+			$out = null;
+			$comment = self::$state['current_comment'];
+
+			if (empty($comment)) return;
 
 			$fields = array(
 				'ID', 'post_ID', 'author', 'author_email', 'author_url', 'date',
@@ -51,15 +57,18 @@ class CCS_Comments {
 				$atts = array_flip( $atts ); // check for parameters without value
 
 			$post_id = $comment->comment_post_ID;
+
 			foreach ($fields as $field) {
 
 				$arg_field = strtolower($field);
-				$arg_field = str_replace("_", "-", $field);
+				$arg_field = str_replace('_', '-', $field);
 
-				if ($arg_field=="user-id")
-					$field = "user_id";
+				if ($arg_field=='user-id')
+					$field = 'user_id';
 				else
-					$field = "comment_".$field; // name of property in comment object
+					$field = 'comment_'.$field; // name of property in comment object
+
+				// Check first parameter [comment ~]
 
 				if (isset($atts[$arg_field])) {
 
@@ -83,7 +92,7 @@ class CCS_Comments {
 						case 'content':
 							if (isset($comment->{$field}))
 								$out = $comment->{$field};
-							if (empty($format)) $format="true"; // Format content by default
+							if (empty($format)) $format='true'; // Format content by default
 							break;
 						default:
 							if (isset($comment->{$field}))
@@ -113,7 +122,7 @@ class CCS_Comments {
 
 			if ( !empty($out) && !empty($date_format) ) {
 				$out = date($date_format, strtotime($out));
-			} elseif ( $format=="true" ) {
+			} elseif ( $format=='true' ) {
 				$out = apply_filters('the_content', $out);
 			}
 
@@ -122,13 +131,13 @@ class CCS_Comments {
 
 		// Start a comments loop?
 		if ( !empty($count) || !empty($id) ||
-			 ( ($tag=="comments") && !empty($content) ) ) {
+			 ( ($tag=='comments') && !empty($content) ) ) {
 
-			$out = "";
-			$ccs_global_variable['comments_loop'] = true;
-			if ((empty($count)) || ($count=="all")) $count = 999;
+			$out = '';
+			self::$state['is_comments_loop'] = true;
+			if ((empty($count)) || ($count=='all')) $count = 999;
 			$atts['number'] = $count;
-			if ($id=="this") {
+			if ($id=='this') {
 				$atts['post_id'] = get_the_id();
 			} elseif (!empty($id)) {
 				$atts['post_id'] = $id;
@@ -163,10 +172,10 @@ class CCS_Comments {
 
 			// Loop through each comment
 			foreach ($comments as $comment) {
-				$ccs_global_variable['current_comment'] = $comment;
+				self::$state['current_comment'] = $comment;
 				$out .= do_shortcode( $content );
 			}
-			$ccs_global_variable['comments_loop'] = false;
+			self::$state['is_comments_loop'] = false;
 			return $out;
 		}
 
@@ -183,21 +192,21 @@ class CCS_Comments {
 
 		{
 
-			$dir = "";
+			$dir = '';
 	/*		if (isset($atts['dir'])) {
-				$dir = do_shortcode("[url ".$atts['dir']."]/");
+				$dir = do_shortcode('[url '.$atts['dir'].']/');
 			}
 	*/
-			if (empty($template)) $template = "/comments.php";
-			if (isset($template[0]) && ($template[0]!="/"))
-				$template = "/".$template;
+			if (empty($template)) $template = '/comments.php';
+			if (isset($template[0]) && ($template[0]!='/'))
+				$template = '/'.$template;
 
 			$file = $dir.$template;
 	/*
-			echo "file: ".$file."<br>";
+			echo 'file: '.$file.'<br>';
 	// filter 'comments_template' gets this value
-			echo "style: ".STYLESHEETPATH . $file."<br>";
-			echo "template: ".TEMPLATEPATH . $file ."<br>";
+			echo 'style: '.STYLESHEETPATH . $file.'<br>';
+			echo 'template: '.TEMPLATEPATH . $file .'<br>';
 	*/
 			$content = self::return_comments_template($dir.$template);
 
@@ -212,7 +221,7 @@ class CCS_Comments {
 			return get_comments_number();
 		}
 		if( isset( $atts['total'] ) ) {
-			return $ccs_global_variable['total_comments'];
+			return self::$state['total_comments'];
 		}
 	}
 
