@@ -1,5 +1,6 @@
-## Custom Content Shortcode v1.3.0-beta
+Custom Content Shortcode
+============
 
-Currently under testing.
+This is version 1.3.0-beta, currently under development and testing.
 
-For production sites, use [stable release](http://wordpress.org/plugins/custom-content-shortcode/).
+For production, please use the [stable release](http://wordpress.org/plugins/custom-content-shortcode/).
