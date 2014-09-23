@@ -278,16 +278,16 @@ class CCS_Docs {
 
 	function content_settings_page() {
 
-		$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'overview';
+		$active_tab = isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'welcome';
 
 
-		$all_tabs = array( 'overview', 'content', 'loop', 'views', 'if', 'each',
-							'comment',
+		$all_tabs = array( 'welcome', 'content', 'loop', 'view', 'if', 'each',
+							
 							// 'widget',
-							'attach',
-							'user', 'load', 'gallery',
+							'attach', 'gallery', 'comment',
+							'user', 'load', 
 							// 'ACF', 'mobile',
-							'etc', 'settings' );
+							'other', 'settings' );
 
 		?>
 			<div class="wrap">
@@ -345,7 +345,7 @@ class CCS_Docs {
 					);
 				}
 
-				if ( $active_tab == 'overview' ) {
+				if ( $active_tab == 'welcome' ) {
 
 				 	// Add footnote
 				 	?>

@@ -138,7 +138,7 @@ class CCS_Comments {
 			if ((empty($count)) || ($count=='all')) $count = 999;
 			$atts['number'] = $count;
 			if ($id=='this') {
-				$atts['post_id'] = get_the_id();
+				$atts['post_id'] = get_the_ID();
 			} elseif (!empty($id)) {
 				$atts['post_id'] = $id;
 			}

@@ -22,7 +22,7 @@ class CCS_Cache {
 		self::$transient_prefix = 'ccs_';
 		add_shortcode( 'cache', array( $this, 'cache_shortcode') );
 
-		self::$num_queries = get_num_queries();
+		self::$num_queries = get_num_queries(); // Number of queries at init
 		add_shortcode( 'timer', array( $this, 'timer_shortcode') );
 	}
 	
@@ -30,16 +30,19 @@ class CCS_Cache {
 
 		extract( shortcode_atts( array(
 			'name' => '',
-			'expire' => '10 min',
+			'expire' => '10 min', // Default
 			'update' => 'false'
 		), $atts ) );
 
 		if (empty($name)) return; // Needs a transient name
 
 		$result = false;
+		if (is_array($atts)) $atts = array_flip($atts);
+		$update = (isset($atts['update'])) ? 'true' : $update;
 
-		if ($update != 'true')
+		if ($update != 'true') {
 			$result = self::get_transient( $name ); // get cache if update not true
+		}
 
 		if ( false === $result ) {
 

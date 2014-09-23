@@ -30,7 +30,7 @@ class CCS_To_ACF {
 		add_shortcode('live-edit', array($this, 'call_live_edit'));
 
 		add_shortcode('related', array($this, 'loop_relationship_field'));
-		CCS_Loop::$state['is_relationship_loop'] = 'false';
+		self::$state['is_relationship_loop'] = 'false';
 	}
 
 	public static function sub_field( $atts ) {
@@ -204,17 +204,17 @@ class CCS_To_ACF {
 
 		if ($posts) {
 
-			CCS_Loop::$state['is_relationship_loop'] = 'true';
+			self::$state['is_relationship_loop'] = 'true';
 
 			foreach ($posts as $post) { // must be named $post
 
-				CCS_Loop::$state['relationship_id'] = $post->ID;
+				self::$state['relationship_id'] = $post->ID;
 //				setup_postdata( $post );
 				$out[] = do_shortcode($content);
 			}
 		}
 
-		CCS_Loop::$state['is_relationship_loop'] = 'false';
+		self::$state['is_relationship_loop'] = 'false';
 
 		return implode('', $out);
 	}

@@ -47,7 +47,8 @@ class CCS_Loop {
 	function init() {
 
 		self::$state['is_loop'] = false;
-
+		self::$state['is_attachment_loop'] = false;
+		self::$state['do_reset_postdata'] = false;
 	}
 
 
@@ -117,6 +118,7 @@ class CCS_Loop {
 	function init_loop() {
 
 		self::$state['is_loop'] 			= true;
+		self::$state['do_reset_postdata'] 	= false;
 		self::$state['do_cache'] 			= false;
 		self::$state['blog'] 				= 0;
 
@@ -126,6 +128,7 @@ class CCS_Loop {
 		self::$state['posts_count']			= 0;
 		self::$state['comments_count']		= 0;
 
+		self::$state['is_attachment_loop'] = false;
 	}
 
 
@@ -175,13 +178,17 @@ class CCS_Loop {
 			// Format
 
 			'date_format' => '',
-			'columns' => '', 'pad' => '',
 			'strip_tags' => '', 'strip' => '', 'allow' => '',
 			'clean' => 'false', 'trim' => '',
 
+			// Columns
+
+			'columns' => '', 'pad' => '', 'between' => '',
+
 			// Gallery
 
-			'gallery' => '', 'acf_gallery' => '',
+			'gallery' => '',
+			'acf_gallery' => '',
 			'repeater' => '', // ACF repeater
 			
 			// Other
@@ -190,6 +197,7 @@ class CCS_Loop {
 			'blog' => '', // Multi-site (not tested)
 			'x' => '', // Just loop X times, no query
 
+			// Cache
 			'cache' => 'false',
 			'expire' => '10 min',
 			'update' => 'false',
@@ -205,7 +213,7 @@ class CCS_Loop {
 
 		$merged = shortcode_atts($defaults, $parameters, true);
 
-		// Support aliases
+		// Support aliases?
 
 //		if ( !empty($tax) ) $taxonomy = $tax;
 
@@ -218,8 +226,10 @@ class CCS_Loop {
 	 *
 	 * Check cache based on parameters
 	 * 
-	 * If update is not true, returns cached result
-	 *
+	 * If no cache, returns false
+	 * If update is true, set do_cache for end of loop, and returns false
+	 * If cache exists and update is not true, returns cached result
+	 * 
 	 *=======================================================================*/
 
 	function check_cache( $parameters ) {
@@ -241,7 +251,7 @@ class CCS_Loop {
 				if ( ($key!='update') && ($key!='cache')) // skip these parameters
 					$cache_name .= $key.$value;
 			}
-//			$cache_num = substr($string, 0, 40); // Max number of characters
+			$cache_name = substr($cache_name, 0, 40); // Max number of characters
 
 			self::$state['cache_name'] = $cache_name;
 
@@ -309,6 +319,25 @@ class CCS_Loop {
 
 		/*========================================================================
 		 *
+		 * field="gallery"
+		 *
+		 *=======================================================================*/
+
+		if ( $parameters['field'] == 'gallery' ) {
+
+			// Gallery field
+
+			$parameters['type'] = 'attachment';
+//			$query['post_parent'] = get_the_ID();
+			self::$state['is_attachment_loop'] = true;
+
+			$parameters['id'] = implode(',', CCS_Gallery_Field::get_image_ids( get_the_ID() ) );
+			$parameters['field'] = '';
+
+		}
+
+		/*========================================================================
+		 *
 		 * Post type
 		 *
 		 *=======================================================================*/
@@ -322,8 +351,6 @@ class CCS_Loop {
 
 			$query['post_type'] = 'any';
 		}
-
-
 
 		/*========================================================================
 		 *
@@ -403,11 +430,11 @@ class CCS_Loop {
 		} else {
 
 			// Default
-			if ( $parameters['type'] == 'attachment' )
-
+			if ( $parameters['type'] == 'attachment' ) {
 				$query['post_status'] = array('any');
-			else
+			} else {
 				$query['post_status'] = array('publish');
+			}
 		}
 
 
@@ -662,8 +689,126 @@ class CCS_Loop {
 
 
 
-		return apply_filters( 'ccs_loop_query_filter', $query );
+		/*========================================================================
+		 *
+		 * Query by field value
+		 *
+		 *=======================================================================*/
 
+		if( !empty($parameters['field']) && !empty($parameters['value']) ) {
+
+
+			$field = $parameters['field'];
+			$value = $parameters['value'];
+			$compare = $parameters['compare'];
+
+			// Support for date values
+
+			if ($value=='future') {
+				$value = 'now';
+				$compare = '>';
+			} elseif ($value=='past') {
+				$value = 'now';
+				$compare = '<';
+			}
+
+			if ( ($parameters['in'] == 'string') || (!empty($parameters['date_format'])) ) {
+
+				if (empty($parameters['date_format'])) {
+
+					// default date format
+					if ($value == 'today')
+						$parameters['date_format'] = 'Y-m-d'; // Y-m-d h:i A
+					if ($value == 'now')
+						$parameters['date_format'] = 'Y-m-d h:i A'; 
+				}
+
+				if (($value == 'today') || ($value == 'now')){
+					$value = date($parameters['date_format'],time());
+				}
+			} else {
+				if (($value == 'today') || (($value == 'now'))){
+					$value = time();
+				}
+			}
+
+			$compare = strtoupper($compare);
+
+			switch ($compare) {
+				case '':
+				case '=':
+				case 'EQUAL': $compare = "LIKE"; break;
+				case 'NOT':
+				case '!=':
+				case 'NOT EQUAL': $compare = 'NOT LIKE'; break;
+				default: break;
+			}
+
+			// To do: shouldn't this be $query['meta_query']..?
+
+			$query['meta_query'][] =
+				array(
+						'key' => $field,
+						'value' => $value,
+						'compare' => $compare
+				);
+
+			// Additional query by field value
+
+			if ( !empty($parameters['field_2']) && !empty($parameters['value_2']) ) {
+
+				$field_2 = $parameters['field_2'];
+				$value_2 = $parameters['value_2'];
+				$relation = $parameters['relation'];
+				$compare_2 = $parameters['compare_2'];
+
+				if (!empty($relation)) {
+
+					$relation = strtoupper($relation);
+
+					// Alias
+					switch ($relation) {
+						case '&': $relation = 'AND'; break;
+						case '|': $relation = 'OR'; break;
+					}
+
+					$query['meta_query']['relation'] = $relation;
+				}
+				else
+					$query['meta_query']['relation'] = 'AND';
+
+				if (!empty($compare_2)) {
+
+					$compare_2 = strtoupper($compare_2);
+
+					switch ($compare_2) {
+						case '':
+						case '=':
+						case 'EQUAL': $compare_2 = 'LIKE'; break;
+						case 'NOT':
+						case '!=':
+						case 'NOT EQUAL': $compare_2 = 'NOT LIKE'; break;
+						default: break;
+					}					
+				}
+
+
+				$query['meta_query'][] =
+					array(
+						'key' => $field_2,
+						'value' => $value_2,
+						'compare' => $compare_2
+				);
+			}
+		}
+
+
+
+
+
+
+
+		return apply_filters( 'ccs_loop_query_filter', $query );
 
 	} // End prepare query
 
@@ -675,6 +820,8 @@ class CCS_Loop {
 	 *=======================================================================*/
 
 	function run_query( $query ) {
+
+		self::$state['do_reset_postdata'] = true;
 
 		return new WP_Query( $query );
 	}
@@ -847,12 +994,11 @@ class CCS_Loop {
 		 *
 		 *=======================================================================*/
 		
+		if (strpos($template, '{') !== false) {
 
+			$template = self::render_field_tags( $template, self::$parameters );
 
-
-
-
-
+		}
 
 		$template = do_shortcode( $template );
 
@@ -862,7 +1008,7 @@ class CCS_Loop {
 
 	/*========================================================================
 	 *
-	 * Process results to final output
+	 * Process results array to final output
 	 *
 	 *=======================================================================*/
 	
@@ -876,17 +1022,20 @@ class CCS_Loop {
 
 			/*========================================================================
 			 *
-			 * Do [if last]
+			 * Do [if last]..?
 			 *
 			 *=======================================================================*/
 
 			// Find last template
-
 			// Replace [if last]..[/if]
 
 
-
-			// Combine results
+			/*========================================================================
+			 *
+			 * Combine results
+			 *
+			 *=======================================================================*/
+			
 			$result = implode('', $results);
 
 		} else {
@@ -896,15 +1045,17 @@ class CCS_Loop {
 
 
 
-
-		// Process final result
+	/*========================================================================
+	 *
+	 * Process the combined result
+	 *
+	 *=======================================================================*/
 
 		/*========================================================================
 		 *
 		 * Strip tags
 		 *
 		 *=======================================================================*/
-		
 					
 		if ( !empty($parameters['strip']) ) {
 
@@ -934,9 +1085,42 @@ class CCS_Loop {
 			$trim = $parameters['trim'];
 			if ($trim=='true') $trim = null;
 
-			$result = trim($result, " \t\n\r\0\x0B,".$trim);
+			if (empty($parameters['columns'])) {
+				$result = trim($result, " \t\n\r\0\x0B,".$trim);
+			} else {
+
+				// Trim each item for columns
+				$new_results = array();
+				foreach ($results as $result) {
+					$new_results[] = trim($result, " \t\n\r\0\x0B,".$trim);
+				}
+				$results = $new_results;
+			}
 		}
 
+		/*========================================================================
+		 *
+		 * Finally, columns
+		 *
+		 *=======================================================================*/
+
+		if ( !empty($parameters['columns']) ) {
+
+			$result = self::render_columns( $results, $parameters['columns'], $parameters['pad'], $parameters['between'] );
+		}
+
+
+
+		/*========================================================================
+		 *
+		 * Cache the final result?
+		 *
+		 *=======================================================================*/
+
+		if ( self::$state['do_cache'] == 'true' ) {
+
+			CCS_Cache::set_transient( self::$state['cache_name'], $result, self::$state['cache_name'] );
+		}
 
 		return $result;
 	}
@@ -951,6 +1135,18 @@ class CCS_Loop {
 
 	function close_loop(){
 
+
+		/*========================================================================
+		 *
+		 * Reset postdata after WP_Query
+		 *
+		 *=======================================================================*/
+
+		if (self::$state['do_reset_postdata']) {
+			wp_reset_postdata();
+			self::$state['do_reset_postdata'] = false;
+		}
+
 		/*========================================================================
 		 *
 		 * If blog was switched on multisite, retore original blog
@@ -962,6 +1158,7 @@ class CCS_Loop {
 		}
 
 		self::$state['is_loop'] = false;
+		self::$state['is_attachment_loop'] = false;
 
 	}
 
@@ -971,15 +1168,301 @@ class CCS_Loop {
 
 
 
+	/*========================================================================
+	 *
+	 * Columns: takes an array of items, puts them in columns and returns string
+	 *
+	 *=======================================================================*/
+	
+	public static function render_columns( $items, $per_row, $pad = null, $between_row = null ) {
 
+		$column_index = 0;
+
+		$percent = 100 / (int)$per_row; // Percentage-based width for each item
+
+		if ( empty($between_row) ) {
+			$between_row = '<br>';
+		} elseif ($between_row == 'false') {
+			$between_row = '';
+		}
+		$clear = '<div style="clear:both;">'.$between_row.'</div>';
+
+		$out = null;
+
+		foreach ($items as $each_item) {
+
+			$trimmed = trim($each_item); // Avoid empty columns
+
+			if ( !empty( $trimmed ) ) {
+
+				$column_index++;
+
+				$out .= '<div class="column-1_of_'.$per_row.'" style="width:'.$percent.'%;float:left;">';
+
+				// Wrap in padding?
+				if (!empty($pad)) {
+					$out .= '<div class="column-inner" style="padding:'.$pad.'">'.$each_item.'</div>';
+				} else {
+					$out .= $each_item;
+				}
+
+				$out .= '</div>';
+
+				if ( ($column_index % $per_row) == 0 ) {
+
+					// The row is full, then clear float
+					$out .= $clear;
+				}
+			}
+		}
+
+		if ( ($column_index % $per_row) != 0 ) {
+
+			// if last row was not full
+			$out .= $clear;
+		}
+
+		return $out;
+	}
 
 
 
 	/*========================================================================
 	 *
-	 * Helper functions
+	 * Pass shortcode - pass field values
 	 *
 	 *=======================================================================*/
+
+	function pass_shortcode( $atts, $content ) {
+
+		$args = array(
+			'field' => '',
+			'fields' => '',
+			'field_loop' => '', // Field is array or comma-separated list
+			);
+
+		extract( shortcode_atts( $args , $atts, true ) );
+
+		$content = self::render_default_field_tags( $content );
+
+		if ( !empty($fields) ) {
+
+			// $fields = self::explode_list($fields);
+
+			// Replace these fields
+
+			$content = self::render_field_tags( $content, array('fields' => $fields) );
+		} 
+
+		if ( !empty($field) ) {
+
+			$post_id = get_the_ID();
+
+			if ($field=='gallery') $field = '_custom_gallery'; // Support gallery field
+
+			$field_value = get_post_meta( $post_id, $field, true );
+
+			if (is_array($field_value)) {
+
+				$field_value = implode(",", $field_value);
+
+			} else {
+
+				// Clean extra spaces if it's a list
+				$field_value = self::clean_list($field_value);
+			}
+
+			// Replace it
+
+			$content = str_replace('{FIELD}', $field_value, $content);
+
+		} elseif (!empty($field_loop)) {
+
+			$post_id = get_the_ID();
+
+			if ($field_loop=='gallery') {
+
+				// Support gallery field
+
+				$field_values = CCS_Gallery_Field::get_image_ids(); 
+
+			} else {
+
+				$field_values = get_post_meta( $post_id, $field_loop, true );
+			}
+
+
+			if (!empty($field_values)) {
+
+				if (!is_array($field_values))
+					$field_values = self::explode_list($field_values); // Get comma-separated list of values
+
+				$contents = null;
+
+				// Loop for the number of field values
+
+				foreach ($field_values as $field_value) {
+
+					$contents[] = str_replace('{FIELD}', $field_value, $content);
+				}
+
+				$content = implode('', $contents);
+			}
+		}
+
+		return do_shortcode( $content );
+
+	} // End pass shortcode
+
+
+
+	/*========================================================================
+	 *
+	 * Process {FIELD} tags
+	 *
+	 *=======================================================================*/
+
+
+
+	function render_field_tags( $template, $parameters ) {
+
+		$template = self::render_default_field_tags( $template );
+		$post_id = !empty($parameters['id']) ? $parameters['id'] : get_the_ID();
+
+		/*========================================================================
+		 *
+		 * User defined fields
+		 *
+		 *=======================================================================*/
+
+		if (!empty($parameters['fields'])) {
+
+			$fields = self::explode_list($parameters['fields']);
+
+			foreach ($fields as $key) {
+
+				$search = '{'.strtoupper($key).'}';
+
+				if (strpos($template, $search)!==false) {
+
+					$replace = get_post_meta( $post_id, $key, true );
+
+					$template = str_replace($search, $replace, $template);
+				}
+			}
+		}
+
+
+		return $template;
+	}
+
+
+
+
+	function render_default_field_tags( $template ) {
+
+		/*========================================================================
+		 *
+		 * Predefined field tags
+		 *
+		 *=======================================================================*/
+
+		$keywords = array(
+			'URL', 'ID', 'COUNT', 'TITLE', 'AUTHOR', 'DATE', 'THUMBNAIL', 'THUMBNAIL_URL',
+			'CONTENT', 'EXCERPT', 'COMMENT_COUNT', 'TAGS', 'IMAGE', 'IMAGE_ID', 'IMAGE_URL',
+		);
+
+		foreach ($keywords as $key) {
+
+			$search = '{'.$key.'}';
+
+			if (strpos($template, $search)!==false) {
+
+				$replace = $search;
+
+				switch ($key) {
+					case 'URL':
+						$replace = get_permalink();
+						break;
+					case 'ID':
+						$replace = get_the_ID();
+						break;
+					case 'COUNT':
+						$replace = self::$state['loop_count'];
+						break;
+					case 'TITLE':
+						$replace = get_the_title();
+						break;
+					case 'AUTHOR':
+						$replace = get_the_author();
+						break;
+					case 'AUTHOR_URL':
+						$replace = get_author_posts_url( get_the_author_meta( 'ID' ) );
+						break;
+					case 'DATE':
+						$replace = get_the_date();
+						break;
+					case 'THUMBNAIL':
+						$replace = get_the_post_thumbnail( null, 'thumbnail' );
+						break;
+					case 'THUMBNAIL_URL':
+						$replace = wp_get_attachment_url(get_post_thumbnail_id(get_the_ID()));
+						break;
+					case 'CONTENT':
+						$replace = get_the_content();
+						break;
+					case 'EXCERPT':
+						$replace = get_the_excerpt();
+						break;
+					case 'COMMENT_COUNT':
+						$replace = get_comments_number();
+						break;
+					case 'TAGS':
+						$replace = strip_tags( get_the_tag_list('',', ','') );
+						break;
+					case 'IMAGE':
+						$replace = get_the_post_thumbnail();
+						break;
+					case 'IMAGE_ID':
+						$replace = get_post_thumbnail_id(get_the_ID());
+						break;
+					case 'IMAGE_URL':
+						$replace = wp_get_attachment_url(get_post_thumbnail_id(get_the_ID()));
+						break;
+					default:
+						break;
+				}
+
+				$template = str_replace($search, $replace, $template);
+			}
+
+		}
+
+		return $template;
+	}
+
+
+
+
+/*========================================================================
+ *
+ * Helper functions
+ *
+ *=======================================================================*/
+
+	// Get text between two strings
+
+	public static function getBetween($start, $end, $text) {
+
+		$middle = explode($start, $text);
+		if (isset($middle[1])){
+			$middle = explode($end, $middle[1]);
+			$middle = $middle[0];
+			return $middle;
+		} else {
+			return false;
+		}
+	}
 
 
 	// Explode comma-separated list and remove extra space from each item
@@ -1024,7 +1507,7 @@ class CCS_Loop {
 
 	/*========================================================================
 	 *
-	 * [loop-index]
+	 * [loop-count] - Display current loop count
 	 *
 	 *=======================================================================*/
 	
@@ -1052,6 +1535,14 @@ class CCS_Loop {
 		}
 		return $out;
 	}
+
+
+
+
+
+
+
+
 
 
 } // End CCS_Loop

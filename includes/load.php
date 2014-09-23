@@ -165,6 +165,7 @@ class CCS_Load {
 			if ($cache=='false') {
 
 				// Generate random string to prevent caching
+				$tail = '';
 				for ($i=0; $i<8; $i++) { 
 					$tail .= rand(0,9) ; 
 				} 

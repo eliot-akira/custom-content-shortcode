@@ -3,17 +3,29 @@
 
 Enable a simple gallery field for any post type, under <a href="options-general.php?page=custom-gallery">Settings -&gt; Gallery Fields</a>.<br>
 
-Images can be added, ordered, and removed.
+You can add, order, edit details and remove the image from the field.
 
-<h4>Display image details from the gallery field</h4>
-<code>[loop field="gallery"]
+<h4>Display images from the gallery field</h4>
+<code>[attached gallery]
 &nbsp;&nbsp;&nbsp;&nbsp;Title: [field title]
 &nbsp;&nbsp;&nbsp;&nbsp;Full-size image: [field image]
 &nbsp;&nbsp;&nbsp;&nbsp;Caption: [field caption]
-[/loop]</code>
+[/attached]</code>
 For each image, these fields can be displayed: <em>id</em>, <em>title</em>, <em>image</em>, <em>image-url</em>, <em>caption</em>, <em>description</em>,<em> thumbnail</em>, and<em> thumbnail-url</em>.
 <br>
 <hr>
+<h3>In a Loop</h3>
+
+<h4>Display gallery fields of each post in a loop</h4>
+<code>[loop type="post" category="colorful"]
+&nbsp;&nbsp;&nbsp;&nbsp;Post Title: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;Description: [content]
+&nbsp;&nbsp;&nbsp;&nbsp;[attached gallery columns="4"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field thumbnail]
+&nbsp;&nbsp;&nbsp;&nbsp;[/attached]
+[/loop]</code><br>
+<hr>
+
 <h3>Native or Bootstrap gallery</h3>
 
 You can display all images in the gallery field using a native gallery or Bootstrap carousel.

@@ -2,9 +2,7 @@
 
 /*====================================================================================================
  *
- * [content] shortcode
- *
- * Get a field or post content
+ * [content] - Get a field or post content
  *
  *====================================================================================================*/
 
@@ -12,420 +10,337 @@ new CCS_Content;
 
 class CCS_Content {
 
+	public static $original_parameters; // Before merge with defaults
+	public static $parameters; // with defaults
+	public static $state;
+
 	function __construct() {
 
-		add_shortcode('content', array($this, 'content_shortcode'));
-		add_shortcode('field', array($this, 'field_shortcode'));
-		add_shortcode('taxonomy', array($this, 'taxonomy_shortcode'));
+		add_shortcode( 'content', array($this, 'content_shortcode') );
+		add_shortcode( 'field', array($this, 'field_shortcode') );
+		add_shortcode( 'taxonomy', array($this, 'taxonomy_shortcode') );
 	}
 
-	public static function content_shortcode( $atts ) {
 
-		global $post;
+	/*========================================================================
+	 *
+	 * Main function
+	 *
+	 *=======================================================================*/
 
-		$current_post = $post;
+	function content_shortcode( $parameters ) {
 
-		extract(shortcode_atts(array(
+		$parameters = $this->merge_with_defaults( $parameters );
+		self::$parameters = $parameters;
 
-			'type' => null,
-			'name' => null,
-			'field' => null,
-			'id' => null,
+		$result = $this->before_query( $parameters );
 
-			'page' => null,
-//			'status' => null,
+		if (empty($result)) {
 
-			'taxonomy' => null, 'checkbox' => null, 'out' => null,
+			$result = $this->run_query( $parameters );
+		}
 
-			'align' => null, 'class' => null, 'height' => null,
-			'words' => null, 'len' => null, 'length' => null,
-			'date_format' => null, 'timestamp' => null,
-			'image' => null, 'in' => null, 'return' => null,
-			'image_class' => null, 
+		$result = $this->process_result( $result, $parameters );
+
+		return $result;
+	}
+
+	/*========================================================================
+	 *
+	 * Merge parameters with defaults
+	 *
+	 *=======================================================================*/
+
+	function merge_with_defaults( $parameters ) {
+
+		self::$original_parameters = $parameters;
+
+		$defaults = array(
+
+			'type' => 'any',
+			'status' => 'publish',
+			'name' => '',
+			'id' => '',
+
+			// Field value
+			'field' => '',
+
+			'page' => '',
+
+			// Taxonomy value
+
+			'taxonomy' => '',
+			'out' => '', // out="slug" taxonomy slug
+
+			// Image field
+			'image' => '',
+			'size' => 'full',
+			'in' => '', // object, url, id
+			'return' => '',
+			'alt' => '', 'height' => '', 'width' => '', 
+			'image_class' => '',
+			'url' => '', // Option for image-link
+
+			// Author meta
+			'meta' => '',
+
+			// Checkbox value
+			'checkbox' => '',
+
+			// Sidebar/widget area
+			'area' => '', 'sidebar' => '', 
+
+			// Menu
+			'menu' => '', 'ul' => '',
+
+			// ACF gallery
+			'row' => '', 'sub' => '',
+			'acf_gallery' => '', 'num' => '',
+
+			// Gallery
+			'gallery' => 'false', 'group' => '',
+
+			// Native gallery options
+
+			'orderby' => '', 'order' => '', 'columns' => '',
+			'link' => '', 'include' => '', 'exclude' => '',
+
+
+			// Fomatting
+
+			'format' => '', 'shortcode' => '',
+			'embed' => '',
+			'align' => '', 'class' => '', 'height' => '',
+			'words' => '', 'len' => '', 'length' => '',
+			'date_format' => '', 'timestamp' => '',
 			'more' => '', 'dots' => '...',
+		);
 
-			'meta' => '', // Author meta
-
-			'embed' => null, 'format' => null, 'shortcode' => null,
-
-			'area' => null, 'sidebar' => null, 
-			'menu' => null, 'ul' => null,
-
-			'row' => null, 'sub' => null,
-			'acf_gallery' => null, 'num' => null,
-
-			'gallery' => 'false', 'group' => null,
-
-			'url' => null, // Optional for image-link
-
-			/* Native gallery options: orderby, order, columns, size, link, include, exclude */
-
-			'orderby' => null, 'order' => null, 'columns' => null, 'size' => 'full',
-			'link' => null, 'include' => null, 'exclude' => null
-
-		), $atts));
-
-
-		/*========================================================================
-		 *
-		 * Set up query parameters
-		 *
-		 *=======================================================================*/
-
-		$custom_post_type = $type;
-		$custom_post_name = $name;
-
-		if(!empty($page)) {
-			$custom_post_type = 'page';
-			$custom_post_name = $page;
-		}
-
-		$custom_menu_name = $menu;
-		$custom_field = $field;
-		$custom_id = $id;
-		$content_format = $format;
-		$shortcode_option = $shortcode;
-		$custom_gallery_type = $gallery;
-		$custom_gallery_name = $group;
-		if ($size=="middle") $size = "medium";
-		if (!isset($image_class)) $image_class = "";
-		$custom_area_name = $area;
-		if(!empty($len)) $length=$len;
-		if ( ($taxonomy != '') && ($out != '') ) {
-			$taxonomy_out = $out;
-			$out = null;
-		}
-
-	/*	if ((!empty($more)) && (empty($field)))
-			$words="55";
-	*/
-
-		if (!empty($checkbox))
-			$custom_field = $checkbox;
-
-		/* For displaying ACF labels for checkbox or select field */
-
-		if (!empty($out) && ($out=="label")) {
-			$acf_label_out = true;
-			$out = null;
-		} else {
-			$acf_label_out = false;
-		}
-
-
-		if(!empty($status))
-			$status = explode(",", $status);
-		else
-			$status = array("publish");
-
-		$out = null;
-		if($image != null) {
-			$custom_field = $image; // Search for the image field
-		}
-
-		if( $custom_post_type == '' ) { // If no post type is specified, then default is any
-			$custom_post_type = 'any';
-		}
-
-
-		/*========================================================================
-		 *
-		 * In an attachment or gallery loop
-		 *
-		 *=======================================================================*/
-
-		// Get each field as requested
-
-/*
-		if( ( CCS_Loop::$state['is_gallery_loop'] == 'true') || 
-			( CCS_Loop::$state['is_attachment_loop'] == 'true' ) || 
-			 ( CCS_Loop::$state['is_acf_gallery_loop'] == 'true' ) ) {
-
-			if (empty($custom_field)) $custom_field = 'image'; // show attachment image by default [content]
-
-			switch($custom_field) {
-
-				case "image":
-					if (empty($size)) {
-						$out = $ccs_global_variable['current_image']['full'];
-					} else {
-						$out = $ccs_global_variable['current_image'][$size];
-					}
-					break;
-				case "image-url": $out = $ccs_global_variable['current_image_url']; break;
-				case "url":
-					$out = $ccs_global_variable['current_attachment_file_url']; break;
-				case "page-url":
-					$out = $ccs_global_variable['current_attachment_page_url']; break;
-				case "attach-link":
-					$out = $ccs_global_variable['current_attachment_link']; break;
-				case "thumbnail": $out = $ccs_global_variable['current_image_thumb']; break;
-				case "thumbnail-url": $out = $ccs_global_variable['current_image_thumb_url']; break;
-				case "caption": $out = $ccs_global_variable['current_image_caption']; break;
-				case "id": $out = $ccs_global_variable['current_attachment_id']; break;
-				case "title": $out = $ccs_global_variable['current_image_title']; break;
-				case "description": $out = $ccs_global_variable['current_image_description']; break;
-				case "alt": $out = $ccs_global_variable['current_image_alt']; break;
-				case "count": $out = $ccs_global_variable['current_row']; break;
-			}
-
-			if (!empty($image_class)) {
-				$out = str_replace('class="', 'class="'.$image_class.' ', $out);
-			}
-
-			if (!empty($class))
-				return '<div class="' . $class . '">' . $out . '</div>';
-			else return $out;
-
-		} // End attachment or gallery loop
-*/
-
-		/*========================================================================
-		 *
-		 * Sidebar/widget area
-		 *
-		 *=======================================================================*/
-
-		if( $sidebar != '') {
-			$custom_area_name = $sidebar;
-		}
-		if( $custom_area_name != '') {
-			$back =  '<div id="' . str_replace( " ", "_", $custom_area_name ) . '" class="sidebar';
-			if(!empty($class))
-				$back .=  ' ' . $class;
-
-			$back .= '">';
-
-			ob_start();
-			if ( function_exists('dynamic_sidebar') )
-				dynamic_sidebar($custom_area_name);
-			$back .= ob_get_clean();
-			$back .= "</div>";
-			return $back;
-		}
-
-
-		/*========================================================================
-		 *
-		 * Menu
-		 *
-		 *=======================================================================*/
-
-		if( $custom_menu_name != '' ) {
-
-			$menu_args = array (
-				'menu' => $custom_menu_name,
-				'echo' => false,
-				'menu_class' => $ul,
-			);
-
-			$output = wp_nav_menu( $menu_args );
-
-			if(empty($class)) {
-				return $output;
-			} else {
-				return '<div class="' . $class . '">' . $output . '</div>';
+		if ( isset($parameters['type']) && ($parameters['type']=='attachment') ) {
+			if (!isset($parameters['status'])) {
+				$parameters['status'] = 'any'; // Default for attachment
 			}
 		}
 
+		$parameters = shortcode_atts($defaults, $parameters);
 
 
 		/*========================================================================
 		 *
-		 * Get post ID
+		 * Prepare parameters
 		 *
 		 *=======================================================================*/
+		
+		// Get page by name
+		if (!empty($parameters['page'])) {
+
+			$parameters['type'] = 'page';
+			$parameters['name'] = $parameters['page'];
+		}
+		
+		// Post status
+
+		if (!empty($parameters['status'])) {
+			$parameters['status'] = CCS_Loop::explode_list($parameters['status']); // multiple values
+		}
+
+		// Image field
+
+		if (!empty($parameters['image'])) {
+			$parameters['field'] = $parameters['image'];
+		}
+
+		// Image size alias
+		if ($parameters['size']=='middle')
+			$parameters['size'] = 'medium';
+
+		// Checkbox
+		if (!empty($parameters['checkbox']))
+			$parameters['field'] = $parameters['checkbox'];
+
 
 
 		// Relationship loop
 
-		if (CCS_Loop::$state['is_relationship_loop']=='true') {
-			$custom_id = CCS_Loop::$state['relationship_id'];
+		if (CCS_To_ACF::$state['is_relationship_loop']=='true') {
+			$parameters['id'] = CCS_To_ACF::$state['relationship_id'];
 		}
 
 
 
+		return $parameters;
+	}
 
-		// If post name/slug is defined, find its ID
 
-		if($custom_post_name != '') {
+
+	/*========================================================================
+	 *
+	 * Before query: if return is not null, there is result already
+	 *
+	 *=======================================================================*/
+
+	function before_query( $parameters ) {
+
+		if (empty($parameters['id'])) {
+			$post_id = get_the_ID();
+		} else {
+			$post_id = $parameters['id'];
+		}
+
+		$result = '';
+
+		// Menu
+
+		// Sidebar
+
+		// Gallery: native or carousel
+
+		if( $parameters['gallery'] == 'carousel') {
+
+			$result = '[gallery type="carousel" ';
+
+			if (!empty($parameters['name'])) {
+				$result .= 'name="' . $parameters['name'] . '" ';
+			}
+			if (!empty($parameters['height'])!='') {
+				$result .= 'height="' . $parameters['height'] . '" ';	
+			}
+			$result .= 'ids="';
+
+			if(!empty($parameters['acf_gallery'])) {
+				if( function_exists('get_field') ) {
+					$result .= implode(',', get_field($parameters['acf_gallery'], $post_id, false));
+				}
+			} else {
+				$result .= get_post_meta( $post_id, '_custom_gallery', true );
+			}
+			$result .= '" ]';
+
+			if (!empty($parameters['class']))
+				$result = '<div class="' . $class . '">' . $result . '</div>';
+			
+			return do_shortcode( $result );
+
+		} elseif ( $parameters['gallery'] == 'native' ) {
+
+			$result = '[gallery " ';
+
+			if(!empty($parameters['name'])) {
+				$result .= 'name="' . $parameters['name'] . '" ';
+			}
+
+			$result .= 'ids="';
+
+			if (!empty($parameters['acf_gallery'])) {
+				if( function_exists('get_field') ) {
+					$result .= implode(',', get_field($parameters['acf_gallery'], $post_id, false));
+				}
+			} else {
+				$result .= get_post_meta( $post_id, '_custom_gallery', true );
+			}
+			$result .= '"';
+
+			/* Additional parameters */
+
+			$native_gallery_options = array(
+				'orderby' => $parameters['orderby'],
+				'order' => $parameters['order'],
+				'columns' => $parameters['columns'],
+				'size' => $parameters['size'],
+				'link' => $parameters['link'],
+				'include' => $parameters['include'],
+				'exclude' => $parameters['exclude']
+			);
+
+			if (!empty($parameters['columns']))
+				$parameters['columns'] = ''; // prevent CCS columns
+
+			foreach ($native_gallery_options as $option => $value) {
+
+				if (!empty($value)) {
+					$result .= ' ' . $option . '="' . $value . '"';
+				}
+			}
+
+			$result .= ']';
+
+			if(!empty($parameters['class']))
+				$result = '<div class="' . $parameters['class'] . '">' . $result . '</div>';
+
+			return do_shortcode( $result );
+		}
+
+
+		return $result;
+	}
+
+	/*========================================================================
+	 *
+	 * Get the post
+	 *
+	 *=======================================================================*/
+
+	function prepare_post( $parameters ) {
+		
+		// Get post from ID
+
+		if (!empty($parameters['id'])) {
+
+			$this_post = get_post( $parameters['id'] );
+
+			if (empty($this_post)) return false; // No post by that ID
+
+			self::$state['current_post'] = $this_post;
+			self::$state['current_post_id'] = $parameters['id'];
+
+		} elseif (!empty($parameters['name'])) {
+
+			// Get post from name
+
 			$args=array(
-				'name' => $custom_post_name,
-				'post_type' => $custom_post_type,
-				'post_status' => $status,
+				'name' => $parameters['name'],
+				'post_type' => $parameters['type'],
+				'post_status' => $parameters['status'], // Default is publish, or any for attachment
 				'posts_per_page' => '1',
 	  		);
 
-			$my_posts = get_posts($args);
-			if ( $my_posts ) {
-				$custom_id=$my_posts[0]->ID;
-				$current_post = $my_posts[0];
+			$posts = get_posts($args);
+
+			if ( $posts ) {
+
+				self::$state['current_post'] = $posts[0];
+				self::$state['current_post_id'] = $posts[0]->ID;
+
 			} else {
-				return null; // No post found by that name
+
+				return false; // No post by that name
 			}
-		}
-		else {
-
-			if (!empty($custom_id)) {
-				$current_post = get_post($custom_id); // Get post by ID
-			} else {
-				// If no name or id, then current post
-				$custom_id = get_the_ID();
-			}
-
-		}
-
-
-		/*========================================================================
-		 *
-		 * If ACF repeater field loop then get sub field
-		 *
-		 *=======================================================================
-		
-		if( CCS_Loop::$state['is_repeater_loop'] == 'true') {
-
-			$custom_id = $ccs_global_variable['current_loop_id'];
-			if (empty($size)) $size='full';
-
-			if($custom_field=='row') {
-				return $ccs_global_variable['current_row'];
-			}
-			if( function_exists('the_sub_field') ) {
-
-				$out = get_sub_field($custom_field, $custom_id);
-				switch($in) {
-					case 'id' : $out = wp_get_attachment_image( $out, $size ); break;
-					case 'url' : $out = '<img src="' . $out . '">'; break;
-					default : if (is_array($out)) {
-						$out = wp_get_attachment_image( $out['id'], $size );
-					} else {
-						$out = wp_get_attachment_image( $out, $size ); 
-					}
-				}
-				if ($custom_field == 'id') {
-					$out = $ccs_global_variable['current_loop_id'];
-				}
-			} else {
-				$out = get_post_meta($custom_id, $custom_field, $single=true);
-			}
-			if(($class!='') || ($align!='')) {
-				$pre = '<div';
-				if(!empty($class))
-					$pre .= ' class="' . $class . '"';
-				if(!empty($align))
-					$pre .= ' align="' . $align . '"';
-				$pre .= '>' . $out . '</div>';
-				return $pre;
-			}
-			else return $out;
-		}
-	
-		// Repeater field subfield
-
-		if ($sub != '') {
-			$out = null;
-			if( function_exists('get_field') ) {
-				if (empty($size)) $size='full';
-				$rows = get_field($custom_field, $custom_id); // Get all rows
-				$row = $rows[$row-1]; // Get the specific row (first, second, ...)
-				$out = $row[$sub]; // Get the subfield
-				switch($in) {
-					case 'id' : $out = wp_get_attachment_image( $out, $size ); break;
-					case 'url' : $out = '<img src="' . $out . '">'; break;
-					default : if (is_array($out)) {
-						$out = wp_get_attachment_image( $out['id'], $size );
-					} else {
-						$out = wp_get_attachment_image( $out, $size ); 
-					}
-				}
-			}
-			if ( (!empty($class)) || (!empty($align)) ) {
-				$pre = '<div';
-				if($class!='')
-					$pre .= ' class="' . $class . '"';
-				if($align!='')
-					$pre .= ' align="' . $align . '"';
-				$pre .= '>' . $out . '</div>';
-				return $pre;
-			}
-			else return $out;
-		}
-		*/
-
-
-		/*========================================================================
-		 *
-		 * Gallery types - native or carousel
-		 *
-		 *=======================================================================*/
-
-		if( $custom_gallery_type == "carousel") {
-			$out = '[gallery type="carousel" ';
-			if($custom_gallery_name != '') {
-				$out .= 'name ="' . $custom_gallery_name . '" ';
-			}
-			if($height!='') {
-				$out .= 'height ="' . $height . '" ';	
-			}
-			$out .= 'ids="';
-
-			if($acf_gallery!='') {
-				if( function_exists('get_field') ) {
-					$out .= implode(',', get_field($acf_gallery, $custom_id, false));
-				}
-			} else {
-				$out .= get_post_meta( $custom_id, '_custom_gallery', true );
-			}
-			$out .= '" ]';
-
-			if(!empty($class))
-				$out = '<div class="' . $class . '">' . $out . '</div>';
-			
-			return do_shortcode( $out );
 
 		} else {
 
-			if( $custom_gallery_type == "native") {
+			// Current post
 
-				$out = '[gallery " ';
-				if($custom_gallery_name != '') {
-					$out .= 'name ="' . $custom_gallery_name . '" ';
-				}
-				$out .= 'ids="';
+			self::$state['current_post'] = get_post();
+			self::$state['current_post_id'] = get_the_ID();
+		}
 
-				if ($acf_gallery!='') {
-					if( function_exists('get_field') ) {
-						$out .= implode(',', get_field($acf_gallery, $custom_id, false));
-					}
-				} else {
-					$out .= get_post_meta( $custom_id, '_custom_gallery', true );
-				}
-				$out .= '"';
+		return true;
+	}
 
-				/* Additional parameters */
 
-				$native_gallery_options = array(
-					'orderby' => $orderby,
-					'order' => $order,
-					'columns' => $columns,
-					'size' => $size,
-					'link' => $link,
-					'include' => $include,
-					'exclude' => $exclude
-				);
+	/*========================================================================
+	 *
+	 * Main query
+	 *
+	 *=======================================================================*/
 
-				foreach ($native_gallery_options as $option => $value) {
+	function run_query( $parameters ) {
 
-					if (!empty($value)) {
-						$out .= ' ' . $option . '="' . $value . '"';
-					}
-				}
+		$result = '';
 
-				$out .= ']';
-				if(!empty($class))
-					$out = '<div class="' . $class . '">' . $out . '</div>';
-				return do_shortcode( $out );
-			}	
+		if (self::prepare_post( $parameters ) == false) {
+
+			return null; // No post by those parameters
 		}
 
 
@@ -435,273 +350,129 @@ class CCS_Content {
 		 *
 		 *=======================================================================*/
 
-		if (!empty($image)) {
+		elseif (!empty($parameters['image'])) {
 
-			$image_field = get_post_meta( $custom_id, $image, true );
+			$result = self::get_image_field( $parameters );
 
-			switch($in) {
+		}
 
-				case 'object' :
-					if (is_array( $image_field )) {
-						$image_id = $image_field['id'];
-					} else {
-						$image_id = $image_field; // Assume it's ID
-					}
-					$out = wp_get_attachment_image( $image_id , $size );
-					break;
-				case 'url' : $out = '<img src="' . $out . '">'; break;
-				case 'id' : 
-				default :
-					$image_id = $image_field;
-					$out = wp_get_attachment_image( $image_field, $size ); break;
-			}
+		/*========================================================================
+		 *
+		 * Taxonomy
+		 *
+		 *=======================================================================*/
 
-			if ($return=='url') {
-
-				if ( $in=='url') return $out;
-
-				$image_info = wp_get_attachment_image_src( $image_id, 'full' );
-				$image_url = $image_info[0];
-				return $image_url;
-
+		elseif (!empty($parameters['taxonomy'])) {
+			
+			if ($parameters['taxonomy'] == 'tag') {
+				$taxonomy='post_tag';
 			} else {
-
-				$image_return = $out;
-	/*
-				$image_return = wp_get_attachment_image( $image_id, 'full' );
-	*/			if(!empty($class))
-					$image_return = '<div class="' . $class . '">' . $image_return . '</div>';
-
-				return $image_return;
+				$taxonomy = $parameters['taxonomy'];
 			}
+
+		    $terms = get_the_terms( self::$state['current_post_id'], $taxonomy );
+
+		    if ( !empty( $terms ) ) {
+
+		    	foreach ($terms as $term) {
+		    		$names[] = $term->name;
+		    		$slugs[] = $term->slug;
+		    	}
+
+		    	if ( $parameters['out'] == 'slug') {
+			    	$result = implode(' ', $slugs);
+		    	} else {
+			    	$result = implode(', ', $names);
+		    	}
+		    } else {
+		    	return null; // No terms found
+		    }
 
 		}
 
 
 		/*========================================================================
 		 *
-		 * If no field is specified
+		 * ACF checkbox/select label
 		 *
 		 *=======================================================================*/
+		
+		elseif ( !empty($parameters['field']) && ($parameters['out']=='label') ) {
 
-		if ($custom_field == '') { 
+			if (function_exists('get_field_object')) {
 
-			if ($taxonomy != '') { // Taxonomy query?
-
-			    // Get taxonomy terms related to post
-
-				if ($taxonomy == "tag")
-					$taxonomy="post_tag";
-
-			    $terms = get_the_terms( $custom_id, $taxonomy );
-
-			    if ( !empty( $terms ) ) {
-			    	foreach ($terms as $term) {
-			    		$out_all[] = $term->name;
-			    		$slugs_all[] = $term->slug;
-			    	}
-
-			    	if ( (isset($taxonomy_out)) && ($taxonomy_out == 'slug')) {
-				    	$out = implode(" ", $slugs_all);
-			    	} else {
-				    	$out = implode(", ", $out_all);
-			    	}
-			    } else {
-			    	$out = null;
-			    }
-
-		    } else { // no field or taxonomy, then just return post content
-
-//				$out = $current_post;
-//				$current_post = get_post( $custom_id );
-				$out = $current_post->post_content;
-				if($content_format=='')
-					$content_format = 'true';
-				if($embed=='')
-					$embed = 'true';
+				// ??
+				
 			}
-
-		} else { // else return specified field
-
+		}
 
 
-			/*========================================================================
-			 *
-			 * Predefined fields
-			 *
-			 *=======================================================================*/
 
 
-			switch($custom_field) {
-				case "id": $out = $custom_id; break;
-				case "url": $out = post_permalink( $custom_id ); break;
-				case "edit-url": $out = get_edit_post_link( $custom_id ); break;
-				case "edit-link": $out = apply_filters( 'the_title', $current_post->post_title ); break;
-					
-				case "slug": $out = $current_post->post_name; break;
 
-				case "title-link":
-				case "title-link-out":
-				case "title": $out = apply_filters( 'the_title', $current_post->post_title ); break;
+		/*========================================================================
+		 *
+		 * Field
+		 *
+		 *=======================================================================*/
+		
+		elseif (!empty($parameters['field'])) {
 
-				case "title-length": $out = strlen(apply_filters( 'the_title', $current_post->post_title )); break;
+			$result = self::get_the_field( $parameters );
+		
+		} else {
 
-				case "author":
+		/*========================================================================
+		 *
+		 * Show post content - [content]
+		 * 
+		 *=======================================================================*/
 
-					$author_id = $current_post->post_author;
-					$user = get_user_by( 'id', $author_id);
+			// Make sure no parameters are set
+			if (count(self::$original_parameters)==0) {
 
-					if ( !empty($meta) )
-						$out = get_the_author_meta( $meta, $author_id );
-					else
-						$out = $user->display_name;
-					break;
-
-				case "author-id":
-
-					$author_id = $current_post->post_author;
-					$out = $author_id; break;
-
-				case "author-url":
-
-					$author_id = $current_post->post_author;
-					$out = get_author_posts_url($author_id); break;
-
-				case "avatar": 
-
-					$author_id = $current_post->post_author;
-					if( $size=='' )
-						$out = get_avatar($author_id);
-					else
-						$out = get_avatar($author_id, $size);
-					break;
-
-				case "date":
-
-					if($date_format!='') {
-						$out = mysql2date($date_format, $current_post->post_date); break;
-					}
-					else { // Default date format under Settings -> General
-						$out = mysql2date(get_option('date_format'), $current_post->post_date); break;
-					}
-
-				case "modified":
-
-					if($date_format!='') {
-						$out = get_post_modified_time( $date_format, $gmt=false, $custom_id, $translate=true ); break;
-					}
-					else { // Default date format under Settings -> General
-						$out = get_post_modified_time( get_option('date_format'), $gmt=false, $custom_id, $translate=true ); break;
-					}
-
-				case "image":				// image
-				case "image-link":			// image with link to post
-				case "image-link-self":		// image with link to attachment page
-
-					$out = get_the_post_thumbnail( $custom_id, $size ); break;
-
-				case "image-full": $out = get_the_post_thumbnail( $custom_id, 'full' ); break;
-				case "image-url": $out = wp_get_attachment_url(get_post_thumbnail_id($custom_id)); break;
-
-				case "thumbnail":			// thumbnail
-				case "thumbnail-link":		// thumbnail with link to post
-				case "thumbnail-link-self":	// thumbnail with link to attachment page
-
-					$out = get_the_post_thumbnail( $custom_id, 'thumbnail' ); break;
-
-				case "thumbnail-url": $res = wp_get_attachment_image_src( get_post_thumbnail_id($custom_id), 'thumbnail' ); $out = $res['0']; break;
-
-				case "tags": $out = implode(' ', wp_get_post_tags( $custom_id, array( 'fields' => 'names' ) ) ); break;
-
-				case 'gallery' :
-
-					// Get specific image from gallery field
-
-					$attachment_ids = get_post_meta( $custom_id, '_custom_gallery', true );
-					$attachment_ids = array_filter( explode( ',', $attachment_ids ) );
-
-					if($num == null) { $num = '1'; }
-						$out = wp_get_attachment_image( $attachment_ids[$num-1], 'full' );
-					break;
-
-				case 'excerpt' :
-
-					$out = $current_post;
-
-					// Get excerpt
-					$excerpt = $current_post->post_excerpt;
-					if( ($excerpt=='') || (is_wp_error($excerpt)) ) {
-						$out = $out->post_content;
-						if(($words=='') && ($length==''))
-							$words='35';
-					} else {
-						$out = $excerpt; 
-					}
-					break;
-
-				default :
-
-					// Get other fields
-
-					$out = get_post_meta($custom_id, $custom_field, $single=true);
-					break;
-
-			}
-
-			if (!empty($image_class)) {
-				$out = str_replace('class="', 'class="'.$image_class.' ', $out);
+				$result = self::$state['current_post']->post_content;
 			}
 
 		}
 
-		if ($timestamp == "ms") {
-			$out = $out / 1000;
+		return $result;
+	}
+
+
+	function process_result( $result, $parameters ) {
+
+		// If it's an array, make it a list
+
+		if (is_array($result))
+			$result = implode(', ', $result);
+
+
+
+		/*========================================================================
+		 *
+		 * Time/date
+		 *
+		 *=======================================================================*/
+		
+		if (!empty($parameters['timestamp']) && ($parameters['timestamp']=='ms') ) {
+			$result = $result / 1000;
 		}
-		if (($date_format!='') && ($custom_field!="date") && ($custom_field!="modified")) {
+
+		if ( !empty($parameters['date_format']) && !empty($parameters['field'])
+			&& ($parameters['field']!='date') && ($parameters['field']!='modified') ) {
 
 			// Date format for custom field
 
-			if ($in=="timestamp") {
-				$out = gmdate("Y-m-d H:i:s", $out);
+			if ( !empty($parameters['in']) && ($parameters['in']=="timestamp") ) {
+				$result = gmdate("Y-m-d H:i:s", $result);
 			}
 
-			if ($date_format=="true") {
-				$out = mysql2date(get_option('date_format'), $out);
-			} else {
-				$out = mysql2date($date_format, $out);
-			}
-		}
-/*
-		if ($checkbox != '') {
-			if(! empty($out) )
-				$out = implode(", ", $out);
-			else $out = '';
-		}
-*/
+			if ($parameters['date_format']=='true') 
+				$parameters['date_format'] = get_option('date_format');
 
-		/* Display labels from ACF checkbox/select field */
+			$result = mysql2date($parameters['date_format'], $result);
 
-		if ($acf_label_out) {
-			if ((!empty($out)) && function_exists('get_field_object')) {
-				$all_selected = $out;
-				$out = array();
-
-				$field = get_field_object($custom_field); 
-
-				if (!is_array($all_selected)) {
-					$out = $field['choices'][ $all_selected ]; /* One selection */
-				} else {
-					foreach($all_selected as $selected){
-						$out[] = $field['choices'][ $selected ]; /* Multiple */
-					}
-				}
-			}
-		}
-
-		/* If output is array, just implode it to string */
-
-		if ((!empty($out)) && is_array($out)) {
-			$out = implode(", ", $out);
 		}
 
 
@@ -711,110 +482,452 @@ class CCS_Content {
 		 *
 		 *=======================================================================*/
 
-		if($words!='') {
-			$out = wp_trim_words( $out, $words );
+		if (!empty($parameters['words'])) {
+
+			$result = wp_trim_words( $result, $parameters['words'] );
+
 		}
 
-		if($length!='') {
+		if (!empty($parameters['length'])) {
 
-			$the_excerpt = $out;
-			$the_excerpt = strip_tags(strip_shortcodes($the_excerpt)); //Strips tags and images
+			$result = strip_tags(strip_shortcodes($result)); //Strips tags and images
 
 			// Support multi-byte character code
-			$out = mb_substr($the_excerpt, 0, $length, 'UTF-8');
+			$result = mb_substr($result, 0, $parameters['length'], 'UTF-8');
 		}
-
 
 		/*========================================================================
 		 *
-		 * If wrapping title in link, do it after word/length trim
+		 * Wrap in link
 		 *
 		 *=======================================================================*/
 
-		switch ($custom_field) {
+		$post_id = isset(self::$state['current_post_id']) ? self::$state['current_post_id'] : get_the_ID();
+		
+		switch ($parameters['field']) {
+
 			case "edit-link":
-				$out = '<a target="_blank" href="' . get_edit_post_link( $custom_id ) . '">' . $out . '</a>'; break;
+				$result = '<a target="_blank" href="' . get_edit_post_link( $post_id ) . '">' . $result . '</a>';
+				break;
 
 			case "image-link":				// Link image to post
 			case "thumbnail-link":			// Link thumbnail to post
 			case "title-link":				// Link title to post
 
-				$out = '<a href="' . post_permalink( $custom_id ) . '">' . $out . '</a>'; break;
+				$result = '<a href="' . post_permalink( $post_id ) . '">' . $result . '</a>';
+				break;
 
 			case "image-post-link-out":		// Link image to post
 			case "thumbnail-post-link-out":	// Link thumbnail to post
 			case "title-link-out": 			// Open link in new tab
 
-				$out = '<a target="_blank" href="' . post_permalink( $custom_id ) . '">' . $out . '</a>'; break;
+				$result = '<a target="_blank" href="' . post_permalink( $post_id ) . '">' . $result . '</a>';
+				break;
 
 			case "image-link-self":
 			case "thumbnail-link-self": // Link to image attachment page
-				$url = get_attachment_link( get_post_thumbnail_id($custom_id) );
+				$url = get_attachment_link( get_post_thumbnail_id( $post_id ) );
 //				$url = wp_get_attachment_url( get_post_thumbnail_id($custom_id) );
-				$out = '<a href="' . $url . '">' . $out . '</a>'; break;
+				$result = '<a href="' . $url . '">' . $result . '</a>';
+				break;
 
-		}		
-		
-		if (!empty($class))
-			$out = '<div class="' . $class . '">' . $out . '</div>';
-
-		if ($shortcode_option != 'false') {		// Shortcode
-			$out = do_shortcode( $out );
 		}
 
-		if ($embed == 'true') {					// Then auto-embed
+		// Class
+
+		if (!empty($parameters['class']))
+			$result = '<div class="' . $parameters['class'] . '">' . $result . '</div>';
+
+		// Shortcode
+
+		if ($parameters['shortcode'] != 'false') {		// Shortcode
+			$result = do_shortcode( $result );
+		}
+
+		// Auto-embed links
+
+		if ($parameters['embed'] == 'true') {					// Then auto-embed
 			if(isset($GLOBALS['wp_embed'])) {
 				$wp_embed = $GLOBALS['wp_embed'];
-				$out = $wp_embed->autoembed($out);
+				$result = $wp_embed->autoembed($result);
 			}
 		}
 
-		if ($content_format == 'true') {		// Then format
-			$out = wpautop( $out );
-		}
+		// Then format
 
+		if ($parameters['format'] == 'true') {		// Then format
+			$result = wpautop( $result );
+		}
+		
+		
 		/*========================================================================
 		 *
 		 * Read more tag
 		 *
 		 *=======================================================================*/
 
-		if (!empty($more)) {
+		if (!empty($parameters['more'])) {
 
-			$until_pos = strpos($out, '<!--more-->');
+			$until_pos = strpos($result, '<!--more-->');
 			if ($until_pos!==false) {
-				$out = substr($out, 0, $until_pos);
+				$result = substr($result, 0, $until_pos);
 			}
 
-			if ($more=='true') {
+			if ($parameters['more']=='true') {
 				$more = 'Read more';
+			} else {
+				$more = $parameters['more'];
 			}
 
 			if ($more!='none') {
 
-				if ($link != 'false') {
-					if ($field=='excerpt')
-						$out .= '<br>';
+				if ($parameters['link'] != 'false') {
+					if ($parameters['field']=='excerpt') {
+						$result .= '<br>';
 	/*				if ((substr($out, -3)!='</p>') && (substr($out, -4)!='</br>'))
 						$out .= '<br>';
-	*/				$out .= '<a class="more-tag" href="'. get_permalink($custom_id) . '">'
+	*/
+						$result .= '<a class="more-tag" href="'. get_permalink($post_id) . '">'
 							. $more . '</a>';
+
+					}
 				} else {
-					$out .= $more;
+					$result .= $more;
 				}
 			}
 		}
-
-		/* Not needed? Loop handles post status already
-		if ( $status!=array("any") ) {
-			$post_status = get_post_status($custom_id);
-			if ( ! in_array($post_status, $status) ) {
-				$out = null;
-			}
-		} */
-
-		return $out;
+		
+		return $result;
 	}
+
+
+/*========================================================================
+ *
+ * Helper functions
+ *
+ *=======================================================================*/
+
+
+	
+	/*========================================================================
+	 *
+	 * Image field
+	 *
+	 *=======================================================================*/
+
+	function get_image_field( $parameters ) {
+
+		$result = '';
+
+		$post_id = $parameters['id'];
+
+		$field = get_post_meta( $post_id, $parameters['image'], true );
+
+		switch($parameters['in']) {
+
+			case 'object' : // ACF image object
+
+				if (is_array( $field )) {
+					$image_id = $field['id'];
+				} else {
+					$image_id = $field; // Assume it's ID
+				}
+
+				$result = wp_get_attachment_image( $image_id , $parameters['size'] );
+
+				break;
+
+			case 'url' :
+
+				if ( $parameters['return']=='url' ) {
+
+					$result = $field;
+
+				} else {
+
+					$result = '<img src="' . $field . '"';
+					if (!empty($parameters['alt']))
+						$result .= ' alt="' . $parameters['alt'] . '"';
+					if (!empty($parameters['height']))
+						$result .= ' height="' . $parameters['height'] . '"';
+					if (!empty($parameters['width']))
+						$result .= ' width="' . $parameters['width'] . '"';
+					$result .= '>';
+				}
+				break;
+			case 'id' : 
+			default :
+				$image_id = $field;
+				$result = wp_get_attachment_image( $field, $parameters['size'] );
+				break;
+		}
+
+		if ($parameters['return']=='url') {
+
+			$image_info = wp_get_attachment_image_src( $image_id, 'full' );
+			return isset($image_info) ? $image_info[0] : null;
+
+		} else {
+
+			if (!empty($parameters['class'])) {
+				$result = '<div class="' . $parameters['class'] . '">' . $result . '</div>';
+			}
+
+			return $result;
+		}
+
+	}
+
+
+
+	/*========================================================================
+	 *
+	 * Field
+	 *
+	 *=======================================================================*/
+	
+	
+	function get_the_field( $parameters ) {
+
+		if ( $parameters['type']=='attachment' ||
+			CCS_Loop::$state['is_attachment_loop'] ||
+			CCS_Attached::$state['is_attachment_loop'] ) {
+
+			return self::get_the_attachment_field( $parameters );
+		}
+
+		$post_id = !empty($parameters['id']) ? $parameters['id'] : get_the_ID();
+
+		if ($post_id == self::$state['current_post_id']) {
+			$post = self::$state['current_post'];
+		} else {
+			$post = get_post($post_id);
+			self::$state['current_post'] = $post;
+			self::$state['current_post_id'] = $post_id;
+		}
+
+		$field = $parameters['field'];
+		$result = '';
+
+		/*========================================================================
+		 *
+		 * Pre-defined fields
+		 *
+		 *=======================================================================*/
+
+		switch ($field) {
+
+			case 'id': $result = $post_id; break;
+			case 'url': $result = post_permalink( $post_id ); break;
+			case 'edit-url': $result = get_edit_post_link( $post_id ); break;
+			case 'edit-link': $result = apply_filters( 'the_title', $post->post_title ); break;
+			case 'slug': $result = $post->post_name; break;
+
+			case 'title-link':
+			case 'title-link-out':
+			case 'title': $result = apply_filters( 'the_title', $post->post_title ); break;
+
+			case 'author':
+
+				$author_id = $post->post_author;
+				$user = get_user_by( 'id', $author_id);
+
+				if ( !empty($parameters['meta']) )
+					$result = get_the_author_meta( $meta, $author_id );
+				else
+					$result = $user->display_name;
+				break;
+
+			case 'author-id':
+
+				$result = $post->post_author; break;
+
+			case 'author-url':
+
+				$result = get_author_posts_url($post->post_author); break;
+
+			case 'avatar': 
+				if( !empty($parameters['size']) )
+					$result = get_avatar($post->post_author, $parameters['size']);
+				else
+					$result = get_avatar($post->post_author);
+				break;
+
+			case 'date':
+
+				if (!empty($parameters['date_format'])) {
+					$result = mysql2date($parameters['date_format'], $post->post_date);
+				}
+				else { // Default date format under Settings -> General
+					$result = mysql2date(get_option('date_format'), $post->post_date);
+				}
+				break;
+
+			case 'modified':
+
+				if (!empty($parameters['date_format'])) {
+					$result = get_post_modified_time( $parameters['date_format'], $gmt=false, $post_id, $translate=true );
+				}
+				else { // Default date format under Settings -> General
+					$result = get_post_modified_time( get_option('date_format'), $gmt=false, $post_id, $translate=true );
+				}
+				break;
+
+			case 'image-full':
+				$parameters['size'] = 'full';
+			case 'image':				// image
+			case 'image-link':			// image with link to post
+			case 'image-link-self':		// image with link to attachment page
+
+				if (!empty($parameters['size']))
+					$result = get_the_post_thumbnail( $post_id, $parameters['size'] );
+				else
+					$result = get_the_post_thumbnail( $post_id );
+				break;
+				
+			case 'image-url':
+				$result = wp_get_attachment_url(get_post_thumbnail_id($post_id));
+				break;
+
+			case 'thumbnail':			// thumbnail
+			case 'thumbnail-link':		// thumbnail with link to post
+			case 'thumbnail-link-self':	// thumbnail with link to attachment page
+
+				$result = get_the_post_thumbnail( $post_id, 'thumbnail' ); break;
+
+			case 'thumbnail-url':
+				$src = wp_get_attachment_image_src( get_post_thumbnail_id($post_id), 'thumbnail' );
+				$result = $src['0'];
+				break;
+
+			case 'tags':
+				$result = implode(' ', wp_get_post_tags( $post_id, array( 'fields' => 'names' ) ) );
+				break;
+
+			case 'gallery' :
+
+				// Get specific image from gallery field
+
+				$attachment_ids = CCS_Gallery_Field::get_image_ids( $post_id );
+
+				if (empty($parameters['num']))
+					$parameters['num'] = 1;
+				if (empty($parameters['size']))
+					$parameters['size'] = 'full';
+
+				$result = wp_get_attachment_image( $attachment_ids[$parameters['num']-1], $parameters['size'] );
+				break;
+
+			case 'excerpt' :
+
+				// Get excerpt
+
+				$result = $post->post_excerpt;
+
+				if( empty($result) ) { // If empty, get it from post content
+
+					$result = $post->post_content;
+				}
+				break;
+
+			default :
+
+				/*========================================================================
+				 *
+				 * Custom field
+				 *
+				 *=======================================================================*/
+
+				$result = get_post_meta($post_id, $field, true);
+
+				break;
+		}
+
+
+		return $result;
+
+	} // End content shortcode
+
+
+
+	/*========================================================================
+	 *
+	 * Attachment fields
+	 *
+	 *=======================================================================*/
+
+	function get_the_attachment_field( $parameters ) {
+
+
+		if (!empty($parameters['id'])) {
+			$post_id = $parameters['id'];
+		} elseif (CCS_Loop::$state['is_attachment_loop']) {
+			$post_id = CCS_Loop::$state['current_post_id'];
+		} elseif (CCS_Attached::$state['is_attachment_loop']) {
+			$post_id = CCS_Attached::$state['current_attachment_id'];
+		}
+
+		if (empty($post_id)) return; // Needs attachment ID
+
+		if ($post_id == self::$state['current_post_id']) {
+			$post = self::$state['current_post'];
+		} else {
+			$post = get_post($post_id);
+		}
+
+		if (empty($parameters['size']))
+			$parameters['size'] = 'full';
+
+		$field = $parameters['field'];
+		$result = '';
+
+		switch ($field) {
+			case 'id': $result = $post_id; break;
+			case 'alt': $result = get_post_meta( $post_id, '_wp_attachment_image_alt', true );
+				break;
+			case 'caption' : $result = $post->post_excerpt;
+				break;
+			case 'description' : $result = $post->post_content;
+				break;
+			case 'url' :
+			case 'href' : $result = get_permalink( $post_id );
+				break;
+			case 'src' : $result = $post->guid;
+				break;
+			case 'title' : $result = $post->post_title;
+				break;
+			case 'image' : $result = wp_get_attachment_image( $post_id, $parameters['size'] );
+				break;
+			case 'image-url' :
+				$src = wp_get_attachment_image_src( $post_id, $parameters['size'] );
+				$result = $src[0];
+				break;
+			case 'thumbnail' : $result = wp_get_attachment_image( $post_id, 'thumbnail' );;
+				break;
+			case 'thumbnail-url' : $result = wp_get_attachment_thumb_url( $post_id ) ;
+				break;
+			default:
+				break;
+		}
+
+		return $result;
+	}
+
+
+
+
+
+
+
+
+
+
+
+/*========================================================================
+ *
+ * Other shortcodes
+ *
+ *=======================================================================*/
 
 
 	/*========================================================================
@@ -825,7 +938,7 @@ class CCS_Content {
 
 	public static function field_shortcode($atts) {
 
-		$out = null; $rest="";
+		$out = null; $rest='';
 
 		if (isset($atts) && ( !empty($atts[0]) || !empty($atts['image'])) ) {
 
@@ -838,7 +951,7 @@ class CCS_Content {
 			if (count($atts)>1) { // Combine additional parameters
 				$i=0;
 				foreach ($atts as $key => $value) {
-					$rest .= " ";
+					$rest .= ' ';
 					if ($i>0) $rest .= $key.'="'.$value.'"'; // Skip the first parameter
 					$i++;
 				}
@@ -859,13 +972,13 @@ class CCS_Content {
 	 *=======================================================================*/
 
 	public static function taxonomy_shortcode($atts) {
-		$out = null; $rest="";
+		$out = null; $rest='';
 		if (isset($atts) && !empty($atts[0])) {
 
 			if (count($atts)>1) {
-				$i=0; $rest="";
+				$i=0; $rest='';
 				foreach ($atts as $key => $value) {
-					$rest .= " ";
+					$rest .= ' ';
 					if ($i>0) $rest .= $key.'="'.$value.'"';
 					$i++;
 				}
@@ -874,5 +987,8 @@ class CCS_Content {
 		}
 		return $out;
 	}
+
+
+
 
 }

@@ -10,6 +10,8 @@ new CCS_Gallery_Field;
 
 class CCS_Gallery_Field {
 
+	public static $state;
+
 	function __construct() {
 
 		add_action( 'admin_init', array($this, 'register_settings_page') );
@@ -29,93 +31,122 @@ class CCS_Gallery_Field {
 	*=======================================================================*/
 
 	function admin_css() {
-		?>
-		<style>
-		.attachment.details .check div {
-			background-position: -60px 0;
-		}
 
-		.attachment.details .check:hover div {
-			background-position: -60px 0;
-		}
+		if (self::is_edit_page()) {
 
-		.gallery_images .details.attachment {
-			/* margin: 0; */
-			box-shadow: none;
-		}
+			// Include only when editing post
 
-		.eig-metabox-sortable-placeholder {
-			background: #DFDFDF;
-		}
+?>
+<style>
+.attachment.details .check div {
+	background-position: -60px 0;
+}
 
-		.gallery_images .attachment.details > div {
-			width: 150px; /* 150px */
-			height: 150px;
-			box-shadow: none;
-		}
+.attachment.details .check:hover div {
+	background-position: -60px 0;
+}
 
-		.gallery_images .attachment-preview .thumbnail {
-			cursor: move;
-		}
+.gallery_images .details.attachment {
+	/* margin: 0; */
+	box-shadow: none;
+}
 
-		.attachment.details div:hover .check {
-			display:block;
-		}
+.eig-metabox-sortable-placeholder {
+	background: #DFDFDF;
+}
 
-		.gallery_images:after,
-		#gallery_images_container:after {
-			content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.gallery_images .attachment.details > div {
+	width: 150px; /* 150px */
+	height: 150px;
+	box-shadow: none;
+}
 
-		ul.gallery_images {
-			/* max-width: 665px; */
-			margin: 0 auto;
-		}
-		.gallery_images > li {
-			float: left;
-			width: 150px;
-			height: 150px;
-			margin: 8px;
-			padding: 0;
-		}
-		.gallery_images li.image {
-			cursor: move;
-		}
-		.gallery_images li.image img {
-			width: 100%; /*150px*/
-			height: auto;
- 		}
+.gallery_images .attachment-preview .thumbnail {
+	cursor: move;
+}
 
-		.add_gallery_images a, .add_gallery_images a:active, .add_gallery_images a:focus {
-			outline: 0;
-		}
-		.add_gallery_images {
-			background: #f0f0f0;
-		}
-		.add_gallery_images:hover {
-			background: #eaeaea;
-		}
-		.add_gallery_images a {
-			text-decoration: none;
-			width: 150px;
-			height: 150px;
-			line-height: 150px;
-			display: block;
-			color: #bbb;
-		}
-		.add_gallery_images a:hover {
-			color: #999;
-			/* color: #0074a2;  #2ea2cc */
-		}
-		.add_gallery_images a .dashicons {
-			font-size: 50px;
-			height: 150px;
-			line-height: 150px;
-			text-align: center;
-			vertical-align: middle;
-			width: 100%;
-		}
-		</style>
+.attachment.details div:hover .check {
+	display:block;
+}
+
+.gallery_images:after,
+#gallery_images_container:after {
+	content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+
+ul.gallery_images {
+	/* max-width: 665px; */
+	margin: 0 auto;
+}
+.gallery_images > li {
+	float: left;
+	width: 150px;
+	height: 150px;
+	margin: 8px;
+	padding: 0;
+}
+.gallery_images li.image {
+	cursor: move;
+}
+.gallery_images li.image img {
+	width: 100%; /*150px*/
+	height: auto;
+	}
+.gallery_images a.edit {
+	text-decoration: none;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	display: none;
+	color: white;
+}
+.gallery_images .attachment a.edit div {
+	margin: 0;
+	vertical-align: middle;
+	width: 20px;
+	height: 15px;
+}
+.gallery_images .attachment.details .check div.media-modal-icon {
+	background-position: -60px 0; /* Keep it minus */
+}
+.gallery_images .attachment .check,
+.gallery_images .attachment.details .check {
+	box-shadow: none;
+}
+
+.add_gallery_images a, .add_gallery_images a:active, .add_gallery_images a:focus {
+	outline: 0;
+}
+.add_gallery_images {
+	background: #f0f0f0;
+}
+.add_gallery_images:hover {
+	background: #eaeaea;
+}
+.add_gallery_images a {
+	text-decoration: none;
+	width: 150px;
+	height: 150px;
+	line-height: 150px;
+	display: block;
+	color: #bbb;
+}
+.add_gallery_images a:hover {
+	color: #999;
+	/* color: #0074a2;  #2ea2cc */
+}
+.add_gallery_images a .dashicons {
+	font-size: 50px;
+	height: 150px;
+	line-height: 150px;
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
+}
+</style>
 		<?php
+
+		} // End include when edit post
+
 	}
 
 
@@ -159,10 +190,10 @@ class CCS_Gallery_Field {
 			            echo '<li class="image attachment details" data-attachment_id="'
 			            	. $attachment_id
 			            	. '"><div class="attachment-preview"><div class="thumbnail">'
-			            	. wp_get_attachment_image( $attachment_id, 'thumbnail' )
+			            	. wp_get_attachment_image( $attachment_id )
 			            	. '</div><a href="#" class="delete check" title="'
-			            	. __( 'Remove image', 'custom-gallery' )
-			            	. '"><div class="media-modal-icon"></div></a></div></li>';
+			            	. 'Remove image'
+			            	. '"><div class="media-modal-icon"></div></a><a href="#" class="edit check" title="Edit image"><div class="dashicons dashicons-search"></div></a></div></li>';
 	        		}
 	        	}
 			?>
@@ -213,18 +244,20 @@ class CCS_Gallery_Field {
 	            var $image_gallery_ids = $('#image_gallery');
 	            var $gallery_images = $('#gallery_images_container ul.gallery_images');
 
-
-
 	            function adjust_gallery_width() {
 
 					// Get the total width and center the images
 
 					var mw = $gallery_images_wrap.width();
+					if (mw==0) {
+						// If metabox closed, get the whole thing's width
+						mw = $gallery_images_wrap.parent().parent().width();
+					}
 					var e = 170; // each image
 					var nume = Math.floor(mw / e); // round down
 
 					var fitw = nume * e;
-					$gallery_images.width(fitw); console.log(fitw);
+					$gallery_images.width(fitw);
 
 	            }
 
@@ -249,9 +282,9 @@ class CCS_Gallery_Field {
 	                // Create the media frame.
 	                image_gallery_frame = wp.media.frames.downloadable_file = wp.media({
 	                    // Set the title of the modal.
-	                    title: '<?php _e( 'Add Images to Gallery', 'custom-gallery' ); ?>',
+	                    title: '<?php echo 'Add Images to Gallery'; ?>',
 	                    button: {
-	                        text: '<?php _e( 'Add to gallery', 'custom-gallery' ); ?>',
+	                        text: '<?php echo 'Add to gallery'; ?>',
 	                    },
 	                    multiple: true
 	                });
@@ -264,6 +297,7 @@ class CCS_Gallery_Field {
 	                    selection.map( function( attachment ) {
 
 	                        attachment = attachment.toJSON();
+	                        console.log(attachment);
 
 	                        if ( attachment.id ) {
 	                            attachment_ids = attachment_ids ? attachment_ids + "," + attachment.id : attachment.id;
@@ -272,9 +306,9 @@ class CCS_Gallery_Field {
 	                                <li class="image attachment details" data-attachment_id="' + attachment.id + '">\
 	                                    <div class="attachment-preview">\
 	                                        <div class="thumbnail">\
-	                                            <img src="' + attachment.url + '" />\
+	                                            <img src="' + attachment.sizes.thumbnail.url + '" />\
 	                                        </div>\
-	                                       <a href="#" class="delete check" title="<?php _e( 'Remove image', 'custom-gallery' ); ?>"><div class="media-modal-icon"></div></a>\
+	                                       <a href="#" class="delete check" title="Remove image"><div class="media-modal-icon"></div></a><a href="#" class="edit check" title="Edit image"><div class="dashicons dashicons-search"></div></a>\
 	                                    </div>\
 	                                </li>');
 
@@ -337,6 +371,29 @@ class CCS_Gallery_Field {
 	                return false;
 	            } );
 
+	            // Edit image
+
+	            $('#gallery_images_container').on( 'click', 'a.edit', function() {
+
+					var attachment_id = $(this).closest('li.image').attr( 'data-attachment_id' );
+
+					var frame = wp.media({
+						// Set the title of the modal.
+						title: '<?php echo 'Edit Image Details'; ?>',
+						button: {
+							text: '<?php echo 'Finish'; ?>',
+						},
+						//library : { type : 'image'},
+						multiple: false,
+					});
+
+					frame.on('open',function() {
+
+						var selection = frame.state().get('selection');
+						selection.add(wp.media.attachment(attachment_id));
+					});
+					frame.open();
+				});
 	        });
 	    </script>
 	    <?php
@@ -538,6 +595,59 @@ class CCS_Gallery_Field {
 	}
 
 
+	/*========================================================================
+	 *
+	 * Get attachment IDs from gallery field
+	 *
+	 *=======================================================================*/
+
+	public static function get_image_ids( $id = null ) {
+
+		global $post;
+
+		$field = '_custom_gallery';
+
+		if (!empty($id)) {
+
+			$attachment_ids = get_post_meta( $id, $field, true );
+
+		} /* elseif( !empty(self::$state['is_gallery_field_loop']) ) {
+
+			$attachment_ids = get_post_meta( self::$state['current_gallery_id'], $field, true );
+
+		}  */ 
+
+		else {
+
+			// Current post
+			if( ! isset( $post->ID) ) return;
+
+			$attachment_ids = get_post_meta( $post->ID, $field, true );
+		}
+
+		$attachment_ids = explode( ',', $attachment_ids );
+
+		return array_filter( $attachment_ids );
+	}
+
+
+
+
+	function is_edit_page($new_edit = null){
+		global $pagenow;
+		//make sure we are on the backend
+		if (!is_admin()) return false;
+
+		if($new_edit == "edit")
+			return in_array( $pagenow, array( 'post.php',  ) );
+		elseif($new_edit == "new") //check for new post page
+			return in_array( $pagenow, array( 'post-new.php' ) );
+		else //check for either new or edit
+			return in_array( $pagenow, array( 'post.php', 'post-new.php' ) );
+	}
+
+
+
 
 
 /*========================================================================
@@ -589,30 +699,6 @@ class CCS_Gallery_Field {
 			return true;
 	}
 
-	/*========================================================================
-	 *
-	 * Retrieve attachment IDs
-	 *
-	 *=======================================================================*/
-
-	function get_image_ids() {
-
-		if( empty(self::$state['current_gallery_id']) ) {
-
-			global $post;
-			if( ! isset( $post->ID) )
-				return;
-			$attachment_ids = get_post_meta( $post->ID, '_custom_gallery', true );
-
-		} else {
-			$attachment_ids = get_post_meta( self::$state['current_gallery_id'], '_custom_gallery', true );
-		}
-
-		$attachment_ids = explode( ',', $attachment_ids );
-
-		return array_filter( $attachment_ids );
-	}
-
 
 	/*========================================================================
 	 *
@@ -632,4 +718,4 @@ class CCS_Gallery_Field {
 
 
 
-}
+} // End CCS_Gallery_Field
