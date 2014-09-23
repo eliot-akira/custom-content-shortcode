@@ -1,3 +1,3 @@
-= Custom Content Shortcode =
+# Custom Content Shortcode
 
-Version 1.3.0 beta
+## Version 1.3.0 beta
