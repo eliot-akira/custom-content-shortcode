@@ -2,7 +2,7 @@
 
 /*====================================================================================================
  *
- * Load file, HTML, CSS, JS
+ * Load file, HTML/CSS/JS field
  *
  *====================================================================================================*/
 
@@ -58,23 +58,25 @@ class CCS_Load {
 				if (!empty($view)) {
 
 					$file = $view;
-					$out = do_shortcode_file($file,$dir,true);
+					$out = do_shortcode_file($file,$dir,$return = true);
 
 				} else {
+
+					// Default routing for view template
 
 					$current_post_type = $post->post_type;
 					$current_post_slug = $post->post_name;
 
-					// Do post_type/post_slug.html
+					// post_type/post_slug.html
 
 					$file = $current_post_type.'/'.$current_post_slug;
-					$out = do_shortcode_file($file,$dir,true);
+					$out = do_shortcode_file($file,$dir,$return = true);
 
 					if (!$out) {
 
 						// If not, post_slug.html
 
-						$out = do_shortcode_file($current_post_slug,$dir,true);
+						$out = do_shortcode_file($current_post_slug,$dir,$return = true);
 					}
 				}
 				return $out;
@@ -202,6 +204,8 @@ class CCS_Load {
 				if ((strpos($js, 'http://') === false) && (strpos($js, 'https://') === false))
 					$dir = 'http://';
 			}
+
+			// cache/version?
 
 			return '<script type="text/javascript" src="' . $dir . $js . '"></script>';
 		}

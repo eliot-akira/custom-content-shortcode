@@ -1130,7 +1130,7 @@ class CCS_Loop {
 
 		if ( self::$state['do_cache'] == 'true' ) {
 
-			CCS_Cache::set_transient( self::$state['cache_name'], $result, self::$state['cache_name'] );
+			CCS_Cache::set_transient( self::$state['cache_name'], $result, $parameters['expire'] );
 		}
 
 		return $result;
