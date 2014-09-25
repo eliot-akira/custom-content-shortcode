@@ -1,5 +1,4 @@
-Custom Content Shortcode
-============
+## Custom Content Shortcode
 
 This is version 1.3.0-beta, currently under development and testing. For production, please use the [stable release](http://wordpress.org/plugins/custom-content-shortcode/).
 
@@ -20,6 +19,4 @@ Here is a list of features still missing:
 * Documentation for [raw] and [cache]
 
 * Test and improve shortcodes for ACF: Gallery, Repeater, Flexible Content, Relationship
-
-
 
