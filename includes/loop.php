@@ -80,7 +80,7 @@ class CCS_Loop {
 				}
 
 				// If there's already result based on parameters, return it
-				$result = $this->before_query( $parameters );
+				$result = $this->before_query( $parameters, $template );
 				if ( !empty( $result ) ) {
 					$this->close_loop();
 					return $result;
@@ -270,7 +270,7 @@ class CCS_Loop {
 	 *
 	 *=======================================================================*/
 
-	function before_query( $parameters ) {
+	function before_query( $parameters, $template = null ) {
 
 
 		/*========================================================================
@@ -279,7 +279,18 @@ class CCS_Loop {
 		 *
 		 *=======================================================================*/
 		
-		
+		if (!empty($parameters['x'])) {
+
+			$out = '';
+
+			$x = $parameters['x'];
+			for ($i=0; $i <$x ; $i++) { 
+				self::$state['loop_count']++;
+				$out .= do_shortcode( self::render_field_tags( $template, $parameters ) );
+			}
+
+			return $out;
+		}
 
 
 		
@@ -323,7 +334,7 @@ class CCS_Loop {
 		 *
 		 *=======================================================================*/
 
-		if ( $parameters['field'] == 'gallery' ) {
+		if ( ($parameters['field'] == 'gallery') && (class_exists('CCS_Gallery_Field')) ) {
 
 			// Gallery field
 
@@ -815,7 +826,7 @@ class CCS_Loop {
 
 	/*========================================================================
 	 *
-	 * Run the prepared query and return posts
+	 * Run the prepared query and return posts (WP_Query object)
 	 *
 	 *=======================================================================*/
 
@@ -909,7 +920,7 @@ class CCS_Loop {
 
 	/*========================================================================
 	 *
-	 * Prepare all posts: takes and returns a WP_Query class instance
+	 * Prepare all posts: takes and returns a WP_Query object
 	 *
 	 *=======================================================================*/
 	
@@ -918,7 +929,7 @@ class CCS_Loop {
 
 		/*========================================================================
 		 *
-		 * Filter posts by checkbox query
+		 * Checkbox query: prepare data on which posts to filter out
 		 *
 		 *=======================================================================*/
 		
@@ -1174,16 +1185,16 @@ class CCS_Loop {
 	 *
 	 *=======================================================================*/
 	
-	public static function render_columns( $items, $per_row, $pad = null, $between_row = null ) {
+	public static function render_columns( $items, $per_row, $pad = null, $between_row ) {
 
 		$column_index = 0;
 
 		$percent = 100 / (int)$per_row; // Percentage-based width for each item
 
 		if ( empty($between_row) ) {
-			$between_row = '<br>';
-		} elseif ($between_row == 'false') {
 			$between_row = '';
+		} elseif ($between_row == 'true') {
+			$between_row = '<br>';
 		}
 		$clear = '<div style="clear:both;">'.$between_row.'</div>';
 
@@ -1280,7 +1291,7 @@ class CCS_Loop {
 
 			$post_id = get_the_ID();
 
-			if ($field_loop=='gallery') {
+			if ( $field_loop=='gallery' && class_exists('CCS_Gallery_Field')) {
 
 				// Support gallery field
 

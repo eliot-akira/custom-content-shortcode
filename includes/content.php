@@ -189,39 +189,70 @@ class CCS_Content {
 
 		$result = '';
 
-		// Menu
 
-		// Sidebar
+		/*========================================================================
+		 *
+		 * Menu
+		 *
+		 *=======================================================================*/
 
-		// Gallery: native or carousel
+		if (!empty($parameters['menu'])) {
 
-		if( $parameters['gallery'] == 'carousel') {
+			$menu_args = array (
+				'menu' => $parameters['menu'],
+				'echo' => false,
+				'menu_class' => $parameters['ul'],
+			);
 
-			$result = '[gallery type="carousel" ';
+			$result = wp_nav_menu( $menu_args );
 
-			if (!empty($parameters['name'])) {
-				$result .= 'name="' . $parameters['name'] . '" ';
-			}
-			if (!empty($parameters['height'])!='') {
-				$result .= 'height="' . $parameters['height'] . '" ';	
-			}
-			$result .= 'ids="';
-
-			if(!empty($parameters['acf_gallery'])) {
-				if( function_exists('get_field') ) {
-					$result .= implode(',', get_field($parameters['acf_gallery'], $post_id, false));
-				}
+			if(empty($parameters['class'])) {
+				return $result;
 			} else {
-				$result .= get_post_meta( $post_id, '_custom_gallery', true );
+				return '<div class="' . $parameters['class'] . '">' . $result . '</div>';
 			}
-			$result .= '" ]';
 
-			if (!empty($parameters['class']))
-				$result = '<div class="' . $class . '">' . $result . '</div>';
-			
-			return do_shortcode( $result );
+		} elseif ( !empty($parameters['sidebar']) || !empty($parameters['area']) ) {
 
-		} elseif ( $parameters['gallery'] == 'native' ) {
+		/*========================================================================
+		 *
+		 * Sidebar or widget area
+		 *
+		 *=======================================================================*/
+
+			if (!empty($parameters['sidebar']))
+				$sidebar = $parameters['sidebar'];
+			else $sidebar = $parameters['area'];
+
+			$result =  '<div id="sidebar-' . str_replace( " ", "_", strtolower($sidebar)) . '"';
+
+
+			if(!empty($parameters['class']))
+				$result .=  ' class="' . $parameters['class'].'"';
+
+			$result .= '>';
+
+			ob_start();
+			if ( function_exists('dynamic_sidebar') )
+				dynamic_sidebar($parameters['sidebar']);
+			$result .= ob_get_clean();
+			$result .= "</div>";
+
+			return $result;
+		}
+
+
+
+
+
+
+		/*========================================================================
+		 *
+		 * Native gallery
+		 *
+		 *=======================================================================*/
+
+		elseif ( $parameters['gallery'] == 'native') {
 
 			$result = '[gallery " ';
 
@@ -267,6 +298,39 @@ class CCS_Content {
 			if(!empty($parameters['class']))
 				$result = '<div class="' . $parameters['class'] . '">' . $result . '</div>';
 
+			return do_shortcode( $result );
+
+		} elseif ( $parameters['gallery'] == 'carousel' ) {
+
+
+			/*========================================================================
+			 *
+			 * Gallery Bootstrap carousel
+			 *
+			 *=======================================================================*/
+
+			$result = '[gallery type="carousel" ';
+
+			if (!empty($parameters['name'])) {
+				$result .= 'name="' . $parameters['name'] . '" ';
+			}
+			if (!empty($parameters['height'])!='') {
+				$result .= 'height="' . $parameters['height'] . '" ';	
+			}
+			$result .= 'ids="';
+
+			if(!empty($parameters['acf_gallery'])) {
+				if( function_exists('get_field') ) {
+					$result .= implode(',', get_field($parameters['acf_gallery'], $post_id, false));
+				}
+			} else {
+				$result .= get_post_meta( $post_id, '_custom_gallery', true );
+			}
+			$result .= '" ]';
+
+			if (!empty($parameters['class']))
+				$result = '<div class="' . $class . '">' . $result . '</div>';
+			
 			return do_shortcode( $result );
 		}
 
@@ -465,7 +529,10 @@ class CCS_Content {
 			// Date format for custom field
 
 			if ( !empty($parameters['in']) && ($parameters['in']=="timestamp") ) {
-				$result = gmdate("Y-m-d H:i:s", $result);
+				// Check if it's really a timestamp
+				if (is_numeric($result)) {
+					$result = gmdate("Y-m-d H:i:s", $result);
+				}
 			}
 
 			if ($parameters['date_format']=='true') 
@@ -733,7 +800,7 @@ class CCS_Content {
 				$user = get_user_by( 'id', $author_id);
 
 				if ( !empty($parameters['meta']) )
-					$result = get_the_author_meta( $meta, $author_id );
+					$result = get_the_author_meta( $parameters['meta'], $author_id );
 				else
 					$result = $user->display_name;
 				break;
@@ -808,14 +875,18 @@ class CCS_Content {
 
 				// Get specific image from gallery field
 
-				$attachment_ids = CCS_Gallery_Field::get_image_ids( $post_id );
+				if (class_exists('CCS_Gallery_Field')) { // Gallery field can be turned off
 
-				if (empty($parameters['num']))
-					$parameters['num'] = 1;
-				if (empty($parameters['size']))
-					$parameters['size'] = 'full';
+					$attachment_ids = CCS_Gallery_Field::get_image_ids( $post_id );
 
-				$result = wp_get_attachment_image( $attachment_ids[$parameters['num']-1], $parameters['size'] );
+					if (empty($parameters['num']))
+						$parameters['num'] = 1;
+					if (empty($parameters['size']))
+						$parameters['size'] = 'full';
+
+					$result = wp_get_attachment_image( $attachment_ids[$parameters['num']-1], $parameters['size'] );
+				}
+
 				break;
 
 			case 'excerpt' :
@@ -990,5 +1061,4 @@ class CCS_Content {
 
 
 
-
-}
+} // End CCS_Content

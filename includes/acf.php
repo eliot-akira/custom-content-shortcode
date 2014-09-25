@@ -18,19 +18,23 @@ class CCS_To_ACF {
 
 	function __construct() {
 
+		self::$state['is_relationship_loop'] = 'false';
+
+		if (!function_exists('get_field')) return; // If ACF is not installed
+
 		add_shortcode('sub', array($this, 'sub_field'));
 		add_shortcode('flex', array($this, 'loop_through_acf_field'));
-		add_shortcode('repeat', array($this, 'loop_through_acf_field'));
 		add_shortcode('repeater', array($this, 'loop_through_acf_field'));
 
 		add_shortcode('acf_gallery', array($this, 'loop_through_acf_gallery_field'));
 		add_shortcode('sub_image', array($this, 'get_image_details_from_acf_gallery'));
 		add_shortcode('acf_image', array($this, 'get_image_details_from_acf_gallery'));
 		add_shortcode('layout', array($this, 'if_get_row_layout'));
-		add_shortcode('live-edit', array($this, 'call_live_edit'));
 
 		add_shortcode('related', array($this, 'loop_relationship_field'));
-		self::$state['is_relationship_loop'] = 'false';
+
+		// Legacy - to be removed in a future update
+		add_shortcode('live-edit', array($this, 'call_live_edit'));
 	}
 
 	public static function sub_field( $atts ) {
@@ -197,7 +201,7 @@ class CCS_To_ACF {
 			'field' => '',
 		), $atts ) );
 
-		if ( (!function_exists('get_field')) && (!empty($field)) )return;
+		if (empty($field)) return;
 
 		$out = array();
 		$posts = get_field($field);

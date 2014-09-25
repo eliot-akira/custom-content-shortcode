@@ -85,28 +85,4 @@ To display gallery, repeater, or flexible content fields from other posts, use t
 &nbsp;&nbsp;&nbsp;&nbsp;[/repeater]
 [/loop]
 </code><br>
-<hr><a id="live-edit"></a>
-<h3>Live Edit</h3>
 
-To enable front-end editing, install <a href="http://wordpress.org/plugins/live-edit/" target="_blank">Live Edit</a> and wrap the content you'd like to edit with the <strong>[live-edit]</strong> shortcode.
-
-If Live Edit is active, and the user is logged in and has <em>post edit</em> capability, there will be an Edit button on the top right corner of the container. Otherwise the shortcode just displays the content normally.
-<h4>Enable live edit of post title and content</h4>
-<code>[live-edit]
-&nbsp;&nbsp;&nbsp;&nbsp;Here is an article you can edit from the front-end.
-[/live-edit]</code>When you press the <em>update</em> button, the changes will be saved to the post. Changes made to any ccontent not wrapped inside the shortcode will be visible after reloading the page.
-
-Here are the available parameters:
-<ul>
-	<li><strong>field</strong> - enable Live Edit for title, content and fields</li>
-	<li><strong>admin</strong> - enable title, content and fields for administrator</li>
-	<li><strong>editor</strong> - enable title, content and fields for editor</li>
-	<li><strong>only</strong> - enable specific fields only, such as post_title</em>, <em>post_content</em>, <em>images</em> - only applies to the editor if the<em> admin</em> parameter is set</li>
-	<li><strong>title</strong> - set to <em>false</em> to disable <em>post_title</em> edit</li>
-	<li><strong>content</strong> - set to <em>false</em> to disable <em>post_content</em> edit</li>
-</ul>
-<em>Admin can edit post content and images; editor can only edit content</em>
-
-<code>[live-edit admin="images" only="post_content"]
-...
-[/live-edit]</code>

@@ -8,7 +8,8 @@
  *
  *=======================================================================*/
 
-class WidgetShortcode {
+new CCS_Widget;
+class CCS_Widget {
 
 	function __construct() {
 		add_shortcode( 'widget', array($this, 'do_widget_shortcode') );
@@ -120,5 +121,3 @@ class WidgetShortcode {
 	}
 
 }
-
-new WidgetShortcode;

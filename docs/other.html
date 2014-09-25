@@ -15,7 +15,23 @@ Available parameters:
 	<li><em>uploads</em> - <em>/wp-content/uploads/</em></li>
 	<li><em>theme</em> - <em>/wp-content/theme</em> - theme directory</li>
 	<li><em>child</em> - <em>/wp-content/child_theme</em> - child theme directory</li>
-</ul>
+</ul><br>
+
+<a href="#" id="raw" name="raw"></a>
+<h3 align="center">Raw output</h3>
+
+<hr>
+
+To protect multi-line shortcodes from default post formatting, wrap the section with the [raw] shortcode.
+
+<code>[raw]
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="post"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This area will not have &lt;p&gt; or &lt;br&gt; tags.
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+[/raw]</code>
+
+This feature can be enabled under <a href="options-general.php?page=ccs_content_shortcode_help&tab=settings">Settings</a>.
+
 <br>
 <h3 align="center">Pass field values</h3>
 <a href="#" id="field-as-parameter" name="field-as-parameter"></a>
