@@ -697,7 +697,7 @@
 <hr>
 
 	<div style="margin:20px 0 0 5px;">
-		<a href="options-general.php?page=ccs_content_shortcode_help"><em>Reference: Custom Content Shortcode</em></a>
+		<a href="options-general.php?page=ccs_reference"><em>Reference: Custom Content Shortcode</em></a>
 	</div>
 </div>
 <script type="text/javascript">

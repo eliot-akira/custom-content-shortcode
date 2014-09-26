@@ -10,29 +10,29 @@ This is a feature to create a loop for each category, tag, or taxonomy term.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title-link]
 &nbsp;&nbsp;&nbsp;&nbsp;[/loop]
 [/for]</code>
-It gets all existing terms of a given taxonomy, in this case <em>category</em>, and loops through each term.
+It gets all existing terms of a given taxonomy, in this case <i>category</i>, and loops through each term.
 <br>
 <hr>
 <h3>Parameters</h3>
 
-Available parameters for the <strong>[for]</strong> shortcode are:
+Available parameters for the <b>[for]</b> shortcode are:
 <ul>
-	<li><strong>each</strong> - <em>category</em>, <em>tag</em>, or custom taxonomy</li>
+	<li><b>each</b> - <i>category</i>, <i>tag</i>, or custom taxonomy</li>
 </ul><ul>
-	<li><strong>count</strong> - limit number of terms: <em>count="3"</em></li>
-	<li><strong>parent</strong> - get child categories by parent slug</li>
+	<li><b>count</b> - limit number of terms: <i>count="3"</i></li>
+	<li><b>parent</b> - get child categories by parent slug</li>
 </ul><ul>
-	<li><strong>orderby</strong> - order by <em>name</em> (default), <em>count</em> (post count), <em>id</em>, or <em>slug</em></li>
-	<li><strong>order</strong> - <em>ASC</em> (ascending - default), or <em>DESC</em> (descending)</li>
+	<li><b>orderby</b> - order by <i>name</i> (default), <i>count</i> (post count), <i>id</i>, or <i>slug</i></li>
+	<li><b>order</b> - <i>ASC</i> (ascending - default), or <i>DESC</i> (descending)</li>
 </ul><ul>
 	<li><b>trim</b> - set <i>true</i> to trim space or comma at the end</li>
 </ul>
 
-Available parameters for the <strong>[each]</strong> shortcode are:
+Available parameters for the <b>[each]</b> shortcode are:
 <ul>
-	<li><strong>name</strong> - name of category, tag, or taxonomy term</li>
-	<li><strong>slug</strong> - slug of category, tag, or taxonomy term</li>
-	<li><strong>id</strong> - ID of category, tag, or taxonomy term</li>
+	<li><b>name</b> - name of category, tag, or taxonomy term</li>
+	<li><b>slug</b> - slug of category, tag, or taxonomy term</li>
+	<li><b>id</b> - ID of category, tag, or taxonomy term</li>
 </ul>
 If no parameter is specified, [each] will display the name.
 <br>
@@ -51,7 +51,7 @@ It's possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
 <hr>
 <h3>Current post</h3>
 
-The <b>[for each]</b> loop displays all terms that exist. Use the <em>current</em> parameter to display category/tag/taxonomy assigned to the current post only. 
+The <b>[for each]</b> loop displays all terms that exist. Use the <i>current</i> parameter to display category/tag/taxonomy assigned to the current post only. 
 
 <h4>Display a link for each category assigned to the current post</h4>
 <code>[for each="category" current="true"]

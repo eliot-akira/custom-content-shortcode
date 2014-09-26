@@ -3,7 +3,7 @@
 
 Here is an example of how to display your content.
 
-Let's imagine a bicycle shop. Create a custom post type called <em>bicycle</em>, and add custom fields such as <em>model</em>, <em>price</em>, and <em>description</em>. Add all bicycles in the store as new entries, with featured image and other info in the fields.
+Let's imagine a bicycle shop. Create a custom post type called <i>bicycle</i>, and add custom fields such as <i>model</i>, <i>price</i>, and <i>description</i>. Add all bicycles in the store as new entries, with featured image and other info in the fields.
 
 Create a new page to display the bicycles. A basic template could be:
 
@@ -14,7 +14,7 @@ Create a new page to display the bicycles. A basic template could be:
 &nbsp;&nbsp;&nbsp;&nbsp;Description: [field description]
 [/loop]</code>
 
-Another page can display a list of bicycles in the<em> freestyle</em> category:
+Another page can display a list of bicycles in the<i> freestyle</i> category:
 
 <code>Freestyle bikes available:
 &lt;ul&gt;
@@ -34,7 +34,7 @@ You can create and edit these templates inside the post with the <b>Text editor<
 There are a couple points to keep in mind:
 
 <ul>
-	<li>The content of the post editor is automatically formatted, which can create unwanted tags inside multi-line shortcodes. Try wrapping the section with the <a href="options-general.php?page=ccs_content_shortcode_help&tab=other#raw">[raw] shortcode</a> to prevent this.</li>
+	<li>The content of the post editor is automatically formatted, which can create unwanted tags inside multi-line shortcodes. Try wrapping the section with the <a href="options-general.php?page=ccs_reference&tab=other#raw">[raw] shortcode</a> to prevent this.</li>
 	<li><b>Don't use the Visual mode</b> when editing HTML, as the code can sometimes be wrongly interpreted. To solve this, you can disable the visual editor per page or post type with the plugin <a target="_blank" href="http://wordpress.org/plugins/raw-html/">Raw HTML</a>, or move the code outside the post content with one of the methods below.</li>
 </ul>
 
@@ -44,6 +44,6 @@ The template can also be loaded from a number of places.
 	<li>Custom post type: [content type="template" name="home-page"]</li>
 	<li>Custom field: [content field="code_block"]</li>
 	<li>File: [load dir="views" file="recent-posts.html"]</li>
-	<li>Sidebar: <a href="options-general.php?page=ccs_content_shortcode_help&tab=settings"><i>Enable shortcodes inside Text widget</i></a></li>
+	<li>Sidebar: <a href="options-general.php?page=ccs_reference&tab=settings"><i>Enable shortcodes inside Text widget</i></a></li>
 </ul>
 

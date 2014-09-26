@@ -1,4 +1,4 @@
-<h3 align="center">Loop shortcode</h3>
+<h3 align="center">Loop</h3>
 <hr>
 
 Use <b>[loop]</b> to get posts and loop through them.
@@ -24,93 +24,108 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 
 <h4>Post Type</h4>
 <ul>
-	<li><strong>type</strong> - <em>post</em>, <em>page</em>, or <em>custom post type</em>; if empty, the default is <em>any</em></li>
+	<li><b>type</b> - <i>post</i>, <i>page</i>, or <i>custom post type</i>; if empty, the default is <i>any</i></li>
 </ul>
 
 <h4>Post ID</h4>
 <ul>
-	<li><strong>id</strong> - show post by ID; <em>id="1,3,5,7"</em></li>
-	<li><strong>exclude</strong> - exclude post by ID; <em>exclude="1,3,5,7"</em></li>
+	<li><b>id</b> - show post by ID; <i>id="1,3,5,7"</i></li>
+	<li><b>exclude</b> - exclude post by ID; <i>exclude="1,3,5,7"</i> - use <i>this</i> to exlude current post</li>
 </ul>
 
 <h4>Post count and status</h4>
 <ul>
-	<li><strong>count</strong> - number of posts to show - default is <em>all</em></li>
-	<li><strong>offset</strong> - offset the loop by a number of posts, for example: skip the first 3 posts</li>
-	<li><strong>status</strong> - display posts by status: <em>any</em>, <em>publish</em>, <em>pending</em>, <em>draft</em>, <em>future</em>, <em>private</em>; the default is <em>publish</em> - multiple values possible, i.e., <em>status="publish, pending"</em></li>
+	<li><b>count</b> - number of posts to show - default is <i>all</i></li>
+	<li><b>offset</b> - offset the loop by a number of posts, for example: skip the first 3 posts</li>
+	<li><b>status</b> - display posts by status: <i>any</i>, <i>publish</i>, <i>pending</i>, <i>draft</i>, <i>future</i>, <i>private</i>; the default is <i>publish</i> - multiple values possible, i.e., <i>status="publish, pending"</i></li>
 </ul>
 
 <h4>Published date</h4>
 <ul>
-	<li><strong>year, month, day</strong> - display posts by specific year, month, day; you can use <em>today</em> as a value, for example <em>month="today"</em> will show posts from this month</li>
+	<li><b>year, month, day</b> - display posts by specific year, month, day; you can use <i>today</i> as a value, for example <i>month="today"</i> will show posts from this month</li>
 </ul>
 
 <h4>Category, tags and taxonomies</h4>
 <ul>
-	<li><strong>category</strong> - display posts from one or more categories: <em>category="sports, fashion"</em></li>
-	<li><strong>tag</strong> - display posts with one or more tags: <em>tag="apples, green"</em></li>
-	<li><strong>taxonomy</strong>, <strong>value</strong> - display posts by taxonomy value: <em>taxonomy="product-type" value="book"</em>.
-	 Mutiple values are possible: <em>value="drama, comedy"</em> shows all posts whose taxonomy value is <em>drama</em> <b>or</b> <em>comedy</em></li>
-	<li><strong>compare</strong> - optional for taxonomy query: use <em>compare="NOT"</em> for posts whose <em>taxonomy</em> is <b>not</b> <em>value</em>; use <em>compare="AND"</em> when you want posts whose <em>taxonomy</em> contains all values</li>
+	<li><b>category</b> - display posts from one or more categories: <i>category="sports, fashion"</i></li>
+	<li><b>tag</b> - display posts with one or more tags: <i>tag="apples, green"</i></li>
+	<li><b>taxonomy</b>, <b>value</b> - display posts by taxonomy value: <i>taxonomy="product-type" value="book"</i>.
+	 Mutiple values are possible: <i>value="drama, comedy"</i> shows all posts whose taxonomy value is <i>drama</i> <b>or</b> <i>comedy</i></li>
+	<li><b>compare</b> - optional for taxonomy query: use <i>compare="NOT"</i> for posts whose <i>taxonomy</i> is <b>not</b> <i>value</i>; use <i>compare="AND"</i> when you want posts whose <i>taxonomy</i> contains all values</li>
 </ul>
 
 <h4>Field value</h4>
 <ul>
 	<li><b>field</b> - field name</li>
 	<li><b>value</b> - value to search</li>
-	<li><b>compare</b> - <i>equal</i> (default), <i>not</i> (not equal), <i>&gt;</i> (greater than), <i>&lt;</i> (less than)</li>
-	<li><strong>relation, field_2, compare_2, value_2</strong> - query for additional field value, where <em>relation</em> is <em>AND</em> (default) or <em>OR</em></li>
+	<li><b>compare</b> - <i>equal</i> (default), <i>not</i> (not equal), <i>more</i> (greater than), <i>less</i> (less than)</li>
+	<li><b>relation, field_2, compare_2, value_2</b> - query for additional field value, where <i>relation</i> is <i>AND</i> (default) or <i>OR</i></li>
 </ul>
 
 <h4>Date field</h4>
 
 <ul>
-	<li><strong>field</strong> - field name</li>
-	<li><strong>value</strong> - field value</li>
-	<li><strong>value="now"</strong> - compare to now</li>
-	<li><strong>value="future"</strong> or <strong>"past"</strong> - query future or past values; no need to set <i>compare</i> parameter</li>
-	<li><strong>compare</strong> - <i>equal</i> (default), <i>not</i> (not equal), <i>&gt;</i> (greater than), <i>&lt;</i> (less than)</li>
+	<li><b>field</b> - field name</li>
+	<li><b>value</b> - field value</li>
+	<li><b>compare</b> - <i>equal</i> (default), <i>not</i> (not equal), <i>more</i> (greater than), <i>less</i> (less than)</li>
 </ul><ul>
-	<li><strong>in="string"</strong> - if the date field is stored as string, for example: 2014-08-15</li>
-<!--	<li><strong>date_format</strong> - instead of using <em>in="string"</em>, you can set a date format, for example: "Y-m-d h:i A"</li>
+	<li><b>value="now"</b> - compare to now</li>
+	<li><b>value="future"</b> or <b>"past"</b> - find future or past values; no need to set <i>compare</i> parameter</li>
+	<li><b>in="string"</b> - if the date field is stored as string, for example: 2014-08-15</li>
+
+<!--	<li><b>date_format</b> - instead of using <i>in="string"</i>, you can set a date format, for example: "Y-m-d h:i A"</li>
 -->
 
-By default, it's assumed that the field is stored as a UNIX timestamp. There are some examples below, after the parameter list.
+By default, it's assumed that the field is stored as a UNIX timestamp. See the examples section below.
 
 </ul>
 
 <h4>Sorting and series</h4>
 <ul>
-	<li><strong>parent</strong> - display all children of a parent, specified by ID or slug</li>
-	<li><strong>orderby</strong> - order by<em> ID</em>,<em> author</em>,<em> title</em>,<em> name</em>,<em> date</em>,<em> rand</em> (randomized),<em> modified</em>,<em> menu_order</em>,<em> parent</em>,<em> field</em> (field value: string), or<em> field_num</em> (field value: number)</li>
-	<li><strong>order</strong> - ASC (ascending/alphabetical) or DESC (descending/from most recent date) when using the <em>orderby</em> parameter</li>
-	<li><strong>key</strong> - when ordering by<em> field</em> or<em> field_num</em>, specify<strong> key</strong> as the name of the custom field to order by</li>
-	<li><strong>series</strong>, <strong>key</strong> - order posts by a series of custom field values, where <em>key</em> is the name of the field - the series can include ranges, for example: <em>1-15,30-40,42,44</em>.</li>
+	<li><b>parent</b> - display all children of a parent, specified by ID or slug</li>
+	<li><b>orderby</b> - order by<i> ID</i>,<i> author</i>,<i> title</i>,<i> name</i>,<i> date</i>,<i> rand</i> (randomized),<i> modified</i>,<i> menu_order</i>,<i> parent</i>,<i> field</i> (field value: string), or<i> field_num</i> (field value: number)</li>
+	<li><b>order</b> - ASC (ascending/alphabetical) or DESC (descending/from most recent date) when using the <i>orderby</i> parameter</li>
+	<li><b>key</b> - when ordering by<i> field</i> or<i> field_num</i>, specify<b> key</b> as the name of the custom field to order by</li>
+	<li><b>series</b>, <b>key</b> - order posts by a series of custom field values, where <i>key</i> is the name of the field - the series can include ranges, for example: <i>1-15,30-40,42,44</i>.</li>
 </ul>
 
 <h4>Checkboxes</h4>
 <ul>
-	<li><strong>checkbox, value</strong> - display posts according to custom field, whose checkbox contains the value</li>
+	<li><b>checkbox, value</b> - display posts according to custom field, whose checkbox contains the value</li>
 
-Multiple values are possible: <em>value="first, second"</em>. This will return all posts with checkboxes containing <b>any</b> of the values, i.e., first <b>or</b> second. Optionally, you can set the parameter <em>compare</em> to <em>AND</em>, which will return all posts with checkboxes containing <b>all</b> of the values, i.e., first <b>and</b> second.  See examples below.
+Multiple values are possible: <i>value="first, second"</i>. This will return all posts with checkboxes containing <b>any</b> of the values, i.e., first <b>or</b> second. Optionally, you can set the parameter <i>compare</i> to <i>AND</i>, which will return all posts with checkboxes containing <b>all</b> of the values, i.e., first <b>and</b> second.  See example section below.
 
-	<li><strong>relation, checkbox_2, value_2</strong> - additional query for checkbox value, where <em>relation</em> is <em>AND</em> (default) or <em>OR</em>. You can use multiple values, and the parameter <em>compare_2</em>, if necessary.</li>
+	<li><b>relation, checkbox_2, value_2</b> - additional query for checkbox value, where <i>relation</i> is <i>AND</i> (default) or <i>OR</i>. You can use multiple values, and the parameter <i>compare_2</i>, if necessary.</li>
 </ul>
 
 <h4>Formatting</h4>
 <ul>
 	<li><b>trim</b> - set <i>true</i> to remove space or comma at the end</li>
-	<li><strong>clean</strong> - set <em>true</em> to remove all <em>&lt;p&gt;</em> and <em>&lt;br&gt;</em> tags</li>
-	<li><strong>strip_tags</strong> - set <em>true</em> to remove all HTML tags inside the loop</li>
-	<li><strong>allow</strong> - strip all HTML tags except allowed; for example, <em>allow="&lt;a&gt;&lt;li&gt;&lt;br&gt;"</em></li>
+	<li><b>clean</b> - set <i>true</i> to remove all <i>&lt;p&gt;</i> and <i>&lt;br&gt;</i> tags</li>
+	<li><b>strip_tags</b> - set <i>true</i> to remove all HTML tags inside the loop</li>
+	<li><b>allow</b> - strip all HTML tags except allowed, for example: <i>allow="&lt;a&gt;&lt;li&gt;&lt;br&gt;"</i></li>
 </ul>
+
+<h4>Cache</h4>
+
+<ul>
+	<li><b>cache</b> - set <i>true</i> to cache the result of the loop; see <a href="options-general.php?page=ccs_reference&tab=cache">here</a> for details</li>
+	<li><b>expire</b> - how often the cache is updated: <i>minutes</i>, <i>hours</i>, <i>days</i>, <i>years</i> - default is <i>10 minutes</i></li>
+	<li><b>update</b> - set <i>true</i> to force update the cache</li>
+</ul>
+
 
 <h4>Other parameters</h4>
 <ul>
-	<li><strong>columns</strong> - display output in columns: <em>columns="3"</em>; use <em>pad</em> for padding: <em>pad="0px 10px"</em></li>
-	<li><strong>name</strong> - show one post by slug; can be used to display, for example, gallery or repeater fields from another post</li>
-	<li><strong>x</strong> - repeat the loop <em>x</em> times - no query</li>
-</ul><br>
+	<li><b>name</b> - show one post by slug</li>
+	<li><b>columns</b> - display output in columns: <i>columns="3"</i>; use <i>pad</i> for padding: <i>pad="0px 10px"</i></li>
+	<li><b>timer</b> - set <i>true</i> to display resource info at the end of loop; see <a href="options-general.php?page=ccs_reference&tab=cache#timer">here</a> for details</li>
+	<li><b>x</b> - repeat the loop <i>x</i> times - no query</li>
+</ul>
+
+
+
+<br>
 <h3 align="center">Examples</h3>
 <hr>
 
@@ -122,7 +137,11 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 
 <h4>Single field compare</h4>
 
-<code>[loop type="hotels" field="stars" compare="NOT EQUAL" value="3"]</code>
+<code>[loop type="hotels" field="stars" compare="not equal" value="3"]</code>
+
+<h4>Single field: if value exists</h4>
+
+<code>[loop type="hotels" field="event_date" compare="exists"]</code>
 
 <h4>Two field values</h4>
 
@@ -130,7 +149,7 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 
 <h4>Two field values relation</h4>
 
-<code>[loop type="hotels" field="stars" value="4 stars" relation="OR" field_2="service" value_2="all inclusive"]</code>
+<code>[loop type="hotels" field="stars" value="4 stars" relation="or" field_2="service" value_2="all inclusive"]</code>
 
 <h4>Series</h4>
 
@@ -144,11 +163,11 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 
 <h4>Show past events, when the field is stored as a string</h4>
 
-<code>[loop type="events" field="event_date" compare="&lt;" value="now" in="string"]</code>
+<code>[loop type="events" field="event_date" value="past" in="string"]</code>
 
-<h4>Show past events in descending order</h4>
+<h4>Show future events in descending order</h4>
 
-<code>[loop type="events" field="event_date" compare="&lt;" value="now" orderby="meta_value_num" key="event_date" order="DESC"]</code><br>
+<code>[loop type="events" field="event_date" value="future" orderby="field_num" order="DESC"]</code><br>
 <hr>
 <h3>Query by checkbox values</h3>
 
@@ -162,11 +181,11 @@ Multiple values are possible: <em>value="first, second"</em>. This will return a
 
 <h4>Single checkbox and multiple values: comedy and drama</h4>
 
-<code>[loop type="movies" checkbox="genre" compare="AND" value="comedy, drama"]</code>
+<code>[loop type="movies" checkbox="genre" compare="and" value="comedy, drama"]</code>
 
 <h4>Two checkboxes..</h4>
 
-<code>[loop type="movies" checkbox="genre" compare="AND" value="comedy, drama" checkbox_2="in-stock" value_2="current, pending"]</code><br>
+<code>[loop type="movies" checkbox="genre" compare="and" value="comedy, drama" checkbox_2="in-stock" value_2="current, pending"]</code><br>
 
 <a href="#" id="field-tags" name="field-tags"></a>
 <h3 align="center">Field tags</h3>
@@ -182,5 +201,5 @@ The {FIELD} tags are uppercase versions of the field names.
 
 There are also predefined tags: COUNT, URL, ID, TITLE, AUTHOR, AUTHOR_URL, DATE, THUMBNAIL, THUMBNAIL_URL, CONTENT, EXCERPT, COMMENT_COUNT, TAGS, IMAGE, IMAGE_ID, IMAGE_URL.
 
-If you want to pass field values to the loop shortcode itself, refer to: <a href="options-general.php?page=ccs_content_shortcode_help&tab=other#field-as-parameter">Field as parameter</a>.
+If you want to pass field values to the loop shortcode itself, refer to: <a href="options-general.php?page=ccs_reference&tab=other#field-as-parameter">Field as parameter</a>.
 

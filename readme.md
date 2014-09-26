@@ -6,17 +6,6 @@ The **[loop]** and **[content]** have been rewritten for better code organizatio
 
 Here is a list of features still missing:
 
-* [if first/last/empty]
-
-* [if gallery] - if current post has images in the gallery field
-
-* Exclude current post from [loop]
-
-* [br], [p]
-
-* [redirect] - make it possible to set URL as parameter or as content
-
-* Documentation for [raw] and [cache]
-
 * Test and improve shortcodes for ACF: Gallery, Repeater, Flexible Content, Relationship
 
+* Read more link for excerpt field

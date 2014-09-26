@@ -1,7 +1,7 @@
 <h3 align="center">If</h3>
 <hr>
 
-Use the <strong>[if]</strong> shortcode to display content based on certain conditions.
+Use the <b>[if]</b> shortcode to display content based on certain conditions.
 
 <code>[loop type="films"]
 &nbsp;&nbsp;&nbsp;&nbsp;[field title]
@@ -15,47 +15,48 @@ Use the <strong>[if]</strong> shortcode to display content based on certain con
 
 <h4>Post type and name</h4>
 <ul>
-	<li><strong>type</strong> - post type</li>
-	<li><strong>name</strong> - post name/slug</li>
+	<li><b>type</b> - post type</li>
+	<li><b>name</b> - post name/slug</li>
 </ul>
 <h4>Parent</h4>
 <ul>
-	<li><strong>parent</strong> - slug or ID of parent</li>
+	<li><b>parent</b> - slug or ID of parent</li>
 </ul>
 <h4>Category, tag, taxonomy</h4>
 <ul>
-	<li><strong>category</strong> - if post is in category</li>
-	<li><strong>tag</strong> - if post has tag(s)
+	<li><b>category</b> - if post is in category</li>
+	<li><b>tag</b> - if post has tag(s)
 </ul>
 <ul>
-	<li><strong>taxonomy</strong> - name of taxonomy to query
-	<li><strong>term</strong> - if post has term(s) in the specified taxonomy
+	<li><b>taxonomy</b> - name of taxonomy to query
+	<li><b>term</b> - if post has term(s) in the specified taxonomy
 </ul>
 <h4>Field value</h4>
 <ul>
-	<li><strong>field</strong> - name of field to query</li>
-	<li><strong>value</strong> - if post has value(s) in the specified field</li>
+	<li><b>field</b> - name of field to query</li>
+	<li><b>value</b> - if post has value(s) in the specified field</li>
 
 For category, tag, taxonomy term or field value, you can query for multiple values: for example, <i>category="sci-fi, comedy"</i>. This returns posts in <i>either</i> Sci-Fi or Comedy. If you want posts matching <i>both</i> categories, use the <i>compare</i> parameter.
 
-	<li><strong>compare</strong> - Set compare="AND" to query for <i>all</i> values
+	<li><b>compare</b> - Set compare="AND" to query for <i>all</i> values
 </ul>
-<h4>If ~ exists</h4>
+<h4>If it exists</h4>
 <ul>
-	<li><strong>attached</strong> - if the post has any attachments</li>
-	<li><strong>comment</strong> - if the post has any comments</li>
-	<li><strong>image</strong> - if the post has a featured image</li>
-	<li><strong>flag</strong> - if custom field value exists; for example: <em>flag="field_name"</em></li>
+	<li><b>attached</b> - if the post has any attachments</li>
+	<li><b>comment</b> - if the post has any comments</li>
+	<li><b>image</b> - if the post has a featured image</li>
+	<li><b>gallery</b> - if the post has any image in the gallery field</li>
+	<li><b>flag</b> - if custom field value exists; for example: <i>flag="field_name"</i></li>
 </ul>
 <h4>Loop conditions</h4>
 <ul>
-	<li><strong>empty</strong> - if the loop is empty (no post found)</li>
-	<li><strong>first, last</strong> - if it's the first or last post found</li>
-	<li><strong>every</strong> - for every X post in the loop</li>
+	<li><b>empty</b> - if the loop is empty (no post found)</li>
+	<li><b>first, last</b> - if it's the first or last post found</li>
+	<li><b>every</b> - for every X post in the loop</li>
 </ul>
 <h4>Other</h4>
 <ul>
-	<li><strong>not</strong> - when the condition is not met, for example: [if not first]</li>
+	<li><b>not</b> - when the condition is not met, for example: [if not first]</li>
 </ul>
 <br>
 
@@ -127,6 +128,6 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
 
-The <em>flag</em> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
+The <i>flag</i> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
 
 <br>

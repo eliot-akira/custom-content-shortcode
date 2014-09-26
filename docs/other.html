@@ -1,20 +1,20 @@
 <h3 align="center">Relative URL</h3>
 <hr>
 
-Use the <strong>[url]</strong> shortcode to generate relative links and image URLs.
+Use the <b>[url]</b> shortcode to generate relative links and image URLs.
 <h4>Display an image from a relative location</h4>
 <code>&lt;img src='[url uploads]/assets/logo.png'&gt;</code>
 
-This could be useful when you're migrating sites, for example, from local server to public. When inserting an image, replace the specific web address with the <strong>[url]</strong> shortcode. Then the image doesn't depend on where the site is located.
+This could be useful when you're migrating sites, for example, from local server to public. When inserting an image, replace the specific web address with the <b>[url]</b> shortcode. Then the image doesn't depend on where the site is located.
 
 Available parameters:
 <ul>
-	<li><em>site</em> - site address</li>
-	<li><em>wordpress</em> - WordPress directory</li>
-	<li><em>content</em> -<em> /wp-content/</em></li>
-	<li><em>uploads</em> - <em>/wp-content/uploads/</em></li>
-	<li><em>theme</em> - <em>/wp-content/theme</em> - theme directory</li>
-	<li><em>child</em> - <em>/wp-content/child_theme</em> - child theme directory</li>
+	<li><i>site</i> - site address</li>
+	<li><i>wordpress</i> - WordPress directory</li>
+	<li><i>content</i> -<i> /wp-content/</i></li>
+	<li><i>uploads</i> - <i>/wp-content/uploads/</i></li>
+	<li><i>theme</i> - <i>/wp-content/theme</i> - theme directory</li>
+	<li><i>child</i> - <i>/wp-content/child_theme</i> - child theme directory</li>
 </ul><br>
 
 <a href="#" id="raw" name="raw"></a>
@@ -22,15 +22,13 @@ Available parameters:
 
 <hr>
 
-To protect multi-line shortcodes from default post formatting, wrap the section with the [raw] shortcode.
+To protect a page section from default formatting, wrap the section with the [raw] shortcode.
 
 <code>[raw]
-&nbsp;&nbsp;&nbsp;&nbsp;[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This area will not have &lt;p&gt; or &lt;br&gt; tags.
-&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+&nbsp;&nbsp;&nbsp;&nbsp;This area will not have &lt;p&gt; or &lt;br&gt; tags added.
 [/raw]</code>
 
-This feature can be enabled under <a href="options-general.php?page=ccs_content_shortcode_help&tab=settings">Settings</a>.
+This feature can be enabled under <a href="options-general.php?page=ccs_reference&tab=settings">Settings</a>.
 
 <br>
 <h3 align="center">Pass field values</h3>
@@ -38,7 +36,7 @@ This feature can be enabled under <a href="options-general.php?page=ccs_content_
 <hr>
 <h3>Field as parameter</h3>
 
-Use the <strong>[pass] </strong>shortcode to pass a field value to another shortcode.
+Use the <b>[pass] </b>shortcode to pass a field value to another shortcode.
 
 <h4>Display a map according to the address entered in a custom field</h4>
 
@@ -76,7 +74,7 @@ Pass values from multiple fields using the <i>fields</i> parameter.
 &nbsp;&nbsp;&nbsp;&nbsp;[/loop]
 [/pass]</code>
 
-This works in the same way as <a href="options-general.php?page=ccs_content_shortcode_help&tab=loop#field-tags">field tags</a> for the <b>[loop]</b> shortcode.
+This works in the same way as <a href="options-general.php?page=ccs_reference&tab=loop#field-tags">field tags</a> for the <b>[loop]</b> shortcode.
 
 
 <br>
@@ -99,6 +97,6 @@ To display a search form, use the <b>[search_form]</b> shortcode.
 &nbsp;&nbsp;&nbsp;&nbsp;Brand
 [/navbar]</code>
 
-The <em>menu</em> parameter is the title of the menu to be displayed. You can put text or image for the brand/logo area.
+The <i>menu</i> parameter is the title of the menu to be displayed. You can put text or image for the brand/logo area.
 
-In addition, you can define the <em>navclass</em> parameter: <em>top-nav</em>, <em>navbar-fixed-top</em>, <em>navbar-fixed-bottom</em>, <em>navbar-static-top</em>. The default is <em>top-nav</em>. Please refer to the <a href="http://getbootstrap.com/components/#navbar" target="_blank">Bootstrap documentation</a> for details.
+In addition, you can define the <i>navclass</i> parameter: <i>top-nav</i>, <i>navbar-fixed-top</i>, <i>navbar-fixed-bottom</i>, <i>navbar-static-top</i>. The default is <i>top-nav</i>. Please refer to the <a href="http://getbootstrap.com/components/#navbar" target="_blank">Bootstrap documentation</a> for details.

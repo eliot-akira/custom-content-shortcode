@@ -128,10 +128,19 @@ class CCS_URL {
     }
 
 
-	/* Redirect to another page - use inside conditional statement */
+	/* Redirect to another page */
 
 	function redirect_shortcode( $atts, $content ) {
-		echo "<script> window.location = '" . strip_tags( do_shortcode($content) ) . "'; </script>";
+
+		if (empty($content)) {
+			// First argument as URL
+			$content = isset($atts['go']) ? $atts['go'] : null;
+			if (!empty($content))
+				echo "<script> window.location = '" . strip_tags( $content ) . "'; </script>";
+		} else {
+			// Shortcode content as URL
+			echo "<script> window.location = '" . strip_tags( do_shortcode(trim($content)) ) . "'; </script>";
+		}
 	}
 
 }

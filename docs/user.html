@@ -14,7 +14,7 @@ Custom user field: [user field="twitter"]</code><br>
 <h3 align="center">User status</h3>
 <hr>
 
-The <strong>[is]</strong> shortcode is used to display content based on user status.
+The <b>[is]</b> shortcode is used to display content based on user status.
 
 <h4>Display user status</h4>
 <code>[is admin]You are an administrator.[/is]
@@ -26,25 +26,25 @@ The <strong>[is]</strong> shortcode is used to display content based on user sta
 
 Available parameters:
 <ul>
-	<li><em>admin</em> - user has admin capability (manage options)</li>
-	<li><em>login</em> - user is logged in</li>
-	<li><em>logout</em> - user is logged out</li>
-	<li><em>user</em> - user name or ID - multiple values are possible: "1, 3, 22"</li>
+	<li><i>admin</i> - user has admin capability (manage options)</li>
+	<li><i>login</i> - user is logged in</li>
+	<li><i>logout</i> - user is logged out</li>
+	<li><i>user</i> - user name or ID - multiple values are possible: "1, 3, 22"</li>
 </ul><ul>
-	<li><em>role</em> - user role - default roles are <i>administrator</i>, <i>editor</i>, <i>author</i>, <i>contributor</i>, or <i>subscriber</i>
-	<li><em>capable</em> - user capability, for example: <i>capable="manage_options"</i></li>
+	<li><i>role</i> - user role - default roles are <i>administrator</i>, <i>editor</i>, <i>author</i>, <i>contributor</i>, or <i>subscriber</i>
+	<li><i>capable</i> - user capability, for example: <i>capable="manage_options"</i></li>
 
 	Multiple values are possible: <i>role="admin, subscriber"</i> will be true if the user is <i>admin</i> or <i>subscriber</i>.
 	See the list of available user roles and capabilities under <a href="index.php?page=content_overview#user-roles">Dashboard -> Content -> User Roles</a>.
 </ul>
-You can also use <strong>[is not]</strong> to display something when the condition is not true.
+You can also use <b>[is not]</b> to display something when the condition is not true.
 <br>
 
 <a id="login-out" href="#"></a>
-<h3 align="center">Login and logout</h3>
+<h3 align="center">Login/out</h3>
 <hr>
 
-The <strong>[url]</strong> shortcode is also used to display login and logout links.
+The <b>[url]</b> shortcode is used to display login and logout links.
 <h4>Display a login link</h4>
 <code>&lt;a href="[url login]"&gt;User login&lt;/a&gt;</code>
 <h4>Display a logout link with redirect to home</h4>
@@ -52,9 +52,9 @@ The <strong>[url]</strong> shortcode is also used to display login and logout 
 
 Available parameters:
 <ul>
-	<li><em>login</em> - login link</li>
-	<li><em>logout</em> - logout link</li>
-	<li><em>go</em> - redirect user after login/logout; use a full URL, or the name of a post or page; <i>go="home"</i> will return the user to the home page.
+	<li><i>login</i> - login link</li>
+	<li><i>logout</i> - logout link</li>
+	<li><i>go</i> - redirect user after login/logout; use a full URL, or the name of a post or page; <i>go="home"</i> will return the user to the home page.
 </li>
 </ul>
 Here is an example using both <b>[is]</b> and <b>[url]</b> to show a login/logout link based on user status.
@@ -69,21 +69,23 @@ Here is an example using both <b>[is]</b> and <b>[url]</b> to show a login/logou
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Logout Button
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;
 [/is]</code><br>
+
+<h3 align="center">Redirect</h3>
 <hr>
-<h3>Redirect users</h3>
-To redirect users to a different URL, use the <b>[redirect]</b> shortcode. As soon as it is executed, the user will be taken to another page.
+
+The <b>[redirect]</b> shortcode redirects the user to another URL.
 
 <h4>Redirect if visitor is not logged in</h4>
 <code>[is not login]
-&nbsp;&nbsp;&nbsp;&nbsp;[redirect]http://example.com/guest/[/redirect]
+&nbsp;&nbsp;&nbsp;&nbsp;[redirect go="http://example.com/guest/"]
 [/is]
 </code>
 
-Note that the URL is not a parameter, it is wrapped inside. This is to allow relative links.
+You can also specify a relative URL by wrapping it inside.
 
 <code>[is login]
 &nbsp;&nbsp;&nbsp;&nbsp;[redirect][url site]/user-area/[/redirect]
 [/is]
 </code>
 
-The <b>[redirect]</b> shortcode can be placed anywhere, but the best place is at the top of the page.
+The best place to use the <b>[redirect]</b> shortcode is at the top of the page.

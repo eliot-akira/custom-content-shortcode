@@ -40,7 +40,7 @@ class CCS_Plugin {
 
 		self::$settings = get_option( $option_key );
 
-		if (self::$settings === false ) {
+		if ( self::$settings === false ) {
 
 			// Default settings
 
@@ -87,6 +87,7 @@ class CCS_Plugin {
 			'if',			// If shortcode
 			'docs',			// Documentation under Settings -> Custom Content
 			'cache',		// Cache shortcode
+			'format',		// Format shortcodes: br, p, x, clean, direct, format
 			'wck',			// WCK support
 		//	'widget'		// Widget shortcode (not ready)
 		);
@@ -119,10 +120,10 @@ class CCS_Plugin {
 		);
 
 		foreach ($optional_modules as $option => $module) {
+
 			if ( isset(self::$settings[ $option ]) && self::$settings[ $option ]=='on' ) {
 
 				$this->load_module( $module );
-
 			}
 		}
 	}

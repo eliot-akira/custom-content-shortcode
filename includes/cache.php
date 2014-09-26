@@ -10,20 +10,19 @@ new CCS_Cache;
 
 class CCS_Cache {
 
-	private static $start;			// Time at [timer start]
-	private static $mem;			// Memory usage at [timer start]
+	private static $start;					// Time at [timer start]
+	private static $mem;					// Memory usage at [timer start]
 
-	private static $num_queries;	// Number of queries at init
-
-	private static $transient_prefix;
+	private static $num_queries;			// Number of queries at init
+	private static $transient_prefix; 		// Cache name prefix
 
 	function __construct() {
 
-		self::$transient_prefix = 'ccs_';
 		add_shortcode( 'cache', array( $this, 'cache_shortcode') );
-
-		self::$num_queries = get_num_queries(); // Number of queries at init
 		add_shortcode( 'timer', array( $this, 'timer_shortcode') );
+
+		self::$transient_prefix = 'ccs_';
+		self::$num_queries = get_num_queries(); // Number of queries at init
 	}
 	
 	function cache_shortcode( $atts, $content ) {
@@ -63,6 +62,8 @@ class CCS_Cache {
 		if (count($expire)>1) {
 
 			switch ($expire[1]) {
+				case 'minute': 
+				case 'minutes': 
 				case 'mins': 
 				case 'min': $expire_sec *= 60; break;
 				case 'hours': 
@@ -100,32 +101,45 @@ class CCS_Cache {
 
 	function timer_shortcode( $atts ) {
 
+		if (empty($atts)) $atts[0] = 'start';
 		$x = count($atts);
 		$out = null;
 
 		for ($i=0; $i < $x; $i++) { 
 			$action = isset($atts[$i]) ? $atts[$i] : null;
 			switch ($action) {
-				case 'start':
-					self::$start = microtime(true); // start timer
-					self::$mem = memory_get_peak_usage(TRUE); // current memory usage
-					break;
+				case 'stop':
 				case 'end':
-				case 'info':
-					$out = self::info();
+					$out = self::stop_timer();
+					break;
+				case 'start':
+					$out = self::start_timer();
 					break;
 				case 'total':
+				default:
 					$out = self::total_info();
+					break;
 			}
 		}
 		return $out;
 	}
 
+	public static function start_timer() {
+		self::$start = microtime(true); // start timer
+		self::$mem = memory_get_peak_usage(TRUE); // current memory usage
+		self::$num_queries = get_num_queries(); // Number of queries at timer start
+	}
 
-	function info() {
+
+	public static function stop_timer( $message = null ) {
+
 		$now_queries = get_num_queries();
+
+		if (empty($message)) $message = '<b>Timer stop</b>: ';
+
 		return sprintf(
-			'Time: %s, Memory: %4.2fMb - Queries: %d',
+			'%s%s - %4.2f Mb - %d queries',
+			$message,
 			self::human_time(microtime(true) - self::$start),
 			(memory_get_peak_usage(TRUE) - self::$mem) / 1048576,
 			( $now_queries - self::$num_queries )
@@ -134,7 +148,7 @@ class CCS_Cache {
 
 	function total_info() {
 		return sprintf(
-			'Total time: %.3f sec, Total Memory: %4.2fMb, Total Queries: %d',
+			'<b>Current total</b>: %.3f sec - %4.2f Mb - %d queries',
 			timer_stop(0),
 //			self::human_time(microtime(true) - self::$total_start),
 			(memory_get_peak_usage(TRUE)) / 1048576,
@@ -143,7 +157,12 @@ class CCS_Cache {
 	}
 
 	function human_time($time) {
-		$times = array(
+
+		$ms = round($time * 1000);
+		$sec = $ms / 1000; // Round off to thousandth
+		return $sec . ' sec';
+
+/*		$times = array(
 			'hour' => 3600000,
 			'minute' => 60000,
 			'second' => 1000
@@ -156,7 +175,7 @@ class CCS_Cache {
 				return $time . ' ' . ($time == 1 ? $unit : $unit . 's');
 			}
 		}
-		return $ms . ' ms';
+		return $ms/1000 . ' sec'; */
 	}
 }
 

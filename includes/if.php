@@ -17,12 +17,12 @@ class CCS_If {
 
 		self::$if_flag = '';
 
-		add_action( 'init', array( &$this, 'register' ) );
+		add_action( 'init', array( $this, 'register' ) );
 	}
 
 	function register() {
-		add_shortcode( 'if', array( &$this, 'if_shortcode' ) );
-		add_shortcode( 'flag', array( &$this, 'flag_shortcode' ) );
+		add_shortcode( 'if', array( $this, 'if_shortcode' ) );
+		add_shortcode( 'flag', array( $this, 'flag_shortcode' ) );
 	}
 
 	function if_shortcode( $atts, $content = null, $shortcode_name ) {
@@ -63,7 +63,8 @@ class CCS_If {
 		$compare = strtoupper($compare);
 
 		// Get [else] if it exists
-		$content_array = explode("[else]", $content);
+
+		$content_array = explode('[else]', $content);
 		$content = $content_array[0];
 		if (count($content_array)>1) {
 			$else = $content_array[1];
@@ -286,16 +287,18 @@ class CCS_If {
 		 *=======================================================================*/
 		
 		$condition = isset($atts['home']) ? is_front_page() : $condition;
-
 		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : $condition;
 		$condition = isset($atts['image']) ? has_post_thumbnail() : $condition;
+
+		if ( isset($atts['gallery']) && class_exists('CCS_Gallery_Field')) {
+
+			$condition =  CCS_Gallery_Field::has_gallery();
+		}
 
 /* test these */
 		$condition = isset($atts['loop']) ? (CCS_Loop::$state['is_loop']=='true') : $condition;
 		$condition = isset($atts['archive']) ? is_archive() : $condition;
 		$condition = isset($atts['single']) ? is_single() : $condition;
-
-
 
 
 		if (isset($atts['attached'])) {
@@ -314,7 +317,7 @@ class CCS_If {
 
 		$condition = isset($atts['not']) ? !$condition : $condition;
 
-		$out = $condition ? do_shortcode( $content ) : do_shortcode( $else );
+		$out = $condition ? do_shortcode( $content ) : do_shortcode( $else ); // [if]..[else]..[/if]
 
 		self::$if_flag = '';
 

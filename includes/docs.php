@@ -2,7 +2,7 @@
 
 /*====================================================================================================
  *
- * Create documentation under Settings -> Content Shortcodes
+ * Create documentation under Settings -> Custom Content
  *
  *====================================================================================================*/
 
@@ -35,7 +35,7 @@ class CCS_Docs {
 
 		global $ccs_settings_page_hook, $ccs_content_overview_page_hook;
 
-		$ccs_settings_page_hook = add_options_page('Custom Content Shortcode - Documentation', 'Custom Content', 'manage_options', 'ccs_content_shortcode_help', array($this, 'content_settings_page'));
+		$ccs_settings_page_hook = add_options_page('Custom Content Shortcode - Documentation', 'Custom Content', 'manage_options', 'ccs_reference', array($this, 'content_settings_page'));
 		$ccs_content_overview_page_hook = add_dashboard_page( 'Content', 'Content', 'edit_dashboard', 'content_overview',  array($this, 'dashboard_content_overview') );
 	}
 
@@ -44,7 +44,7 @@ class CCS_Docs {
 		global $ccs_settings_saved;
 		$page = isset($_GET['page']) ? $_GET['page'] : null;
 		if ($pagenow == 'options-general.php' && $page ==
-			'ccs_content_shortcode_help') { 
+			'ccs_reference') { 
 
 			if ( (isset($_GET['updated']) && $_GET['updated'] == 'true') ||
 				(isset($_GET['settings-updated']) && $_GET['settings-updated'] == 'true') ) {
@@ -60,8 +60,8 @@ class CCS_Docs {
 		//make sure it is our plugin we are modifying
 		if ( $file == $plugin_file ) {
 			$settings_link = '<a href="' .
-				admin_url( 'admin.php?page=ccs_content_shortcode_help' ) . '">' .
-				__( 'Reference', 'ccs_content_shortcode_help' ) . '</a>';
+				admin_url( 'admin.php?page=ccs_reference' ) . '">' .
+				__( 'Reference', 'ccs_reference' ) . '</a>';
 			array_unshift( $links, $settings_link );
 		}
 		return $links;
@@ -112,12 +112,31 @@ class CCS_Docs {
 			esc_attr( $settings['move_wpautop'] ) : 'off';
 
 		?>
+
+		<tr>
+			<td>
+				<input type="checkbox" value="on" name="ccs_content_settings[load_gallery_field]"
+					<?php checked( $load_gallery_field, 'on' ); ?>
+				/>
+				&nbsp;&nbsp;<a href="options-general.php?page=ccs_reference&tab=gallery"><b>Gallery Field</b></a> module
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<input type="checkbox" value="on" name="ccs_content_settings[load_file_loader]"
+					<?php checked( $load_file_loader, 'on' ); ?>
+				/>
+				&nbsp;&nbsp;<a href="options-general.php?page=ccs_reference&tab=load"><b>File Loader</b></a> module
+			</td>
+		</tr>
+
 		<tr>
 			<td>
 				<input type="checkbox" value="on" name="ccs_content_settings[load_acf_module]"
 					<?php checked( $load_acf_module, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;<b>ACF</b> shortcodes
+				&nbsp;&nbsp;<a href="options-general.php?page=ccs_reference&tab=acf"><b>ACF</b></a> shortcodes
 			</td>
 		</tr>
 		<tr>
@@ -125,30 +144,16 @@ class CCS_Docs {
 				<input type="checkbox" value="on" name="ccs_content_settings[load_bootstrap_module]"
 					<?php checked( $load_bootstrap_module, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;<b>Bootstrap</b> shortcodes
+				&nbsp;&nbsp;<a href="options-general.php?page=ccs_reference&tab=other#bootstrap-navbar"><b>Bootstrap</b></a> shortcodes
 			</td>
 		</tr>
+
 		<tr>
-			<td>
-				<input type="checkbox" value="on" name="ccs_content_settings[load_file_loader]"
-					<?php checked( $load_file_loader, 'on' ); ?>
-				/>
-				&nbsp;&nbsp;<b>File Loader</b> module
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<input type="checkbox" value="on" name="ccs_content_settings[load_gallery_field]"
-					<?php checked( $load_gallery_field, 'on' ); ?>
-				/>
-				&nbsp;&nbsp;<b>Gallery Field</b> module
-			</td>
-		</tr>	<tr>
 			<td>
 				<input type="checkbox" value="on" name="ccs_content_settings[load_mobile_detect]"
 					<?php checked( $load_mobile_detect, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;<b>Mobile Detect</b> module
+				&nbsp;&nbsp;<a href="options-general.php?page=ccs_reference&tab=mobile"><b>Mobile Detect</b></a> module
 			</td>
 		</tr>
 
@@ -164,15 +169,16 @@ class CCS_Docs {
 
 		<tr>
 			<td>
-				<hr class="setting-section">
 				<input type="checkbox" value="on" name="ccs_content_settings[raw_shortcode]"
 					<?php checked( $raw_shortcode, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Enable <b>[raw]</b> shortcode - <i>Protect shortcode content from auto-formatting</i>
+				&nbsp;&nbsp;Enable <a href="options-general.php?page=ccs_reference&tab=other#raw"><b>[raw]</b> shortcode</a> - <i>Protect shortcode content from formatting</i>
 			</td>
 		</tr>
+
 		<tr>
-			<td>
+			<td class="grey">
+				<hr class="setting-section">
 				<input type="checkbox" value="on" name="ccs_content_settings[shortcode_unautop]"
 					<?php checked( $shortcode_unautop, 'on' ); ?>
 				/>
@@ -180,7 +186,7 @@ class CCS_Docs {
 			</td>
 		</tr>
 		<tr>
-			<td>
+			<td class="grey">
 				<input type="checkbox" value="on" name="ccs_content_settings[move_wpautop]"
 					<?php checked( $move_wpautop, 'on' ); ?>
 				/>
@@ -305,7 +311,7 @@ class CCS_Docs {
 					$tab_name = ucwords(str_replace('-', ' ', $tab));
 
 					?>
-					<a href="?page=ccs_content_shortcode_help&tab=<?php echo $tab; ?>"
+					<a href="?page=ccs_reference&tab=<?php echo $tab; ?>"
 						class="nav-tab <?php echo $active_tab == $tab ? 'nav-tab-active' : ''; ?>">
 							<?php echo $tab_name; ?></a>
 					<?php
@@ -314,6 +320,7 @@ class CCS_Docs {
 				}
 			?>
 			</h2>
+			<div class="inner-wrap">
 			<?php
 
 				if ( $active_tab == 'settings' ) {
@@ -353,7 +360,7 @@ class CCS_Docs {
 					<div align="center" class="overview-logo-pad">
 						<img src="<?php echo plugins_url();?>/custom-content-shortcode/docs/logo/logo.png">
 						<div class="overview-logo-pad"><b>Custom Content Shortcode</b> is developed by Eliot Akira.</div>
-						Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">WordPress plugin support forum</a> for general questions.<br>
+						Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin support forum</a> for feedback and questions.<br>
 						If you'd like to contribute to this plugin, here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>.<br>
 						For commercial development, contact <a href="mailto:me@eliotakira.com">me@eliotakira.com</a><br>
 					</div>
@@ -362,9 +369,7 @@ class CCS_Docs {
 				}
 					?>
 					</div>
-					<?php
-
-				/*-- End of .doc-style --*/
+					</div><?php	/*-- End of .doc-style --*/
 
 //				}
 		?>

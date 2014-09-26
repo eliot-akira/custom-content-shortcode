@@ -32,7 +32,6 @@ class CCS_Loop {
 		add_shortcode( 'pass', array($this, 'pass_shortcode') );
 
 		add_shortcode( 'loop-count', array($this, 'loop_count_shortcode') );
-		add_shortcode( 'x', array($this, 'x_shortcode') );
 	}
 
 
@@ -117,18 +116,25 @@ class CCS_Loop {
 
 	function init_loop() {
 
-		self::$state['is_loop'] 			= true;
-		self::$state['do_reset_postdata'] 	= false;
-		self::$state['do_cache'] 			= false;
-		self::$state['blog'] 				= 0;
+		$state = self::$state;
 
-		self::$state['loop_count']			= 0;
+		$state['is_loop'] 				= true;
 
-		self::$state['current_post_id']		= 0;
-		self::$state['posts_count']			= 0;
-		self::$state['comments_count']		= 0;
+		$state['do_reset_postdata'] 	= false;
+		$state['do_cache'] 				= false;
+		$state['blog'] 					= 0;
 
-		self::$state['is_attachment_loop'] = false;
+		$state['loop_count']			= 0;
+		$state['post_count'] 			= 0;
+		$state['skip_ids'] 				= array();
+
+		$state['current_post_id']		= 0;
+		$state['posts_count']			= 0;
+		$state['comments_count']		= 0;
+
+		$state['is_attachment_loop']	= false;
+
+		self::$state = $state;
 	}
 
 
@@ -202,6 +208,9 @@ class CCS_Loop {
 			'expire' => '10 min',
 			'update' => 'false',
 
+			// Timer
+			'timer' => 'false',
+
 			// ?
 			'if' => '', 'list' => '', 'posts_separator' => '',
 			'variable' => '', 'var' => '',
@@ -248,7 +257,9 @@ class CCS_Loop {
 
 			foreach (self::$original_parameters as $key => $value) {
 
-				if ( ($key!='update') && ($key!='cache')) // skip these parameters
+				$skip_parameters = array('update','cache','expire');  // Skip cache parameters
+
+				if ( ! in_array($key, $skip_parameters) )
 					$cache_name .= $key.$value;
 			}
 			$cache_name = substr($cache_name, 0, 40); // Max number of characters
@@ -273,6 +284,20 @@ class CCS_Loop {
 	function before_query( $parameters, $template = null ) {
 
 
+
+		/*========================================================================
+		 *
+		 * Start timer
+		 *
+		 *=======================================================================*/
+
+		if ( $parameters['timer'] == 'true' ) {
+
+			CCS_Cache::start_timer();
+
+		}
+		
+		
 		/*========================================================================
 		 *
 		 * The X parameter - run loop X times, no query
@@ -291,9 +316,6 @@ class CCS_Loop {
 
 			return $out;
 		}
-
-
-		
 
 
 		/*========================================================================
@@ -379,6 +401,14 @@ class CCS_Loop {
 		} elseif ( !empty($parameters['exclude']) ) {
 
 			$id_array = $this->explode_list($parameters['exclude']);
+
+			// Exclude current post
+
+			foreach ($id_array as $key => $value) {
+				if ($value=='this') {
+					$id_array[$key] = self::$state['original_post_id']; // ID of post that contains the loop
+				}
+			}
 
 			$query['post__not_in'] = $id_array;
 
@@ -634,7 +664,7 @@ class CCS_Loop {
 				if ( !empty($parameters['key']) )
 					$key = $parameters['key'];
 				else
-					$key = $parameters['field']; // Alias
+					$key = $parameters['field']; // If no key is specified, order by field
 
 				$query['meta_key'] = $key;
 			}
@@ -706,8 +736,8 @@ class CCS_Loop {
 		 *
 		 *=======================================================================*/
 
-		if( !empty($parameters['field']) && !empty($parameters['value']) ) {
-
+		if( !empty($parameters['field']) &&
+			( !empty($parameters['value']) || !empty($parameters['compare']) ) ) {
 
 			$field = $parameters['field'];
 			$value = $parameters['value'];
@@ -752,17 +782,25 @@ class CCS_Loop {
 				case 'NOT':
 				case '!=':
 				case 'NOT EQUAL': $compare = 'NOT LIKE'; break;
+				case 'MORE': $compare = '>'; break;
+				case 'LESS': $compare = '<'; break;
 				default: break;
 			}
-
-			// To do: shouldn't this be $query['meta_query']..?
 
 			$query['meta_query'][] =
 				array(
 						'key' => $field,
-						'value' => $value,
+//						'value' => $value,
 						'compare' => $compare
 				);
+
+			if ( $compare!='EXISTS' && $compare!='NOT EXISTS') {
+				$query['meta_query']['value'] = $value;
+			} elseif ($compare!='NOT EXISTS') {
+				$query['meta_query']['value'] = ' '; // NOT EXISTS needs some value
+			}
+
+
 
 			// Additional query by field value
 
@@ -799,6 +837,8 @@ class CCS_Loop {
 						case 'NOT':
 						case '!=':
 						case 'NOT EQUAL': $compare_2 = 'NOT LIKE'; break;
+						case 'MORE': $compare_2 = '>'; break;
+						case 'LESS': $compare_2 = '<'; break;
 						default: break;
 					}					
 				}
@@ -832,7 +872,11 @@ class CCS_Loop {
 
 	function run_query( $query ) {
 
-		self::$state['do_reset_postdata'] = true;
+		self::$query = $query; // Store query parameters
+
+		self::$state['original_post_id'] = get_the_ID(); // Store ID of post that contains the loop
+
+		self::$state['do_reset_postdata'] = true; // Reset post data at the end of loop
 
 		return new WP_Query( $query );
 	}
@@ -874,6 +918,8 @@ class CCS_Loop {
 
 		$posts = apply_filters( 'ccs_loop_posts_before_compile', $posts);
 
+		$template = $this->pre_process_template($template);
+
 		if ( $posts->have_posts() ) {
 
 			$posts = $this->prepare_all_posts( $posts );
@@ -892,7 +938,6 @@ class CCS_Loop {
 					self::$state['loop_count']++;
 
 					$this_template = $this->prepare_each_template($template);
-
 					$templates[] = $this->render_template($this_template);
 
 				} // End: if this post not empty
@@ -901,19 +946,81 @@ class CCS_Loop {
 
 		} else {
 
-			// No posts found
+			// No post found: do [if empty]
 
-			$this_template = null;
-
-			// Do [if empty]
-
-
-
-
-			$templates[] = $this->render_template($this_template);
+			if (!empty(self::$state['if_empty'])) {
+				$this_template = $this->prepare_each_template(self::$state['if_empty']);
+				$templates[] = $this->render_template($this_template);
+			}
 		}
 
 		return $templates;
+	}
+
+
+	/*========================================================================
+	 *
+	 * Pre-process template: if first, last, empty
+	 *
+	 *=======================================================================*/
+
+	function pre_process_template( $template ) {
+
+		$state = self::$state;
+
+		// If empty
+
+		$start = '[if empty]'; $end = '[/if]';
+		$middle = self::get_between($start, $end, $template);
+		$else = self::extract_else( $middle );
+
+		$state['if_empty'] = $middle;
+		$state['if_empty_else'] = $else;
+
+
+		// If first
+
+		$start = '[if first]'; $end = '[/if]';
+		$middle = self::get_between($start, $end, $template);
+		$else = self::extract_else( $middle );
+
+		$state['if_first'] = $middle;
+		$state['if_first_else'] = $else;
+
+
+		// If last
+
+		$start = '[if last]'; $end = '[/if]';
+		$middle = self::get_between($start, $end, $template);
+		$else = self::extract_else( $middle ); // Remove and return what's after [else]
+
+		$state['if_last'] = $middle;
+		$state['if_last_else'] = $else;
+
+
+		self::$state = $state; // Update global state
+		return $template;
+	}
+
+
+	/*========================================================================
+	 *
+	 * [if]..[else] - returns whatever is after [else] and removes it from original template
+	 *
+	 *=======================================================================*/
+
+	function extract_else( &$template ) {
+		// Get [else] if it exists
+		$content_array = explode('[else]', $template);
+
+		if (count($content_array)>1) {
+			$after = $content_array[1]; // anything after [else]
+			$template = str_replace('[else]'.$after, '', $template);
+		} else {
+			$after = null; // no [else]
+		}
+
+		return $after;
 	}
 
 
@@ -924,29 +1031,79 @@ class CCS_Loop {
 	 *
 	 *=======================================================================*/
 	
-	function prepare_all_posts( $posts ) {
+	function prepare_all_posts( $query_object ) {
 
-
-		/*========================================================================
-		 *
-		 * Checkbox query: prepare data on which posts to filter out
-		 *
-		 *=======================================================================*/
+		$query = self::$query;
+		$state =& self::$state; // Update global state directly
 		
+		$state['post_count'] = $query_object->post_count;
+
+		if ( isset($query['meta_query'][0]) ) {
+			$compare = $query['meta_query'][0]['compare'];
+			$key = $query['meta_query'][0]['key'];
+		} else {
+			$compare = '';
+			$key = '';
+		}
+
+		// If we need to check for skipped post
 		
-		self::$state['post_count'] = $posts->post_count;
-		self::$state['skip_ids'] = array();
+		if ( $compare=='EXISTS' || $compare=='NOT EXISTS' ) {
+
+			$all_posts = $query_object->posts;
+
+			foreach ($all_posts as $post) {
 
 
-		return $posts;
+				/*========================================================================
+				 *
+				 * If field value exists or not
+				 *
+				 *=======================================================================*/
 
+				$field_value = get_post_meta( $post->ID, $key, true );
+
+				if (is_array($field_value)) $field_value = implode('', $field_value);
+
+				if (($field_value==false) || empty(trim($field_value))) {
+
+					if ($compare=='EXISTS') {
+						$state['skip_ids'][] = $post->ID; // value is empty, then skip
+					}
+				} elseif ($compare=='NOT EXISTS') {
+						$state['skip_ids'][] = $post->ID; // value is not empty, then skip
+				}
+
+
+				/*========================================================================
+				 *
+				 * Checkbox query
+				 *
+				 *=======================================================================*/
+		
+
+
+
+
+			} // End for each post
+
+
+			// Subtract skipped posts from post count
+
+			$state['post_count'] = $state['post_count'] - count($state['skip_ids']);
+
+		} // End if we need to check for skipped posts
+
+
+		return $query_object;
 	}
 
 	function prepare_each_post( $post ) {
 
 		$post_id = $post->ID;
 
-		// Skip?
+		// Skip
+
 		if ( in_array($post_id, self::$state['skip_ids']) ) {
 			return null;
 		}
@@ -957,6 +1114,8 @@ class CCS_Loop {
 
 	function prepare_each_template( $template ) {
 
+		$state = self::$state;
+		$parameters = self::$parameters;
 
 		/*========================================================================
 		 *
@@ -964,8 +1123,12 @@ class CCS_Loop {
 		 *
 		 *=======================================================================*/
 		
-		if ( self::$state['loop_count'] == 1 ) {
+		if ( $state['loop_count'] == 1 ) {
 
+			if ($state['if_first']) {
+				$else = isset($state['if_first_else']) ? '[else]'.$state['if_first_else'] : null;
+				$template = str_replace('[if first]'.$state['if_first'].$else.'[/if]', $state['if_first'], $template);
+			}
 		}
 
 		/*========================================================================
@@ -974,26 +1137,44 @@ class CCS_Loop {
 		 *
 		 *=======================================================================*/
 		
-		if (self::$state['loop_count'] == self::$state['post_count'] ) {
+		if ( $state['loop_count'] == $state['post_count'] ) {
 
+			if ($state['if_last']) {
+				$else = isset($state['if_last_else']) ? '[else]'.$state['if_last_else'] : null;
+				$template = str_replace('[if last]'.$state['if_last'].$else.'[/if]', $state['if_last'], $template);
+			}
 		}
 
 
 		/*========================================================================
 		 *
-		 * Clean
+		 * Clean each template of <br> and <p>
 		 *
 		 *=======================================================================*/
 		
-		
-		// Over the limit, then skip
-		if ( !empty(self::$parameters['count']) &&
-			(self::$state['loop_count'] > self::$parameters['count']))
-			return null;
+		if ($parameters['clean']=='true') {
 
+			$template = CCS_Format::clean_content( $template );
+
+		}
+
+
+		// Make sure to limit by count parameter
+
+		if ( !empty(self::$parameters['count']) &&
+			( $state['loop_count'] > $parameters['count']) )
+			return null;
 
 		return $template;		
 	}
+
+
+
+	/*========================================================================
+	 *
+	 * Render template: expand {FIELD} tags and shortcodes
+	 *
+	 *=======================================================================*/
 
 	function render_template( $template ) {
 
@@ -1028,18 +1209,6 @@ class CCS_Loop {
 		$parameters = self::$parameters;
 
 		if ( is_array($results) ) {
-
-
-
-			/*========================================================================
-			 *
-			 * Do [if last]..?
-			 *
-			 *=======================================================================*/
-
-			// Find last template
-			// Replace [if last]..[/if]
-
 
 			/*========================================================================
 			 *
@@ -1145,6 +1314,21 @@ class CCS_Loop {
 	 *=======================================================================*/
 
 	function close_loop(){
+
+		$state =& self::$state;
+		$parameters = self::$parameters;
+
+		/*========================================================================
+		 *
+		 * Stop timer
+		 *
+		 *=======================================================================*/
+
+		if ( self::$parameters['timer'] == 'true' ) {
+
+			echo CCS_Cache::stop_timer('<br><b>Loop result</b>: ');
+
+		}
 
 
 		/*========================================================================
@@ -1463,7 +1647,7 @@ class CCS_Loop {
 
 	// Get text between two strings
 
-	public static function getBetween($start, $end, $text) {
+	public static function get_between($start, $end, $text) {
 
 		$middle = explode($start, $text);
 		if (isset($middle[1])){
@@ -1526,33 +1710,6 @@ class CCS_Loop {
 
 		return CCS_Loop::$state['loop_count'];
 	}
-
-
-	/*========================================================================
-	 *
-	 * [x] - Repeat x times: [x 10]..[/x]
-	 *
-	 *=======================================================================*/
-
-	function x_shortcode( $atts, $content ) {
-
-		$out = '';
-
-		if (isset($atts[0])) {
-			$x = $atts[0];
-			for ($i=0; $i <$x ; $i++) { 
-				$out .= do_shortcode($content);
-			}
-		}
-		return $out;
-	}
-
-
-
-
-
-
-
 
 
 

@@ -379,9 +379,9 @@ ul.gallery_images {
 
 					var frame = wp.media({
 						// Set the title of the modal.
-						title: '<?php echo 'Edit Image Details'; ?>',
+						title: 'Edit Image Details',
 						button: {
-							text: '<?php echo 'Finish'; ?>',
+							text: 'Finish',
 						},
 						//library : { type : 'image'},
 						multiple: false,
@@ -451,7 +451,7 @@ ul.gallery_images {
 	 *=======================================================================*/
 
 	function gallery_field_settings() {
-		add_options_page( 'Gallery Fields', 'Gallery Fields', 'manage_options', 'custom-gallery', array($this, 'settings_page') );
+		add_options_page( 'Gallery Fields', 'Gallery Fields', 'manage_options', 'ccs_gallery_field_settings', array($this, 'settings_page') );
 	}
 
 
@@ -471,7 +471,7 @@ ul.gallery_images {
 	            <?php submit_button(); ?>
 	        </form>
 			<div style="padding-left:5px;">
-				<a href="options-general.php?page=ccs_content_shortcode_help&tab=gallery"><em>Reference: Custom Content Shortcode</em></a>
+				<a href="options-general.php?page=ccs_reference&tab=gallery"><em>Reference: Custom Content Shortcode</em></a>
 			</div>
 	    </div>
 	<?php
@@ -648,6 +648,24 @@ ul.gallery_images {
 
 
 
+	/*========================================================================
+	 *
+	 * Check if a post has gallery field images
+	 *
+	 *=======================================================================*/
+
+	public static function has_gallery( $id = null ) {
+
+		$id = empty($id) ? get_the_ID() : $id; // Current post by default
+
+		$attachment_ids = get_post_meta( $id, '_custom_gallery', true );
+
+		if ( $attachment_ids )
+			return true;
+		else
+			return false;
+	}
+
 
 
 /*========================================================================
@@ -655,12 +673,6 @@ ul.gallery_images {
  * Unused
  *
  *=======================================================================*/
-
-	function has_gallery() {
-		$attachment_ids = get_post_meta( get_the_ID(), '_custom_gallery', true );
-		if ( $attachment_ids )
-			return true;
-	}
 
 	function has_shortcode( $shortcode = '' ) {
 		global $post;
