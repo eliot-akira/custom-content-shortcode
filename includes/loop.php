@@ -1069,7 +1069,9 @@ class CCS_Loop {
 
 					if (!empty($field_value) && is_array($field_value)) $field_value = implode('', $field_value);
 
-					if ( ($field_value==false) || empty(trim($field_value)) ) {
+					$field_value = trim($field_value);
+
+					if ( ($field_value==false) || empty($field_value) ) {
 
 						if ($compare=='EXISTS') {
 							$state['skip_ids'][] = $current_id; // value is empty, then skip
@@ -1646,6 +1648,9 @@ class CCS_Loop {
 				if (strpos($template, $search)!==false) {
 
 					$replace = get_post_meta( $post_id, $key, true );
+					if (is_array($replace)) {
+						$replace = ucwords(implode(', ', $replace));
+					}
 
 					$template = str_replace($search, $replace, $template);
 				}
