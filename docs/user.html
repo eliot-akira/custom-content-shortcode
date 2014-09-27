@@ -22,17 +22,17 @@ The <b>[is]</b> shortcode is used to display content based on user status.
 [is logout]You are logged out.[/is]
 [is user="john"]You are John.[/is]
 [is role="subscriber"]You are a subscriber.[/is]
-</code>
-
-Available parameters:
+</code><br>
+<hr>
+<h3>Parameters</h3>
 <ul>
-	<li><i>admin</i> - user has admin capability (manage options)</li>
-	<li><i>login</i> - user is logged in</li>
-	<li><i>logout</i> - user is logged out</li>
-	<li><i>user</i> - user name or ID - multiple values are possible: "1, 3, 22"</li>
+	<li><b>admin</b> - user has admin capability (manage options)</li>
+	<li><b>login</b> - user is logged in</li>
+	<li><b>logout</b> - user is logged out</li>
+	<li><b>user</b> - user name or ID - multiple values are possible: "1, 3, 22"</li>
 </ul><ul>
-	<li><i>role</i> - user role - default roles are <i>administrator</i>, <i>editor</i>, <i>author</i>, <i>contributor</i>, or <i>subscriber</i>
-	<li><i>capable</i> - user capability, for example: <i>capable="manage_options"</i></li>
+	<li><b>role</b> - user role - default roles are <i>administrator</i>, <i>editor</i>, <i>author</i>, <i>contributor</i>, or <i>subscriber</i>
+	<li><b>capable</b> - user capability, for example: <i>capable="manage_options"</i></li>
 
 	Multiple values are possible: <i>role="admin, subscriber"</i> will be true if the user is <i>admin</i> or <i>subscriber</i>.
 	See the list of available user roles and capabilities under <a href="index.php?page=content_overview#user-roles">Dashboard -> Content -> User Roles</a>.
@@ -48,15 +48,18 @@ The <b>[url]</b> shortcode is used to display login and logout links.
 <h4>Display a login link</h4>
 <code>&lt;a href="[url login]"&gt;User login&lt;/a&gt;</code>
 <h4>Display a logout link with redirect to home</h4>
-<code>&lt;a href="[url logout go='home']"&gt;Logout&lt;/a&gt;</code>
-
-Available parameters:
+<code>&lt;a href="[url logout go='home']"&gt;Logout&lt;/a&gt;</code><br>
+<hr>
+<h3>Parameters</h3>
 <ul>
-	<li><i>login</i> - login link</li>
-	<li><i>logout</i> - logout link</li>
-	<li><i>go</i> - redirect user after login/logout; use a full URL, or the name of a post or page; <i>go="home"</i> will return the user to the home page.
+	<li><b>login</b> - login link</li>
+	<li><b>logout</b> - logout link</li>
+	<li><b>go</b> - redirect user after login/logout; use a full URL, or the name of a post or page; <i>go="home"</i> will return the user to the home page.
 </li>
 </ul>
+
+<hr>
+
 Here is an example using both <b>[is]</b> and <b>[url]</b> to show a login/logout link based on user status.
 
 <code>[is logout]

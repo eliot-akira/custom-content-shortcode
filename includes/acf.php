@@ -27,8 +27,8 @@ class CCS_To_ACF {
 		add_shortcode('repeater', array($this, 'loop_through_acf_field'));
 
 		add_shortcode('acf_gallery', array($this, 'loop_through_acf_gallery_field'));
-		add_shortcode('sub_image', array($this, 'get_image_details_from_acf_gallery'));
 		add_shortcode('acf_image', array($this, 'get_image_details_from_acf_gallery'));
+		add_shortcode('sub_image', array($this, 'get_image_details_from_acf_gallery')); // Alias
 		add_shortcode('layout', array($this, 'if_get_row_layout'));
 
 		add_shortcode('related', array($this, 'loop_relationship_field'));
@@ -91,6 +91,7 @@ class CCS_To_ACF {
 		if ( get_field( $field ) /* && ( strpos($content, '[sub ') !== FALSE ) */ ) {
 
 			$index_now = 0;
+
 			if ( $start == '' ) $start='1';
 
 			while ( has_sub_field( $field ) ) {
@@ -99,11 +100,12 @@ class CCS_To_ACF {
 
 				if ( $index_now >= $start ) { /* Start loop */
 
-					if ( ( $count!= '' ) && ( $index_now >= ($start+$count) ) ) {
+					if ( ( !empty($count) ) && ( $index_now >= ($start+$count) ) ) {
 							/* If over count, continue empty looping for has_sub_field */
 					} else {
 
-						$output[] = do_shortcode( $content );
+						$replaced_content = do_shortcode($content);
+						$output[] = str_replace('{COUNT}', $index_now, $replaced_content);
 
 					}
 				}
@@ -111,7 +113,7 @@ class CCS_To_ACF {
 		} else {
 			$output = $content;
 		}
-		if( $output != null)
+		if( !empty($output) && is_array($output))
 			$output = implode( '', $output );
 		return $output;
 	}
@@ -122,10 +124,16 @@ class CCS_To_ACF {
 			'field' => '',
 			'count' => '',
 			'start' => '',
+			'subfield' => '',
 			'sub' => '',
 		), $atts ));
 
-		if ($sub=='') {
+		if (!empty($subfield)) {
+			$field = $subfield;
+			$sub = 'true';
+		}
+
+		if (empty($sub)) {
 			$images = get_field( $field );
 		} else {
 			$images = get_sub_field( $field );
@@ -139,7 +147,6 @@ class CCS_To_ACF {
 			foreach ( $images as $image ) {
 
 				self::$state['current_image'] = $image;
-
 				$index_now++;
 
 				if ( $index_now >= $start ) { /* Start loop */
@@ -148,11 +155,12 @@ class CCS_To_ACF {
 							break;				/* If over count, break the loop */
 					}
 
-					$output[] = do_shortcode( $content );
+					$replaced_content = do_shortcode($content);
+					$output[] = str_replace('{COUNT}', $index_now, $replaced_content);
 				}
 			}
 		}
-		if( $output != null)
+		if( !empty($output) && is_array($output))
 			$output = implode( '', $output );
 
 		self::$state['current_image'] = '';
@@ -199,28 +207,39 @@ class CCS_To_ACF {
 
 		extract( shortcode_atts( array(
 			'field' => '',
+			'subfield' => '',
 		), $atts ) );
 
-		if (empty($field)) return;
+		$output = array();
+		if (!empty($field)) {
+			$posts = get_field($field);
+		} elseif (!empty($subfield)) {
+			$posts = get_sub_field($subfield);
+		} else return null;
 
-		$out = array();
-		$posts = get_field($field);
 
 		if ($posts) {
 
 			self::$state['is_relationship_loop'] = 'true';
 
+			$index_now = 0;
+
 			foreach ($posts as $post) { // must be named $post
 
+				$index_now++;
+
 				self::$state['relationship_id'] = $post->ID;
-//				setup_postdata( $post );
-				$out[] = do_shortcode($content);
+
+				$replaced_content = do_shortcode($content);
+				$output[] = str_replace('{COUNT}', $index_now, $replaced_content);
 			}
 		}
 
 		self::$state['is_relationship_loop'] = 'false';
 
-		return implode('', $out);
+		if (is_array($output))
+			$output = implode('', $output);
+		return $output;
 	}
 
 

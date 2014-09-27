@@ -17,13 +17,13 @@ The file can contain HTML, PHP, CSS, JavaScript, and shortcodes. <br>
 </ul><ul>
 	<li><b>dir</b> - load from a directory</li>
 		<ul>
-			<li>web - http://</li>
-			<li>site - site address</li>
-			<li>wordpress - WordPress directory</li>
-			<li>content - /wp-content/</li>
-			<li>theme - /wp-content/theme</li>
-			<li>child - /wp-content/child_theme</li>
-			<li>views - /wp-content/views/</li>
+			<li><i>web</i> - http://</li>
+			<li><i>site</i> - site address</li>
+			<li><i>wordpress</i> - WordPress directory</li>
+			<li><i>content</i> - /wp-content/</li>
+			<li><i>theme</i> - /wp-content/theme</li>
+			<li><i>child</i> - /wp-content/child_theme</li>
+			<li><i>views</i> - /wp-content/views/</li>
 		</ul>
 </ul>
 By default, it looks for the file in the current theme directory. 
@@ -38,7 +38,7 @@ By default, it looks for the file in the current theme directory.
 There are special fields that are automatically loaded into the page.
 
 <h3>Head - CSS</h3>
-Create a custom field named <i>css</i>, and the field will be included in the document head.
+Create a custom field named <i>css</i>, and the field will be included in the document head. Inside this field, you can load CSS file or styles.
 <h4>Load a page-specific stylesheet</h4>
 <code>[load css="landing-page.css"]</code>
 
@@ -57,7 +57,7 @@ By default, it looks for the stylesheet in the <i>css</i> folder of the current 
 <hr>
 <h3>Google Fonts</h3>
 
-Use the <i>gfonts</i> parameter to include fonts from Google Fonts.
+Use the <i>gfonts</i> parameter to include fonts from Google Fonts. This should be placed in the <i>css</i> field.
 
 <h4>Include fonts and apply them to page elements</h4>
 
@@ -67,11 +67,10 @@ Use the <i>gfonts</i> parameter to include fonts from Google Fonts.
 &nbsp;&nbsp;&nbsp;&nbsp;p { font-family: Lato, sans-serif; }
 [/css]</code>
 
-This should be placed in the <i>css</i> field.
 <br>
 <hr>
 <h3>Foot - JS</h3>
-Create a custom field named <i>js</i>, and the field will be included at the foot of document body.
+Create a custom field named <i>js</i>, and the field will be included at the foot of document body. Inside this field, you can load JS file or script.
 <h4>Load a JavaScript file</h4>
 <code>[load js="slider.js"]</code>
 
@@ -84,13 +83,13 @@ By default, it looks for the file in the <i>js</i> folder of the current theme d
 &nbsp;&nbsp;&nbsp;&nbsp;});
 [/js]</code>
 
-You can also load the script in the header, by placing the command in the <i>css</i> field.
+You can also load the script in the header by placing it in the <i>css</i> field.
 <br>
 <hr>
 
 <h3>HTML</h3>
 Create a custom field named <i>html</i>, and the field will be displayed <i>instead of</i> the post content.
 
-This can be useful for pulling the post editor's content into a layout.
+This can be useful for pulling the post editor's content into a shortcode template.
 
 

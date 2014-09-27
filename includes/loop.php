@@ -129,8 +129,8 @@ class CCS_Loop {
 		$state['skip_ids'] 				= array();
 
 		$state['current_post_id']		= 0;
-		$state['posts_count']			= 0;
-		$state['comments_count']		= 0;
+
+		$state['comment_count']			= 0;
 
 		$state['is_attachment_loop']	= false;
 
@@ -1033,9 +1033,10 @@ class CCS_Loop {
 	
 	function prepare_all_posts( $query_object ) {
 
+		$parameters = self::$parameters;
 		$query = self::$query;
 		$state =& self::$state; // Update global state directly
-		
+
 		$state['post_count'] = $query_object->post_count;
 
 		if ( isset($query['meta_query'][0]) ) {
@@ -1048,12 +1049,13 @@ class CCS_Loop {
 
 		// If we need to check for skipped post
 		
-		if ( $compare=='EXISTS' || $compare=='NOT EXISTS' ) {
+		if ( $compare=='EXISTS' || $compare=='NOT EXISTS' || !empty($parameters['checkbox']) ) {
 
 			$all_posts = $query_object->posts;
 
 			foreach ($all_posts as $post) {
 
+				$current_id = $post->ID;
 
 				/*========================================================================
 				 *
@@ -1061,17 +1063,20 @@ class CCS_Loop {
 				 *
 				 *=======================================================================*/
 
-				$field_value = get_post_meta( $post->ID, $key, true );
+				if (isset($query['meta_query'][0]) && isset($query['meta_query'][0]['key'])) {
 
-				if (is_array($field_value)) $field_value = implode('', $field_value);
+					$field_value = get_post_meta( $post->ID, $key, true );
 
-				if (($field_value==false) || empty(trim($field_value))) {
+					if (!empty($field_value) && is_array($field_value)) $field_value = implode('', $field_value);
 
-					if ($compare=='EXISTS') {
-						$state['skip_ids'][] = $post->ID; // value is empty, then skip
+					if ( ($field_value==false) || empty(trim($field_value)) ) {
+
+						if ($compare=='EXISTS') {
+							$state['skip_ids'][] = $current_id; // value is empty, then skip
+						}
+					} elseif ($compare=='NOT EXISTS') {
+							$state['skip_ids'][] = $current_id; // value is not empty, then skip
 					}
-				} elseif ($compare=='NOT EXISTS') {
-						$state['skip_ids'][] = $post->ID; // value is not empty, then skip
 				}
 
 
@@ -1080,10 +1085,87 @@ class CCS_Loop {
 				 * Checkbox query
 				 *
 				 *=======================================================================*/
-		
 
+				$skip_1 = false;
 
+				if (!empty($parameters['checkbox']) && !empty($parameters['value'])) {
 
+					$values = self::explode_list($parameters['value']);
+					$check_field = get_post_meta( $current_id, $parameters['checkbox'], $single=true );
+
+					if (empty($parameters['compare'])) $compare="or";
+//					elseif (empty($parameters['checkbox_2'])) $compare = strtolower($parameters['compare']);
+//					else $compare="or";
+					else $compare = strtolower($parameters['compare']);
+
+					if ($compare == 'or') $skip_1 = true;
+
+					foreach ($values as $value) {
+
+						$in_array = in_array($value, (array)$check_field);
+
+						if (($compare == 'or') && ( $in_array )) {
+							$skip_1 = false;
+							break;						
+						}
+
+						if (($compare == 'and') && ( ! $in_array )) {
+							$skip_1 = true;
+						}
+
+					}
+				}
+
+				$skip_2 = false;
+				if ( !empty($parameters['checkbox_2']) && !empty($parameters['value_2']) ) {
+					$values = $this->explode_list($parameters['value_2']);
+					$check_field = get_post_meta( $current_id, $parameters['checkbox_2'], $single=true );
+
+					if (!empty($parameters['compare_2'])) $compare_2 = strtolower($parameters['compare_2']);
+					else $compare_2 = 'or';
+
+					if ($compare_2 == 'or') $skip_2 = true;
+
+					foreach ($values as $value) {
+
+						$in_array = in_array($value, (array)$check_field);
+
+						if (($compare_2 == 'or') && ( $in_array )) {
+							$skip_2 = false;
+							break;						
+						}
+
+						if (($compare_2 == 'and') && ( ! $in_array )) {
+							$skip_2 = true;
+						}
+					}
+				}
+
+				if (!empty($parameters['checkbox_2'])) {
+
+					if (!empty($parameters['relation'])) 
+						$relation = strtoupper($parameters['relation']);
+					else
+						$relation = 'AND'; // default
+
+					if ($relation=='OR') {
+						if ( ( ! $skip_1 ) || ( ! $skip_2 ) )
+							$skip = false;
+						else
+							$skip = true;
+					} else {
+						if ( ( ! $skip_1 ) && ( ! $skip_2 ) )
+							$skip = false;
+						else
+							$skip = true;
+					}
+				} else {
+					$skip = $skip_1;
+				}
+
+				if ($skip) {
+					$state['skip_ids'][] = $current_id; 
+				}
 
 			} // End for each post
 
@@ -1107,6 +1189,8 @@ class CCS_Loop {
 		if ( in_array($post_id, self::$state['skip_ids']) ) {
 			return null;
 		}
+
+		self::$state['comment_count']+=get_comments_number();
 
 		return $post;
 	}
@@ -1434,10 +1518,12 @@ class CCS_Loop {
 			'field' => '',
 			'fields' => '',
 			'field_loop' => '', // Field is array or comma-separated list
+			'acf_gallery' => '', // Pass image IDs from ACF gallery field
 			);
 
 		extract( shortcode_atts( $args , $atts, true ) );
 
+		$post_id = get_the_ID();
 		$content = self::render_default_field_tags( $content );
 
 		if ( !empty($fields) ) {
@@ -1451,9 +1537,7 @@ class CCS_Loop {
 
 		if ( !empty($field) ) {
 
-			$post_id = get_the_ID();
-
-			if ($field=='gallery') $field = '_custom_gallery'; // Support gallery field
+			if ($field=='gallery') $field = '_custom_gallery'; // Support CCS gallery field
 
 			$field_value = get_post_meta( $post_id, $field, true );
 
@@ -1472,8 +1556,6 @@ class CCS_Loop {
 			$content = str_replace('{FIELD}', $field_value, $content);
 
 		} elseif (!empty($field_loop)) {
-
-			$post_id = get_the_ID();
 
 			if ( $field_loop=='gallery' && class_exists('CCS_Gallery_Field')) {
 
@@ -1503,7 +1585,30 @@ class CCS_Loop {
 
 				$content = implode('', $contents);
 			}
+
+		} elseif (!empty($acf_gallery)) {
+
+			if ( function_exists('get_field') && function_exists('get_sub_field') ) {
+				$field = $acf_gallery;
+				$images = get_field($acf_gallery, $post_id, false);
+				if (empty($field_value)) {
+					// Try sub field
+					$images = get_sub_field($acf_gallery, $post_id, false);
+				}
+				if (!empty($images)) {
+
+					$ids = array();
+					foreach ($images as $image) {
+						$ids[] = $image['id'];
+					}
+					if (is_array($ids))
+						$replace = implode(',', $ids);
+					else $replace = $ids;
+					$content = str_replace('{FIELD}', $replace, $content);
+				}
+			}
 		}
+
 
 		return do_shortcode( $content );
 

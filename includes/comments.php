@@ -18,7 +18,6 @@ class CCS_Comments {
 		add_shortcode('comments', array($this, 'comment_shortcode') );
 
 		self::$state['is_comments_loop'] = false;
-		self::$state['total_comments'] = 0;
 	}
 
 	function comment_shortcode( $atts, $content, $tag ) {
@@ -221,7 +220,7 @@ class CCS_Comments {
 			return get_comments_number();
 		}
 		if( isset( $atts['total'] ) ) {
-			return self::$state['total_comments'];
+			return CCS_Loop::$state['comment_count'];
 		}
 	}
 

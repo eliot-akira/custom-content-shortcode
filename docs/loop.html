@@ -51,7 +51,7 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 	<li><b>tag</b> - display posts with one or more tags: <i>tag="apples, green"</i></li>
 	<li><b>taxonomy</b>, <b>value</b> - display posts by taxonomy value: <i>taxonomy="product-type" value="book"</i>.
 	 Mutiple values are possible: <i>value="drama, comedy"</i> shows all posts whose taxonomy value is <i>drama</i> <b>or</b> <i>comedy</i></li>
-	<li><b>compare</b> - optional for taxonomy query: use <i>compare="NOT"</i> for posts whose <i>taxonomy</i> is <b>not</b> <i>value</i>; use <i>compare="AND"</i> when you want posts whose <i>taxonomy</i> contains all values</li>
+	<li><b>compare</b> - optional for taxonomy query: use <i>compare="not"</i> for posts whose <i>taxonomy</i> is <b>not</b> <i>value</i>; use <i>compare="and"</i> when you want posts whose <i>taxonomy</i> contains all values</li>
 </ul>
 
 <h4>Field value</h4>
@@ -93,7 +93,7 @@ By default, it's assumed that the field is stored as a UNIX timestamp. See the e
 <ul>
 	<li><b>checkbox, value</b> - display posts according to custom field, whose checkbox contains the value</li>
 
-Multiple values are possible: <i>value="first, second"</i>. This will return all posts with checkboxes containing <b>any</b> of the values, i.e., first <b>or</b> second. Optionally, you can set the parameter <i>compare</i> to <i>AND</i>, which will return all posts with checkboxes containing <b>all</b> of the values, i.e., first <b>and</b> second.  See example section below.
+Multiple values are possible: <i>value="first, second"</i>. This will return all posts with checkboxes containing <b>any</b> of the values, i.e., first <i>or</i> second. Optionally, you can set the parameter <i>compare="and"</i>, which will return all posts with checkboxes containing <b>all</b> of the values, i.e., first <i>and</i> second.  See example section below.
 
 	<li><b>relation, checkbox_2, value_2</b> - additional query for checkbox value, where <i>relation</i> is <i>AND</i> (default) or <i>OR</i>. You can use multiple values, and the parameter <i>compare_2</i>, if necessary.</li>
 </ul>

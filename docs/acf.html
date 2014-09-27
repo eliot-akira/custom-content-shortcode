@@ -1,18 +1,21 @@
 <h3 align="center">Advanced Custom Fields</h3>
 <hr>
 
-<h3>Relationship field</h3>
+<h3>Relationship</h3>
 
-For relationship fields made in Advanced Custom Fields, use the <b>[related]</b>  shortcode.
+Use the <b>[related]</b> shortcode to loop through a relationship field.
 
 <h4>Display titles and thumbnails of related posts</h4>
 <code>[related field="relationship"]
 &nbsp;&nbsp;&nbsp;&nbsp;[field title]
 &nbsp;&nbsp;&nbsp;&nbsp;[field thumbnail]
 [/related]
-</code><br>
+</code>
+
+To access a relationship field inside repeater or flexible content, use the <i>subfield</i> parameter.
+
 <hr>
-<h3>Gallery field</h3>
+<h3>Gallery</h3>
 
 For gallery fields, use the <b>[acf_gallery]</b>  shortcode.
 
@@ -23,9 +26,14 @@ For gallery fields, use the <b>[acf_gallery]</b>  shortcode.
 &nbsp;&nbsp;&nbsp;&nbsp;[acf_image size="thumbnail"]
 [/acf_gallery]
 </code>
+
+To access a gallery field inside repeater or flexible content, use the <i>subfield</i> parameter.
+
 The<b> [acf_image]</b> shortcode displays each image in the gallery field. It can also display these fields: <i>id</i>,<i> title</i>,<i> caption</i>,<i> alt</i>,<i> url</i>, and<i> description</i>. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i>. The default is full-size.
 
-You can also pass the image IDs to another shortcode to display.
+<hr>
+
+You can pass the image IDs to another shortcode.
 <h4>Pass the images to another shortcode</h4>
 <code>[pass acf_gallery="images"]
 &nbsp;&nbsp;&nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
@@ -34,7 +42,7 @@ You can also pass the image IDs to another shortcode to display.
 <hr>
 <h3>Repeater field</h3>
 
-For repeater fields made in Advanced Custom Fields, use the <b>[repeater]</b> shortcode. You can display sub-fields using the <b>[sub]</b> shortcode.
+Use the <b>[repeater]</b> shortcode to loop through repeater fields. You can display sub-fields using the <b>[sub]</b> shortcode.
 
 
 <h4>Display repeater fields</h4>
@@ -44,9 +52,7 @@ For repeater fields made in Advanced Custom Fields, use the <b>[repeater]</b> 
 &nbsp;&nbsp;&nbsp;&nbsp;[sub field="description" format="true"]
 [/repeater]</code>
 
-For an image field, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size.
-
-Advanced Custom Fields gives you an option to return the image value as: image ID, image URL, or image object. You can set the <i>in</i> parameter as: <i>id</i>, <i>url</i>, or <i>image object</i>. The default is <i>image object</i>.
+For an image field, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size. If the image field returns as URL, set <i>in="url"</i>.
 <br>
 <hr>
 <h3>Flexible content field</h3>
@@ -65,8 +71,8 @@ Advanced Custom Fields gives you an option to return the image value as: image I
 &nbsp;&nbsp;&nbsp;&nbsp;[/layout]
 &nbsp;
 &nbsp;&nbsp;&nbsp;&nbsp;[layout name="gallery"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_gallery field="gallery" sub="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub_image size="thumbnail"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_gallery subfield="gallery"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_image size="thumbnail"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/acf_gallery]
 &nbsp;&nbsp;&nbsp;&nbsp;[/layout]
 &nbsp;
@@ -75,7 +81,7 @@ Advanced Custom Fields gives you an option to return the image value as: image I
 <hr>
 <h3>ACF fields in other posts</h3>
 
-To display gallery, repeater, or flexible content fields from other posts, use the <i>loop</i> shortcode:
+Display gallery, relationship, repeater, or flexible content fields from other posts inside the loop.
 
 <code>[loop name="hello-world"]
 &nbsp;&nbsp;&nbsp;&nbsp;[repeater field="boxes"]
