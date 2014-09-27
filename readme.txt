@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.2.1
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,13 +90,14 @@ Support for other plugins:
 * Update all modules for better code organization and performance
 * Improve documentation
 * [loop cache] - Cache the result for an amount of time
-* [cache] - Cache multiple loops or page sections
+* [cache] - Cache page section or multiple loops
 * [timer] - Tool to measure performance
 * Gallery field - Improve UI and function
 * [attached gallery] - Loop through images in the gallery field
 * [if gallery] - If the post has any image in gallery field
 * [loop exclude="this"] - Exclude current post from loop
 * Mobile detect - now disabled by default
+* ..and more
 
 = 1.2.2 =
 
