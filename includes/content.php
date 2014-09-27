@@ -40,7 +40,7 @@ class CCS_Content {
 			$result = $this->run_query( $parameters );
 		}
 
-		$result = $this->process_result( $result, $parameters );
+		$result = $this->process_result( $result, self::$parameters );
 
 		return $result;
 	}
@@ -103,7 +103,11 @@ class CCS_Content {
 			// Native gallery options
 
 			'orderby' => '', 'order' => '', 'columns' => '',
-			'link' => '', 'include' => '', 'exclude' => '',
+			 'include' => '', 'exclude' => '',
+
+			// Read more
+			'more' => '', 'link' => 'true', 'dots' => '...',
+			'between' => 'false',
 
 
 			// Fomatting
@@ -113,7 +117,6 @@ class CCS_Content {
 			'align' => '', 'class' => '', 'height' => '',
 			'words' => '', 'len' => '', 'length' => '',
 			'date_format' => '', 'timestamp' => '',
-			'more' => '', 'dots' => '...',
 		);
 
 		if ( isset($parameters['type']) && ($parameters['type']=='attachment') ) {
@@ -465,12 +468,26 @@ class CCS_Content {
 
 			if (function_exists('get_field_object')) {
 
-				// ??
-				
+				$all_selected = self::get_the_field( $parameters );
+				$out = array();
+
+				if (!empty($all_selected)) {
+
+					$field = get_field_object($parameters['field']); 
+
+					if (!is_array($all_selected)) {
+ 						// One selection
+						$out = isset($field['choices'][$all_selected]) ?  $field['choices'][$all_selected] : null;
+					} else {
+						foreach($all_selected as $selected){
+							$out[] = $field['choices'][ $selected ]; /* Multiple */
+						}
+						$out = implode(', ', $out);
+					}
+				}
+				$result = $out;
 			}
 		}
-
-
 
 
 
@@ -493,13 +510,12 @@ class CCS_Content {
 		 *=======================================================================*/
 
 			// Make sure no parameters are set
-			if (count(self::$original_parameters)==0) {
+//			if (count(self::$original_parameters)==0) {
 
 				$result = self::$state['current_post']->post_content;
-			}
+//			}
 
 		}
-
 		return $result;
 	}
 
@@ -551,7 +567,13 @@ class CCS_Content {
 
 		if (!empty($parameters['words'])) {
 
-			$result = wp_trim_words( $result, $parameters['words'] );
+			if (!empty($parameters['dots'])) {
+				if ($parameters['dots']=='false')
+					$parameters['dots'] = null;
+				$result = wp_trim_words( $result, $parameters['words'], $parameters['dots'] );
+			}
+			else
+				$result = wp_trim_words( $result, $parameters['words'] );
 
 		}
 
@@ -649,15 +671,20 @@ class CCS_Content {
 			if ($more!='none') {
 
 				if ($parameters['link'] != 'false') {
-					if ($parameters['field']=='excerpt') {
-						$result .= '<br>';
+//					if ($parameters['field']=='excerpt') {
+
+						if (empty($parameters['between']))
+							$result .= '<br>';
+						elseif ($parameters['between']!='false')
+							$result .= $parameters['between'];
+
 	/*				if ((substr($out, -3)!='</p>') && (substr($out, -4)!='</br>'))
 						$out .= '<br>';
 	*/
 						$result .= '<a class="more-tag" href="'. get_permalink($post_id) . '">'
 							. $more . '</a>';
 
-					}
+//					}
 				} else {
 					$result .= $more;
 				}
@@ -893,11 +920,15 @@ class CCS_Content {
 
 				// Get excerpt
 
+//				$result = get_the_excerpt();
 				$result = $post->post_excerpt;
 
 				if( empty($result) ) { // If empty, get it from post content
-
 					$result = $post->post_content;
+					if (empty($parameters['words']) && empty($parameters['length'])) {
+						self::$parameters['words'] = 25;
+					}
+
 				}
 				break;
 
@@ -917,7 +948,7 @@ class CCS_Content {
 
 		return $result;
 
-	} // End content shortcode
+	} // End get_the_field
 
 
 

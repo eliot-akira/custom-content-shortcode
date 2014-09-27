@@ -87,19 +87,15 @@ Support for other plugins:
 
 = 1.3.0 =
 
-* Updated all modules for better code organization and performance
-* Improved documentation
-
+* Update all modules for better code organization and performance
+* Improve documentation
 * [loop cache] - Cache the result for an amount of time
 * [cache] - Cache multiple loops or page sections
 * [timer] - Tool to measure performance
-
 * Gallery field - Improve UI and function
 * [attached gallery] - Loop through images in the gallery field
 * [if gallery] - If the post has any image in gallery field
-
 * [loop exclude="this"] - Exclude current post from loop
-
 * Mobile detect - now disabled by default
 
 = 1.2.2 =
