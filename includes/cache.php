@@ -146,7 +146,7 @@ class CCS_Cache {
 		);
 	}
 
-	function total_info() {
+	public static function total_info() {
 		return sprintf(
 			'<b>Current total</b>: %.3f sec - %4.2f Mb - %d queries',
 			timer_stop(0),
@@ -156,7 +156,7 @@ class CCS_Cache {
 		);
 	}
 
-	function human_time($time) {
+	public static function human_time($time) {
 
 		$ms = round($time * 1000);
 		$sec = $ms / 1000; // Round off to thousandth

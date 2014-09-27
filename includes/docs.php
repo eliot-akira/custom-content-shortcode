@@ -160,19 +160,19 @@ class CCS_Docs {
 		<tr>
 			<td>
 				<hr class="setting-section">
-				<input type="checkbox" value="on" name="ccs_content_settings[shortcodes_in_widget]"
-					<?php checked( $shortcodes_in_widget, 'on' ); ?>
+				<input type="checkbox" value="on" name="ccs_content_settings[raw_shortcode]"
+					<?php checked( $raw_shortcode, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Enable shortcodes inside Text widget
+				&nbsp;&nbsp;Enable <a href="options-general.php?page=ccs_reference&tab=other#raw"><b>[raw]</b></a> shortcode</i>
 			</td>
 		</tr>
 
 		<tr>
 			<td>
-				<input type="checkbox" value="on" name="ccs_content_settings[raw_shortcode]"
-					<?php checked( $raw_shortcode, 'on' ); ?>
+				<input type="checkbox" value="on" name="ccs_content_settings[shortcodes_in_widget]"
+					<?php checked( $shortcodes_in_widget, 'on' ); ?>
 				/>
-				&nbsp;&nbsp;Enable <a href="options-general.php?page=ccs_reference&tab=other#raw"><b>[raw]</b> shortcode</a> - <i>Protect shortcode content from formatting</i>
+				&nbsp;&nbsp;Enable shortcodes inside Text widget
 			</td>
 		</tr>
 
@@ -360,7 +360,7 @@ class CCS_Docs {
 					<div align="center" class="overview-logo-pad">
 						<img src="<?php echo plugins_url();?>/custom-content-shortcode/docs/logo/logo.png">
 						<div class="overview-logo-pad"><b>Custom Content Shortcode</b> is developed by Eliot Akira.</div>
-						Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin support forum</a> for feedback and questions.<br>
+						Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin support forum</a> for questions or feedback.<br>
 						If you'd like to contribute to this plugin, here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>.<br>
 						For commercial development, contact <a href="mailto:me@eliotakira.com">me@eliotakira.com</a><br>
 					</div>
