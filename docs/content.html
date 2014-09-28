@@ -67,23 +67,32 @@ You can display custom fields as well as predefined fields:
 </ul>
 <i>Read more</i>
 <ul>
-	<li><b>more</b> - display content up to the &lt;!--more--&gt; tag; <i>more="true"</i> will show "Read More" at the end, with a link to the post; to change the text, use: <i>more="..."</i></li>
-	<li><b>link</b> - set <i>link="false"</i> to disable link to the post</li>
+	<li><b>more</b> - set <i>true</i> to display content up to the &lt;!--more--&gt; tag, or an excerpt if the tag doesn't exist. It will add "Read More" at the end, with a link to the post; to change the text, use: <i>more="..."</i></li>
+	<li><b>dots</b> - set <i>false</i> to disable dots at the end of excerpt</li>
+	<li><b>link</b> - set <i>false</i> to disable link to the post</li>
 </ul>
 <i>Image field</i>
 <ul>
 	<li><b>image</b> - display an image field, for example: <i>image="product_image"</i>
 	<li><b>size</b> -  size of image to get: <i>thumbnail</i>, <i>medium</i>, <i>large</i>, <i>full</i> (default) or custom defined size
-	<li><b>in</b> - type of image field: <i>id</i> (default), <i>url</i>, or <i>object</i>
 	<li><b>image_class</b> - add class to the &lt;img&gt; tag</li>
+	<li><b>alt</b>, <b>title</b> - additional &lt;img&gt; attributes</li>
+	<li><b>in</b> - type of image field: <i>id</i> (default), <i>url</i>, or <i>object</i>
 </ul>
-<h4>Other field types</h4>
+
+<h4>Taxonomy</h4>
 <ul>
-	<li><b>taxonomy</b> - display <i>category</i>, <i>post_tag</i>, or a custom taxonomy of the post</li>
+	<li><b>taxonomy</b> - display <i>category</i>, <i>tag</i>, or a custom taxonomy of the post</li>
 
 	You can also use <b>[taxonomy <i>tax_name</i>]</b>.
 
-	<li><b>out="slug"</b> - display the taxonomy term slug, not label</li>
+	<li><b>field</b> - taxonomy field to display: <i>name</i> (default), <i>id</i>, <i>slug</i>, <i>description</i>, or custom taxonomy field</li>
+	<li><b>term</b> - get taxonomy term by ID or slug, regardless of current post</li>
+	<li><b>term_name</b> - get taxonomy term by name/label</li>
+</ul>
+
+<h4>Other field types</h4>
+<ul>
 	<li><b>meta</b> - display author meta: <i>field="author" meta="user_email"</i> - see: <a href="http://codex.wordpress.org/Function_Reference/get_the_author_meta" target="_blank">Codex: Author Meta</a></li>
 	<li><b>out="label"</b> - when displaying checkboxes or select fields made in ACF, this parameter displays their labels instead of values
 </ul>

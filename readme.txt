@@ -85,6 +85,13 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.3.1 =
+
+* [taxonomy] - Taxonomy fields: *term="name or ID" field="description"*
+* [field excerpt] - Read more: *more="true"*
+* [if name/field] - Check only the beginning of name or field value: *start="true"*
+* [field] - Image attributes for image field, attachment, and featured image
+
 = 1.3.0 =
 
 * Update all modules for better code organization and performance

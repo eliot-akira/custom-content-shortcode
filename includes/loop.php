@@ -129,9 +129,10 @@ class CCS_Loop {
 		$state['skip_ids'] 				= array();
 
 		$state['current_post_id']		= 0;
+		// Store ID of post that contains the loop
+		$state['original_post_id']		= get_the_ID();
 
 		$state['comment_count']			= 0;
-
 		$state['is_attachment_loop']	= false;
 
 		self::$state = $state;
@@ -874,8 +875,6 @@ class CCS_Loop {
 
 		self::$query = $query; // Store query parameters
 
-		self::$state['original_post_id'] = get_the_ID(); // Store ID of post that contains the loop
-
 		self::$state['do_reset_postdata'] = true; // Reset post data at the end of loop
 
 		return new WP_Query( $query );
@@ -1466,7 +1465,7 @@ class CCS_Loop {
 		} elseif ($between_row == 'true') {
 			$between_row = '<br>';
 		}
-		$clear = '<div style="clear:both;">'.$between_row.'</div>';
+		$clear = '<div style="clear:both">'.$between_row.'</div>';
 
 		$out = null;
 
@@ -1478,7 +1477,7 @@ class CCS_Loop {
 
 				$column_index++;
 
-				$out .= '<div class="column-1_of_'.$per_row.'" style="width:'.$percent.'%;float:left;">';
+				$out .= '<div class="column-1_of_'.$per_row.'" style="width:'.$percent.'%;float:left">';
 
 				// Wrap in padding?
 				if (!empty($pad)) {
@@ -1788,9 +1787,11 @@ class CCS_Loop {
 
 	// Explode the list, trim each item and put it back together
 
-	public static function clean_list( $list ) {
-		$list = self::explode_list($list);
-		return implode(',',$list);
+	public static function clean_list( $list, $delimiter = null ) {
+
+		if (empty($delimiter)) $delimiter = ',';
+		$list = self::explode_list($list, $delimiter);
+		return implode($delimiter,$list);
 	}
 
 
