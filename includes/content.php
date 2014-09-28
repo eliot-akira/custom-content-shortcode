@@ -398,7 +398,7 @@ class CCS_Content {
 			if ( $posts ) {
 
 				self::$state['current_post'] = $posts[0];
-				self::$state['current_post_id'] = $posts[0]->ID;
+				self::$state['current_post_id'] = $posts[0]->ID; // ID of the post
 
 			} else {
 
@@ -909,7 +909,7 @@ class CCS_Content {
 
 			return self::get_the_attachment_field( $parameters );
 		}
-
+/*
 		$post_id = !empty($parameters['id']) ? $parameters['id'] : get_the_ID();
 
 		if ($post_id == self::$state['current_post_id']) {
@@ -919,6 +919,9 @@ class CCS_Content {
 			self::$state['current_post'] = $post;
 			self::$state['current_post_id'] = $post_id;
 		}
+*/
+		$post = self::$state['current_post'];
+		$post_id = self::$state['current_post_id'];
 
 		$field = $parameters['field'];
 		$result = '';
@@ -1113,7 +1116,9 @@ class CCS_Content {
 			$post_id = CCS_Loop::$state['current_post_id'];
 		} elseif (CCS_Attached::$state['is_attachment_loop']) {
 			$post_id = CCS_Attached::$state['current_attachment_id'];
-		}
+		} /* else {
+			$post_id = self::$state['current_post_id'];
+		} */
 
 		if (empty($post_id)) return; // Needs attachment ID
 /*

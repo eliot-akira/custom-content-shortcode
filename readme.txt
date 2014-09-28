@@ -90,7 +90,8 @@ Support for other plugins:
 * [taxonomy] - Taxonomy fields: *term="name or ID" field="description"*
 * [field excerpt] - Read more: *more="true"*
 * [if name/field] - Check only the beginning of name or field value: *start="true"*
-* [field] - Image attributes for image field, attachment, and featured image
+* [field] - Image attributes for image field, attachment, and featured image; make sure *image_class* works for all types
+* [loop exclude="this"] - Make sure to get the original post ID in which the loop is contained
 
 = 1.3.0 =
 
