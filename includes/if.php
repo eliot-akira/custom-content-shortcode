@@ -47,6 +47,7 @@ class CCS_If {
 			'value' => '',
 
 			'not' => '',
+			'start' => '',
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -203,18 +204,30 @@ class CCS_If {
 		if (!empty($field)) {
 
 			$check = get_post_meta( $current_post_id, $field, true );
-			if (!is_array($check)) $check = array($check);
+			if (empty($check) || ($check==false))
+				$condition = false;
+			else {
+				if (!is_array($check)) $check = array($check);
+				$values = self::comma_list_to_array($value);
 
-			$values = self::comma_list_to_array($value);
+				foreach ($values as $this_value) {
 
-			foreach ($values as $this_value) {
+					foreach ($check as $check_this) {
 
-				if ($compare == "OR") {
-					$condition = in_array($this_value, $check) ? true : $condition;
-				} else { // AND
-					$condition = in_array($this_value, $check) ? true : false;
-					if (!$condition) break; // Every term must be found
+						if ($start=='true') {
+							// Only check beginning of field value
+							$check_this = substr($check_this, 0, strlen($this_value));
+						}
+
+						if ($compare == 'OR') {
+							$condition = ($this_value==$check_this) ? true : $condition;
+						} else { // AND
+							$condition = ($this_value==$check_this) ? true : false;
+							if (!$condition) break; // Every term must be found
+						}
+					}
 				}
+
 			}
 		}
 
@@ -226,13 +239,22 @@ class CCS_If {
 		 *=======================================================================*/
 
 		if (!empty($type)) {
-			$types = self::comma_list_to_array($types); // Enable comma-separated list
+			$types = self::comma_list_to_array($type); // Enable comma-separated list
 			$condition = in_array($current_post_type, $types) ? true : false;
 		}
 
 		if (!empty($name)) {
 			$names = self::comma_list_to_array($name);
-			$condition = in_array($current_post_name, $names) ? true : false;
+
+			foreach ($names as $each_name) {
+				if ($start=='true') {
+					// Only check beginning of string
+					$this_value = substr($current_post_name, 0, strlen($each_name));
+				} else {
+					$this_value = $current_post_name;
+				}
+				$condition = ($this_value == $each_name) ? true : $condition;
+			}
 		}
 
 
@@ -268,10 +290,17 @@ class CCS_If {
 					} else {
 						// compare to parent slug
 
-						if ($compare == "OR") {
-							$condition = ($check_parent==$current_post_parent_slug) ? true : $condition;
+						if ($start=='true') {
+							// Only check beginning of string
+							$check_this = substr($current_post_parent_slug, 0, strlen($check_parent));
+						} else {
+							$check_this = $current_post_parent_slug;
+						}
+
+						if ($compare == 'OR') {
+							$condition = ($check_parent==$check_this) ? true : $condition;
 						} else { // AND
-							$condition = ($check_parent==$current_post_parent_slug) ? true : false;
+							$condition = ($check_parent==$check_this) ? true : false;
 							if (!$condition) break; // Every term must be found
 						}
 					}
@@ -309,7 +338,8 @@ class CCS_If {
 			$posts = get_posts( array (
 				'post_parent' => $current_id,
 				'post_type' => 'attachment',
-				'post_status' => 'any'
+				'post_status' => 'any',
+				'posts_per_page' => 1,
 				) );
 			if (!empty($posts)) $condition = true;
 			else $condition = false;

@@ -70,6 +70,7 @@ class CCS_Content {
 			// Taxonomy value
 
 			'taxonomy' => '',
+			'term' => '', 'term_name' => '',
 			'out' => '', // out="slug" taxonomy slug
 
 			// Image field
@@ -106,7 +107,7 @@ class CCS_Content {
 			 'include' => '', 'exclude' => '',
 
 			// Read more
-			'more' => '', 'link' => 'true', 'dots' => '...',
+			'more' => '', 'link' => 'true', 'dots' => 'true',
 			'between' => 'false',
 
 
@@ -430,6 +431,8 @@ class CCS_Content {
 		 *=======================================================================*/
 
 		elseif (!empty($parameters['taxonomy'])) {
+
+			$results = array();
 			
 			if ($parameters['taxonomy'] == 'tag') {
 				$taxonomy='post_tag';
@@ -437,23 +440,78 @@ class CCS_Content {
 				$taxonomy = $parameters['taxonomy'];
 			}
 
-		    $terms = get_the_terms( self::$state['current_post_id'], $taxonomy );
+			// Get taxonomy term by ID, slug or name
 
-		    if ( !empty( $terms ) ) {
+			if (!empty($parameters['term'])) {
+				if (is_numeric($parameters['term'])) {
+					// By term ID
+					$terms = get_term_by('id', $parameters['term'], $taxonomy);
+					$terms = array($terms); // Single term
+				} else {
+					// By term slug
+					$terms = get_term_by('slug', $parameters['term'], $taxonomy);
+					$terms = array($terms); // Single term
+				}
+			} elseif (!empty($parameters['term_name'])) {
+					// By term name
+					$terms = get_term_by('name', $parameters['term_name'], $taxonomy);
+					$terms = array($terms); // Single term
+			} else {
 
-		    	foreach ($terms as $term) {
-		    		$names[] = $term->name;
-		    		$slugs[] = $term->slug;
-		    	}
+				// Default: get all taxonomy terms of current post
 
-		    	if ( $parameters['out'] == 'slug') {
-			    	$result = implode(' ', $slugs);
-		    	} else {
-			    	$result = implode(', ', $names);
-		    	}
-		    } else {
-		    	return null; // No terms found
-		    }
+				$terms = get_the_terms( self::$state['current_post_id'], $taxonomy );
+			}
+
+			if ( !empty( $terms ) ) {
+
+				foreach ($terms as $term) {
+
+					$names[] = $term->name;
+					$slugs[] = $term->slug;
+					$ids[] = $term->term_id;
+
+					if (!empty($parameters['field'])) {
+
+						// Get taxonomy field
+
+						switch ($parameters['field']) {
+							case 'id':
+								$results[] = $term->term_id;
+								break;
+							case 'slug':
+								$results[] = $term->slug;
+								break;
+							case 'description':
+								$results[] = $term->description;
+								break;
+							default:
+
+								// Support taxonomy meta fields
+								 
+								if (function_exists('get_tax_meta')) {
+									$field_value = get_tax_meta($term->term_id,$parameters['field']);
+									if (!empty($field_value)) {
+										$results[] = $field_value;
+									}
+								}
+
+								break;
+						}
+					} else {
+						$results[] = $term->name; // Default: taxonomy name
+					}
+
+				}
+
+				if ( $parameters['out'] == 'slug') { // Backward compatibility
+					$result = implode(' ', $slugs);
+				} else {
+					$result = implode(', ', $results);
+				}
+			} else {
+				return null; // No terms found
+			}
 
 		}
 
@@ -569,7 +627,10 @@ class CCS_Content {
 
 			if (!empty($parameters['dots'])) {
 				if ($parameters['dots']=='false')
-					$parameters['dots'] = null;
+					$parameters['dots'] = false;
+				elseif ($parameters['dots']=='true')
+					$parameters['dots'] = '&hellip;'; // default
+
 				$result = wp_trim_words( $result, $parameters['words'], $parameters['dots'] );
 			}
 			else
@@ -659,7 +720,7 @@ class CCS_Content {
 
 			$until_pos = strpos($result, '<!--more-->');
 			if ($until_pos!==false) {
-				$result = substr($result, 0, $until_pos);
+				$result = substr($result, 0, $until_pos); // Get content until tag
 			}
 
 			if ($parameters['more']=='true') {
@@ -887,7 +948,8 @@ class CCS_Content {
 			case 'thumbnail-link':		// thumbnail with link to post
 			case 'thumbnail-link-self':	// thumbnail with link to attachment page
 
-				$result = get_the_post_thumbnail( $post_id, 'thumbnail' ); break;
+				$result = get_the_post_thumbnail( $post_id, 'thumbnail' );
+				break;
 
 			case 'thumbnail-url':
 				$src = wp_get_attachment_image_src( get_post_thumbnail_id($post_id), 'thumbnail' );

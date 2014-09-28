@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,7 +62,7 @@ Support for other plugins:
 
 **Q:** How do I remove unwanted formatting inside shortcodes?
 
-**A:** WordPress auto-formats the post content using the wp_autop filter. This can cause unwanted `<p>` and `<br>` tags around line breaks. To prevent this, go to Settings -> Custom Content, and under the settings tab, enable: Move wp_autop to *after* shortcodes.
+**A:** WordPress automatically formats the post content, which can cause unwanted `<p>` and `<br>` tags around line breaks. To prevent this, wrap the content with the [raw] shortcode. You can enable it under Settings -> Custom Content.
 
 **Q:** Switching from text to visual editor breaks my HTML.
 
@@ -70,11 +70,11 @@ Support for other plugins:
 
 * Disable the visual editor for certain posts or post types, with the [Raw HTML](http://wordpress.org/plugins/raw-html/) plugin. However, if the post needs to be editable by the client, this won't be ideal.
 
-* Put the code in a custom field, then include it in the post. For example: *[content field="code_block"]*
+* Put all code in a custom post type, then include it into the post. For example: *[content type="template" name="recent-posts"]*
+
+* Put the code in a custom field, then include it in the post. For example: *[field code_block]*
 
 * Put the code in a file, then include it into the post. For example: *[load dir="views" file="recent-posts.html"]*
-
-* You can create a custom field called *html*. This special field is displayed **instead of** the post content. All your HTML and shortcodes can be put there, then place *[content]* where you need the content of the visual editor to appear.
 
 * Put your code in a text widget, and use a plugin like [Widgets on Pages](http://wordpress.org/plugins/widgets-on-pages/).
 
