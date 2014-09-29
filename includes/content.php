@@ -134,9 +134,9 @@ class CCS_Content {
 			}
 		}
 
-		// Default size for featured image and image link
+		// Default size for featured image thumbnail
 
-		$image_fields = array('image','image-link','thumbnail','thumbnail-link');
+		$image_fields = array('thumbnail','thumbnail-link');
 
 		if ( isset($parameters['field']) && in_array($parameters['field'],$image_fields)) {
 			$parameters['size'] = isset($parameters['size']) ? $parameters['size'] : 'thumbnail';
@@ -277,7 +277,7 @@ class CCS_Content {
 		 *
 		 *=======================================================================*/
 
-		elseif ( $parameters['gallery'] == 'native') {
+		elseif ( $parameters['gallery'] == 'native' ) {
 
 			$result = '[gallery " ';
 
@@ -411,6 +411,14 @@ class CCS_Content {
 
 			self::$state['current_post'] = get_post();
 			self::$state['current_post_id'] = get_the_ID();
+		}
+
+		if ( !empty($parameters['exclude']) && ($parameters['exclude']=='this') ) {
+
+			// Exclude current post ID
+			if (self::$state['current_post_id'] == get_the_ID())
+				return false;
+
 		}
 
 		return true;
