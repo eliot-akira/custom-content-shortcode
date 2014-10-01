@@ -440,10 +440,9 @@ class CCS_Loop {
 					// Get parent ID(s) by slug (pretty expensive query)
 
 					$parent_IDs = array();
-
 					foreach ($parents as $parent_slug) {
 
-						$posts = get_posts( array('name' => $parent_slug, 'post_type' => $query['type'], 'posts_per_page' => 1) );
+						$posts = get_posts( array('name' => $parent_slug, 'post_type' => $query['post_type'], 'posts_per_page' => '1') );
 
 						if ( $posts ) $parent_IDs[] = $posts[0]->ID;
 					}

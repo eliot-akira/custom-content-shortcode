@@ -21,6 +21,8 @@ Available parameters for the <b>[for]</b> shortcode are:
 </ul><ul>
 	<li><b>count</b> - limit number of terms: <i>count="3"</i></li>
 	<li><b>parent</b> - get child categories by parent slug</li>
+	<li><b>exclude</b> - exclude taxonomy term by ID or slug; <i>exlude="uncategorized"</i></li>
+	<li><b>empty</b> - set <i>true</i> to include terms that have no associated posts; use outside the loop</li>
 </ul><ul>
 	<li><b>orderby</b> - order by <i>name</i> (default), <i>count</i> (post count), <i>id</i>, or <i>slug</i></li>
 	<li><b>order</b> - <i>ASC</i> (ascending - default), or <i>DESC</i> (descending)</li>
@@ -51,7 +53,7 @@ It's possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
 <hr>
 <h3>Current post</h3>
 
-The <b>[for each]</b> loop displays all terms that exist. Use the <i>current</i> parameter to display category/tag/taxonomy assigned to the current post only. 
+Outside the loop, <b>[for each]</b> displays all terms that have posts associated. Use the <i>current</i> parameter to display terms of the current post only. 
 
 <h4>Display a link for each category assigned to the current post</h4>
 <code>[for each="category" current="true"]
