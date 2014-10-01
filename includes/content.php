@@ -975,6 +975,7 @@ class CCS_Content {
 			case 'edit-url': $result = get_edit_post_link( $post_id ); break;
 			case 'edit-link': $result = apply_filters( 'the_title', $post->post_title ); break;
 			case 'slug': $result = $post->post_name; break;
+			case 'post-type': $result = $post->post_type; break;
 
 			case 'title-link':
 			case 'title-link-out':

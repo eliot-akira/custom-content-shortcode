@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,6 +84,14 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.3.4 =
+
+* [loop type] - Support multiple post types
+* [field post-type] - Display post type of current post in the loop
+* [for each] - Display empty terms: *empty="true"*
+* [for each exclude] - Exclude taxonomy term by ID or slug
+* Mobile Detect - load correctly
 
 = 1.3.3 =
 

@@ -403,7 +403,7 @@
 							<td>
 								<?php
 
-								$terms = get_terms( $taxonomy );
+								$terms = get_terms( $taxonomy, array('hide_empty'=>0) ); // Show empty terms
 
 								foreach ( $terms as $term ) {
 									echo $term->name . '<br>';

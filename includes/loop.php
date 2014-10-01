@@ -379,7 +379,7 @@ class CCS_Loop {
 		
 		if ( !empty($parameters['type']) ) {
 
-			$query['post_type'] = $parameters['type'];
+			$query['post_type'] = $this->explode_list($parameters['type']);
 
 		} else {
 

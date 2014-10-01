@@ -38,7 +38,9 @@ class CCS_ForEach {
 			'count' => '',
 			'parent' => '',
 			'current' => '',
-			'trim' => ''
+			'trim' => '',
+			'empty' => 'false',
+			'exclude' => ''
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -63,6 +65,7 @@ class CCS_ForEach {
 				'orderby' => $orderby,
 				'order' => $order,
 				'number' => $count,
+				'hide_empty' => ($empty=='true' ? 0 : 1),
 				) );
 
 		} else {
@@ -73,22 +76,32 @@ class CCS_ForEach {
 					'orderby' => $orderby,
 					'order' => $order,
 					'number' => $count,
+					'hide_empty' => ($empty=='true' ? 0 : 1),
 					) );
 
 			} else {
 
-				/* Get parent term ID from name */
+				/* Get parent term ID from slug */
 
-				$term = get_term_by( 'slug', $parent, $each );
-				if (!empty($term)) {
-					$parent_term_id = $term->term_id;
+				if ( is_numeric($parent) ) {
 
+					$parent_term_id = $parent;
+
+				} else {
+					$term = get_term_by( 'slug', $parent, $each );
+					if (!empty($term))
+						$parent_term_id = $term->term_id;
+					else $parent_term_id = null;
+				}
+
+				if (!empty($parent_term_id)) {
 					/* Get direct children */
 					$taxonomies = get_terms( $each, array(
 						'orderby' => $orderby,
 						'order' => $order,
 						'number' => $count,
-						'parent' => $parent_term_id
+						'parent' => $parent_term_id,
+						'hide_empty' => ($empty=='true' ? 0 : 1),
 						) );
 
 				} else { /* No parent found */
@@ -103,14 +116,34 @@ class CCS_ForEach {
 			self::$state['each']['type']='taxonomy';
 			self::$state['each']['taxonomy']=$each;
 
+			$excludes = CCS_Loop::explode_list( $exclude );
+
 			foreach ($taxonomies as $term_object) {
 
-				self::$state['each']['id']=$term_object->term_id;
-				self::$state['each']['name']=$term_object->name;
-				self::$state['each']['slug']=$term_object->slug;
+				// Exclude IDs or slugs
 
-				$out .= do_shortcode($content);
+				$condition = true;
+				foreach ($excludes as $exclude) {
+					if ( is_numeric($exclude) ) {
+						 // Exclude ID
+						if ( $exclude == $term_object->term_id ) {
+							$condition = false;
+						}
+					} else {
+						 // Exclude slug
+						if ( $exclude == $term_object->slug ) {
+							$condition = false;
+						}
+					}
+				}
 
+				if ($condition) {
+					self::$state['each']['id']=$term_object->term_id;
+					self::$state['each']['name']=$term_object->name;
+					self::$state['each']['slug']=$term_object->slug;
+
+					$out .= do_shortcode($content);
+				}
 			}
 		}
 
