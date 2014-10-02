@@ -597,11 +597,10 @@ class CCS_Content {
 		 * 
 		 *=======================================================================*/
 
-			// Make sure no parameters are set
-//			if (count(self::$original_parameters)==0) {
+			$result = self::$state['current_post']->post_content;
 
-				$result = self::$state['current_post']->post_content;
-//			}
+			// Format post content by default
+			self::$parameters['format'] = empty(self::$parameters['format']) ? 'true' : self::$parameters['format'];
 
 		}
 		return $result;
