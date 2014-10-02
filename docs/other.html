@@ -76,8 +76,26 @@ Pass values from multiple fields using the <i>fields</i> parameter.
 
 This works in the same way as <a href="options-general.php?page=ccs_reference&tab=loop#field-tags">field tags</a> for the <b>[loop]</b> shortcode.
 
+<hr>
+
+<h3>Taxonomy loop</h3>
+
+You can loop through all terms in a taxonomy, and pass each item.
+
+<h4>Display products from each category</h4>
+
+<code>[pass taxonomy_loop="category"]
+&nbsp;&nbsp;&nbsp;&nbsp;Category: {TERM_NAME}
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="product" category="{TERM}"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+[/pass]</code>
+
+The available tags are TERM, TERM_NAME and TERM_ID.
 
 <br>
+
 <h3 align="center">Other notes</h3>
 <hr>
 <h3>Search form</h3>

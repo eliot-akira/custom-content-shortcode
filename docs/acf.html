@@ -1,4 +1,5 @@
 <h3 align="center">Advanced Custom Fields</h3>
+
 <hr>
 
 <h3>Relationship</h3>
@@ -12,7 +13,45 @@ Use the <b>[related]</b> shortcode to loop through a relationship field.
 [/related]
 </code>
 
-To access a relationship field inside repeater or flexible content, use the <i>subfield</i> parameter.
+<hr>
+<h3>Repeater field</h3>
+
+Use the <b>[repeater]</b> shortcode to loop through a repeater field.
+
+
+<h4>Display repeater fields</h4>
+<code>[repeater field="boxes"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[field image="image"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field description format="true"]
+[/repeater]</code>
+
+For an image field, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size. If the image field returns as URL, set <i>in="url"</i>.
+<br>
+<hr>
+<h3>Flexible content field</h3>
+
+<code>[flex field="flexible_content"]
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;[layout name="title_text"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field text]
+&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;[layout name="title_image_text"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field image="image" size="thumbnail"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field text]
+&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;[layout name="gallery"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_gallery field="gallery"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_image size="thumbnail"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/acf_gallery]
+&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;
+[/flex]</code><br>
+
 
 <hr>
 <h3>Gallery</h3>
@@ -27,8 +66,6 @@ For gallery fields, use the <b>[acf_gallery]</b>  shortcode.
 [/acf_gallery]
 </code>
 
-To access a gallery field inside repeater or flexible content, use the <i>subfield</i> parameter.
-
 The<b> [acf_image]</b> shortcode displays each image in the gallery field. It can also display these fields: <i>id</i>,<i> title</i>,<i> caption</i>,<i> alt</i>,<i> url</i>, and<i> description</i>. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i>. The default is full-size.
 
 <hr>
@@ -39,44 +76,6 @@ You can pass the image IDs to another shortcode.
 &nbsp;&nbsp;&nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
 [/pass]</code><br>
 
-<hr>
-<h3>Repeater field</h3>
-
-Use the <b>[repeater]</b> shortcode to loop through repeater fields. You can display sub-fields using the <b>[sub]</b> shortcode.
-
-
-<h4>Display repeater fields</h4>
-<code>[repeater field="boxes"]
-&nbsp;&nbsp;&nbsp;&nbsp;[sub field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;[sub image="image"]
-&nbsp;&nbsp;&nbsp;&nbsp;[sub field="description" format="true"]
-[/repeater]</code>
-
-For an image field, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size. If the image field returns as URL, set <i>in="url"</i>.
-<br>
-<hr>
-<h3>Flexible content field</h3>
-
-<code>[flex field="flexible_content"]
-&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;[layout name="title_text"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="text"]
-&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
-&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;[layout name="title_image_text"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub image="image" size="thumbnail"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="text"]
-&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
-&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;[layout name="gallery"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_gallery subfield="gallery"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_image size="thumbnail"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/acf_gallery]
-&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
-&nbsp;
-[/flex]</code><br>
 
 <hr>
 <h3>ACF fields in other posts</h3>
@@ -85,10 +84,16 @@ Display gallery, relationship, repeater, or flexible content fields from other p
 
 <code>[loop name="hello-world"]
 &nbsp;&nbsp;&nbsp;&nbsp;[repeater field="boxes"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub image="image"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[sub field="description" format="true"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field image="image"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field description format="true"]
 &nbsp;&nbsp;&nbsp;&nbsp;[/repeater]
 [/loop]
 </code><br>
+
+
+<hr>
+<h3>Columns</h3>
+
+You can use the <i>columns</i> parameter for gallery, repeater, or flexible content. For details, please see its description for <a href="options-general.php?page=ccs_reference&tab=loop">[loop]</a>, under <i>Other Parameters</i>.
 

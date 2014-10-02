@@ -87,12 +87,14 @@ class CCS_To_ACF {
 			'field' => '',
 			'count' => '',
 			'start' => '',
+			'columns' => '', 'pad' => '', 'between' => '', 
 		), $atts ));
 
 		if ( get_field( $field ) /* && ( strpos($content, '[sub ') !== FALSE ) */ ) {
 
 			self::$state['is_repeater_or_flex_loop'] = 'true';
 			$index_now = 0;
+			$outputs = array();
 
 			if ( $start == '' ) $start='1';
 
@@ -106,8 +108,7 @@ class CCS_To_ACF {
 							/* If over count, continue empty looping for has_sub_field */
 					} else {
 
-						$replaced_content = do_shortcode($content);
-						$output[] = str_replace('{COUNT}', $index_now, $replaced_content);
+						$outputs[] = do_shortcode(str_replace('{COUNT}', $index_now, $content));
 
 					}
 				}
@@ -115,10 +116,15 @@ class CCS_To_ACF {
 			self::$state['is_repeater_or_flex_loop'] = 'false';
 
 		} else {
-			$output = null;
+			return null;
 		}
-		if( !empty($output) && is_array($output))
-			$output = implode( '', $output );
+		if( !empty($outputs) && is_array($outputs)) {
+
+			if (!empty($columns))
+				$output = CCS_Loop::render_columns( $outputs, $columns, $pad, $between );
+			else
+				$output = implode( '', $outputs );
+		}
 		return $output;
 	}
 
@@ -130,8 +136,16 @@ class CCS_To_ACF {
 			'start' => '',
 			'subfield' => '',
 			'sub' => '',
+			'columns' => '', 'pad' => '', 'between' => '', 
 		), $atts ));
 
+
+		// If in repeater or flexible content, get subfield by default
+		if ( self::$state['is_repeater_or_flex_loop']=='true' ) {
+			$sub = 'true';
+		}
+
+		// Backward compatibility
 		if (!empty($subfield)) {
 			$field = $subfield;
 			$sub = 'true';
@@ -142,6 +156,8 @@ class CCS_To_ACF {
 		} else {
 			$images = get_sub_field( $field );
 		}
+
+		$outputs = array();
 
 		if ( $images ) {
 
@@ -159,13 +175,19 @@ class CCS_To_ACF {
 							break;				/* If over count, break the loop */
 					}
 
-					$replaced_content = do_shortcode($content);
-					$output[] = str_replace('{COUNT}', $index_now, $replaced_content);
+					$outputs[] = do_shortcode(str_replace('{COUNT}', $index_now, $content));
 				}
 			}
 		}
-		if( !empty($output) && is_array($output))
-			$output = implode( '', $output );
+		if( !empty($outputs) && is_array($outputs)) {
+
+			if (!empty($columns))
+				$output = CCS_Loop::render_columns( $outputs, $columns, $pad, $between );
+			else
+				$output = implode( '', $outputs );
+		} else {
+			$output = $outputs;
+		}
 
 		self::$state['current_image'] = '';
 		return $output;
@@ -215,6 +237,15 @@ class CCS_To_ACF {
 		), $atts ) );
 
 		$output = array();
+
+		// If in repeater or flexible content, get subfield by default
+		if ( self::$state['is_repeater_or_flex_loop']=='true' ) {
+			if (empty($subfield)) {
+				$subfield = $field;
+				$field = null;
+			}
+		}
+
 		if (!empty($field)) {
 			$posts = get_field($field);
 		} elseif (!empty($subfield)) {

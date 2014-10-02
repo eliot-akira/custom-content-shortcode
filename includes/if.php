@@ -212,7 +212,16 @@ class CCS_If {
 
 		if (!empty($field)) {
 
-			$check = get_post_meta( $current_post_id, $field, true );
+			$check = CCS_Content::get_prepared_field( $field );
+//			$check = get_post_meta( $current_post_id, $field, true );
+
+			// start=".."
+
+			if ( !empty($start) && ($value!='true') && empty($value) ) {
+				$value = $start;
+				$start = 'true';
+			}
+
 			if (empty($check) || ($check==false))
 				$condition = false;
 			else {

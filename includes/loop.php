@@ -1551,6 +1551,13 @@ class CCS_Loop {
 
 		$post_id = get_the_ID();
 
+
+		/*========================================================================
+		 *
+		 * Pass single field to {FIELD}
+		 *
+		 *=======================================================================*/
+
 		if ( !empty($field) ) {
 
 			if ($field=='gallery') $field = '_custom_gallery'; // Support CCS gallery field
@@ -1579,6 +1586,13 @@ class CCS_Loop {
 			// Replace it
 
 			$content = str_replace('{FIELD}', $field_value, $content);
+
+
+		/*========================================================================
+		 *
+		 * Pass each item in a list stored in a field
+		 *
+		 *=======================================================================*/
 
 		} elseif (!empty($field_loop)) {
 
@@ -1611,6 +1625,12 @@ class CCS_Loop {
 				$content = implode('', $contents);
 			}
 
+		/*========================================================================
+		 *
+		 * Pass image IDs from ACF gallery
+		 *
+		 *=======================================================================*/
+
 		} elseif (!empty($acf_gallery)) {
 
 			if ( function_exists('get_field') && function_exists('get_sub_field') ) {
@@ -1632,6 +1652,39 @@ class CCS_Loop {
 					$content = str_replace('{FIELD}', $replace, $content);
 				}
 			}
+
+
+		/*========================================================================
+		 *
+		 * Pass each taxonomy term
+		 *
+		 *=======================================================================*/
+
+		} elseif (!empty($taxonomy_loop)) {
+
+			$terms = get_the_terms( $post_id, $taxonomy_loop );
+
+			$contents = null;
+
+			// Loop through each term
+
+			if ( !empty( $terms ) ) {
+
+				foreach ($terms as $term) {
+
+					$slug = $term->slug;
+					$id = $term->term_id;
+					$name = $term->name;
+
+					$replaced_content = str_replace('{TERM}', $slug, $content);
+					$replaced_content = str_replace('{TERM_ID}', $id, $replaced_content);
+					$replaced_content = str_replace('{TERM_NAME}', $name, $replaced_content);
+
+					$contents[] = $replaced_content;
+				}
+			}
+
+			$content = implode('', $contents);
 		}
 
 

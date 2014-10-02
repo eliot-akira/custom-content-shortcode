@@ -187,7 +187,6 @@ class CCS_Content {
 		// Relationship loop
 
 		if (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_relationship_loop']=='true') {
-
 			$parameters['id'] = CCS_To_ACF::$state['relationship_id']; // Get related post
 		}
 
@@ -369,7 +368,7 @@ class CCS_Content {
 	 *
 	 *=======================================================================*/
 
-	function prepare_post( $parameters ) {
+	function prepare_post( $parameters = array() ) {
 		
 		// Get post from ID
 
@@ -824,8 +823,16 @@ class CCS_Content {
 
 		$post_id = self::$state['current_post_id'];
 
-		$field = get_post_meta( $post_id, $parameters['image'], true );
+		if (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true') {
 
+			// Repeater or flexible content field: then get sub field
+
+			if (function_exists('get_sub_field')) {
+				$field = get_sub_field( $parameters['image'] );
+			} else return null;
+		} else {
+			$field = get_post_meta( $post_id, $parameters['image'], true );
+		}
 
 		/*========================================================================
 		 *
@@ -845,6 +852,7 @@ class CCS_Content {
 
 		switch($parameters['in']) {
 
+			case 'array' :
 			case 'object' : // ACF image object
 
 				if (is_array( $field )) {
@@ -877,10 +885,14 @@ class CCS_Content {
 					$result .= '>';
 				}
 				break;
-			case 'id' : 
+			case 'id' : // Default is attachment ID for the image
 			default :
 
-				$image_id = $field;
+				if (is_array($field)) {
+					$image_id = $field['id']; // If it's an array, assume image object
+				} else {
+					$image_id = $field;
+				}
 				$result = wp_get_attachment_image( $image_id, $parameters['size'], $icon=0, $attr );
 				break;
 		}
@@ -909,31 +921,43 @@ class CCS_Content {
 	 *=======================================================================*/
 	
 	
-	function get_the_field( $parameters ) {
+	public static function get_the_field( $parameters, $get_post = false ) {
 
-		if ( $parameters['type']=='attachment' ||
-			CCS_Loop::$state['is_attachment_loop'] ||
-			CCS_Attached::$state['is_attachment_loop'] ) {
-
-			return self::get_the_attachment_field( $parameters );
-		}
-/*
-		$post_id = !empty($parameters['id']) ? $parameters['id'] : get_the_ID();
-
-		if ($post_id == self::$state['current_post_id']) {
-			$post = self::$state['current_post'];
-		} else {
-			$post = get_post($post_id);
-			self::$state['current_post'] = $post;
-			self::$state['current_post_id'] = $post_id;
-		}
-*/
-		$post = self::$state['current_post'];
-		$post_id = self::$state['current_post_id'];
 
 		$field = $parameters['field'];
 		$result = '';
 
+		if ( (!empty($parameters['type']) && $parameters['type']=='attachment') ||
+			CCS_Loop::$state['is_attachment_loop'] ||
+			CCS_Attached::$state['is_attachment_loop'] ) {
+
+			// Attachment field
+
+			return self::get_the_attachment_field( $parameters );
+
+		} elseif (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true' ) {
+
+			// If not inside relationship loop
+			if ( CCS_To_ACF::$state['is_relationship_loop']!='true' ) {
+
+				// Repeater or flexible content field: then get sub field
+				if (function_exists('get_sub_field')) {
+					return get_sub_field( $field );
+				} else return null;
+			}
+		}
+
+		if ( $get_post ) {
+
+			// Current post
+
+			$post = get_post();
+			$post_id = get_the_ID();
+
+		} else {
+			$post = self::$state['current_post'];
+			$post_id = self::$state['current_post_id'];
+		}
 
 		/*========================================================================
 		 *
@@ -1109,6 +1133,10 @@ class CCS_Content {
 	} // End get_the_field
 
 
+	// Helper for getting field including predefined
+	public static function get_prepared_field( $field ) {
+		return self::get_the_field( array('field' => $field), true);
+	}
 
 	/*========================================================================
 	 *
