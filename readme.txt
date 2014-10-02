@@ -31,7 +31,7 @@ There is a reference section under Settings -> Custom Content.
 Here are some of the included features:
 
 * View your site's **content structure**
-* **Dynamic templates** with HTML and shortcodes
+* **Dynamic templates** with shortcodes
 * Simple **gallery field** for any post type
 * Display **comments** and **attachments**
 * **User info** and content based on user status
@@ -60,13 +60,13 @@ Support for other plugins:
 
 == Frequently Asked Questions ==
 
-**Q:** How do I remove unwanted formatting inside shortcodes?
+**Q:** How do I protect shortcodes from post content formatting?
 
-**A:** WordPress automatically formats the post content, which can cause unwanted `<p>` and `<br>` tags around line breaks. To prevent this, wrap the content with the [raw] shortcode. You can enable it under Settings -> Custom Content.
+**A:** Post content is automatically formatted, which can cause unwanted `<p>` and `<br>` tags inside multi-line shortcodes. To prevent this, wrap the section with the [raw] shortcode. You can enable it under Settings -> Custom Content.
 
-**Q:** Switching from text to visual editor breaks my HTML.
+**Q:** How do I protect HTML code from the visual editor?
 
-**A:** The visual editor (TinyMCE) sometimes misinterprets HTML code placed in the text editor. There are several ways to address this issue.
+**A:** The visual editor (TinyMCE) sometimes misinterprets HTML tags placed in the text editor. There are several ways to address this issue.
 
 * Disable the visual editor for certain posts or post types, with the [Raw HTML](http://wordpress.org/plugins/raw-html/) plugin. However, if the post needs to be editable by the client, this won't be ideal.
 
