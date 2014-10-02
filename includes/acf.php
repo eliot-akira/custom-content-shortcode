@@ -108,7 +108,7 @@ class CCS_To_ACF {
 							/* If over count, continue empty looping for has_sub_field */
 					} else {
 
-						$outputs[] = do_shortcode(str_replace('{COUNT}', $index_now, $content));
+						$outputs[] = str_replace( '{COUNT}', $index_now, do_shortcode($content) );
 
 					}
 				}
@@ -175,7 +175,7 @@ class CCS_To_ACF {
 							break;				/* If over count, break the loop */
 					}
 
-					$outputs[] = do_shortcode(str_replace('{COUNT}', $index_now, $content));
+					$outputs[] = str_replace( '{COUNT}', $index_now, do_shortcode($content) );
 				}
 			}
 		}
@@ -265,8 +265,7 @@ class CCS_To_ACF {
 
 				self::$state['relationship_id'] = $post->ID;
 
-				$replaced_content = do_shortcode($content);
-				$output[] = str_replace('{COUNT}', $index_now, $replaced_content);
+				$output[] = str_replace('{COUNT}', $index_now, do_shortcode($content));
 			}
 		}
 
