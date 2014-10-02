@@ -1144,7 +1144,7 @@ class CCS_Content {
 	 *
 	 *=======================================================================*/
 
-	function get_the_attachment_field( $parameters ) {
+	public static function get_the_attachment_field( $parameters ) {
 
 
 		if (!empty($parameters['id'])) {
