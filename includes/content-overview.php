@@ -471,16 +471,18 @@
 			$max = count($all_meta);
 			$break = round($max / 4);
 
+			if ($break==0) echo '<td>';
+
 			foreach ($all_meta as $key => $value) {
 
 				$count++;
 
-				if ($count % $break == 1) echo '<td>';
+				if ( ($break>0) && ($count % $break == 1) ) echo '<td>';
 				echo $key.'<br>';
-				if ($count % $break == 0) echo '</td>';
+				if ( ($break>0) && ($count % $break == 0) ) echo '</td>';
 			}
 
-			if ($count % $break != 0) echo '</td>';
+			if ( ($break==0) || ($count % $break != 0)) echo '</td>';
 			echo '</tr>';
 
 			?>

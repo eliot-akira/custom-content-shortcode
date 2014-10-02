@@ -192,6 +192,13 @@ class CCS_Loop {
 
 			'columns' => '', 'pad' => '', 'between' => '',
 
+			// List
+
+			'list' => 'false',
+			'list_class' => '', 'list_style' => '',
+			'item' => '',
+			'item_class' => '', 'item_style' => '',
+
 			// Gallery
 
 			'gallery' => '',
@@ -1349,11 +1356,11 @@ class CCS_Loop {
 			$trim = $parameters['trim'];
 			if ($trim=='true') $trim = null;
 
-			if (empty($parameters['columns'])) {
+			if ( empty($parameters['columns']) && $parameters['list']=='true' ) {
 				$result = trim($result, " \t\n\r\0\x0B,".$trim);
 			} else {
 
-				// Trim each item for columns
+				// Trim each item for columns/list
 				$new_results = array();
 				foreach ($results as $result) {
 					$new_results[] = trim($result, " \t\n\r\0\x0B,".$trim);
@@ -1364,13 +1371,31 @@ class CCS_Loop {
 
 		/*========================================================================
 		 *
-		 * Finally, columns
+		 * Finally, columns or list
 		 *
 		 *=======================================================================*/
 
 		if ( !empty($parameters['columns']) ) {
 
 			$result = self::render_columns( $results, $parameters['columns'], $parameters['pad'], $parameters['between'] );
+
+		} elseif ( !empty($parameters['list']) ) {
+
+			// Wrap each list item
+			$new_results = null;
+
+			$item_tag = !empty($parameters['item']) ? $parameters['item'] : 'li';
+			$item_class = !empty($parameters['item_class']) ? ' class="'.$parameters['item_class'].'"' : null;
+			$item_style = !empty($parameters['item_style']) ? ' style="'.$parameters['item_style'].'"' : null;
+
+			foreach ($results as $result) {
+				$new_results .= '<'.$item_tag.$item_class.$item_style.'>'.$result.'</'.$item_tag.'>';
+			}
+
+			$list_tag = ($parameters['list']=='true') ? 'ul' : $parameters['list'];
+			$list_class = !empty($parameters['list_class']) ? ' class="'.$parameters['list_class'].'"' : null;
+			$list_style = !empty($parameters['list_style']) ? ' style="'.$parameters['list_style'].'"' : null;
+			$result = '<'.$list_tag.$list_class.$list_style.'>'.$new_results.'</'.$list_tag.'>';
 		}
 
 
@@ -1518,28 +1543,28 @@ class CCS_Loop {
 			'field' => '',
 			'fields' => '',
 			'field_loop' => '', // Field is array or comma-separated list
+			'taxonomy_loop' => '', // Loop through each term in taxonomy
 			'acf_gallery' => '', // Pass image IDs from ACF gallery field
 			);
 
 		extract( shortcode_atts( $args , $atts, true ) );
 
 		$post_id = get_the_ID();
-		$content = self::render_default_field_tags( $content );
-
-		if ( !empty($fields) ) {
-
-			// $fields = self::explode_list($fields);
-
-			// Replace these fields
-
-			$content = self::render_field_tags( $content, array('fields' => $fields) );
-		} 
 
 		if ( !empty($field) ) {
 
 			if ($field=='gallery') $field = '_custom_gallery'; // Support CCS gallery field
 
-			$field_value = get_post_meta( $post_id, $field, true );
+			if (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true') {
+				// Repeater or flexible content field: then get sub field
+				if (function_exists('get_sub_field')) {
+					$field_value = get_sub_field( $field );
+				} else $field_value = null;
+
+			} else {
+				// Get normal field
+				$field_value = get_post_meta( $post_id, $field, true );
+			}
 
 			if (is_array($field_value)) {
 
@@ -1610,6 +1635,18 @@ class CCS_Loop {
 		}
 
 
+		if ( !empty($fields) ) {
+
+			// Replace these fields (+default)
+
+			$content = self::render_field_tags( $content, array('fields' => $fields) );
+
+		} else {
+
+			$content = self::render_default_field_tags( $content );
+
+		}
+
 		return do_shortcode( $content );
 
 	} // End pass shortcode
@@ -1626,7 +1663,6 @@ class CCS_Loop {
 
 	function render_field_tags( $template, $parameters ) {
 
-		$template = self::render_default_field_tags( $template );
 		$post_id = !empty($parameters['id']) ? $parameters['id'] : get_the_ID();
 
 		/*========================================================================
@@ -1645,16 +1681,27 @@ class CCS_Loop {
 
 				if (strpos($template, $search)!==false) {
 
-					$replace = get_post_meta( $post_id, $key, true );
-					if (is_array($replace)) {
-						$replace = ucwords(implode(', ', $replace));
+					if (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true') {
+						// Repeater or flexible content field: then get sub field
+						if (function_exists('get_sub_field')) {
+							$field_value = get_sub_field( $key );
+						} else $field_value = null;
+					} else {
+						$field_value = get_post_meta( $post_id, $key, true );
+
 					}
 
-					$template = str_replace($search, $replace, $template);
+					if (is_array($field_value)) {
+						$field_value = ucwords(implode(', ', $field_value));
+					}
+
+					$template = str_replace($search, $field_value, $template);
 				}
 			}
 		}
 
+		// Render default tags later, to allow custom fields to take priority
+		$template = self::render_default_field_tags( $template );
 
 		return $template;
 	}

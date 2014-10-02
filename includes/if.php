@@ -22,6 +22,8 @@ class CCS_If {
 
 	function register() {
 		add_shortcode( 'if', array( $this, 'if_shortcode' ) );
+		add_shortcode( '-if', array( $this, 'if_shortcode' ) );
+		add_shortcode( '--if', array( $this, 'if_shortcode' ) );
 		add_shortcode( 'flag', array( $this, 'flag_shortcode' ) );
 	}
 
@@ -59,13 +61,20 @@ class CCS_If {
 */
 		if (!empty($no_flag)) $flag = $no_flag;
 
+		if ( substr($shortcode_name, 0, 2)=='--' ) {
+			$else_prefix = '--';
+		} elseif ( substr($shortcode_name, 0, 1)=='-' ) {
+			$else_prefix = '-';
+		} else
+			$else_prefix = null; // Top level
+
 		$out = '';
 		$condition = false;
 		$compare = strtoupper($compare);
 
 		// Get [else] if it exists
 
-		$content_array = explode('[else]', $content);
+		$content_array = explode('['.$else_prefix.'else]', $content);
 		$content = $content_array[0];
 		if (count($content_array)>1) {
 			$else = $content_array[1];

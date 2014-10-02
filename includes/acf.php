@@ -19,6 +19,7 @@ class CCS_To_ACF {
 	function __construct() {
 
 		self::$state['is_relationship_loop'] = 'false';
+		self::$state['is_repeater_or_flex_loop'] = 'false';
 
 		if (!function_exists('get_field')) return; // If ACF is not installed
 
@@ -80,7 +81,7 @@ class CCS_To_ACF {
 
 	public static function loop_through_acf_field( $atts, $content ) {
 
-		/* For flex and repeater fields */
+		/* For repeater and flexible content fields */
 
 		extract( shortcode_atts( array(
 			'field' => '',
@@ -90,6 +91,7 @@ class CCS_To_ACF {
 
 		if ( get_field( $field ) /* && ( strpos($content, '[sub ') !== FALSE ) */ ) {
 
+			self::$state['is_repeater_or_flex_loop'] = 'true';
 			$index_now = 0;
 
 			if ( $start == '' ) $start='1';
@@ -110,8 +112,10 @@ class CCS_To_ACF {
 					}
 				}
 			}
+			self::$state['is_repeater_or_flex_loop'] = 'false';
+
 		} else {
-			$output = $content;
+			$output = null;
 		}
 		if( !empty($output) && is_array($output))
 			$output = implode( '', $output );

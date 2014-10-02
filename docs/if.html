@@ -130,5 +130,23 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 [/loop]</code>
 
 The <i>flag</i> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
-
 <br>
+<h3 align="center">Nested</h3>
+<hr>
+
+For nested conditions, use [-if][-else][/-if].
+
+<code>[loop type="product"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if category="books"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The book [field title-link] is
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-if field="status" value="in-stock"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in stock.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-else]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not available.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/-if]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title-link] is not a book.
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
+
+

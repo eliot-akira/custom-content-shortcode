@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,11 +32,11 @@ Here are some of the included features:
 
 * View your site's **content structure**
 * **Dynamic templates** with HTML and shortcodes
-* **Cache** the result of query loops - *New!*
 * Simple **gallery field** for any post type
 * Display **comments** and **attachments**
 * **User info** and content based on user status
 * **Relative URLs** for links and images
+* **Cache** the result of query loops
 
 Support for other plugins:
 
@@ -85,6 +85,12 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.3.6 =
+
+* [loop list] - Build a list from loop items
+* [if] - Support nested conditions
+* [pass] - Pass sub fields if inside repeater or flexible content
+* Content Overview - Prevent division by zero
 
 = 1.3.5 =
 
