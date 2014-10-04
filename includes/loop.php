@@ -72,22 +72,24 @@ class CCS_Loop {
 			self::$parameters = $parameters;
 
 
-				// Check cache - if loaded, return result
-				if ( ($result = $this->check_cache( $parameters )) !== false ) {
-					$this->close_loop();
-					return $result;
-				}
+			// Check cache - if loaded, return result
+			if ( ($result = $this->check_cache( $parameters )) !== false ) {
+				$this->close_loop();
+				return $result;
+			}
 
-				// If there's already result based on parameters, return it
-				$result = $this->before_query( $parameters, $template );
-				if ( !empty( $result ) ) {
-					$this->close_loop();
-					return $result;
-				}
+			// If there's already result based on parameters, return it
+			$result = $this->before_query( $parameters, $template );
+			if ( !empty( $result ) ) {
+				$this->close_loop();
+				return $result;
+			}
 
 
 			// Set up query based on parameters
 			$query = $this->prepare_query( $parameters );
+
+			if (!empty($query)) {
 
 				// Get posts from query
 				$posts = $this->run_query( $query );
@@ -98,8 +100,9 @@ class CCS_Loop {
 				// Loop through each post and compile shortcode template
 				$results = $this->compile_templates( $posts, $template );
 
-			// Combine results and process to final output
-			$result = $this->process_results( $results );
+				// Combine results and process to final output
+				$result = $this->process_results( $results );
+			}
 
 		$this->close_loop();
 
@@ -428,33 +431,47 @@ class CCS_Loop {
 
 			$parent = $parameters['parent'];
 
-			if ( is_numeric($parent) )
+			if ( $parent=='this' ) {
+
+				// Get children of current post
+				$query['post_parent'] = get_the_ID();
+
+			} elseif ( is_numeric($parent) ) {
 
 				$query['post_parent'] = intval( $parent ); // Single parent ID
 
-			else {
-
-				$parents = $this->explode_list( $parent ); // Convert to array
+			} else {
 
 				// Multiple IDs
 
-				if ( is_numeric($parents[0]) ) {
+				$parents = $this->explode_list( $parent ); // Convert to array
+				$parent_IDs = array();
 
-					$parent_IDs = $parents;
+				foreach ($parents as $each_parent) {
 
-				} else {
+					if ( $each_parent=='this' ) {
 
-					// Get parent ID(s) by slug (pretty expensive query)
+						// Get children of current post
+						$parent_IDs[] = get_the_ID();
 
-					$parent_IDs = array();
-					foreach ($parents as $parent_slug) {
+					} elseif ( is_numeric($each_parent) ) {
 
-						$posts = get_posts( array('name' => $parent_slug, 'post_type' => $query['post_type'], 'posts_per_page' => '1') );
+						// by ID
+						$parent_IDs[] = intval( $each_parent );
 
+					} else {
+
+						// by slug
+						$posts = get_posts( array(
+							'name' => $each_parent,
+							'post_type' => $query['post_type'],
+							'posts_per_page' => '1')
+						);
 						if ( $posts ) $parent_IDs[] = $posts[0]->ID;
 					}
-
 				}
+
+				if (empty($parent_IDs)) return null; // No parent
 
 				$query['post_parent__in'] = $parent_IDs;
 
@@ -859,12 +876,6 @@ class CCS_Loop {
 				);
 			}
 		}
-
-
-
-
-
-
 
 		return apply_filters( 'ccs_loop_query_filter', $query );
 
