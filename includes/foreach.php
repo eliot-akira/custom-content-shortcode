@@ -18,7 +18,7 @@ class CCS_ForEach {
 
 	function __construct() {
 
-		self::$state['is_for_loop'] = 'false';
+		self::$state['is_for_loop'] = false;
 
 		add_action( 'init', array( $this, 'register' ) );
 	}
@@ -45,7 +45,7 @@ class CCS_ForEach {
 
 		extract( shortcode_atts( $args , $atts, true ) );
 
-		self::$state['is_for_loop'] = 'true';
+		self::$state['is_for_loop'] = true;
 		if ($each=='tag') $each='post_tag';
 		$out = '';
 
@@ -154,16 +154,15 @@ class CCS_ForEach {
 			$out = trim($out, " \t\n\r\0\x0B,".$trim);
 		}
 
-		self::$state['is_for_loop'] = 'false';
-		self::$state['each'] = '';
+		self::$state['is_for_loop'] = false;
+		self::$state['each'] = null;
 
 		return $out;
 	}
 
 	function each_shortcode( $atts, $content = null, $shortcode_name ) {
 
-		if (!isset(self::$state['is_for_loop']) ||
-			(self::$state['is_for_loop']=='false'))
+		if ( !self::$state['is_for_loop'] )
 				return; // Must be inside a for loop
 
         if( is_array( $atts ) )

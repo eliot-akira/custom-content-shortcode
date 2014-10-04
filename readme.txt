@@ -7,11 +7,11 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
+Display posts, pages, custom post types, fields, images, attachments, comments, files, menus, widget areas
 
 == Description ==
 
@@ -19,9 +19,9 @@ Display posts, pages, custom post types, custom fields, files, images, comments,
 <br />
 From a single field to entire pages, Custom Content Shortcode is a set of commands to display content where you need.
 
-The **[content]** shortcode displays any of the following: *posts, pages, custom post types, custom fields, files, images, attachments, menus,* or *widget areas*.
+The **[content]** shortcode displays any of the following: *posts, pages, custom post types, fields, images, menus,* or *widget areas*.
 
-The **[loop]** shortcode performs query loops. It can display, for example, available products in a category, or excerpts from the 5 most recent posts. You can query by parameters such as: *post type, category, custom taxonomy, date,* and *custom field values*.
+The **[loop]** shortcode performs query loops. It can display, for example, available products in a category, or excerpts from the 5 most recent posts. You can query by parameters such as: *post type, taxonomy, date,* and *field values*.
 
 There is a reference section under Settings -> Custom Content.
 
@@ -46,9 +46,7 @@ Support for other plugins:
 
 == Installation ==
 
-1. Install from *Plugins -> Add New*
-1. Or download the .zip and extract to *wp-content/plugins*
-1. Activate the plugin from the *Plugins* menu
+1. Install & activate from *Plugins -> Add New*
 1. See: *Settings -> Custom Content*
 
 
@@ -85,9 +83,11 @@ Support for other plugins:
 
 == Changelog ==
 
-= 1.4.0 =
+= 1.4.1 =
 
-* [loop] - Check beginning of field value: *field="title" start="The"*
+* [loop] - Query by beginning of field value: *field="title" start="The"*
+* [for each] - If there's a loop inside, filter by each taxonomy term
+* [loop trim] - Correctly trim extra space or comma
 
 = 1.3.9 =
 

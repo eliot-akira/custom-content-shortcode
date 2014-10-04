@@ -568,13 +568,6 @@ class CCS_Loop {
 		}
 
 
-
-
-
-
-
-
-
 		/*========================================================================
 		 *
 		 * Category
@@ -618,6 +611,15 @@ class CCS_Loop {
 		 * Taxonomy
 		 *
 		 *=======================================================================*/
+
+		if ( CCS_ForEach::$state['is_for_loop'] ) {
+			// In a [for each] loop, filter by each taxonomy term
+			// unless it's specified otherwise
+
+			$parameters['taxonomy'] = empty($parameters['taxonomy']) ? CCS_ForEach::$state['each']['taxonomy'] : $parameters['taxonomy'];
+			$parameters['term'] = empty($parameters['term']) ? CCS_ForEach::$state['each']['slug'] : $parameters['term'];
+
+		}
 
 		if ( !empty($parameters['taxonomy']) ) {
 
@@ -1422,7 +1424,7 @@ class CCS_Loop {
 			$trim = $parameters['trim'];
 			if ($trim=='true') $trim = null;
 
-			if ( empty($parameters['columns']) && $parameters['list']=='true' ) {
+			if ( empty($parameters['columns']) && $parameters['list']!='true' ) {
 				$result = trim($result, " \t\n\r\0\x0B,".$trim);
 			} else {
 
@@ -1609,8 +1611,13 @@ class CCS_Loop {
 			'field' => '',
 			'fields' => '',
 			'field_loop' => '', // Field is array or comma-separated list
-			'taxonomy_loop' => '', // Loop through each term in taxonomy
+
 			'acf_gallery' => '', // Pass image IDs from ACF gallery field
+
+			'taxonomy_loop' => '', // Loop through each term in taxonomy
+			'current' => '',
+			'orderby' => '',
+			'order' => '',
 			);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -1728,9 +1735,21 @@ class CCS_Loop {
 
 		} elseif (!empty($taxonomy_loop)) {
 
-			$terms = get_the_terms( $post_id, $taxonomy_loop );
+			if ($current=='true') {
 
-			$contents = null;
+				$terms = get_the_terms( $post_id, $taxonomy_loop );
+
+			} else {
+				// Get all terms, not only from current post
+
+				$terms = get_terms( $taxonomy_loop, array(
+					'orderby' => $orderby,
+					'order' => $order,
+				));
+
+			}
+
+			$contents = array();
 
 			// Loop through each term
 
