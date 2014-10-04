@@ -217,7 +217,7 @@ class CCS_If {
 
 			// start=".."
 
-			if ( !empty($start) && ($value!='true') && empty($value) ) {
+			if ( !empty($start) && ($start!='true') && empty($value) ) {
 				$value = $start;
 				$start = 'true';
 			}
@@ -363,6 +363,7 @@ class CCS_If {
 			else $condition = false;
 		}
 
+		// Not - also catches compare="not"
 		$condition = isset($atts['not']) ? !$condition : $condition;
 
 		$out = $condition ? do_shortcode( $content ) : do_shortcode( $else ); // [if]..[else]..[/if]

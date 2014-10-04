@@ -57,9 +57,13 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 <h4>Field value</h4>
 <ul>
 	<li><b>field</b> - field name</li>
-	<li><b>value</b> - value to search</li>
-	<li><b>compare</b> - <i>equal</i> (default), <i>not</i> (not equal), <i>more</i> (greater than), <i>less</i> (less than)</li>
-	<li><b>relation, field_2, compare_2, value_2</b> - query for additional field value, where <i>relation</i> is <i>AND</i> (default) or <i>OR</i></li>
+	<li><b>value</b> - value to search for</li>
+	<li><b>compare</b> - <i>equal</i> (default), <i>not</i>, <i>more</i>, <i>less</i>, or operators like <i>&gt;=</i> and <i>&lt;=</i>.</li>
+</ul><ul>
+	<li><b>start</b> - use instead of <b>value</b> to check only the beginning of field value</li>
+</ul><ul>
+	<li><b>field_2</b>, <b>value_2</b>, <b>compare_2</b></li>
+	<li><b>relation</b> - query for additional field value, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
 </ul>
 
 <h4>Date field</h4>

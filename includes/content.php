@@ -611,8 +611,9 @@ class CCS_Content {
 
 		// If it's an array, make it a list
 
-		if (is_array($result))
+		if ( is_array($result) ) {
 			$result = implode(', ', $result);
+		}
 
 
 
@@ -920,7 +921,7 @@ class CCS_Content {
 	 *=======================================================================*/
 	
 	
-	public static function get_the_field( $parameters, $get_post = false ) {
+	public static function get_the_field( $parameters, $id = null ) {
 
 
 		$field = $parameters['field'];
@@ -946,14 +947,17 @@ class CCS_Content {
 			}
 		}
 
-		if ( $get_post ) {
+		if ( !empty($id) ) {
 
-			// Current post
+			// Get the post
 
-			$post = get_post();
-			$post_id = get_the_ID();
+			$post_id = $id;
+			$post = get_post($post_id);
 
 		} else {
+
+			// In a loop
+
 			$post = self::$state['current_post'];
 			$post_id = self::$state['current_post_id'];
 		}
@@ -1133,8 +1137,10 @@ class CCS_Content {
 
 
 	// Helper for getting field including predefined
-	public static function get_prepared_field( $field ) {
-		return self::get_the_field( array('field' => $field), true);
+	public static function get_prepared_field( $field, $id = null ) {
+
+		if (empty($id)) $id = get_the_ID();
+		return self::get_the_field( array('field' => $field), $id );
 	}
 
 	/*========================================================================

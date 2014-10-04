@@ -171,6 +171,7 @@ class CCS_Loop {
 
 			'field' => '', 'value' => '',
 			'compare' => '',
+			'start' => '', // If field value starts with
 			'in' => '', // ??
 			// Additional field value query
 			'field_2' => '', 'value_2' => '', 'compare_2' => '', 'relation' => '',
@@ -760,8 +761,7 @@ class CCS_Loop {
 		 *
 		 *=======================================================================*/
 
-		if( !empty($parameters['field']) &&
-			( !empty($parameters['value']) || !empty($parameters['compare']) ) ) {
+		if( !empty($parameters['field']) &&	!empty($parameters['value']) ) {
 
 			$field = $parameters['field'];
 			$value = $parameters['value'];
@@ -1065,7 +1065,8 @@ class CCS_Loop {
 
 		// If we need to check for skipped post
 		
-		if ( $compare=='EXISTS' || $compare=='NOT EXISTS' || !empty($parameters['checkbox']) ) {
+		if ( $compare=='EXISTS' || $compare=='NOT EXISTS' ||
+			!empty($parameters['checkbox']) || !empty($parameters['start']) ) {
 
 			$all_posts = $query_object->posts;
 
@@ -1096,6 +1097,60 @@ class CCS_Loop {
 							$state['skip_ids'][] = $current_id; // value is not empty, then skip
 					}
 				}
+
+
+				/*========================================================================
+				 *
+				 * If field value starts with
+				 *
+				 *=======================================================================*/
+				
+				if (!empty($parameters['start'])) {
+
+					$field_value = CCS_Content::get_prepared_field( $parameters['field'], $post->ID );
+//					$field_value = get_post_meta( $post->ID, $parameters['field'], true );
+
+					$skip = true;
+					if (!empty($field_value)) {
+						// Get beginning of field value
+						$beginning = substr($field_value, 0, strlen($parameters['start']));
+
+						switch ($parameters['compare']) {
+							case '':
+							case 'equal':
+								if ($beginning == $parameters['start'])
+									$skip = false;
+								break;
+							case '>':
+							case 'more':
+								if ($beginning > $parameters['start'])
+									$skip = false;
+								break;
+							case '<':
+							case 'less':
+								if ($beginning < $parameters['start'])
+									$skip = false;
+								break;
+							case '>=':
+								if ($beginning >= $parameters['start'])
+									$skip = false;
+								break;
+							case '<=':
+								if ($beginning <= $parameters['start'])
+									$skip = false;
+								break;
+							case '!=':
+							case 'not':
+								if ($beginning != $parameters['start'])
+									$skip = false;
+								break;
+						}
+					} // End if there's field value
+
+					if ($skip) {
+						$state['skip_ids'][] = $current_id;
+					}
+				}		
 
 
 				/*========================================================================
@@ -1182,7 +1237,7 @@ class CCS_Loop {
 				}
 
 				if ($skip) {
-					$state['skip_ids'][] = $current_id; 
+					$state['skip_ids'][] = $current_id;
 				}
 
 			} // End for each post
