@@ -1,15 +1,65 @@
 <h3 align="center">User info</h3>
 <hr>
 
-<h4>Display user info</h4>
-<code>User name: [user name]
-User ID: [user id]
-User e-mail: [user email]
-User full name: [user fullname]
-User avatar: [user avatar]
-User role(s): [user role]
-Custom user field: [user field="twitter"]</code><br>
+<h4>Display current user info</h4>
+<code>ID: [user id]
+Full name: [user]
+E-mail: [user email]
+</code><br>
+<hr>
+<h3>User fields</h3>
+<ul>
+	<li><b>id</b> - ID</li>
+	<li><b>name</b> - login name</li>
+	<li><b>email</b> - e-mail</li>
+	<li><b>url</b> - website URL</li>
+	<li><b>avatar</b> - avatar image</li>
+	<li><b>size</b> - avatar image size in pixels - default <i>96</i>, max <i>512</i></li>
+	<li><b>url</b> - website URL</li>
+	<li><b>role</b> - user role</li>
+	<li><b>post-count</b> - user post count</li>
+</ul>
 
+You can also specify a custom user field name.
+<br>
+
+<h3 align="center">Users loop</h3>
+<hr>
+
+<h4>Make a list of admin users</h4>
+
+<code>[users role="admin"]
+&nbsp;&nbsp;&nbsp;&nbsp;Admin: [user]
+&nbsp;&nbsp;&nbsp;&nbsp;Contact: [user email]
+[/users]
+</code><br>
+
+<hr>
+
+<h3>Parameters</h3>
+<ul>
+	<li><b>role</b> - <i>admin</i>, <i>editor</i>, <i>author</i>, <i>contributor</i>, <i>subscriber</i></li>
+</ul><ul>
+	<li><b>include</b> - include users by ID</li>
+	<li><b>exclude</b> - exclude users by ID</li>
+</ul><ul>
+	<li><b>orderby</b> - ID, display_name, name, login, email, url, registered, post_count</li>
+	<li><b>order</b> - <i>ASC</i> - alphabetical (default) or <i>DESC</i> (new to old) </li>
+</ul><ul>
+	<li><b>number</b> - maximum number of returned results</li>
+	<li><b>offset</b> - offset the results by a number</li>
+</ul><ul>
+	<li><b>field</b> - custom field name to query</li>
+	<li><b>value</b> - field value; multiple values possible depending on <i>compare</i></li>
+	<li><b>compare</b> - <i>equal</i>, <i>not</i>, <i>in</i>, <i>not in</i>, <i>between</i>, <i>not between</i>, or operators like &gt;= and &lt;=.</li>
+</ul><ul>
+	<li><b>search</b> - search for string match on user columns</li>
+	<li><b>search_columns</b> - one or more columns to search: <i>ID</i>, <i>login</i>, <i>nicename</i>, <i>email</i>, <i>url</i></li>
+</ul><ul>
+	<li><b>blog_id</b> - blog ID on a multisite</li>
+
+</ul>
+<br>
 <a id="user-status" href="#"></a>
 <h3 align="center">User status</h3>
 <hr>

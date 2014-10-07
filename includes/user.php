@@ -6,18 +6,129 @@
  *
  *=======================================================================*/
 
-class UserShortcodes {
+class CCS_Users {
+
+	public static $state;
 	
 	function __construct() {
 
+		add_shortcode('users', array($this, 'users_shortcode'));
 		add_shortcode('user', array($this, 'user_shortcode'));
+
+		self::$state['is_users_loop'] = false;
+
 		add_shortcode('is', array($this, 'is_shortcode'));
 		add_shortcode('isnt', array($this, 'is_shortcode'));
 		add_shortcode('blog', array($this, 'blog_shortcode'));
 		add_shortcode('list_shortcodes', array($this, 'list_shortcodes'));
 		add_shortcode('search_form', array($this, 'search_form_shortcode'));
-
 	}
+
+
+	/*========================================================================
+	 *
+	 * Users loop
+	 *
+	 *=======================================================================*/
+	
+	function users_shortcode( $atts, $content ) {
+
+		self::$state['is_users_loop'] = true;
+
+		$outputs = array();
+
+		/*========================================================================
+		 *
+		 * Prepare parameters
+		 *
+		 *=======================================================================*/
+
+		$args = array();
+
+		// Just pass these
+		$pass_args = array('orderby','search','number','offset');
+
+		foreach ($pass_args as $arg) {
+			if (isset($atts[$arg]))
+				$args[$arg] = $atts[$arg];
+		}
+
+		if (isset($atts['role'])) {
+			if ($atts['role']=='admin') $atts['role'] = 'Administrator';
+			$args['role'] = ucwords($atts['role']); // Capitalize word
+		}
+
+		if (isset($atts['order']))
+			$args['order'] = strtoupper($atts['order']);
+		if (isset($atts['include']))
+			$args['include'] = CCS_Loop::explode_list($atts['include']);
+		if (isset($atts['exclude']))
+			$args['exclude'] = CCS_Loop::explode_list($atts['exclude']);
+
+		if (isset($atts['blog_id']))
+			$args['blog_id'] = intval($atts['blog_id']);
+
+		if (isset($atts['search_columns']))
+			$args['search_columns'] = CCS_Loop::explode_list($atts['search_columns']);
+
+		if (isset($atts['field']) && isset($atts['value'])) {
+
+			$compare = isset($atts['compare']) ? strtoupper($atts['compare']) : '=';
+
+			switch ($compare) {
+				case 'EQUAL': $compare = "="; break;
+				case 'NOT':
+				case 'NOT EQUAL': $compare = "!="; break;
+				case 'MORE': $compare = '>'; break;
+				case 'LESS': $compare = '<'; break;
+			}
+
+			$multiple = array('IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN');
+
+			if ( in_array($compare,$multiple) ) {
+				$value = CCS_Loop::explode_list($atts['value']);
+			} else {
+				$value = $atts['value'];
+			}
+
+			$args['meta_query'][] = array(
+				'key' => $atts['field'],
+				'value' => $atts['value'],
+				'compare' => $compare,
+			);
+
+			// Additional query
+			if (isset($atts['relation']) && isset($atts['field']) && isset($atts['value'])) {
+
+				$args['meta_query']['relation'] = strtoupper($atts['relation']);
+
+				$args['meta_query'][] = array(
+					'key' => $atts['field_2'],
+					'value' => $atts['value_2'],
+					'compare' => isset($atts['compare_2']) ? strtoupper($atts['compare_2']) : '=',
+				);
+			}
+		}
+
+		$users = get_users( $args );
+
+
+		/*========================================================================
+		 *
+		 * Custom query to filter results
+		 *
+		 *=======================================================================*/
+		
+		// Users Loop
+		foreach ( $users as $user ) {
+			self::$state['current_user_object'] = $user;
+			$outputs[] = do_shortcode( $content );
+		}
+
+		self::$state['is_users_loop'] = false;
+		return implode('', $outputs);
+	}
+
 
 
 	/*========================================================================
@@ -28,36 +139,80 @@ class UserShortcodes {
 
 	function user_shortcode( $atts, $content ) {
 
-		global $current_user;
-		get_currentuserinfo();
+		if ( self::$state['is_users_loop'] ) {
+
+			$current_user = self::$state['current_user_object'];
+
+		} else {
+
+			global $current_user;
+			get_currentuserinfo();
+			self::$state['current_user_object'] = $current_user;
+		}
 
 		extract(shortcode_atts(array(
 			'field' => '',
-			'meta' => ''
+			'meta' => '', // Alias
+			'size' => ''
 		), $atts));
 
 		if(empty($current_user)) return; // no current user
 
-		if(!empty($meta)) $field=$meta;
 
-		$out = null;
+		// Get field specified
 
-		if (!empty($field)) return get_user_meta( $current_user->ID, $field, true );
+		if( !empty($meta) ) $field=$meta;
 
-		if( is_array( $atts ) ) $atts = array_flip( $atts );
+		if ( empty($field) ) {
+			// or just get the first parameter
+			$field = isset($atts[0]) ? $atts[0] : null;
+		}
 
-		if( isset( $atts['name'] ) ) return $current_user->user_login;
+		switch ( $field ) {
+			case '':
+			case 'fullname':
+				return $current_user->display_name;
+				break;
+			case 'name':
+				return $current_user->user_login;
+				break;
+			case 'id':
+				return $current_user->ID;
+				break;
+			case 'email':
+				return $current_user->user_email;
+				break;
+			case 'url':
+				return $current_user->user_url;
+				break;
+			case 'avatar':
+				return get_avatar( $current_user->ID, !empty($size) ? $size : 96);
+				break;
+			case 'fullname':
+				return $current_user->display_name;
+				break;
+			case 'post-count':
+				return count_user_posts( $current_user->ID );
+				break;
+			case 'role':
+				return rtrim(implode(',',array_map('ucwords', $current_user->roles)),',');
+				break;
+			default:
+				return get_user_meta( $current_user->ID, $field, true );
+				break;
+		}
 
-		if( isset( $atts['id'] ) ) return $current_user->ID;
-
-		if( isset( $atts['email'] ) ) return $current_user->user_email;
-
-		if( isset( $atts['fullname'] ) ) return $current_user->display_name;
-
-		if( isset( $atts['avatar'] ) ) return get_avatar( $current_user->ID );
-
-		if( isset( $atts['role'] ) ) return rtrim(implode(',',$current_user->roles),',');
-
+/*
+		if ( is_array( $atts ) ) $atts = array_flip( $atts );
+		if ( isset( $atts['name'] ) ) 
+		if ( isset( $atts['id'] ) ) return $current_user->ID;
+		if ( isset( $atts['email'] ) ) return $current_user->user_email;
+		if ( isset( $atts['fullname'] ) ) return $current_user->display_name;
+		if ( isset( $atts['avatar'] ) ) return get_avatar( $current_user->ID );
+		if ( isset( $atts['role'] ) ) return rtrim(implode(',',$current_user->roles),',');
+		// Or else just get the user field by name
+		return get_user_meta( $current_user->ID, $field, true );
+*/
 	}
 
 
@@ -226,7 +381,7 @@ class UserShortcodes {
 	}
 
 }
-new UserShortcodes;
+new CCS_Users;
 
 
 
