@@ -238,6 +238,19 @@ class CCS_Users {
 		$condition = false;
 		get_currentuserinfo(); // load user info to $current_user
 
+
+		// Get [else] if it exists
+
+		$content_array = explode('[else]', $content);
+		$content = $content_array[0];
+		if (count($content_array)>1) {
+			$else = $content_array[1];
+		} else {
+			$else = null;
+		}
+
+
+
 		if (!empty($user)) {
 
 			$user_array = explode(",", $user);
@@ -303,16 +316,20 @@ class CCS_Users {
 		if ( ($tag=="isnt") || (isset($atts['not'])) )
 			$condition = !$condition;
 
-		if ($format == 'true') // Format?
-			$content = wpautop( $content );
-
-		if ($shortcode != 'false') // Shortcode?
-			$content = do_shortcode( $content );
-
-		if ($condition)
+		if ($condition) {
+			if ($format == 'true') // Format?
+				$content = wpautop( $content );
+			if ($shortcode != 'false') // Shortcode?
+				$content = do_shortcode( $content );
 			return $content;
-		else
-			return null;
+		}
+		else {
+			if ($format == 'true') // Format?
+				$else = wpautop( $else );
+			if ($shortcode != 'false') // Shortcode?
+				$else = do_shortcode( $else );
+			return $else;
+		}
 	}
 
 
