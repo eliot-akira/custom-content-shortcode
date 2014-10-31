@@ -144,6 +144,8 @@ class CCS_Content {
 			'align' => '', 'class' => '', 'height' => '',
 			'words' => '', 'len' => '', 'length' => '',
 			'date_format' => '', 'timestamp' => '',
+
+			'new' => '', // Set true to open link in new tab - currently only for download-link
 		);
 
 		
@@ -1271,6 +1273,13 @@ class CCS_Content {
 			case 'url' :
 			case 'download-url' :
 				$result = wp_get_attachment_url( $post_id );
+				break;
+			case 'download-link' :
+				$target = '';
+				if ( $parameters['new'] == 'true' ) {
+					$target = 'target="_blank" ';
+				}
+				$result = '<a '.$target.'href="'.wp_get_attachment_url( $post_id ).'">'.$post->post_title.'</a>';
 				break;
 			case 'page-url' :
 			case 'href' : $result = get_permalink( $post_id );
