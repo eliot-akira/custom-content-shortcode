@@ -1,36 +1,36 @@
-<h3 align="center">WCK Fields and Post Types</h3>
+<h3 align="center">WCK Fields</h3>
 <hr>
 
-Use <b>[wck-field]</b> to display a field from a metabox.
+For WCK fields, specify the metabox name first, then use the <b>[field]</b> shortcode.
 
-<h4>Display fields</h4>
-<code>[wck-field meta="metabox_name" name="field_name"]
-[wck-field meta="another_metabox" name="another_field"]
-</code>
+<h4>Display WCK fields</h4>
+<code>[metabox name="metabox_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
+&nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
+[/metabox]
+</code><br>
 
 <h3>Parameters</h3>
 
 <ul>
-	<li><b>id</b> - post id (default is current post)</li>
-	<li><b>meta</b> - name of metabox</li>
-	<li><b>name</b> - name of field</li>
+	<li><b>image</b> - display an image field</li>
+	<li><b>size</b> - size of image: <i>thumbnail</i>, <i>medium</i>, <i>large</i>, <i>full</i> (default) or custom defined size</li>
+
+</ul><ul>
+	<li><b>shortcode</b>- set <i>true</i> to enable shortcodes inside the field. Usually WCK pre-processes a text area to create break lines, but it doesn't work well with shortcodes. When shortcodes are enabled, you'll need to insert &lt;br&gt; tags manually.</li>
 </ul>
-<h4>Shortcode in field</h4>
-<ul>
-	<li><b>shortcode</b> - set <i>true</i> to enable shortcodes in the field</li>
-</ul>
-Usually WCK processes a text area to create break lines, but it doesn't work well with shortcodes. When shortcodes are enabled, you'll need to insert &lt;br&gt; tags manually.
+
 <br>
 
 <h3 align="center">Repeater</h3>
 <hr>
-Use <b>[wck-repeat]</b> to go through repeater fields.
+Use <b>[repeater]</b> to display a repeating metabox.
 
 <h4>Display repeater fields</h4>
-<code>[wck-repeat meta="metabox_name"]
-&nbsp;&nbsp;&nbsp;&nbsp;[wck-field name="field_name"]
-&nbsp;&nbsp;&nbsp;&nbsp;[wck-field name="another_field"]
-[/wck-repeat]
+<code>[repeater meta="metabox_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
+&nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
+[/repeater]
 </code><br>
 
 <h3>Parameters</h3>
@@ -40,17 +40,15 @@ Use <b>[wck-repeat]</b> to go through repeater fields.
 	<li><b>id</b> - post id (default is current post)</li>
 </ul><br>
 
-<h3 align="center">Loop</h3>
+<h3 align="center">Inside loop</h3>
 <hr>
-
-You can use these inside <b>[loop]</b> to display fields from multiple posts.
 
 <h4>Display repeater fields from five recent posts</h4>
 <code>[loop type="post_type" count="5"]
 &nbsp;&nbsp;&nbsp;&nbsp;Post Title: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[wck-repeat meta="metabox_name"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[wck-field name="field_name"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[wck-field name="another_field"]
-&nbsp;&nbsp;&nbsp;&nbsp;[/wck-repeat]
+&nbsp;&nbsp;&nbsp;&nbsp;[repeater meta="metabox_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
+&nbsp;&nbsp;&nbsp;&nbsp;[/repeater]
 [/loop]
 </code>

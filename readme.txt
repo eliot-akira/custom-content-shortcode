@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,23 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.4.5 =
+
+* [comments] - Show only approved comments if set in Settings -> Discussion
+* [each description] - Display taxonomy term description
+* [for each] - Enable *current* and *parent* parameters together
+* [loop author] - Display posts by author ID or login name
+* [loop taxonomy] - Support additional taxonomy query: *taxonomy_2*, *value_2*
+* [metabox] - Easier way to display WCK fields; refer to documentation
+* [pass] - Pass current post slug with {SLUG}
+* [related] - Support post object field (ACF)
+* [related taxonomy] - Show posts related to current post by taxonomy
+* [repeater] - Support nested repeater fields (ACF)
+
+* Thanks to *adwrt* and *kurakin_alexander* for the code contribution.
+
+* I'd also like to thank everyone who has donated to this plugin's development, and for all the user feedback.
 
 = 1.4.3 =
 
@@ -661,7 +678,3 @@ Support for other plugins:
 = 0.1 =
 
 * First release
-
-
-
-

@@ -49,13 +49,17 @@ class CCS_ForEach {
 		if ($each=='tag') $each='post_tag';
 		$out = '';
 
-		/* Loop through taxonomies */
+		// Loop through taxonomies
 
 		if ((CCS_Loop::$state['is_loop']=="true") || ($current=="true")) {
 
 			if ($current=="true") {
+
 				$post_id = get_the_ID();
+
 			} else {
+
+				// Inside [loop]
 				$post_id = CCS_Loop::$state['current_post_id'];
 			}
 
@@ -67,6 +71,35 @@ class CCS_ForEach {
 				'number' => $count,
 				'hide_empty' => ($empty=='true' ? 0 : 1),
 				) );
+
+			// Current and parent parameters together
+
+			if (!empty($parent)) {
+				
+				if ( is_numeric($parent) ) {
+
+					/* Get parent term ID */
+					$parent_term_id = $parent;
+
+				} else {
+
+					/* Get parent term ID from slug */
+					$term = get_term_by( 'slug', $parent, $each );
+					if (!empty($term))
+						$parent_term_id = $term->term_id;
+					else $parent_term_id = null;
+				}
+
+				if (!empty($parent_term_id)) {
+					/* Filter out terms that do not have the specified parent */
+					foreach($taxonomies as $key => $term) {
+						if ($term->parent != $parent_term_id) {
+							unset($taxonomies[$key]);
+						}
+					}
+
+				}
+			}
 
 		} else {
 
@@ -141,6 +174,7 @@ class CCS_ForEach {
 					self::$state['each']['id']=$term_object->term_id;
 					self::$state['each']['name']=$term_object->name;
 					self::$state['each']['slug']=$term_object->slug;
+					self::$state['each']['description']=$term_object->description;
 
 					$out .= do_shortcode($content);
 				}
@@ -174,6 +208,8 @@ class CCS_ForEach {
         	$out = self::$state['each']['id'];
         elseif (isset( $atts['slug'] ))
         	$out = self::$state['each']['slug'];
+        elseif (isset( $atts['description'] ))
+			$out = self::$state['each']['description'];
         else /* if (isset( $atts['name'] )) */
         	$out = self::$state['each']['name'];
 

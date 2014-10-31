@@ -4,9 +4,7 @@
  *
  * Shortcodes for Advanced Custom Fields
  * 
- * gallery, repeater, flexible content
- *
- * To do: test with ACF 5
+ * Gallery, repeater, flexible content, relationship/post object
  * 
  *====================================================================================================*/
 
@@ -25,14 +23,18 @@ class CCS_To_ACF {
 
 		add_shortcode('sub', array($this, 'sub_field'));
 		add_shortcode('flex', array($this, 'loop_through_acf_field'));
-		add_shortcode('repeater', array($this, 'loop_through_acf_field'));
+
+		// This will be called by [repeater] if not inside WCK metabox
+//		add_shortcode('repeater', array($this, 'loop_through_acf_field'));
+		add_shortcode('-repeater', array($this, 'loop_through_acf_field')); // Nested repeater
 
 		add_shortcode('acf_gallery', array($this, 'loop_through_acf_gallery_field'));
 		add_shortcode('acf_image', array($this, 'get_image_details_from_acf_gallery'));
 		add_shortcode('sub_image', array($this, 'get_image_details_from_acf_gallery')); // Alias
 		add_shortcode('layout', array($this, 'if_get_row_layout'));
 
-		add_shortcode('related', array($this, 'loop_relationship_field'));
+		// This will be called by [related] when relationship field is specified
+//		add_shortcode('related', array($this, 'loop_relationship_field'));
 
 		// Legacy - to be removed in a future update
 		add_shortcode('live-edit', array($this, 'call_live_edit'));
@@ -90,15 +92,18 @@ class CCS_To_ACF {
 			'columns' => '', 'pad' => '', 'between' => '', 
 		), $atts ));
 
-		if ( get_field( $field ) /* && ( strpos($content, '[sub ') !== FALSE ) */ ) {
+		if ( have_rows( $field )) {
 
-			self::$state['is_repeater_or_flex_loop'] = 'true';
 			$index_now = 0;
 			$outputs = array();
 
 			if ( $start == '' ) $start='1';
 
-			while ( has_sub_field( $field ) ) {
+			while ( have_rows( $field ) ) {
+
+				self::$state['is_repeater_or_flex_loop'] = 'true'; // Keep true for each row in case nested
+
+				the_row(); // Move index forward
 
 				$index_now++;
 
@@ -113,17 +118,23 @@ class CCS_To_ACF {
 					}
 				}
 			}
+
 			self::$state['is_repeater_or_flex_loop'] = 'false';
 
 		} else {
 			return null;
 		}
+
 		if( !empty($outputs) && is_array($outputs)) {
 
-			if (!empty($columns))
+			if (!empty($columns)) {
+
 				$output = CCS_Loop::render_columns( $outputs, $columns, $pad, $between );
-			else
+
+			} else {
+
 				$output = implode( '', $outputs );
+			}
 		}
 		return $output;
 	}
@@ -229,7 +240,7 @@ class CCS_To_ACF {
 		}
 	}
 
-	function loop_relationship_field( $atts, $content ) {
+	public static function loop_relationship_field( $atts, $content ) {
 
 		extract( shortcode_atts( array(
 			'field' => '',
@@ -259,6 +270,10 @@ class CCS_To_ACF {
 
 			$index_now = 0;
 
+			if ( ! is_array($posts) ) {
+				$posts = array( $posts ); // Single post
+			}
+
 			foreach ($posts as $post) { // must be named $post
 
 				$index_now++;
@@ -267,6 +282,7 @@ class CCS_To_ACF {
 
 				$output[] = str_replace('{COUNT}', $index_now, do_shortcode($content));
 			}
+
 		}
 
 		self::$state['is_relationship_loop'] = 'false';

@@ -22,7 +22,7 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 <hr>
 <h3>Parameters</h3>
 
-<h4>Post Type</h4>
+<h4>Post type</h4>
 <ul>
 	<li><b>type</b> - <i>post</i>, <i>page</i>, or <i>custom post type</i> - if empty, default is <i>any</i>; multiple values possible</li>
 </ul>
@@ -40,6 +40,12 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 	<li><b>status</b> - display posts by status: <i>any</i>, <i>publish</i>, <i>pending</i>, <i>draft</i>, <i>future</i>, <i>private</i>; the default is <i>publish</i> - multiple values possible, i.e., <i>status="publish, pending"</i></li>
 </ul>
 
+<h4>Author</h4>
+<ul>
+	<li><b>author</b> - show posts by author ID or login name; multiple values possible</li>
+	<li><b>author_exclude</b> - exclude posts by author ID or login name</li>
+</ul>
+
 <h4>Published date</h4>
 <ul>
 	<li><b>year, month, day</b> - display posts by specific year, month, day; you can use <i>today</i> as a value, for example <i>month="today"</i> will show posts from this month</li>
@@ -49,20 +55,21 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 <ul>
 	<li><b>category</b> - display posts from one or more categories: <i>category="sports, fashion"</i></li>
 	<li><b>tag</b> - display posts with one or more tags: <i>tag="apples, green"</i></li>
+</ul><ul>
 	<li><b>taxonomy</b>, <b>value</b> - display posts by taxonomy value: <i>taxonomy="product" value="book"</i></li>
 	<li><b>compare</b> - optional for taxonomy query: use <i>compare="not"</i> for posts whose <i>taxonomy</i> is <b>not</b> <i>value</i>; use <i>compare="and"</i> when you want posts whose <i>taxonomy</i> contains all values</li>
+</ul><ul>
+	<li><b>relation</b>, <b>taxonomy_2</b>, <b>value_2</b>, <b>compare_2</b> - additional taxonomy query, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
 </ul>
 
 <h4>Field value</h4>
 <ul>
 	<li><b>field</b> - field name</li>
 	<li><b>value</b> - value to search for</li>
+	<li><b>start</b> - use instead of <b>value</b> to check only the beginning of field value</li>
 	<li><b>compare</b> - <i>equal</i> (default), <i>not</i>, <i>more</i>, <i>less</i>, or operators like <i>&gt;=</i> and <i>&lt;=</i>.</li>
 </ul><ul>
-	<li><b>start</b> - use instead of <b>value</b> to check only the beginning of field value</li>
-</ul><ul>
-	<li><b>field_2</b>, <b>value_2</b>, <b>compare_2</b></li>
-	<li><b>relation</b> - query for additional field value, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
+	<li><b>relation</b>, <b>field_2</b>, <b>value_2</b>, <b>compare_2</b> - additional field query, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
 </ul>
 
 <h4>Date field</h4>

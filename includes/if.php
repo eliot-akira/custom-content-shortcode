@@ -225,26 +225,37 @@ class CCS_If {
 			if (empty($check) || ($check==false))
 				$condition = false;
 			else {
+
 				if (!is_array($check)) $check = array($check);
-				$values = self::comma_list_to_array($value);
 
-				foreach ($values as $this_value) {
+				if (!empty($value)) {
 
-					foreach ($check as $check_this) {
+					$values = self::comma_list_to_array($value);
 
-						if ($start=='true') {
-							// Only check beginning of field value
-							$check_this = substr($check_this, 0, strlen($this_value));
-						}
+					foreach ($values as $this_value) {
 
-						if ($compare == 'OR') {
-							$condition = ($this_value==$check_this) ? true : $condition;
-						} else { // AND
-							$condition = ($this_value==$check_this) ? true : false;
-							if (!$condition) break; // Every term must be found
+						foreach ($check as $check_this) {
+
+							if ($start=='true') {
+								// Only check beginning of field value
+								$check_this = substr($check_this, 0, strlen($this_value));
+							}
+
+							if ($compare == 'OR') {
+								$condition = ($this_value==$check_this) ? true : $condition;
+							} else { // AND
+								$condition = ($this_value==$check_this) ? true : false;
+								if (!$condition) break; // Every term must be found
+							}
 						}
 					}
+
+				} else {
+
+					// No value specified - just check that there is field value
+					$condition = !empty($check) ? true : false;
 				}
+
 
 			}
 		}

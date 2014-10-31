@@ -149,7 +149,7 @@ class CCS_Comments {
 				'orderby' => '',
 				'order' => 'DESC',
 				'parent' => '',
-				'post_id' => 0,
+				'post_id' => '',
 				'post_author' => '',
 				'post_name' => '',
 				'post_parent' => '',
@@ -163,7 +163,13 @@ class CCS_Comments {
 			$args = array();
 			foreach ($defaults as $key => $value) {
 				if (!empty($atts[$key])) {
-					$args[$key] = $atts[$key];
+					if ($key=='status' && $atts[$key]=='all') {
+						// Don't set status value
+					} else {
+						$args[$key] = $atts[$key];
+					}
+				} elseif (!empty($value)) {
+					$args[$key] = $value;
 				}
 			}
 

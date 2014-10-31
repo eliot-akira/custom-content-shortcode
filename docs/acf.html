@@ -13,6 +13,8 @@ Use the <b>[related]</b> shortcode to loop through a relationship field.
 [/related]
 </code>
 
+You can use the same shortcode for a Post Object field.
+<br>
 <hr>
 <h3>Repeater field</h3>
 
@@ -27,6 +29,8 @@ Use the <b>[repeater]</b> shortcode to loop through a repeater field.
 [/repeater]</code>
 
 For an image field, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size. If the image field returns as URL, set <i>in="url"</i>.
+
+To display a repeater inside a repeater, use <b>[-repeater]</b>.  Please note that the inner repeater field must have a different name than its parent.
 <br>
 <hr>
 <h3>Flexible content field</h3>

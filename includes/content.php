@@ -30,6 +30,9 @@ class CCS_Content {
 
 	function content_shortcode( $parameters ) {
 
+		$result = $this->before_anything( $parameters );
+		if ( $result ) return $result;
+
 		$parameters = $this->merge_with_defaults( $parameters );
 		self::$parameters = $parameters;
 
@@ -44,6 +47,28 @@ class CCS_Content {
 
 		return $result;
 	}
+
+
+	function before_anything( $parameters ) {
+
+		$out = false;
+		if ( ( CCS_To_WCK::$state['is_wck_metabox_loop'] == 'true' ) ||
+			 ( CCS_To_WCK::$state['is_wck_repeater'] == 'true' ) ||
+			 ( empty($parameters['author']) && !empty($parameters['meta']) ) ) {
+
+			// For post field, get normal
+			if ( CCS_To_WCK::$state['is_wck_post_field'] != 'true' ) {
+
+				// Get WCK field
+				$out = CCS_To_WCK::wck_field_shortcode( $parameters );
+				if (empty($out)) {
+					$out = true; // Force empty content
+				}
+			}
+		}
+		return $out;
+	}
+
 
 	/*========================================================================
 	 *
@@ -183,12 +208,17 @@ class CCS_Content {
 			$parameters['field'] = $parameters['checkbox'];
 
 
-
-		// Relationship loop
-
 		if (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_relationship_loop']=='true') {
-			$parameters['id'] = CCS_To_ACF::$state['relationship_id']; // Get related post
+
+			// Inside ACF Relationship field
+			$parameters['id'] = CCS_To_ACF::$state['relationship_id'];
+
+		} else if ( CCS_To_WCK::$state['is_wck_post_field'] == 'true' ) {
+
+			// Inside WCK post field
+			$parameters['id'] = CCS_To_WCK::$state['current_wck_post_id'];
 		}
+
 
 		return $parameters;
 	}
@@ -204,7 +234,16 @@ class CCS_Content {
 	function before_query( $parameters ) {
 
 		if (empty($parameters['id'])) {
-			$post_id = get_the_ID();
+
+			if ( CCS_Related::$state['is_related_posts_loop'] == 'true' ) {
+
+				// Inside [related]
+				$post_id = CCS_Related::$state['current_related_post_id'];
+
+			}  else {
+				$post_id = get_the_ID(); // Current post
+			}
+
 		} else {
 			$post_id = $parameters['id'];
 		}
@@ -238,6 +277,7 @@ class CCS_Content {
 
 		} elseif ( !empty($parameters['sidebar']) || !empty($parameters['area']) ) {
 
+
 		/*========================================================================
 		 *
 		 * Sidebar or widget area
@@ -264,10 +304,6 @@ class CCS_Content {
 
 			return $result;
 		}
-
-
-
-
 
 
 		/*========================================================================
@@ -923,24 +959,34 @@ class CCS_Content {
 	
 	public static function get_the_field( $parameters, $id = null ) {
 
-
 		$field = $parameters['field'];
 		$result = '';
+
+
+		/*========================================================================
+		 *
+		 * Attachment field
+		 *
+		 *=======================================================================*/
 
 		if ( (!empty($parameters['type']) && $parameters['type']=='attachment') ||
 			CCS_Loop::$state['is_attachment_loop'] ||
 			CCS_Attached::$state['is_attachment_loop'] ) {
 
-			// Attachment field
-
 			return self::get_the_attachment_field( $parameters );
 
 		} elseif (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true' ) {
 
+			/*========================================================================
+			 *
+			 * Repeater or flexible content loop
+			 *
+			 *=======================================================================*/
+		
 			// If not inside relationship loop
 			if ( CCS_To_ACF::$state['is_relationship_loop']!='true' ) {
 
-				// Repeater or flexible content field: then get sub field
+				// Get sub field
 				if (function_exists('get_sub_field')) {
 					return get_sub_field( $field );
 				} else return null;
@@ -1127,6 +1173,16 @@ class CCS_Content {
 
 				$result = get_post_meta($post_id, $field, true);
 
+				if ( is_numeric($result) && !empty($parameters['return']) ) {
+
+					// Get attachment field
+
+					$parameters['id'] = $result;
+					$parameters['field'] = $parameters['return'];
+
+					$result = self::get_the_attachment_field($parameters);
+				}
+
 				break;
 		}
 
@@ -1150,7 +1206,6 @@ class CCS_Content {
 	 *=======================================================================*/
 
 	public static function get_the_attachment_field( $parameters ) {
-
 
 		if (!empty($parameters['id'])) {
 			$post_id = $parameters['id'];
@@ -1201,14 +1256,23 @@ class CCS_Content {
 		}
 
 		switch ($field) {
-			case 'id': $result = $post_id; break;
-			case 'alt': $result = get_post_meta( $post_id, '_wp_attachment_image_alt', true );
+			case 'id':
+				$result = $post_id;
 				break;
-			case 'caption' : $result = $post->post_excerpt;
+			case 'alt':
+				$result = get_post_meta( $post_id, '_wp_attachment_image_alt', true );
 				break;
-			case 'description' : $result = $post->post_content;
+			case 'caption' :
+				$result = $post->post_excerpt;
+				break;
+			case 'description' :
+				$result = $post->post_content;
 				break;
 			case 'url' :
+			case 'download-url' :
+				$result = wp_get_attachment_url( $post_id );
+				break;
+			case 'page-url' :
 			case 'href' : $result = get_permalink( $post_id );
 				break;
 			case 'src' : $result = $post->guid;

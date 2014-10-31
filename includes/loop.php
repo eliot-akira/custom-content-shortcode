@@ -159,11 +159,14 @@ class CCS_Loop {
 			'parent' => '', 
 			'count' => '', 'offset' => '',
 			'year' => '', 'month' => '', 'day' => '',
+			'author' => '', 'author_exclude' => '',
 
 			// Taxonomy
 
 			'taxonomy' => '', 'term' => '',
 			'tax' => '', // Alias
+			'taxonomy_2' => '', // Additional taxonomy query
+
 
 			'category' => '', 'tag' => '', 
 
@@ -485,6 +488,50 @@ class CCS_Loop {
 
 		/*========================================================================
 		 *
+		 * Post author
+		 *
+		 *=======================================================================*/
+		
+		if ( !empty($parameters['author']) ) {
+
+			$authors = $this->explode_list( $parameters['author'] );
+
+			foreach ($authors as $author) {
+				if (is_numeric($author)) {
+					// Author ID
+					$query['author__in'][] = $author;
+				} else {
+					// Get author ID from login name
+					$author_data = get_user_by('login', $author);
+					if ($author_data) {
+						$query['author__in'][] = $author_data->ID;
+					}
+				}
+			}
+		}
+
+		if ( !empty($parameters['author_exclude']) ) {
+
+			$authors = $this->explode_list( $parameters['author_exclude'] );
+
+			foreach ($authors as $author) {
+				if (is_numeric($author)) {
+					// Author ID
+					$query['author__not_in'][] = $author;
+				} else {
+					// Get author ID from login name
+					$author_data = get_user_by('login', $author);
+					if ($author_data) {
+						$query['author__not_in'][] = $author_data->ID;
+					}
+				}
+			}
+		}
+
+
+
+		/*========================================================================
+		 *
 		 * Post status
 		 *
 		 *=======================================================================*/
@@ -530,7 +577,7 @@ class CCS_Loop {
 
 			if (!empty($query['offset']))
 
-				$query['posts_per_page'] = '9999'; // Show all posts (to make offset work)
+				$query['posts_per_page'] = '99999'; // Show all posts (to make offset work)
 
 			else
 				$query['posts_per_page'] = '-1'; // Show all posts (normal method)
@@ -624,6 +671,7 @@ class CCS_Loop {
 		if ( !empty($parameters['taxonomy']) ) {
 
 			$taxonomy = $parameters['taxonomy'];
+			if ($taxonomy == 'tag') $taxonomy = 'post_tag';
 
 			if ( !empty($parameters['term']) )
 				$term = $parameters['term'];
@@ -659,6 +707,45 @@ class CCS_Loop {
 					'operator' => $operator
 				)
 			);
+
+			// Additional taxonomy query
+			if ( !empty($parameters['taxonomy_2']) && !empty($parameters['value_2']) ) {
+
+				$taxonomy = $parameters['taxonomy_2'];
+				if ($taxonomy == 'tag') $taxonomy = 'post_tag';
+
+				$relation = !empty($relation) ? strtoupper($relation) : 'AND';
+				$query['tax_query']['relation'] = $relation;
+
+				$terms = $this->explode_list($parameters['value_2']); // Multiple terms possible
+
+				if ( !empty($parameters['compare_2']) ) {
+
+					$compare = $parameters['compare_2'];
+
+					if ( $compare=='=' )
+						$operator = 'IN';
+					elseif ( $compare=='!=' )
+						$operator = 'NOT IN';
+					else {
+						$compare = strtoupper($compare);
+						if ( $compare == 'NOT' )
+							$compare = 'NOT IN';
+						$operator = $compare;
+					}
+
+				} else {
+					$operator = 'IN'; // Default
+				}
+
+				$query['tax_query'][] = array(
+					'taxonomy' => $taxonomy,
+					'field' => 'slug',
+					'terms' => $terms,
+					'operator' => $operator
+				);
+			}
+
 		}
 
 
@@ -759,7 +846,7 @@ class CCS_Loop {
 
 		/*========================================================================
 		 *
-		 * Query by field value
+		 * Field value
 		 *
 		 *=======================================================================*/
 
@@ -1856,7 +1943,7 @@ class CCS_Loop {
 		 *=======================================================================*/
 
 		$keywords = array(
-			'URL', 'ID', 'COUNT', 'TITLE', 'AUTHOR', 'DATE', 'THUMBNAIL', 'THUMBNAIL_URL',
+			'URL', 'SLUG', 'ID', 'COUNT', 'TITLE', 'AUTHOR', 'DATE', 'THUMBNAIL', 'THUMBNAIL_URL',
 			'CONTENT', 'EXCERPT', 'COMMENT_COUNT', 'TAGS', 'IMAGE', 'IMAGE_ID', 'IMAGE_URL',
 		);
 
@@ -1874,6 +1961,9 @@ class CCS_Loop {
 						break;
 					case 'ID':
 						$replace = get_the_ID();
+						break;
+					case 'SLUG':
+						$replace = self::get_the_slug();
 						break;
 					case 'COUNT':
 						$replace = self::$state['loop_count'];
@@ -1993,6 +2083,22 @@ class CCS_Loop {
 		return ( $apos < $bpos ) ? -1 : 1;
 	}
 
+
+	public static function get_the_slug( $id = null ) {
+		global $post;
+
+		if ( !empty($id) ) {
+			$this_post = get_post($id);
+		} else {
+			$this_post = $post;
+		}
+
+		if (!empty($this_post)) {
+			return $this_post->post_name;
+		} else {
+			return null;
+		}
+	}
 
 
 	/*========================================================================
