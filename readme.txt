@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.4.5
+Stable tag: 1.4.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,11 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.4.6 =
+
+* [related] - By default, loop posts related by category
+* [related] - Add parameter *trim* to remove trailing space or comma
+
 = 1.4.5 =
 
 * [comments] - Show only approved comments if set in Settings -> Discussion
@@ -97,7 +102,6 @@ Support for other plugins:
 * [repeater] - Support nested repeater fields (ACF)
 
 * Thanks to *adwrt* and *kurakin_alexander* for the code contribution.
-
 * I'd also like to thank everyone who has donated to this plugin's development, and for all the user feedback.
 
 = 1.4.3 =

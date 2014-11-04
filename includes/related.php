@@ -39,7 +39,7 @@ class CCS_Related {
 		}
 
 		extract( shortcode_atts( array(
-			'taxonomy' => '',
+			'taxonomy' => 'category', // Default
 			'field' => '', 
 			'value' => '', // For future update: related post by field value
 			'subfield' => '',
@@ -47,6 +47,7 @@ class CCS_Related {
 			'children' => 'true',
 			'order' => 'DESC',
 			'orderby' => 'date',
+			'trim' => '' // Trim extra space and comma
 		), $atts ) );
 
 
@@ -132,7 +133,14 @@ class CCS_Related {
 			self::$state['is_related_posts_loop'] = 'false';
 		}
 
-		return implode('', $outputs);
+		$out = implode('', $outputs);
+
+		if (!empty($trim)) {
+			if ($trim=='true') $trim = null;
+			$out = trim($out, " \t\n\r\0\x0B,".$trim);
+		}
+
+		return $out;
 
 	}
 
