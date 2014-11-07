@@ -31,7 +31,7 @@ class CCS_Content {
 	function content_shortcode( $parameters ) {
 
 		$result = $this->before_anything( $parameters );
-		if ( $result ) return $result;
+		if ( $result != false ) return $result;
 
 		$parameters = $this->merge_with_defaults( $parameters );
 		self::$parameters = $parameters;
@@ -48,21 +48,43 @@ class CCS_Content {
 		return $result;
 	}
 
+	/**
+	 *
+	 * Before anything, check for result
+	 * 
+	 * @param 	array 	$parameters All shortcode parameters
+	 * 
+	 * @return 	false	Continue processing shortcode
+	 * @return 	null 	Exit shortcode with empty result
+	 * @return 	string	Exit shortcode with result
+	 * 
+	 */
 
 	function before_anything( $parameters ) {
 
 		$out = false;
-		if ( ( CCS_To_WCK::$state['is_wck_metabox_loop'] == 'true' ) ||
-			 ( CCS_To_WCK::$state['is_wck_repeater'] == 'true' ) ||
-			 ( empty($parameters['author']) && !empty($parameters['meta']) ) ) {
 
-			// For post field, get normal
-			if ( CCS_To_WCK::$state['is_wck_post_field'] != 'true' ) {
+		if ( CCS_To_WCK::$state['is_wck_loaded'] == 'true' ) {
 
-				// Get WCK field
-				$out = CCS_To_WCK::wck_field_shortcode( $parameters );
-				if (empty($out)) {
-					$out = true; // Force empty content
+			if (
+				( CCS_To_WCK::$state['is_wck_metabox_loop'] == 'true' )
+				||	( CCS_To_WCK::$state['is_wck_repeater'] == 'true' )
+				||	(
+						// Backward compatibility for WCK metabox parameter
+						( !empty($parameters['meta']) || !empty($parameters['metabox']) )
+						&& !empty($parameters['field'])
+						&& ($parameters['field'] !== 'author')
+					)
+			) {
+
+				// For post field, get normal
+				if ( CCS_To_WCK::$state['is_wck_post_field'] != 'true' ) {
+
+					// Get WCK field
+					$out = CCS_To_WCK::wck_field_shortcode( $parameters );
+					if ( $out == false ) {
+						$out = null; // Force empty content
+					}
 				}
 			}
 		}

@@ -85,6 +85,7 @@ Support for other plugins:
 
 = 1.4.6 =
 
+* [field meta] - Return author meta field correctly
 * [related] - By default, loop posts related by category
 * [related] - Add parameter *trim* to remove trailing space or comma
 

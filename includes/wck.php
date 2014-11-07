@@ -14,6 +14,8 @@ class CCS_To_WCK {
 
 	function __construct() {
 
+		self::$state['is_wck_loaded'] = 'false';
+
 		self::$state['current_wck_metabox'] = '';
 		self::$state['is_wck_metabox_loop'] = 'false';
 
@@ -35,12 +37,15 @@ class CCS_To_WCK {
 
 		if ( function_exists('get_cfc_field') && function_exists('get_cfc_meta') ) {
 
+			self::$state['is_wck_loaded'] = 'true';
+
 			add_shortcode( 'metabox', array($this, 'wck_metabox_shortcode') );
 			add_shortcode( 'wck-field', array($this, 'wck_field_shortcode') );
 			add_shortcode( 'post-field', array($this, 'wck_field_shortcode') );
 			add_shortcode( 'wck-repeat', array($this, 'wck_repeater_shortcode') );
 			add_shortcode( 'repeater', array($this, 'general_repeater_shortcode') );
 		} else {
+
 			if (class_exists('CCS_To_ACF')) {
 				add_shortcode( 'repeater', array('CCS_To_ACF', 'loop_through_acf_field') );
 			}
@@ -75,12 +80,15 @@ class CCS_To_WCK {
 	 *
 	 *=======================================================================*/
 
-	function wck_field_shortcode( $atts, $content = null ) {
+	public static function wck_field_shortcode( $atts, $content = null ) {
 
 		extract( shortcode_atts( array(
-			'meta' => '',
-			'name' => '', // Alias to field
+			'metabox' => '',
+			'meta' => '', // Alias to metabox
+
 			'field' => '', 
+			'name' => '', // Alias to field
+
 			'id' => '',
 			'shortcode' => 'false',
 
@@ -89,6 +97,8 @@ class CCS_To_WCK {
 			'icon' => '0',
 			'attr' => '',
 		), $atts ) );
+
+		if (!empty($metabox)) $meta = $metabox;
 
 		if ( self::$state['is_wck_repeater'] == 'true' ) {
 
@@ -199,7 +209,10 @@ class CCS_To_WCK {
 
  	function general_repeater_shortcode( $atts, $content ) {
 
-		if ( isset($atts['meta']) && !empty($atts['meta']) ) {
+		if ( 
+			( isset($atts['meta']) && !empty($atts['meta']) ) 
+			|| ( isset($atts['metabox']) && !empty($atts['metabox']) )
+		) {
 			return self::wck_repeater_shortcode( $atts, $content );
 		} else {
 			if (class_exists('CCS_To_ACF')) {
@@ -218,10 +231,12 @@ class CCS_To_WCK {
 
 		extract( shortcode_atts( array(
 			'meta' => '',
+			'metabox' => '', // Alias
 			'id' => ''
 		), $atts ) );
 
-		if (empty($meta)) return;
+		if (!empty($metabox)) $meta = $metabox;
+		if (empty($meta)) return; // Needs metabox name
 
 		$out = null;
 

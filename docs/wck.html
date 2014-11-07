@@ -1,33 +1,39 @@
 <h3 align="center">WCK Fields</h3>
 <hr>
 
-For WCK fields, specify the metabox name first, then use the <b>[field]</b> shortcode.
+For WCK fields, use the <b>[field]</b> shortcode.
 
-<h4>Display WCK fields</h4>
+<code>[field field_name metabox="metabox_name"]
+</code>
+
+You must specify a metabox name.
+
+<h3>Parameters</h3>
+
+<ul>
+	<li><b>image</b> - display an image field: <i>image="field_name"</i></li>
+	<li><b>size</b> - size of image: <i>thumbnail</i>, <i>medium</i>, <i>large</i>, <i>full</i> (default) or custom defined size</li>
+
+</ul><ul>
+	<li><b>shortcode</b>- set <i>true</i> to enable shortcodes inside the field. Usually WCK formats a text area to create break lines, but it doesn't work well with shortcodes. When shortcodes are enabled, you'll need to insert &lt;br&gt; tags manually.</li>
+</ul>
+
+<hr>
+
+For multiple fields from the same metabox, you can use the <b>[metabox]</b> shortcode.
+
 <code>[metabox name="metabox_name"]
 &nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
 &nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
 [/metabox]
 </code><br>
 
-<h3>Parameters</h3>
-
-<ul>
-	<li><b>image</b> - display an image field</li>
-	<li><b>size</b> - size of image: <i>thumbnail</i>, <i>medium</i>, <i>large</i>, <i>full</i> (default) or custom defined size</li>
-
-</ul><ul>
-	<li><b>shortcode</b>- set <i>true</i> to enable shortcodes inside the field. Usually WCK pre-processes a text area to create break lines, but it doesn't work well with shortcodes. When shortcodes are enabled, you'll need to insert &lt;br&gt; tags manually.</li>
-</ul>
-
-<br>
-
 <h3 align="center">Repeater</h3>
 <hr>
 Use <b>[repeater]</b> to display a repeating metabox.
 
 <h4>Display repeater fields</h4>
-<code>[repeater meta="metabox_name"]
+<code>[repeater metabox="metabox_name"]
 &nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
 &nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
 [/repeater]
@@ -36,7 +42,7 @@ Use <b>[repeater]</b> to display a repeating metabox.
 <h3>Parameters</h3>
 
 <ul>
-	<li><b>meta</b> - name of metabox</li>
+	<li><b>metabox</b> - name of metabox</li>
 	<li><b>id</b> - post id (default is current post)</li>
 </ul><br>
 
@@ -46,7 +52,7 @@ Use <b>[repeater]</b> to display a repeating metabox.
 <h4>Display repeater fields from five recent posts</h4>
 <code>[loop type="post_type" count="5"]
 &nbsp;&nbsp;&nbsp;&nbsp;Post Title: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[repeater meta="metabox_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;[repeater metabox="metabox_name"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
 &nbsp;&nbsp;&nbsp;&nbsp;[/repeater]

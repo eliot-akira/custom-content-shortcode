@@ -77,6 +77,10 @@ class CCS_Related {
 
 			self::$state['is_related_posts_loop'] = 'true';
 
+			if ($taxonomy == 'tag') {
+				$taxonomy = 'post_tag';
+			}
+
 			// Get current post's taxonomy terms
 			$term_objects = get_the_terms( $post_id, $taxonomy );
 
