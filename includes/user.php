@@ -6,7 +6,9 @@
  *
  *=======================================================================*/
 
-class CCS_Users {
+new CCS_User;
+
+class CCS_User {
 
 	public static $state;
 	
@@ -137,7 +139,7 @@ class CCS_Users {
 	 *
 	 *=======================================================================*/
 
-	function user_shortcode( $atts, $content ) {
+	public static function user_shortcode( $atts ) {
 
 		if ( self::$state['is_users_loop'] ) {
 
@@ -192,7 +194,7 @@ class CCS_Users {
 				return $current_user->display_name;
 				break;
 			case 'post-count':
-				return count_user_posts( $current_user->ID );
+				return strval( count_user_posts( $current_user->ID ) );
 				break;
 			case 'role':
 				return rtrim(implode(',',array_map('ucwords', $current_user->roles)),',');
@@ -213,6 +215,10 @@ class CCS_Users {
 		// Or else just get the user field by name
 		return get_user_meta( $current_user->ID, $field, true );
 */
+	}
+
+	public static function get_user_field( $field ) {
+		return self::user_shortcode( array( 'field' =>  $field ) );
 	}
 
 
@@ -316,20 +322,16 @@ class CCS_Users {
 		if ( ($tag=="isnt") || (isset($atts['not'])) )
 			$condition = !$condition;
 
-		if ($condition) {
-			if ($format == 'true') // Format?
-				$content = wpautop( $content );
-			if ($shortcode != 'false') // Shortcode?
-				$content = do_shortcode( $content );
-			return $content;
+		if ( !$condition ) {
+			$content = $else; // Everything after [else]
 		}
-		else {
-			if ($format == 'true') // Format?
-				$else = wpautop( $else );
-			if ($shortcode != 'false') // Shortcode?
-				$else = do_shortcode( $else );
-			return $else;
-		}
+
+		if ($format == 'true') // Format?
+			$content = wpautop( $content );
+		if ($shortcode != 'false') // Shortcode?
+			$content = do_shortcode( $content );
+
+		return $content;
 	}
 
 
@@ -398,9 +400,6 @@ class CCS_Users {
 	}
 
 }
-new CCS_Users;
-
-
 
 
 if ( ! function_exists( 'blog_exists' ) ) {

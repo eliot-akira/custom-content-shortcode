@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,12 +30,12 @@ There is a reference section under Settings -> Custom Content.
 <br />
 Here are some of the included features:
 
-* View your site's **content structure**
 * **Dynamic templates** with shortcodes
-* Simple **gallery field** for any post type
+* View your site's **content structure**
 * Display **comments** and **attachments**
 * **User info** and content based on user status
 * **Relative URLs** for links and images
+* Simple **gallery field** for any post type
 * **Cache** the result of query loops
 
 Support for other plugins:
@@ -82,6 +82,10 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.4.7 =
+
+* [if user_field] - If user field is not empty or has specific value
 
 = 1.4.6 =
 

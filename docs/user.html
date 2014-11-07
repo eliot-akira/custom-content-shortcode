@@ -23,6 +23,38 @@ E-mail: [user email]
 You can also specify a custom user field.
 
 <code>[user field_name]
+</code><br>
+
+
+<h3 align="center">User field value</h3>
+<hr>
+
+Use <b>[if]</b> to check that a user field is not empty, or has specific value.
+
+<h4>If user field is not empty</h4>
+
+<code>[if user_field="facebook_profile"]
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[user facebook_profile]"&gt;Facebook profile&lt;/a&gt;
+[else]
+&nbsp;&nbsp;&nbsp;&nbsp;No Facebook profile
+[/if]
+</code>
+
+<h4>If user has posts</h4>
+
+<code>[if user_field="post-count"]
+&nbsp;&nbsp;&nbsp;&nbsp;Post count: [user post-count]
+[else]
+&nbsp;&nbsp;&nbsp;&nbsp;No posts yet!
+[/if]
+</code>
+
+
+<h4>If user field has specific value</h4>
+
+<code>[if user_field="school" value="Home Town University"]
+&nbsp;&nbsp;&nbsp;&nbsp;Hey, schoolmate!
+[/if]
 </code>
 
 
@@ -121,8 +153,7 @@ Here is an example using both <b>[is]</b> and <b>[url]</b> to show a login/logou
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url login go='home']"&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Login Button
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;
-[/is]
-[is login]
+[else]
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url logout go='somewhere']"&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Logout Button
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/a&gt;

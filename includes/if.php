@@ -46,6 +46,7 @@ class CCS_If {
 			'parent' => '',
 
 			'field' => '',
+			'user_field' => '',
 			'value' => '',
 
 			'not' => '',
@@ -208,12 +209,20 @@ class CCS_If {
 		 * Field: field="field_slug" value="this,that"
 		 *
 		 *=======================================================================*/
-		
 
-		if (!empty($field)) {
+		if ( !empty($field) || !empty($user_field) ) {
 
-			$check = CCS_Content::get_prepared_field( $field );
-//			$check = get_post_meta( $current_post_id, $field, true );
+			if ( empty($user_field) ) {
+
+				// Post field
+				$check = CCS_Content::get_prepared_field( $field );
+
+			} else {
+
+				// User field
+				$field = $user_field;
+				$check = CCS_User::get_user_field( $field );
+			}
 
 			// start=".."
 
@@ -228,7 +237,7 @@ class CCS_If {
 
 				if (!is_array($check)) $check = array($check);
 
-				if (!empty($value)) {
+				if ( !empty($value) ) {
 
 					$values = self::comma_list_to_array($value);
 
@@ -255,8 +264,6 @@ class CCS_If {
 					// No value specified - just check that there is field value
 					$condition = !empty($check) ? true : false;
 				}
-
-
 			}
 		}
 
@@ -336,6 +343,29 @@ class CCS_If {
 				}
 			}
 		}
+
+
+		/*========================================================================
+		 *
+		 * Attachments
+		 *
+		 *=======================================================================*/
+
+		if (isset($atts['attached'])) {
+
+			// Does the current post have any attachments?
+
+			$current_id = get_the_ID();
+			$posts = get_posts( array (
+				'post_parent' => $current_id,
+				'post_type' => 'attachment',
+				'post_status' => 'any',
+				'posts_per_page' => 1,
+				) );
+			if (!empty($posts)) $condition = true;
+			else $condition = false;
+		}
+
 		
 		/*========================================================================
 		 *
@@ -359,20 +389,11 @@ class CCS_If {
 		$condition = isset($atts['single']) ? is_single() : $condition;
 
 
-		if (isset($atts['attached'])) {
-
-			// Does the current post have any attachments?
-
-			$current_id = get_the_ID();
-			$posts = get_posts( array (
-				'post_parent' => $current_id,
-				'post_type' => 'attachment',
-				'post_status' => 'any',
-				'posts_per_page' => 1,
-				) );
-			if (!empty($posts)) $condition = true;
-			else $condition = false;
-		}
+		/*========================================================================
+		 *
+		 * Not
+		 *
+		 *=======================================================================*/
 
 		// Not - also catches compare="not"
 		$condition = isset($atts['not']) ? !$condition : $condition;
@@ -383,6 +404,7 @@ class CCS_If {
 
 		return $out;
 	}
+
 
 	function flag_shortcode() {
 

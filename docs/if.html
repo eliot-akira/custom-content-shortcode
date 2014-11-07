@@ -34,13 +34,21 @@ Use the <b>[if]</b> shortcode to display content based on certain conditions.
 <h4>Field value</h4>
 <ul>
 	<li><b>field</b> - name of field to query</li>
-	<li><b>value</b> - if post has value(s) in the specified field; if no value is set, it will check if any field value exists</li>
+	<li><b>value</b> - if post has value(s) in the specified field; if no value is set, it will check if field is empty</li>
 	<li><b>start</b> - use instead of <b>value</b> to check only the beginning of field value</li>
 </ul>
-For category, tag, taxonomy or field, you can query for multiple values: for example, <i>category="sci-fi, comedy"</i>. This returns posts in <i>either</i> Sci-Fi or Comedy. If you want posts matching <i>both</i> categories, use the <i>compare</i> parameter.
+<h4>User field</h4>
+<ul>
+	<li><b>user_field</b> - name of user field to query</li>
+	<li><b>value, start, compare</b> - see above for field value</li>
+</ul>
+
+<h4>Multiple values</h4>
+For category, tag, taxonomy, field or user field, you can query for multiple values: for example, <i>category="sci-fi, comedy"</i>. This returns posts in <i>either</i> Sci-Fi or Comedy. If you want posts matching <i>both</i> categories, use the <i>compare</i> parameter.
 <ul>
 	<li><b>compare</b> - Set compare="and" to query for <i>all</i> values
 </ul>
+
 <h4>If it exists</h4>
 <ul>
 	<li><b>attached</b> - if the post has any attachments</li>
