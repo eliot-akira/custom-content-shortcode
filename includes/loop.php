@@ -501,10 +501,18 @@ class CCS_Loop {
 					// Author ID
 					$query['author__in'][] = $author;
 				} else {
-					// Get author ID from login name
-					$author_data = get_user_by('login', $author);
-					if ($author_data) {
-						$query['author__in'][] = $author_data->ID;
+
+					if ( $author == 'this' ) {
+
+						// Current user ID
+						$query['author__in'][] = CCS_User::get_user_field('id');
+
+					} else {
+						// Get author ID from login name
+						$author_data = get_user_by('login', $author);
+						if ($author_data) {
+							$query['author__in'][] = $author_data->ID;
+						}
 					}
 				}
 			}
@@ -519,10 +527,18 @@ class CCS_Loop {
 					// Author ID
 					$query['author__not_in'][] = $author;
 				} else {
-					// Get author ID from login name
-					$author_data = get_user_by('login', $author);
-					if ($author_data) {
-						$query['author__not_in'][] = $author_data->ID;
+					if ( $author == 'this' ) {
+
+						// Current user ID
+						$query['author__not_in'][] = CCS_User::get_user_field('id');
+
+					} else {
+
+						// Get author ID from login name
+						$author_data = get_user_by('login', $author);
+						if ($author_data) {
+							$query['author__not_in'][] = $author_data->ID;
+						}
 					}
 				}
 			}
