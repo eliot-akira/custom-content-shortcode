@@ -128,16 +128,19 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 <hr>
 <h3>If a field value exists</h3>
 
+To check if a field has any value, use the <i>field</i> parameter.
+
 <h4>Display only products that have serial numbers</h4>
 
 <code>[loop type="product"]
-&nbsp;&nbsp;&nbsp;&nbsp;[if flag="serial_number"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if field="serial_number"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [flag]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [field serial_number]
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
 
-The <i>flag</i> parameter specifies the field, and its value can be displayed with the <b>[flag]</b> shortcode.
+If you specify the <i>value</i> parameter, it will check for that specific value only.
+
 <br>
 <h3 align="center">Nested</h3>
 <hr>
@@ -152,7 +155,7 @@ For nested conditions, use [-if][-else][/-if].
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-else]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not available.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/-if]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;[else]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title-link] is not a book.
 &nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/loop]</code>
