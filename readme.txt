@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.4.9
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,6 +83,10 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.5.0 =
+
+* 
+
 = 1.4.9 =
 
 * [if taxonomy] - If no term is specified, check if any term exists for the taxonomy
@@ -116,8 +120,7 @@ Support for other plugins:
 * [related taxonomy] - Show posts related to current post by taxonomy
 * [repeater] - Support nested repeater fields (ACF)
 
-* Thanks to *adwrt* and *kurakin_alexander* for the code contribution.
-* I'd also like to thank everyone who has donated to this plugin's development, and for all the user feedback.
+* I'd like to thank everyone who has donated to this plugin's development, and for all the user feedback. Thanks also to *adwrt* and *kurakin_alexander* for the code contribution.
 
 = 1.4.3 =
 
