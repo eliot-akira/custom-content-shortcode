@@ -29,12 +29,12 @@ Use the <b>[if]</b> shortcode to display content based on certain conditions.
 </ul>
 <ul>
 	<li><b>taxonomy</b> - name of taxonomy to query
-	<li><b>term</b> - if post has term(s) in the specified taxonomy
+	<li><b>term</b> - if post has term(s) in the specified taxonomy; if no term is set, it will check if any term exists
 </ul>
 <h4>Field value</h4>
 <ul>
 	<li><b>field</b> - name of field to query</li>
-	<li><b>value</b> - if post has value(s) in the specified field; if no value is set, it will check if field is empty</li>
+	<li><b>value</b> - if post has value(s) in the specified field; if no value is set, it will check if any field value exists</li>
 	<li><b>start</b> - use instead of <b>value</b> to check only the beginning of field value</li>
 </ul>
 <h4>User field</h4>
@@ -140,6 +140,26 @@ To check if a field has any value, use the <i>field</i> parameter.
 [/loop]</code>
 
 If you specify the <i>value</i> parameter, it will check for that specific value only.
+
+<hr>
+<h3>If a taxonomy term exists</h3>
+
+To check if the post has any term in a given taxonomy, use the <i>taxonomy</i> parameter without specifying the term.
+
+<h4>Display tags if any exists</h4>
+
+<code>[loop type="book"]
+&nbsp;&nbsp;&nbsp;&nbsp;Book: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;Author: [field author_name]
+&nbsp;&nbsp;&nbsp;&nbsp;[if taxonomy="tag"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tags:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[for each="tag" trim="true"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[each name-link],
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/for]
+&nbsp;&nbsp;&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There's no tag.
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+[/loop]</code>
 
 <br>
 <h3 align="center">Nested</h3>

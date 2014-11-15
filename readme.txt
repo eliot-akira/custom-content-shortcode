@@ -85,7 +85,9 @@ Support for other plugins:
 
 = 1.4.9 =
 
-* 
+* [if taxonomy] - If no term is specified, check if any term exists for the taxonomy
+* [each url] - URL of taxonomy term archive
+* [each name-link] - Taxonomy term name with link to archive
 
 = 1.4.8 =
 

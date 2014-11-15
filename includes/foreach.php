@@ -171,10 +171,18 @@ class CCS_ForEach {
 				}
 
 				if ($condition) {
-					self::$state['each']['id']=$term_object->term_id;
-					self::$state['each']['name']=$term_object->name;
-					self::$state['each']['slug']=$term_object->slug;
-					self::$state['each']['description']=$term_object->description;
+					self::$state['each']['id'] = $term_object->term_id;
+					self::$state['each']['name'] = $term_object->name;
+					self::$state['each']['slug'] = $term_object->slug;
+					self::$state['each']['description'] = $term_object->description;
+
+					$term_link = get_term_link( $term_object );
+					if ( is_wp_error( $term_link ) ) $term_link = null;
+
+					self::$state['each']['url'] = $term_link;
+
+					self::$state['each']['name-link'] = '<a href="'.self::$state['each']['url'].'">'
+						. self::$state['each']['name'].'</a>';
 
 					$out .= do_shortcode($content);
 				}
@@ -199,19 +207,8 @@ class CCS_ForEach {
 		if ( !self::$state['is_for_loop'] )
 				return; // Must be inside a for loop
 
-        if( is_array( $atts ) )
-            $atts = array_flip( $atts );
-
-        $out = '';
-
-        if (isset( $atts['id'] ))
-        	$out = self::$state['each']['id'];
-        elseif (isset( $atts['slug'] ))
-        	$out = self::$state['each']['slug'];
-        elseif (isset( $atts['description'] ))
-			$out = self::$state['each']['description'];
-        else /* if (isset( $atts['name'] )) */
-        	$out = self::$state['each']['name'];
+		$field = isset($atts[0]) ? $atts[0] : 'name'; // Default: name
+        $out = isset( self::$state['each'][$field] ) ? self::$state['each'][$field] : null;
 
         return $out;
 	}

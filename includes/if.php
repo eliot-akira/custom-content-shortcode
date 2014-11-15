@@ -175,6 +175,8 @@ class CCS_If {
 
 		if (!empty($taxonomy)) {
 
+			if ($taxonomy == 'tag') $taxonomy = 'post_tag';
+
 			$taxonomies = wp_get_post_terms(
 				$current_post_id,
 				$taxonomy, array() );
@@ -186,19 +188,22 @@ class CCS_If {
 
 			$terms = self::comma_list_to_array($term);
 
-//			echo "Find $term in ";
-//			print_r($post_tax_array);
+			if ( empty($term) && count($post_tax_array) ) {
 
-			foreach ($terms as $term) {
+				// If no term query is set, then check if there's any term
+				$condition = true;
 
-				if ($compare == "OR") {
-					$condition = in_array($term, $post_tax_array) ? true : $condition;
-				} else {
-					// AND
-					$condition = in_array($term, $post_tax_array) ? true : false;
-					if (!$condition) break; // Every term must be found
+			} else {
+				foreach ($terms as $term) {
+
+					if ($compare == "OR") {
+						$condition = in_array($term, $post_tax_array) ? true : $condition;
+					} else {
+						// AND
+						$condition = in_array($term, $post_tax_array) ? true : false;
+						if (!$condition) break; // Every term must be found
+					}
 				}
-
 			}
 
 		} // End taxonomy conditions
