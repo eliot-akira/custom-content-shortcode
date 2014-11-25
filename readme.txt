@@ -85,7 +85,7 @@ Support for other plugins:
 
 = 1.5.0 =
 
-* 
+* [related] - Enable posts related by multiple taxonomies
 
 = 1.4.9 =
 
