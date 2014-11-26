@@ -646,6 +646,10 @@ class CCS_Loop {
 
 			$check_category = array_pop($categories); // Check one item
 
+			if (!empty($parameters['compare']) && strtoupper($parameters['compare'])=='AND') {
+				$category = str_replace(',', '+', $category);
+			}
+
 			if ( is_numeric($check_category) )
 				$query['cat'] = $category; // ID(s)
 			else
@@ -665,6 +669,9 @@ class CCS_Loop {
 			// Remove extra space in a list
 
 			$tags = $this->clean_list( $parameters['tag'] );
+			if (!empty($parameters['compare']) && strtoupper($parameters['compare'])=='AND') {
+				$tags = str_replace(',', '+', $tags);
+			}
 			$query['tag'] = $tags;
 		}
 

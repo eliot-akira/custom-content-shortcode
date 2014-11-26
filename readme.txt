@@ -85,6 +85,7 @@ Support for other plugins:
 
 = 1.5.0 =
 
+* [loop] - Enable multiple categories or tags with *compare="and"*
 * [related] - Enable posts related by multiple taxonomies
 
 = 1.4.9 =
