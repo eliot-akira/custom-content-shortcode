@@ -137,7 +137,8 @@ class CCS_Related {
 					// Skip current post
 					if ($post->ID != $post_id) {
 
-						// Filter out terms manually
+						// Manually filter out terms..
+
 						// For some reason, WP_Query is returning more than we need
 
 						$condition = false;
@@ -167,8 +168,10 @@ class CCS_Related {
 							}
 						}
 
-
 						if ( $condition ) {
+
+							// OK, post fits the criteria
+
 							self::$state['current_related_post_id'] = $post->ID;
 							$current_count++;
 							if ($current_count<=$count) {

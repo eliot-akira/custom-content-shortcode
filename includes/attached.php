@@ -21,14 +21,13 @@ class CCS_Attached {
 
 	function attached_shortcode($atts, $content) {
 
-		global $post;
-
 		$args = array(
 			'orderby' => '',
 			'order' => '',
 			'category' => '',
 			'count' => '',
 			'offset' => '',
+			'trim' => '',
 			'columns' => '', 'pad' => '', 'between' => ''
 		);
 		extract( shortcode_atts( $args , $atts, true ) );		
@@ -104,6 +103,10 @@ class CCS_Attached {
 			$out = CCS_Loop::render_columns( $out, $columns, $pad, $between );
 		} else {
 			$out = implode('', $out);
+
+			if ( $trim == 'true' ) {
+				$out = trim($out, " \t\n\r\0\x0B,");
+			}
 		}
 
 		self::$state['is_attachment_loop'] = false;

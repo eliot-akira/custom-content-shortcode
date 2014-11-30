@@ -986,7 +986,6 @@ class CCS_Content {
 		$field = $parameters['field'];
 		$result = '';
 
-
 		/*========================================================================
 		 *
 		 * Attachment field
