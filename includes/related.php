@@ -16,6 +16,26 @@ class CCS_Related {
 
 		$this->init();
 		add_shortcode('related', array($this, 'loop_related_posts'));
+/*
+		$array = array(
+			array(
+				'key_1' => 'Value 1',
+				'key_2' => 'Value 2',
+				'key_3' => 'Value 3'
+			),
+			array(
+				'key_1' => 'Value 4',
+				'key_2' => 'Value 5',
+				'key_3' => 'Value 6'
+			),
+			array(
+				'key_1' => 'Value 7',
+				'key_2' => 'Value 8',
+				'key_3' => 'Value 9'
+			),
+		);
+
+		update_post_meta( 170, 'array_field', $array ); */
 	}
 
 	function init() {

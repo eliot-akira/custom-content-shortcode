@@ -1418,25 +1418,44 @@ class CCS_Content {
 
 		$out = null;
 
+		extract( shortcode_atts( array(
+			'each' => 'false' // Loop through each array
+		), $atts ) );
+
 		if ( isset($atts) && !empty($atts[0]) ) {
 
 			$array = get_post_meta( get_the_ID(), $atts[0], true );
 
-			if ( !empty($array) && is_array($array)) {
+			if ( !empty($array) && is_array($array) ) {
 
 				self::$state['is_array_field'] = true;
-				self::$state['current_field_value'] = $array;
 
-				// print_r($array);
-				$out .= do_shortcode( $content );
+				if ( $each != 'true' ) {
+					$array = array($array); // Create a single array
+				}
+
+				foreach ( $array as $each_array ) {
+
+					self::$state['current_field_value'] = $each_array;
+					$out .= do_shortcode( $content );
+				}
+
 				self::$state['is_array_field'] = false;
 
 			} else {
-				$out = $array; // Empty or not array			
+				$out = $array; // Empty or not array
 			}
 		} 
 		return $out;
 	}
 
+	// For debug purpose: Print an array in a human-readable format
+
+	public static function print_array( $array ) {
+
+		echo '<pre>';
+			print_r( $array );
+		echo '</pre>';
+	}
 
 } // End CCS_Content

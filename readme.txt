@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,9 +83,10 @@ Support for other plugins:
 
 == Changelog ==
 
-= 1.5.2 =
+= 1.5.3 =
 
-* [array] - Loop through an array of key-value pairs stored in a field
+* [array] - Use with [field] to display key-value pairs stored in a field
+* [array] - Enable looping through multiple arrays: *each="true"*
 
 = 1.5.1 =
 

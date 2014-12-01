@@ -2107,7 +2107,10 @@ class CCS_Loop {
 	}
 
 
+	// Get post slug from ID
+
 	public static function get_the_slug( $id = null ) {
+
 		global $post;
 
 		if ( !empty($id) ) {
