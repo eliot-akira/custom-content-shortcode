@@ -19,6 +19,9 @@ class CCS_Content {
 		add_shortcode( 'content', array($this, 'content_shortcode') );
 		add_shortcode( 'field', array($this, 'field_shortcode') );
 		add_shortcode( 'taxonomy', array($this, 'taxonomy_shortcode') );
+
+		add_shortcode( 'array', array($this, 'array_field_shortcode') );
+		self::$state['is_array_field'] = false;
 	}
 
 
@@ -998,7 +1001,7 @@ class CCS_Content {
 
 			return self::get_the_attachment_field( $parameters );
 
-		} elseif (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true' ) {
+		} elseif ( class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true' ) {
 
 			/*========================================================================
 			 *
@@ -1013,6 +1016,15 @@ class CCS_Content {
 				if (function_exists('get_sub_field')) {
 					return get_sub_field( $field );
 				} else return null;
+			}
+		} elseif ( self::$state['is_array_field'] ) {
+
+			// Array field
+
+			$array = self::$state['current_field_value'];
+
+			if (isset( $array[$field] ) ) {
+				return $array[$field];
 			}
 		}
 
@@ -1401,6 +1413,30 @@ class CCS_Content {
 		return $out;
 	}
 
+
+	public static function array_field_shortcode( $atts, $content ) {
+
+		$out = null;
+
+		if ( isset($atts) && !empty($atts[0]) ) {
+
+			$array = get_post_meta( get_the_ID(), $atts[0], true );
+
+			if ( !empty($array) && is_array($array)) {
+
+				self::$state['is_array_field'] = true;
+				self::$state['current_field_value'] = $array;
+
+				// print_r($array);
+				$out .= do_shortcode( $content );
+				self::$state['is_array_field'] = false;
+
+			} else {
+				$out = $array; // Empty or not array			
+			}
+		} 
+		return $out;
+	}
 
 
 } // End CCS_Content
