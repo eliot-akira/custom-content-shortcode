@@ -95,6 +95,17 @@ Display gallery, relationship, repeater, or flexible content fields from other p
 [/loop]
 </code><br>
 
+<hr>
+<h3>ACF fields stored as an array</h3>
+
+If the field value is stored as an array - for example, a file field - you can use the <a href="options-general.php?page=ccs_reference&tab=content#array">[array]</a> shortcode to access its contents.
+
+<code>[array file_field]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[field description]
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[field url]" download&gt;Download Link&lt;/a&gt;
+[/array]
+</code><br>
 
 <hr>
 <h3>Columns</h3>

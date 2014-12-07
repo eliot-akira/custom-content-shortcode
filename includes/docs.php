@@ -358,7 +358,7 @@ class CCS_Docs {
 				 	?>
 					<br><hr>
 					<div align="center" class="overview-logo-pad">
-						<img src="<?php echo plugins_url();?>/custom-content-shortcode/docs/logo/logo.png">
+						<img src="<?php echo CCS_URL;?>/docs/logo/logo.png">
 						<div class="overview-logo-pad"><b>Custom Content Shortcode</b> is developed by Eliot Akira.</div>
 						Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin support forum</a> for questions or feedback.<br>
 						If you'd like to contribute to this plugin, here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>.<br>

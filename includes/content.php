@@ -169,8 +169,11 @@ class CCS_Content {
 			'align' => '', 'class' => '', 'height' => '',
 			'words' => '', 'len' => '', 'length' => '',
 			'date_format' => '', 'timestamp' => '',
-
 			'new' => '', // Set true to open link in new tab - currently only for download-link
+
+			// Support for qTranslate Plus
+			'lang' => ''
+
 		);
 
 		
@@ -661,6 +664,16 @@ class CCS_Content {
 		 *=======================================================================*/
 
 			$result = self::$state['current_post']->post_content;
+/*
+			// Support for qTranslate Plus?
+
+			if ( !empty(self::$parameters['lang']) && function_exists('ppqtrans_use') ) {
+				if ( self::$parameters['lang'] == 'this' && function_exists('ppqtrans_getLanguage') ) {
+					self::$parameters['lang'] = ppqtrans_getLanguage();
+				}
+				$result = ppqtrans_use(self::$parameters['lang'], $result, false);
+			}
+*/
 
 			// Format post content by default
 			self::$parameters['format'] = empty(self::$parameters['format']) ? 'true' : self::$parameters['format'];
@@ -1001,6 +1014,16 @@ class CCS_Content {
 
 			return self::get_the_attachment_field( $parameters );
 
+		} elseif ( self::$state['is_array_field'] ) {
+
+			// Array field
+
+			$array = self::$state['current_field_value'];
+
+			if (isset( $array[$field] ) ) {
+				return $array[$field];
+			}
+
 		} elseif ( class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true' ) {
 
 			/*========================================================================
@@ -1017,16 +1040,8 @@ class CCS_Content {
 					return get_sub_field( $field );
 				} else return null;
 			}
-		} elseif ( self::$state['is_array_field'] ) {
 
-			// Array field
-
-			$array = self::$state['current_field_value'];
-
-			if (isset( $array[$field] ) ) {
-				return $array[$field];
-			}
-		}
+		} 
 
 		if ( !empty($id) ) {
 
@@ -1312,7 +1327,7 @@ class CCS_Content {
 				if ( $parameters['new'] == 'true' ) {
 					$target = 'target="_blank" ';
 				}
-				$result = '<a '.$target.'href="'.wp_get_attachment_url( $post_id ).'">'.$post->post_title.'</a>';
+				$result = '<a '.$target.'href="'.wp_get_attachment_url( $post_id ).'" download>'.$post->post_title.'</a>';
 				break;
 			case 'page-url' :
 			case 'href' : $result = get_permalink( $post_id );
@@ -1417,6 +1432,7 @@ class CCS_Content {
 	public static function array_field_shortcode( $atts, $content ) {
 
 		$out = null;
+		$array = null;
 
 		extract( shortcode_atts( array(
 			'each' => 'false' // Loop through each array
@@ -1424,7 +1440,23 @@ class CCS_Content {
 
 		if ( isset($atts) && !empty($atts[0]) ) {
 
-			$array = get_post_meta( get_the_ID(), $atts[0], true );
+			$field = $atts[0];
+
+			if ( class_exists('CCS_To_ACF')
+				&& CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true'
+				&& CCS_To_ACF::$state['is_relationship_loop']!='true' ) {
+
+				// Inside ACF repeater/flex
+
+				// Get sub field
+				if (function_exists('get_sub_field'))
+					$array = get_sub_field( $field );
+
+			} else {
+
+				// Normal field
+				$array = get_post_meta( get_the_ID(), $field, true );
+			}
 
 			if ( !empty($array) && is_array($array) ) {
 
