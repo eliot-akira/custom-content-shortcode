@@ -1443,8 +1443,8 @@ class CCS_Content {
 			$field = $atts[0];
 
 			if ( class_exists('CCS_To_ACF')
-				&& CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true'
-				&& CCS_To_ACF::$state['is_relationship_loop']!='true' ) {
+				&& CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true' ) {
+//				&& CCS_To_ACF::$state['is_relationship_loop']!='true' ) {
 
 				// Inside ACF repeater/flex
 
