@@ -86,6 +86,7 @@ Support for other plugins:
 = 1.5.5 =
 
 * [array] - Return ACF field array correctly when it's not a sub-field
+* [content] - Return translated result if qTranslate Plus is active
 
 = 1.5.4 =
 

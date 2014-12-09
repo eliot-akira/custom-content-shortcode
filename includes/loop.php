@@ -138,6 +138,9 @@ class CCS_Loop {
 		$state['comment_count']			= 0;
 		$state['is_attachment_loop']	= false;
 
+		// Support qTranslate Plus
+		$state['current_lang'] 			= null;
+
 		self::$state = $state;
 	}
 
@@ -226,7 +229,8 @@ class CCS_Loop {
 			// Timer
 			'timer' => 'false',
 
-			// ?
+
+			// ? Clarify purpose
 			'if' => '', 'list' => '', 'posts_separator' => '',
 			'variable' => '', 'var' => '',
 			'content_limit' => 0,
@@ -340,8 +344,6 @@ class CCS_Loop {
 		 * ** Not tested **
 		 *
 		 *=======================================================================*/
-
-		self::$state['blog'] = 0;
 
 		if ( !empty($parameters['blog']) ) {
 			$result = switch_to_blog($parameters['blog']);

@@ -171,9 +171,6 @@ class CCS_Content {
 			'date_format' => '', 'timestamp' => '',
 			'new' => '', // Set true to open link in new tab - currently only for download-link
 
-			// Support for qTranslate Plus
-			'lang' => ''
-
 		);
 
 		
@@ -664,21 +661,12 @@ class CCS_Content {
 		 *=======================================================================*/
 
 			$result = self::$state['current_post']->post_content;
-/*
-			// Support for qTranslate Plus?
-
-			if ( !empty(self::$parameters['lang']) && function_exists('ppqtrans_use') ) {
-				if ( self::$parameters['lang'] == 'this' && function_exists('ppqtrans_getLanguage') ) {
-					self::$parameters['lang'] = ppqtrans_getLanguage();
-				}
-				$result = ppqtrans_use(self::$parameters['lang'], $result, false);
-			}
-*/
 
 			// Format post content by default
 			self::$parameters['format'] = empty(self::$parameters['format']) ? 'true' : self::$parameters['format'];
 
 		}
+
 		return $result;
 	}
 
@@ -691,6 +679,10 @@ class CCS_Content {
 			$result = implode(', ', $result);
 		}
 
+
+		// Support qTranslate Plus
+
+		$result = self::check_translation( $result );
 
 
 		/*========================================================================
@@ -1354,11 +1346,22 @@ class CCS_Content {
 	}
 
 
+	/*========================================================================
+	 *
+	 * Support qTranslate Plus
+	 *
+	 */
 
+	public static function check_translation( $text ) {
 
+		if ( function_exists('ppqtrans_use') ) {
+			// $text = ppqtrans_useCurrentLanguageIfNotFoundUseDefaultLanguage( $text );
+			global $q_config;
+			return ppqtrans_use($q_config['language'], $text, false);
+		}
 
-
-
+		return $text;
+	}
 
 
 
