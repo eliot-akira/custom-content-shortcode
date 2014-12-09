@@ -1435,7 +1435,8 @@ class CCS_Content {
 		$array = null;
 
 		extract( shortcode_atts( array(
-			'each' => 'false' // Loop through each array
+			'each'  => 'false', // Loop through each array
+			'debug' => 'false' // Print array for debug purpose
 		), $atts ) );
 
 		if ( isset($atts) && !empty($atts[0]) ) {
@@ -1456,6 +1457,18 @@ class CCS_Content {
 
 				// Normal field
 				$array = get_post_meta( get_the_ID(), $field, true );
+
+				// IF value is not array
+				if ( !empty($array) && !is_array($array)) {
+					// See if it's an ACF field
+					if (function_exists('get_field')) {
+						$array = get_field( $field );
+					}
+				}
+			}
+
+			if ( $debug!='false') {
+				$out = self::print_array($array,false);
 			}
 
 			if ( !empty($array) && is_array($array) ) {
@@ -1475,19 +1488,23 @@ class CCS_Content {
 				self::$state['is_array_field'] = false;
 
 			} else {
+
 				$out = $array; // Empty or not array
 			}
+
 		} 
 		return $out;
 	}
 
 	// For debug purpose: Print an array in a human-readable format
 
-	public static function print_array( $array ) {
+	public static function print_array( $array, $echo = true ) {
 
+		if ( !$echo ) ob_start();
 		echo '<pre>';
 			print_r( $array );
 		echo '</pre>';
+		if ( !$echo ) return ob_get_clean();
 	}
 
 } // End CCS_Content
