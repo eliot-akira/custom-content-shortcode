@@ -168,8 +168,8 @@ class CCS_Loop {
 
 			'taxonomy' => '', 'term' => '',
 			'tax' => '', // Alias
-			'taxonomy_2' => '', // Additional taxonomy query
-
+			'taxonomy_2' => '', 'taxonomy_3' => '', 
+			'value_2' => '', 'value_3' => '', 
 
 			'category' => '', 'tag' => '', 
 
@@ -180,7 +180,7 @@ class CCS_Loop {
 			'start' => '', // If field value starts with
 			'in' => '', // ??
 			// Additional field value query
-			'field_2' => '', 'value_2' => '', 'compare_2' => '', 'relation' => '',
+			'field_2' => '', 'compare_2' => '', 'relation' => '',
 			'f' => '', 'v' => '', 'c' => '', 'f2' => '', 'v2' => '', 'c2' => '', 'r' => '', // Alias
 
 			// Checkbox
@@ -681,6 +681,7 @@ class CCS_Loop {
 		/*========================================================================
 		 *
 		 * Taxonomy
+		 * @todo Refactor this somehow
 		 *
 		 *=======================================================================*/
 
@@ -747,6 +748,41 @@ class CCS_Loop {
 				if ( !empty($parameters['compare_2']) ) {
 
 					$compare = $parameters['compare_2'];
+
+					if ( $compare=='=' )
+						$operator = 'IN';
+					elseif ( $compare=='!=' )
+						$operator = 'NOT IN';
+					else {
+						$compare = strtoupper($compare);
+						if ( $compare == 'NOT' )
+							$compare = 'NOT IN';
+						$operator = $compare;
+					}
+
+				} else {
+					$operator = 'IN'; // Default
+				}
+
+				$query['tax_query'][] = array(
+					'taxonomy' => $taxonomy,
+					'field' => 'slug',
+					'terms' => $terms,
+					'operator' => $operator
+				);
+			}
+
+			// Additional taxonomy query
+			if ( !empty($parameters['taxonomy_3']) && !empty($parameters['value_3']) ) {
+
+				$taxonomy = $parameters['taxonomy_3'];
+				if ($taxonomy == 'tag') $taxonomy = 'post_tag';
+
+				$terms = $this->explode_list($parameters['value_3']); // Multiple terms possible
+
+				if ( !empty($parameters['compare_3']) ) {
+
+					$compare = $parameters['compare_3'];
 
 					if ( $compare=='=' )
 						$operator = 'IN';
