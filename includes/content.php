@@ -1354,8 +1354,12 @@ class CCS_Content {
 
 	public static function check_translation( $text ) {
 
-		if ( function_exists('ppqtrans_use') ) {
-			// $text = ppqtrans_useCurrentLanguageIfNotFoundUseDefaultLanguage( $text );
+		if ( !isset(self::$state['ppqtrans_exists']) ) {
+			// Check only once and store result
+			self::$state['ppqtrans_exists'] = function_exists('ppqtrans_use');
+		}
+
+		if ( self::$state['ppqtrans_exists'] ) {
 			global $q_config;
 			return ppqtrans_use($q_config['language'], $text, false);
 		}
