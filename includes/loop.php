@@ -4,7 +4,8 @@
  *
  * [loop] - Query posts and loop through each
  *
- * @filter ccs_loop_add_parameters 			Additional parameters to accept
+ * @filter ccs_loop_add_defaults 			Additional parameters to accept
+ * @filter ccs_loop_parameters	 			Process given parameters
  * @filter ccs_loop_each_post				Each found post
  * @filter ccs_loop_each_result				Each compiled template result
  * @filter ccs_loop_all_results 			Results array
@@ -245,7 +246,9 @@ class CCS_Loop {
 			'keyname' => '', 
 		);
 
-		$defaults = apply_filters( 'ccs_loop_add_parameters', $defaults );
+		$add_defaults = apply_filters( 'ccs_loop_add_defaults', array() );
+		$defaults = array_merge( $defaults, $add_defaults );
+		$parameters = apply_filters( 'ccs_loop_parameters', $parameters );
 
 		$merged = shortcode_atts($defaults, $parameters, true);
 
