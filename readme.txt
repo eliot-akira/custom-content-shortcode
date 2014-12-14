@@ -86,6 +86,7 @@ Support for other plugins:
 = 1.5.7 =
 
 * [content] - Check only once for qTranslate
+* [comments id="this"] - Don't return anything if post/ID is empty
 
 = 1.5.6 =
 
