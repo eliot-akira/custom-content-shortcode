@@ -1,10 +1,15 @@
 <?php
 
-/*====================================================================================================
+
+/*========================================================================
  *
- * Comment shortcodes - [comment form] form/template/count
+ * Comment shortcodes
+ * 
+ * [comments] - Loop through comments
+ * [comment] - Show comment field
+ * [comment form] form/template/count
  *
- *====================================================================================================*/
+ */
 
 new CCS_Comments;
 
@@ -42,7 +47,7 @@ class CCS_Comments {
 			// Display comment fields
 
 			$out = null;
-			$comment = self::$state['current_comment'];
+			$comment = isset(self::$state['current_comment']) ? self::$state['current_comment'] : null;
 
 			if (empty($comment)) return;
 

@@ -1,10 +1,10 @@
 <?php
 
-/*====================================================================================================
+/*========================================================================
  *
  * Gallery field
  *
- *====================================================================================================*/
+ */
 
 new CCS_Gallery_Field;
 
@@ -25,10 +25,10 @@ class CCS_Gallery_Field {
 
 
 	/*========================================================================
-	*
-	* CSS for admin
-	*
-	*=======================================================================*/
+	 *
+	 * CSS for admin
+	 *
+	 */
 
 	function admin_css() {
 
@@ -154,7 +154,7 @@ ul.gallery_images {
 	 *
 	 * Add meta boxes to selected post types
 	 *
-	 *=======================================================================*/
+	 */
 	
 	function add_meta_boxes() {
 
@@ -173,7 +173,7 @@ ul.gallery_images {
 	 *
 	 * Render gallery metabox
 	 *
-	 *=======================================================================*/
+	 */
 
 	function metabox() {
 
@@ -232,7 +232,7 @@ ul.gallery_images {
          *
          * Image order and remove actions
          *
-         *=======================================================================*/
+         */
 
 		?>
 	    <script type="text/javascript">
@@ -405,7 +405,7 @@ ul.gallery_images {
 	 *
 	 * Metabox save function
 	 *
-	 *=======================================================================*/
+	 */
 
 	function save_post( $post_id ) {
 
@@ -448,7 +448,7 @@ ul.gallery_images {
 	 *
 	 * Settings page
 	 *
-	 *=======================================================================*/
+	 */
 
 	function gallery_field_settings() {
 		add_options_page( 'Gallery Fields', 'Gallery Fields', 'manage_options', 'ccs_gallery_field_settings', array($this, 'settings_page') );
@@ -483,7 +483,7 @@ ul.gallery_images {
 	 *
 	 * Register settings page
 	 *
-	 *=======================================================================*/
+	 */
 
 	function register_settings_page() {
 
@@ -545,7 +545,7 @@ ul.gallery_images {
  *
  * Helper functions
  *
- *=======================================================================*/
+ */
 
 	function has_linked_images() {
 
@@ -558,7 +558,7 @@ ul.gallery_images {
 	 *
 	 * List of post types for checkboxes on the settings page
 	 *
-	 *=======================================================================*/
+	 */
 
 	function get_available_post_types() {
 
@@ -578,7 +578,7 @@ ul.gallery_images {
 	 *
 	 * Get enabled post types from options
 	 *
-	 *=======================================================================*/
+	 */
 
 	function enabled_post_types() {
 
@@ -599,7 +599,7 @@ ul.gallery_images {
 	 *
 	 * Get attachment IDs from gallery field
 	 *
-	 *=======================================================================*/
+	 */
 
 	public static function get_image_ids( $id = null ) {
 
@@ -652,7 +652,7 @@ ul.gallery_images {
 	 *
 	 * Check if a post has gallery field images
 	 *
-	 *=======================================================================*/
+	 */
 
 	public static function has_gallery( $id = null ) {
 
@@ -672,7 +672,7 @@ ul.gallery_images {
  *
  * Unused
  *
- *=======================================================================*/
+ */
 
 	function has_shortcode( $shortcode = '' ) {
 		global $post;
@@ -716,7 +716,7 @@ ul.gallery_images {
 	 *
 	 * Count number of images
 	 *
-	 *=======================================================================*/
+	 */
 
 	function count_images() {
 

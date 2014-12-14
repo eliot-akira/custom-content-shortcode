@@ -5,7 +5,7 @@
  *
  * [if] - Display content based on conditions
  *
- *=======================================================================*/
+ */
 
 new CCS_If;
 
@@ -87,7 +87,7 @@ class CCS_If {
 		 *
 		 * If we're inside loop shortcode
 		 *
-		 *=======================================================================*/
+		 */
 
 		if (CCS_Loop::$state['is_loop']=="true") {
 
@@ -97,7 +97,7 @@ class CCS_If {
 				 *
 				 * Every X number of posts in [loop]
 				 *
-				 *=======================================================================*/
+				 */
 
 				$count = CCS_Loop::$state['loop_count'];
 
@@ -120,7 +120,7 @@ class CCS_If {
 		 *
 		 * Get global post info
 		 *
-		 *=======================================================================*/
+		 */
 
 		global $post;
 
@@ -136,7 +136,7 @@ class CCS_If {
 			 *
 			 * Check field as condition [if flag="field"]
 			 *
-			 *=======================================================================*/
+			 */
 
 			if (CCS_Loop::$state['is_loop']=="true") {
 				$current_id = CCS_Loop::$state['current_post_id'];
@@ -161,7 +161,7 @@ class CCS_If {
 		 *
 		 * Taxonomy: category, tags, ..
 		 *
-		 *=======================================================================*/
+		 */
 		
 		if (!empty($category)) {
 			$taxonomy = "category";
@@ -213,7 +213,7 @@ class CCS_If {
 		 *
 		 * Field: field="field_slug" value="this,that"
 		 *
-		 *=======================================================================*/
+		 */
 
 		if ( !empty($field) || !empty($user_field) ) {
 
@@ -277,7 +277,7 @@ class CCS_If {
 		 *
 		 * Post type, name
 		 *
-		 *=======================================================================*/
+		 */
 
 		if (!empty($type)) {
 			$types = self::comma_list_to_array($type); // Enable comma-separated list
@@ -303,7 +303,7 @@ class CCS_If {
 		 *
 		 * Post parent
 		 *
-		 *=======================================================================*/
+		 */
 		
 		if (!empty($parent)) {
 
@@ -354,7 +354,7 @@ class CCS_If {
 		 *
 		 * Attachments
 		 *
-		 *=======================================================================*/
+		 */
 
 		if (isset($atts['attached'])) {
 
@@ -377,7 +377,7 @@ class CCS_If {
 		 * Template: home, archive, single..
 		 * [if comment] - current post has comment
 		 *
-		 *=======================================================================*/
+		 */
 		
 		$condition = isset($atts['home']) ? is_front_page() : $condition;
 		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : $condition;
@@ -398,7 +398,7 @@ class CCS_If {
 		 *
 		 * Not
 		 *
-		 *=======================================================================*/
+		 */
 
 		// Not - also catches compare="not"
 		$condition = isset($atts['not']) ? !$condition : $condition;

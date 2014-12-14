@@ -1,12 +1,12 @@
 <?php
 
-/*====================================================================================================
+/*========================================================================
  *
  * Shortcodes for Advanced Custom Fields
- * 
- * Gallery, repeater, flexible content, relationship/post object
- * 
- *====================================================================================================*/
+ *
+ * Gallery, repeater, flexible content, relationship/post object..
+ *
+ */
 
 new CCS_To_ACF;
 

@@ -4,7 +4,7 @@
  *
  * Format functions
  *
- *=======================================================================*/
+ */
 
 class CCS_Format {
 
@@ -23,7 +23,7 @@ class CCS_Format {
 	 *
 	 * [x] - Repeat x times: [x 10]..[/x]
 	 *
-	 *=======================================================================*/
+	 */
 
 	function x_shortcode( $atts, $content ) {
 
@@ -61,7 +61,7 @@ class CCS_Format {
 	 *
 	 * Strip an array of tags from content
 	 *
-	 *=======================================================================*/
+	 */
 
 	function strip_tag_list( $content, $tags ) {
 

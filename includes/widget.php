@@ -4,9 +4,9 @@
  *
  * Widget shortcode
  *
- * ** Core needs patch to prevent PHP notice for get_widget()
+ * ** WP core needs patch to prevent PHP notice for get_widget()
  *
- *=======================================================================*/
+ */
 
 new CCS_Widget;
 class CCS_Widget {

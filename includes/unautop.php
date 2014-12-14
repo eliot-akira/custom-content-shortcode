@@ -1,5 +1,12 @@
 <?php 
 
+/*========================================================================
+ *
+ * Deprecated
+ *
+ */
+
+
 new CCS_Shortcode_Unautop;
 
 class CCS_Shortcode_Unautop {

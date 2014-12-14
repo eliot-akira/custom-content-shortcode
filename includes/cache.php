@@ -2,9 +2,10 @@
 
 /*========================================================================
  *
- * Cache
+ * [cache] - Store anything in transient cache
+ * [timer] - Simple timer to measure queries and memory consumption
  *
- *=======================================================================*/
+ */
 
 new CCS_Cache;
 
@@ -96,7 +97,7 @@ class CCS_Cache {
 	 *
 	 * Timer
 	 *
-	 *=======================================================================*/
+	 */
 
 
 	function timer_shortcode( $atts ) {

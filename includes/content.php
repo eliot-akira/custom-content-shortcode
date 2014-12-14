@@ -1,10 +1,10 @@
 <?php
 
-/*====================================================================================================
+/*========================================================================
  *
- * [content] - Get a field or post content
+ * [content] - Return field or post content
  *
- *====================================================================================================*/
+ */
 
 new CCS_Content;
 
@@ -29,7 +29,7 @@ class CCS_Content {
 	 *
 	 * Main function
 	 *
-	 *=======================================================================*/
+	 */
 
 	function content_shortcode( $parameters ) {
 
@@ -99,7 +99,7 @@ class CCS_Content {
 	 *
 	 * Merge parameters with defaults
 	 *
-	 *=======================================================================*/
+	 */
 
 	function merge_with_defaults( $parameters ) {
 
@@ -178,7 +178,7 @@ class CCS_Content {
 		 *
 		 * Pre-process parameters
 		 *
-		 *=======================================================================*/
+		 */
 		
 		if ( isset($parameters['type']) && ($parameters['type']=='attachment') ) {
 			if (!isset($parameters['status'])) {
@@ -205,7 +205,7 @@ class CCS_Content {
 		 *
 		 * Post-process parameters
 		 *
-		 *=======================================================================*/
+		 */
 		
 		// Get page by name
 		if (!empty($parameters['page'])) {
@@ -256,7 +256,7 @@ class CCS_Content {
 	 *
 	 * Before query: if return is not null, there is result already
 	 *
-	 *=======================================================================*/
+	 */
 
 	function before_query( $parameters ) {
 
@@ -284,7 +284,7 @@ class CCS_Content {
 		 *
 		 * Menu
 		 *
-		 *=======================================================================*/
+		 */
 
 		if (!empty($parameters['menu'])) {
 
@@ -309,7 +309,7 @@ class CCS_Content {
 		 *
 		 * Sidebar or widget area
 		 *
-		 *=======================================================================*/
+		 */
 
 			if (!empty($parameters['sidebar']))
 				$sidebar = $parameters['sidebar'];
@@ -337,7 +337,7 @@ class CCS_Content {
 		 *
 		 * Native gallery
 		 *
-		 *=======================================================================*/
+		 */
 
 		elseif ( $parameters['gallery'] == 'native' ) {
 
@@ -394,7 +394,7 @@ class CCS_Content {
 			 *
 			 * Gallery Bootstrap carousel
 			 *
-			 *=======================================================================*/
+			 */
 
 			$result = '[gallery type="carousel" ';
 
@@ -429,7 +429,7 @@ class CCS_Content {
 	 *
 	 * Get the post
 	 *
-	 *=======================================================================*/
+	 */
 
 	function prepare_post( $parameters = array() ) {
 		
@@ -491,7 +491,7 @@ class CCS_Content {
 	 *
 	 * Main query
 	 *
-	 *=======================================================================*/
+	 */
 
 	function run_query( $parameters ) {
 
@@ -507,7 +507,7 @@ class CCS_Content {
 		 *
 		 * Image field
 		 *
-		 *=======================================================================*/
+		 */
 
 		elseif (!empty($parameters['image'])) {
 
@@ -519,7 +519,7 @@ class CCS_Content {
 		 *
 		 * Taxonomy
 		 *
-		 *=======================================================================*/
+		 */
 
 		elseif (!empty($parameters['taxonomy'])) {
 
@@ -613,7 +613,7 @@ class CCS_Content {
 		 *
 		 * ACF checkbox/select label
 		 *
-		 *=======================================================================*/
+		 */
 		
 		elseif ( !empty($parameters['field']) && ($parameters['out']=='label') ) {
 
@@ -646,7 +646,7 @@ class CCS_Content {
 		 *
 		 * Field
 		 *
-		 *=======================================================================*/
+		 */
 		
 		elseif (!empty($parameters['field'])) {
 
@@ -658,7 +658,7 @@ class CCS_Content {
 		 *
 		 * Show post content - [content]
 		 * 
-		 *=======================================================================*/
+		 */
 
 			$result = self::$state['current_post']->post_content;
 
@@ -689,7 +689,7 @@ class CCS_Content {
 		 *
 		 * Time/date
 		 *
-		 *=======================================================================*/
+		 */
 		
 		if (!empty($parameters['timestamp']) && ($parameters['timestamp']=='ms') ) {
 			$result = $result / 1000;
@@ -719,7 +719,7 @@ class CCS_Content {
 		 *
 		 * Trim by words or characters
 		 *
-		 *=======================================================================*/
+		 */
 
 		if (!empty($parameters['words'])) {
 
@@ -748,7 +748,7 @@ class CCS_Content {
 		 *
 		 * Wrap in link
 		 *
-		 *=======================================================================*/
+		 */
 
 		$post_id = isset(self::$state['current_post_id']) ? self::$state['current_post_id'] : get_the_ID();
 		
@@ -812,7 +812,7 @@ class CCS_Content {
 		 *
 		 * Read more tag
 		 *
-		 *=======================================================================*/
+		 */
 
 		if (!empty($parameters['more'])) {
 
@@ -875,7 +875,7 @@ class CCS_Content {
  *
  * Helper functions
  *
- *=======================================================================*/
+ */
 
 
 	
@@ -883,7 +883,7 @@ class CCS_Content {
 	 *
 	 * Image field
 	 *
-	 *=======================================================================*/
+	 */
 
 	function get_image_field( $parameters ) {
 
@@ -906,7 +906,7 @@ class CCS_Content {
 		 *
 		 * Prepare image attributes
 		 *
-		 *=======================================================================*/
+		 */
 
 		$attr = array();
 		if (!empty($parameters['width']) || !empty($parameters['height']))
@@ -986,7 +986,7 @@ class CCS_Content {
 	 *
 	 * Field
 	 *
-	 *=======================================================================*/
+	 */
 	
 	
 	public static function get_the_field( $parameters, $id = null ) {
@@ -998,7 +998,7 @@ class CCS_Content {
 		 *
 		 * Attachment field
 		 *
-		 *=======================================================================*/
+		 */
 
 		if ( (!empty($parameters['type']) && $parameters['type']=='attachment') ||
 			CCS_Loop::$state['is_attachment_loop'] ||
@@ -1022,7 +1022,7 @@ class CCS_Content {
 			 *
 			 * Repeater or flexible content loop
 			 *
-			 *=======================================================================*/
+			 */
 		
 			// If not inside relationship loop
 			if ( CCS_To_ACF::$state['is_relationship_loop']!='true' ) {
@@ -1054,7 +1054,7 @@ class CCS_Content {
 		 *
 		 * Prepare image attributes
 		 *
-		 *=======================================================================*/
+		 */
 		
 		$image_fields = array('image','image-full','image-link','image-link-self',
 			'thumbnail','thumbnail-link','thumbnail-link-self','gallery');
@@ -1081,7 +1081,7 @@ class CCS_Content {
 		 *
 		 * Pre-defined fields
 		 *
-		 *=======================================================================*/
+		 */
 
 		switch ($field) {
 
@@ -1211,7 +1211,7 @@ class CCS_Content {
 				 *
 				 * Custom field
 				 *
-				 *=======================================================================*/
+				 */
 
 				$result = get_post_meta($post_id, $field, true);
 
@@ -1245,7 +1245,7 @@ class CCS_Content {
 	 *
 	 * Attachment fields
 	 *
-	 *=======================================================================*/
+	 */
 
 	public static function get_the_attachment_field( $parameters ) {
 
@@ -1280,7 +1280,7 @@ class CCS_Content {
 		 *
 		 * Prepare image attributes
 		 *
-		 *=======================================================================*/
+		 */
 		
 		$image_fields = array('image','thumbnail');
 
@@ -1374,14 +1374,14 @@ class CCS_Content {
  *
  * Other shortcodes
  *
- *=======================================================================*/
+ */
 
 
 	/*========================================================================
 	 *
 	 * [field]
 	 *
-	 *=======================================================================*/
+	 */
 
 	public static function field_shortcode($atts) {
 
@@ -1416,7 +1416,7 @@ class CCS_Content {
 	 *
 	 * [taxonomy]
 	 *
-	 *=======================================================================*/
+	 */
 
 	public static function taxonomy_shortcode($atts) {
 		$out = null; $rest='';

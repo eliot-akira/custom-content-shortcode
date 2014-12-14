@@ -4,7 +4,7 @@
  *
  * WCK metabox and field shortcodes
  *
- *=======================================================================*/
+ */
 
 new CCS_To_WCK;
 
@@ -78,7 +78,7 @@ class CCS_To_WCK {
 	 *
 	 * [wck-field] or [metabox][field][/metabox]
 	 *
-	 *=======================================================================*/
+	 */
 
 	public static function wck_field_shortcode( $atts, $content = null ) {
 
@@ -161,7 +161,7 @@ class CCS_To_WCK {
 			 *
 			 * Process field value
 			 *
-			 *=======================================================================*/
+			 */
 
 			if ( !empty($image) ) {
 				if (isset($out['id'])) {
@@ -225,7 +225,7 @@ class CCS_To_WCK {
 	 *
 	 * [wck-repeat]
 	 *
-	 *=======================================================================*/
+	 */
 
 	function wck_repeater_shortcode( $atts, $content ) {
 

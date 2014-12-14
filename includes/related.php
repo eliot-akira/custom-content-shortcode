@@ -4,7 +4,7 @@
  *
  * Related posts
  *
- *=======================================================================*/
+ */
 
 new CCS_Related;
 
@@ -56,7 +56,7 @@ class CCS_Related {
 		 *
 		 * ACF relationship field
 		 *
-		 *=======================================================================*/
+		 */
 
 		if ( ( !empty($field) || !empty($subfield) ) && (empty($value)) ){
 			if (class_exists('CCS_To_ACF')) {
@@ -70,7 +70,7 @@ class CCS_Related {
 		 *
 		 * Related posts by taxonomy
 		 *
-		 *=======================================================================*/
+		 */
 		
 		if (empty($count)) $count = 99999; // Maximum number of posts
 

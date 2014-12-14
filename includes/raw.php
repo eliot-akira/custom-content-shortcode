@@ -6,7 +6,7 @@
  * 
  * Protect shortcode content from wpautop and wptexturize
  *
- *=======================================================================*/
+ */
 
 function ccs_raw_format( $content ) {
 

@@ -32,7 +32,7 @@ class CCS_Plugin {
 	 *
 	 * Load settings
 	 *
-	 *=======================================================================*/
+	 */
 
 	function load_settings() {
 
@@ -66,7 +66,7 @@ class CCS_Plugin {
 	 *
 	 * Load main and optional modules
 	 *
-	 *=======================================================================*/
+	 */
 
 	function load_module( $module ) {
 
@@ -103,7 +103,7 @@ class CCS_Plugin {
 	 *
 	 * Optional modules
 	 *
-	 *=======================================================================*/
+	 */
 
 	function load_optional_modules() {
 
@@ -134,7 +134,7 @@ class CCS_Plugin {
 	 *
 	 * Set up WP filters
 	 *
-	 *=======================================================================*/
+	 */
 	
 	function setup_wp_filters() {
 
@@ -144,7 +144,7 @@ class CCS_Plugin {
 		 *
 		 * Enable shortcodes in widget
 		 *
-		 *=======================================================================*/
+		 */
 
 		if ( isset( $settings['shortcodes_in_widget'] ) &&
 			($settings['shortcodes_in_widget'] == "on") ) {
@@ -158,13 +158,13 @@ class CCS_Plugin {
 
 		/*========================================================================
 		 *
-		 * Move wpautop filter to after shortcode processing (legacy)
+		 * Move wpautop filter to after shortcode processing (deprecated)
 		 * 
 		 * User feedback suggests some themes/plugins don't work well with the
 		 * filter moved, because they assume default priority. Instead, use [raw]
 		 * or edit code outside of post editor.
 		 *
-		 *=======================================================================*/
+		 */
 
 		if ( isset( $settings['move_wpautop'] ) &&
 			($settings['move_wpautop'] == "on") ) {
@@ -188,7 +188,7 @@ class CCS_Plugin {
  *
  * Global helper functions
  *
- *=======================================================================*/
+ */
 
 if (!function_exists('do_short')) {
 	function do_short($content) {

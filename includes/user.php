@@ -4,7 +4,7 @@
  *
  * User shortcodes: user, is/isnt, list_shortcodes, search_form, blog
  *
- *=======================================================================*/
+ */
 
 new CCS_User;
 
@@ -31,7 +31,7 @@ class CCS_User {
 	 *
 	 * Users loop
 	 *
-	 *=======================================================================*/
+	 */
 	
 	function users_shortcode( $atts, $content ) {
 
@@ -43,7 +43,7 @@ class CCS_User {
 		 *
 		 * Prepare parameters
 		 *
-		 *=======================================================================*/
+		 */
 
 		$args = array();
 
@@ -119,7 +119,7 @@ class CCS_User {
 		 *
 		 * Custom query to filter results
 		 *
-		 *=======================================================================*/
+		 */
 		
 		// Users Loop
 		foreach ( $users as $user ) {
@@ -137,7 +137,7 @@ class CCS_User {
 	 *
 	 * [user]
 	 *
-	 *=======================================================================*/
+	 */
 
 	public static function user_shortcode( $atts ) {
 
@@ -226,7 +226,7 @@ class CCS_User {
 	 *
 	 * [is]
 	 *
-	 *=======================================================================*/
+	 */
 
 	function is_shortcode( $atts, $content, $tag ) {
 
@@ -339,7 +339,7 @@ class CCS_User {
 	 *
 	 * [blog]
 	 *
-	 *=======================================================================*/
+	 */
 
 	function blog_shortcode( $atts, $content ){
 
@@ -364,7 +364,7 @@ class CCS_User {
 	 *
 	 * [list_shortcodes]
 	 *
-	 *=======================================================================*/
+	 */
 
 	function list_shortcodes( ) {
 		global $shortcode_tags;
@@ -387,7 +387,7 @@ class CCS_User {
 	 *
 	 * [search_form]
 	 *
-	 *=======================================================================*/
+	 */
 
 	function search_form_shortcode() {
 
