@@ -28,7 +28,19 @@ Use the <b>[repeater]</b> shortcode to loop through a repeater field.
 &nbsp;&nbsp;&nbsp;&nbsp;[field description format="true"]
 [/repeater]</code>
 
-For an image field, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size. If the image field returns as URL, set <i>in="url"</i>.
+For an image field inside, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size. If the image field returns as URL, set <i>in="url"</i>.
+
+<h4>Display a specific repeater field</h4>
+
+<code>[repeater field="boxes" num="3"]</code>
+
+<h4>Nested repeater fields</h4>
+
+<code>[repeater field="boxes"]
+&nbsp;&nbsp;&nbsp;&nbsp;[-repeater field="inner_boxes"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+&nbsp;&nbsp;&nbsp;&nbsp;[/-repeater]
+[/repeater]</code>
 
 To display a repeater inside a repeater, use <b>[-repeater]</b>.  Please note that the inner repeater field must have a different name than its parent.
 <br>
