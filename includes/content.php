@@ -660,7 +660,8 @@ class CCS_Content {
 		 * 
 		 */
 
-			$result = self::$state['current_post']->post_content;
+			if (!empty(self::$state['current_post']))
+				$result = self::$state['current_post']->post_content;
 
 			// Format post content by default
 			self::$parameters['format'] = empty(self::$parameters['format']) ? 'true' : self::$parameters['format'];
@@ -1049,6 +1050,8 @@ class CCS_Content {
 			$post = self::$state['current_post'];
 			$post_id = self::$state['current_post_id'];
 		}
+
+		if (empty($post)) return null; // No post
 
 		/*========================================================================
 		 *
