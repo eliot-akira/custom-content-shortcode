@@ -89,8 +89,14 @@ class CCS_To_ACF {
 			'field' => '',
 			'count' => '',
 			'start' => '',
+			'num' => '',
 			'columns' => '', 'pad' => '', 'between' => '', 
 		), $atts ));
+
+		if ( !empty($num) ) {
+			$start = $num;
+			$count = 1;
+		}
 
 		if ( have_rows( $field )) {
 

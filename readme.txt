@@ -85,8 +85,11 @@ Support for other plugins:
 
 = 1.5.7 =
 
+* [loop] - Add hooks and filters for extensibility
+* [content] - Make sure current post exists
 * [content] - Check only once for qTranslate
-* [comments id="this"] - Don't return anything if post/ID is empty
+* [comments id] - Don't return anything if post/ID is empty
+* [repeater num] - Display specific field; *num="1"* (first field)
 
 = 1.5.6 =
 
