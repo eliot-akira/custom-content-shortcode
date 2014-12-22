@@ -28,7 +28,7 @@ class CCS_Mobile_Detect {
 			 */
 
 			if (!class_exists('Mobile_Detect')) {
-				require_once (CCS_PATH.'/includes/Mobile_Detect.php');	
+				require_once (CCS_PATH.'/includes/optional/mobile-detect.php');	
 			}
 
 			self::$detect = new Mobile_Detect();

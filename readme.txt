@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.5.7
+Stable tag: 1.5.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,13 +83,15 @@ Support for other plugins:
 
 == Changelog ==
 
-= 1.5.7 =
+= 1.5.8 =
 
-* [loop] - Add hooks and filters for extensibility
+* [comments id] - Return nothing if post/ID is empty
 * [content] - Make sure current post exists
-* [content] - Check only once for qTranslate
-* [comments id] - Don't return anything if post/ID is empty
-* [repeater num] - Display specific field; *num="1"* (first field)
+* [field thumbnail] - Enable *size* parameter to resize thumbnail; thanks @kurakin_alexander!
+* [repeater num] - Display specific repeater field
+* [repeater num sub] - Quick way to display a single sub-field
+* Starting to add hooks and filters for extensibility
+* Improve code organization
 
 = 1.5.6 =
 

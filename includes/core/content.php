@@ -555,6 +555,8 @@ class CCS_Content {
 
 			if ( !empty( $terms ) ) {
 
+				$slugs = array();
+
 				foreach ($terms as $term) {
 
 					$slugs[] = $term->slug;
@@ -1062,7 +1064,7 @@ class CCS_Content {
 		$image_fields = array('image','image-full','image-link','image-link-self',
 			'thumbnail','thumbnail-link','thumbnail-link-self','gallery');
 
-		if ($field=='thumbnail')
+		if ($field=='thumbnail' && empty($parameters['size']))
 			$parameters['size'] = 'thumbnail';
 
 		$attr = array();

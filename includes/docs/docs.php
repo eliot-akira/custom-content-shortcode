@@ -228,9 +228,9 @@ class CCS_Docs {
 		global $ccs_content_overview_page_hook;
 
 		if ( $this->is_current_plugin_screen() ) {
-			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/docs.css");
+			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/docs/docs.css");
 		} elseif ( $this->is_current_plugin_screen($ccs_content_overview_page_hook) ) {
-			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/content-overview.css");
+			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/overview/content-overview.css");
 		}
 	}
 
@@ -346,7 +346,7 @@ class CCS_Docs {
 
 					echo wpautop(
 						@file_get_contents(
-								dirname(dirname(__FILE__)) .'/docs/' . strtolower($active_tab) . '.html'
+								dirname(__FILE__) .'/html/' . strtolower($active_tab) . '.html'
 							)
 					);
 				}
@@ -357,7 +357,7 @@ class CCS_Docs {
 				 	?>
 					<br><hr>
 					<div align="center" class="overview-logo-pad">
-						<img src="<?php echo CCS_URL;?>/docs/logo/logo.png">
+						<img src="<?php echo CCS_URL;?>/includes/docs/logo.png">
 						<div class="overview-logo-pad"><b>Custom Content Shortcode</b> is developed by Eliot Akira.</div>
 						Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin support forum</a> for questions or feedback.<br>
 						If you'd like to contribute to this plugin, here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>.<br>
@@ -381,7 +381,7 @@ class CCS_Docs {
 	function dashboard_content_overview() {
 		?>
 		<div class="wrap">
-		<?php include('content-overview.php'); ?>
+		<?php include( dirname(dirname(__FILE__)) .'/overview/content-overview.php'); ?>
 		</div>
 		<?php
 	}

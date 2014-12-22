@@ -30,9 +30,22 @@ Use the <b>[repeater]</b> shortcode to loop through a repeater field.
 
 For an image field inside, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size. If the image field returns as URL, set <i>in="url"</i>.
 
+<hr>
+
 <h4>Display a specific repeater field</h4>
 
 <code>[repeater field="boxes" num="3"]</code>
+
+<h4>Display specific sub-fields without looping</h4>
+
+<code>[repeater field="boxes" num="1" sub="title"]
+[repeater field="boxes" num="2" sub="text"]
+[repeater field="boxes" num="3" sub_image="image"]
+</code>
+
+This is a quick way to display a sub-field from a specific repeater field. Use by itself, without closing tag.
+
+<hr>
 
 <h4>Nested repeater fields</h4>
 
