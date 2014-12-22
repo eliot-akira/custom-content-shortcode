@@ -75,7 +75,6 @@ class CCS_Attached {
 
 		$index = 0;
 		foreach( $posts as $post ) {
-
 			$attachment_id = $post->ID;
 			$attachment_ids[$index] = $attachment_id; // Keep it in order
 			$index++;
