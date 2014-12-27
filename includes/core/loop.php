@@ -166,7 +166,8 @@ class CCS_Loop {
 			'name' => '',
 			'id' => '', 'exclude' => '',
 			'status' => '',
-			'parent' => '', 
+			'include' => '',
+			'parent' => '0', // Exclude children by default
 			'count' => '', 'offset' => '',
 			'year' => '', 'month' => '', 'day' => '',
 			'author' => '', 'author_exclude' => '',
@@ -426,6 +427,12 @@ class CCS_Loop {
 			$query['post__in'] = $id_array;
 			$query['orderby'] = 'post__in'; // Preserve ID order
 
+		} elseif ( $parameters['include'] == 'children' ) {
+
+			if ( $parameters['parent']=='0' ) {
+				$parameters['parent'] = '';
+			}
+
 		} elseif ( !empty($parameters['exclude']) ) {
 
 			$id_array = $this->explode_list($parameters['exclude']);
@@ -442,9 +449,9 @@ class CCS_Loop {
 
 		} elseif ( !empty($parameters['name']) ) {
 
-			$query['name'] = $parameters['name']; 
+			$query['name'] = $parameters['name'];
 
-		} elseif ( !empty($parameters['parent']) ) {
+		} elseif ( !empty($parameters['parent']) || $parameters['parent']=='0' ) {
 
 			$parent = $parameters['parent'];
 
