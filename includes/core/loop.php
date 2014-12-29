@@ -459,6 +459,8 @@ class CCS_Loop {
 
 				// Get children of current post
 				$query['post_parent'] = get_the_ID();
+				if (!$query['post_parent'])
+					$query['post_parent'] = '-1'; // If no current post
 
 			} elseif ( is_numeric($parent) ) {
 
