@@ -85,6 +85,8 @@ Support for other plugins:
 
 = 1.5.9 =
 
+* Try the new add-on under development: [Paginator](http://eliotakira.com/plugin/paginator)
+* [loop] - If *parent="this"* and no current post, return empty
 * [loop] - Exclude child posts by default, unless *include="children"*
 
 = 1.5.8 =
