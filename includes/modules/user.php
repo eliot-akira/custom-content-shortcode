@@ -230,7 +230,7 @@ class CCS_User {
 
 	function is_shortcode( $atts, $content, $tag ) {
 
-		global $current_user;
+		global $post, $current_user;
 
 		extract(shortcode_atts(array(
 			'user' => '',
@@ -255,8 +255,6 @@ class CCS_User {
 			$else = null;
 		}
 
-
-
 		if (!empty($user)) {
 
 			$user_array = explode(",", $user);
@@ -266,8 +264,8 @@ class CCS_User {
 
 				if ( $this_user == ($current_user->user_login) )
 					$condition = true;
-				if ( ( $this_user == ($current_user->ID) ) &&
-					is_numeric($this_user) ) // $user is a number?
+				elseif ( is_numeric($this_user) &&
+					$this_user == ($current_user->ID) ) // User ID
 						$condition = true;
 			}
 		}
@@ -318,6 +316,16 @@ class CCS_User {
 
 			$condition = true;
 		}
+
+		if ( isset( $atts['author'] ) ) {
+			// If user is the author of current post
+			if (!empty($post)) {
+
+				if ($post->post_author == $current_user->ID)
+					$condition = true;
+			}
+		}
+
 
 		if ( ($tag=="isnt") || (isset($atts['not'])) )
 			$condition = !$condition;
