@@ -1778,6 +1778,7 @@ class CCS_Loop {
 			'current' => '',
 			'orderby' => '',
 			'order' => '',
+			'hide_empty' => 'false',
 			);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -1905,8 +1906,8 @@ class CCS_Loop {
 				$terms = get_terms( $taxonomy_loop, array(
 					'orderby' => $orderby,
 					'order' => $order,
+					'hide_empty' => ($hide_empty=='true') // Boolean
 				));
-
 			}
 
 			$contents = array();

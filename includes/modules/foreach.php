@@ -39,7 +39,7 @@ class CCS_ForEach {
 			'parent' => '',
 			'current' => '',
 			'trim' => '',
-			'empty' => 'false',
+			'empty' => 'true', // Show taxonomy terms with no post
 			'exclude' => ''
 		);
 
@@ -184,7 +184,16 @@ class CCS_ForEach {
 					self::$state['each']['name-link'] = '<a href="'.self::$state['each']['url'].'">'
 						. self::$state['each']['name'].'</a>';
 
-					$out .= do_shortcode($content);
+					// Replace {TAGS}
+
+					$replaced_content = str_replace('{TERM}',
+						self::$state['each']['slug'], $content);
+					$replaced_content = str_replace('{TERM_ID}',
+						self::$state['each']['id'], $replaced_content);
+					$replaced_content = str_replace('{TERM_NAME}',
+						self::$state['each']['name'], $replaced_content);
+
+					$out .= do_shortcode($replaced_content);
 				}
 			}
 		}
