@@ -33,7 +33,7 @@ class CCS_ForEach {
 
 		$args = array(
 			'each' => '',
-			'orderby' => '',
+			'orderby' => 'name',
 			'order' => '',
 			'count' => '',
 			'parent' => '',
