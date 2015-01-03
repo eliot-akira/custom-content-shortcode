@@ -72,7 +72,7 @@ class CCS_To_ACF {
 
 		} else {
 
-			$output = get_sub_field($field);
+			$output = do_shortcode(get_sub_field($field));
 
 			if ( ($format=='true') && ($output!='') ) {
 				$output = wpautop($output);
