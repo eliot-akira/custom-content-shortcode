@@ -39,6 +39,8 @@ class CCS_Loop {
 		add_shortcode( 'pass', array($this, 'pass_shortcode') );
 
 		add_shortcode( 'loop-count', array($this, 'loop_count_shortcode') );
+		add_shortcode( 'found-posts', array($this, 'found_posts_shortcode') );
+		add_shortcode( 'search-keyword', array($this, 'search_keyword_shortcode') );
 	}
 
 
@@ -2189,6 +2191,22 @@ class CCS_Loop {
 		return CCS_Loop::$state['loop_count'];
 	}
 
+	function found_posts_shortcode() {
+		global $wp_query;
+
+		if (!empty($wp_query))
+			return $wp_query->post_count;
+	}
+
+	function search_keyword_shortcode() {
+		global $wp_query;
+
+		if (!empty($wp_query)) {
+			$vars = $wp_query->query_vars;
+			if (isset($vars['s']))
+				return $vars['s'];
+		}
+	}
 
 
 } // End CCS_Loop

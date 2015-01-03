@@ -388,11 +388,11 @@ class CCS_If {
 			$condition =  CCS_Gallery_Field::has_gallery();
 		}
 
-/* test these */
 		$condition = isset($atts['loop']) ? (CCS_Loop::$state['is_loop']=='true') : $condition;
 		$condition = isset($atts['archive']) ? is_archive() : $condition;
 		$condition = isset($atts['single']) ? is_single() : $condition;
-
+		$condition = isset($atts['search']) ? is_search() : $condition;
+		$condition = isset($atts['none']) ? !have_posts() : $condition;
 
 		/*========================================================================
 		 *

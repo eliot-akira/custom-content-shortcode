@@ -312,7 +312,7 @@ class CCS_User {
 
 		if (( isset( $atts['admin'] ) && current_user_can( 'manage_options' ) ) ||
 			( isset( $atts['login'] ) && is_user_logged_in() ) ||
-			( isset( $atts['logout'] ) && !is_user_logged_in() )) {
+			( isset( $atts['logout'] ) && !is_user_logged_in() ) ) {
 
 			$condition = true;
 		}

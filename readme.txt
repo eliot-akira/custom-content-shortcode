@@ -86,6 +86,7 @@ Support for other plugins:
 = 1.6.0 =
 
 * [is author] - If user is author of current post
+* [if search] - If current page is search result
 * [for each] - Enable {TAGS}
 
 = 1.5.9 =
