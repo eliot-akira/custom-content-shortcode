@@ -89,6 +89,8 @@ Support for other plugins:
 * [is author] - If user is author of current post
 * [for each] - Enable tags just like [pass taxonomy_loop]
 * [pass list] - Pass an arbitrary list of items
+* [pass taxonomy_loop] - Default order by taxonomy term name
+* [repeater] - Do shortcode inside ACF repeater sub field
 * [search_form type] - Search specific post type
 
 = 1.5.9 =

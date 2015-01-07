@@ -1782,10 +1782,11 @@ class CCS_Loop {
 			'order' => '',
 			'hide_empty' => 'false',
 
-			'pre_render' => 'false', // do_shortcode before replacing tags?
-			'post_render' => 'true', // do_shortcode at the end
+			'pre_render' => 'false', 	// do_shortcode before replacing tags?
+			'post_render' => 'true', 	// do_shortcode at the end
 
-			'trim' => 'false'
+			'trim' => 'false',
+			'count' => '9999'			// Max number of taxonomy terms
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -1936,7 +1937,11 @@ class CCS_Loop {
 
 			if ( !empty( $terms ) ) {
 
+				$i = 0;
+
 				foreach ($terms as $term) {
+
+					if ($i++ >= $count) break;
 
 					$slug = $term->slug;
 					$id = $term->term_id;
