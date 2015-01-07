@@ -92,9 +92,40 @@ You can loop through all terms in a taxonomy, and pass each item.
 &nbsp;&nbsp;&nbsp;&nbsp;[/loop]
 [/pass]</code>
 
-The available tags are TERM, TERM_NAME and TERM_ID.
+The available tags are: TERM, TERM_NAME and TERM_ID.
 
-To pass taxonomy terms assigned to the current post only, set <i>current="true"</i>.
+Available parameters:
+
+<ul>
+  <li><b>current</b> - Set <i>true</i> to get terms assigned to the current post only</li>
+  <li><b>order</b> - ASC or DESC</li>
+  <li><b>orderby</b> - <i>id</i>, <i>count</i>, <i>name</i> (default), <i>slug</i></li>
+</ul>
+
+<hr>
+
+<h3>List loop</h3>
+
+
+This is a feature to loop through a list of items.
+
+<code>[pass list="blue, red, green"]
+&nbsp;&nbsp;&nbsp;&nbsp;{Item} products
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="product" taxonomy="color" term="{ITEM}"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+[/pass]</code>
+
+{ITEM} is replaced by the item, and {Item} capitalizes the first letter - for example: Blue.
+
+For further flexibility, you can pass multiple items for each loop.
+
+<code>[pass list="Beautiful blue:blue, Bright red:red, Lush green:green"]
+&nbsp;&nbsp;&nbsp;&nbsp;{ITEM_1} products
+&nbsp;&nbsp;&nbsp;&nbsp;[loop type="product" taxonomy="color" term="{ITEM_2}"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+[/pass]</code>
 
 <br>
 
@@ -103,6 +134,12 @@ To pass taxonomy terms assigned to the current post only, set <i>current="true"<
 <h3>Search form</h3>
 
 To display a search form, use the <b>[search_form]</b> shortcode.
+
+By default, the search applies to any post type.  You can limit the search with the <i>type</i> parameter.
+
+<code>[search_form type="post"]</code>
+
+For a custom search form, place <i>searchform.php</i> in your theme and build your form according to the Codex <a target="_blank" href="http://codex.wordpress.org/Function_Reference/get_search_form#Default_HTML5_Form">here</a>. The search result is displayed by <i>search.php</i> in your theme.
 <br>
 <hr><a href="#" id="bootstrap-navbar" name="bootstrap-navbar"></a>
 <h3>Bootstrap tabs or navbar</h3>

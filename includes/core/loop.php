@@ -1772,21 +1772,27 @@ class CCS_Loop {
 		$args = array(
 			'field' => '',
 			'fields' => '',
-			'field_loop' => '', // Field is array or comma-separated list
+			'field_loop' => '', 		// Field is array or comma-separated list
+			'taxonomy_loop' => '', 		// Loop through each term in taxonomy
+			'list' => '', 				// Loop through an arbitrary list of items
+			'acf_gallery' => '', 		// Pass image IDs from ACF gallery field
 
-			'acf_gallery' => '', // Pass image IDs from ACF gallery field
-
-			'taxonomy_loop' => '', // Loop through each term in taxonomy
 			'current' => '',
-			'orderby' => '',
+			'orderby' => '',			// Default: order by taxonomy term name
 			'order' => '',
 			'hide_empty' => 'false',
-			);
+
+			'pre_render' => 'false', // do_shortcode before replacing tags?
+			'post_render' => 'true', // do_shortcode at the end
+
+			'trim' => 'false'
+		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
 
-		$post_id = get_the_ID();
+		if ( $pre_render == 'true' ) $content = do_shortcode($content);
 
+		$post_id = get_the_ID();
 
 		/*========================================================================
 		 *
@@ -1898,21 +1904,33 @@ class CCS_Loop {
 
 		} elseif (!empty($taxonomy_loop)) {
 
-			if ($current=='true') {
+			if ( $current=='true' ) {
 
-				$terms = get_the_terms( $post_id, $taxonomy_loop );
+				if ( empty($orderby) && empty($order) ) {
+
+					// This doesn't accept order/orderby parameters..!
+					$terms = get_the_terms( $post_id, $taxonomy_loop );
+				} else {
+
+					$terms = wp_get_object_terms( $post_id, $taxonomy_loop, array(
+						'orderby' => empty($orderby) ? 'name' : $orderby,
+						'order' => empty($order) ? 'ASC' : $order,
+					));
+
+				}
 
 			} else {
+
 				// Get all terms, not only from current post
 
 				$terms = get_terms( $taxonomy_loop, array(
-					'orderby' => $orderby,
-					'order' => $order,
+					'orderby' => empty($orderby) ? 'name' : $orderby,
+					'order' => empty($order) ? 'ASC' : $order,
 					'hide_empty' => ($hide_empty=='true') // Boolean
 				));
 			}
 
-			$contents = array();
+			$contents = '';
 
 			// Loop through each term
 
@@ -1928,13 +1946,57 @@ class CCS_Loop {
 					$replaced_content = str_replace('{TERM_ID}', $id, $replaced_content);
 					$replaced_content = str_replace('{TERM_NAME}', $name, $replaced_content);
 
-					$contents[] = $replaced_content;
+					$contents .= $replaced_content;
 				}
 			}
 
-			$content = implode('', $contents);
-		}
+			$content = $contents;
 
+
+		/*========================================================================
+		 *
+		 * Pass an arbitrary list of items
+		 *
+		 */
+		
+		} elseif (!empty($list)) {
+
+			$items = self::explode_list($list); // Comma-separated list -> array
+
+			$contents = '';
+
+			foreach ($items as $item) {
+
+				$replaced_content = $content;
+
+				// Multiple items per loop
+				if ( strpos($item, ':') !== false ) {
+
+					$parts = explode(':', $item);
+					$count = count($parts);
+					for ($i=0; $i < $count; $i++) { 
+
+						$this_item = trim($parts[$i]);
+
+						// Index starts at ITEM_1
+						$replaced_content = str_replace(
+							'{ITEM_'.($i+1).'}', $this_item, $replaced_content);
+
+						// Would this be useful?
+						// $replaced_content = str_replace('{Item_'.$i.'}', ucfirst($this_item),
+						//	$replaced_content);
+					}
+
+				} else {
+					$replaced_content = str_replace('{ITEM}', $item, $replaced_content);
+					$replaced_content = str_replace('{Item}', ucfirst($item), $replaced_content );
+				}
+
+				$contents .= $replaced_content;
+			}
+
+			$content = $contents;
+		}
 
 		if ( !empty($fields) ) {
 
@@ -1948,7 +2010,16 @@ class CCS_Loop {
 
 		}
 
-		return do_shortcode( $content );
+		if ( $post_render == 'true' ) $content = do_shortcode($content);
+
+		// Trim trailing white space and comma
+		if ( $trim != 'false' ) {
+
+			if ($trim=='true') $trim = null;
+			$content = rtrim($content, " \t\n\r\0\x0B,".$trim);
+		}
+
+		return $content;
 
 	} // End pass shortcode
 

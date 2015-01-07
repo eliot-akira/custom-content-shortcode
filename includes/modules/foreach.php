@@ -186,6 +186,8 @@ class CCS_ForEach {
 
 					// Replace {TAGS}
 
+					// @todo Create a more efficient general-purpose function for this
+
 					$replaced_content = str_replace('{TERM}',
 						self::$state['each']['slug'], $content);
 					$replaced_content = str_replace('{TERM_ID}',

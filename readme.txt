@@ -85,15 +85,17 @@ Support for other plugins:
 
 = 1.6.0 =
 
-* [is author] - If user is author of current post
 * [if search] - If current page is search result
-* [for each] - Enable {TAGS}
+* [is author] - If user is author of current post
+* [for each] - Enable tags just like [pass taxonomy_loop]
+* [pass list] - Pass an arbitrary list of items
+* [search_form type] - Search specific post type
 
 = 1.5.9 =
 
-* Try the new add-on under development: [Paginator](http://eliotakira.com/plugin/paginator)
 * [loop] - If *parent="this"* and no current post, return empty
 * [loop] - Exclude child posts by default, unless *include="children"*
+* Try the new add-on under development: [Paginator](http://eliotakira.com/plugin/paginator)
 
 = 1.5.8 =
 
