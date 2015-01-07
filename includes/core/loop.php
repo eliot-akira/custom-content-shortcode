@@ -1908,7 +1908,7 @@ class CCS_Loop {
 
 				if ( empty($orderby) && empty($order) ) {
 
-					// This doesn't accept order/orderby parameters..!
+					// This doesn't accept order/orderby parameters
 					$terms = get_the_terms( $post_id, $taxonomy_loop );
 				} else {
 
