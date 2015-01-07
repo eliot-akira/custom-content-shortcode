@@ -37,6 +37,8 @@ class CCS_Loop {
 
 		add_shortcode( 'loop', array($this, 'the_loop_shortcode') );
 		add_shortcode( 'pass', array($this, 'pass_shortcode') );
+		add_shortcode( '-pass', array($this, 'pass_shortcode') );
+		add_shortcode( '--pass', array($this, 'pass_shortcode') );
 
 		add_shortcode( 'loop-count', array($this, 'loop_count_shortcode') );
 		add_shortcode( 'found-posts', array($this, 'found_posts_shortcode') );
@@ -1767,7 +1769,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function pass_shortcode( $atts, $content ) {
+	function pass_shortcode( $atts, $content, $shortcode_name ) {
 
 		$args = array(
 			'field' => '',
@@ -1794,6 +1796,16 @@ class CCS_Loop {
 		if ( $pre_render == 'true' ) $content = do_shortcode($content);
 
 		$post_id = get_the_ID();
+
+		// Support nested
+
+		$prefix = '';
+		if (substr($shortcode_name,0,2)=='--') {
+			$prefix = '--';
+		} elseif (substr($shortcode_name,0,1)=='-') {
+			$prefix = '-';
+		}
+
 
 		/*========================================================================
 		 *
@@ -1828,7 +1840,7 @@ class CCS_Loop {
 
 			// Replace it
 
-			$content = str_replace('{FIELD}', $field_value, $content);
+			$content = str_replace('{'.$prefix.'FIELD}', $field_value, $content);
 
 
 		/*========================================================================
@@ -1862,7 +1874,7 @@ class CCS_Loop {
 
 				foreach ($field_values as $field_value) {
 
-					$contents[] = str_replace('{FIELD}', $field_value, $content);
+					$contents[] = str_replace('{'.$prefix.'FIELD}', $field_value, $content);
 				}
 
 				$content = implode('', $contents);
@@ -1892,7 +1904,7 @@ class CCS_Loop {
 					if (is_array($ids))
 						$replace = implode(',', $ids);
 					else $replace = $ids;
-					$content = str_replace('{FIELD}', $replace, $content);
+					$content = str_replace('{'.$prefix.'FIELD}', $replace, $content);
 				}
 			}
 
@@ -1947,9 +1959,12 @@ class CCS_Loop {
 					$id = $term->term_id;
 					$name = $term->name;
 
-					$replaced_content = str_replace('{TERM}', $slug, $content);
-					$replaced_content = str_replace('{TERM_ID}', $id, $replaced_content);
-					$replaced_content = str_replace('{TERM_NAME}', $name, $replaced_content);
+					$replaced_content = str_replace('{'.$prefix.'TERM}',
+						$slug, $content);
+					$replaced_content = str_replace('{'.$prefix.'TERM_ID}',
+						$id, $replaced_content);
+					$replaced_content = str_replace('{'.$prefix.'TERM_NAME}',
+						$name, $replaced_content);
 
 					$contents .= $replaced_content;
 				}
@@ -1985,7 +2000,7 @@ class CCS_Loop {
 
 						// Index starts at ITEM_1
 						$replaced_content = str_replace(
-							'{ITEM_'.($i+1).'}', $this_item, $replaced_content);
+							'{'.$prefix.'ITEM_'.($i+1).'}', $this_item, $replaced_content);
 
 						// Would this be useful?
 						// $replaced_content = str_replace('{Item_'.$i.'}', ucfirst($this_item),
@@ -1993,8 +2008,10 @@ class CCS_Loop {
 					}
 
 				} else {
-					$replaced_content = str_replace('{ITEM}', $item, $replaced_content);
-					$replaced_content = str_replace('{Item}', ucfirst($item), $replaced_content );
+					$replaced_content = str_replace('{'.$prefix.'ITEM}',
+						$item, $replaced_content);
+					$replaced_content = str_replace('{'.$prefix.'Item}',
+						ucfirst($item), $replaced_content );
 				}
 
 				$contents .= $replaced_content;
