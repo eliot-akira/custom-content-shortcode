@@ -1921,24 +1921,23 @@ class CCS_Loop {
 
 				if ( empty($orderby) && empty($order) ) {
 
-					// This doesn't accept order/orderby parameters
+					// Doesn't accept order/orderby parameters - but it's cached
 					$terms = get_the_terms( $post_id, $taxonomy_loop );
 				} else {
 
 					$terms = wp_get_object_terms( $post_id, $taxonomy_loop, array(
 						'orderby' => empty($orderby) ? 'name' : $orderby,
-						'order' => empty($order) ? 'ASC' : $order,
+						'order' => empty($order) ? 'ASC' : strtoupper($order),
 					));
 
 				}
 
 			} else {
 
-				// Get all terms, not only from current post
-
+				// Get all terms: not by post ID
 				$terms = get_terms( $taxonomy_loop, array(
 					'orderby' => empty($orderby) ? 'name' : $orderby,
-					'order' => empty($order) ? 'ASC' : $order,
+					'order' => empty($order) ? 'ASC' : strtoupper($order),
 					'hide_empty' => ($hide_empty=='true') // Boolean
 				));
 			}
