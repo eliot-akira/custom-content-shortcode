@@ -8,8 +8,9 @@
  * @filter ccs_loop_parameters	 			Process given parameters
  * @filter ccs_loop_each_post				Each found post
  * @filter ccs_loop_each_result				Each compiled template result
+ * @filter ccs_loop_each_row				Each row (if columns option is set)
  * @filter ccs_loop_all_results 			Results array
- * @filter ccs_loop_combined_result 		Final combined result 
+ * @filter ccs_loop_final_result 			Final combined result 
  * 
  */
 
@@ -1643,7 +1644,7 @@ class CCS_Loop {
 		}
 
 
-		return apply_filters('ccs_loop_combined_result', $result );
+		return apply_filters('ccs_loop_final_result', $result, $parameters );
 	}
 
 
@@ -1710,30 +1711,64 @@ class CCS_Loop {
 	 *
 	 */
 	
-	public static function render_columns( $items, $per_row, $pad = null, $between_row ) {
+	public static function render_columns( $items, $column_count, $pad = null, $between_row ) {
 
-		$column_index = 0;
+		$row_count = ceil( count($items) / (int)$column_count ); // How many rows
+		$percent = 100 / (int)$column_count; // Percentage-based width for each item
 
-		$percent = 100 / (int)$per_row; // Percentage-based width for each item
+		if ( empty($between_row) ) $between_row = '';
+		elseif ($between_row == 'true') $between_row = '<br>';
 
-		if ( empty($between_row) ) {
-			$between_row = '';
-		} elseif ($between_row == 'true') {
-			$between_row = '<br>';
+		$clear = '<div style="clear:both"></div>';
+
+		$wrap_start = '<div class="column-1_of_'.$column_count
+			.'" style="width:'.$percent.'%;float:left">';
+		$wrap_end = '</div>';
+
+		if (!empty($pad)) {
+			$wrap_start .= '<div class="column-inner" style="padding:'.$pad.'">';
+			$wrap_end .= '</div>';
 		}
-		$clear = '<div style="clear:both">'.$between_row.'</div>';
 
-		$out = null;
 
+		$out = '';
+		$index = 0;
+
+		// Generate rows
+		for ($i=0; $i < $row_count; $i++) { 
+
+			$each_row = '';
+
+			// Generate columns
+			for ($j=0; $j < $column_count; $j++) { 
+
+				// Avoid empty columns
+				$trimmed = isset($items[ $index ]) ? trim($items[ $index ]) : '';
+				if ( !empty( $trimmed ) ) {
+
+					$each_row .= $wrap_start.$items[ $index ].$wrap_end;
+
+				}
+				$index++;
+			}
+
+			if (!empty($each_row)) {
+				$each_row .= $clear;
+				$each_row = apply_filters('ccs_loop_each_row',
+					do_shortcode($each_row), self::$parameters);
+				$out .= $each_row;
+			}
+		}
+
+/*
 		foreach ($items as $each_item) {
 
 			$trimmed = trim($each_item); // Avoid empty columns
-
 			if ( !empty( $trimmed ) ) {
 
 				$column_index++;
 
-				$out .= '<div class="column-1_of_'.$per_row.'" style="width:'.$percent.'%;float:left">';
+				$out .= '<div class="column-1_of_'.$columns.'" style="width:'.$percent.'%;float:left">';
 
 				// Wrap in padding?
 				if (!empty($pad)) {
@@ -1744,7 +1779,7 @@ class CCS_Loop {
 
 				$out .= '</div>';
 
-				if ( ($column_index % $per_row) == 0 ) {
+				if ( ($column_index % $columns) == 0 ) {
 
 					// The row is full, then clear float
 					$out .= $clear;
@@ -1752,11 +1787,12 @@ class CCS_Loop {
 			}
 		}
 
-		if ( ($column_index % $per_row) != 0 ) {
+		if ( ($column_index % $columns) != 0 ) {
 
 			// if last row was not full
 			$out .= $clear;
 		}
+*/
 
 		return $out;
 	}

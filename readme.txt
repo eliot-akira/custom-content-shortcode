@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1
-Stable tag: 1.6.2
+Stable tag: 1.6.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,7 +90,7 @@ Support for other plugins:
 * [for each] - Enable tags just like [pass taxonomy_loop]
 * [pass list] - Pass an arbitrary list of items
 * [pass taxonomy_loop] - Default order by taxonomy term name
-# [-pass], [--pass] - Enable nested pass: use {-TAG} and {--TAG}
+* [-pass], [--pass] - Enable nested pass: use {-TAG} and {--TAG}
 * [repeater] - Do shortcode inside ACF repeater sub field
 * [search_form type] - Search specific post type
 
