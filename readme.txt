@@ -83,6 +83,10 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.6.3 =
+
+* [loop] - Improve support for paginator add-on
+
 = 1.6.2 =
 
 * [if search] - If current page is search result
