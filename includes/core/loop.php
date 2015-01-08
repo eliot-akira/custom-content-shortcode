@@ -342,15 +342,24 @@ class CCS_Loop {
 		
 		if (!empty($parameters['x'])) {
 
-			$out = '';
+			$outs = array();
 
 			$x = $parameters['x'];
 			for ($i=0; $i <$x ; $i++) { 
 				self::$state['loop_count']++;
-				$out .= do_shortcode( self::render_field_tags( $template, $parameters ) );
+
+				$outs[] =
+				apply_filters('ccs_loop_each_result',
+					do_shortcode( self::render_field_tags( $template, $parameters ) ),
+				$parameters );
+
 			}
 
-			return $out;
+			if (!empty($parameters['columns'])) {
+				$out = self::render_columns( $outs, $parameters['columns'], $parameters['pad'], $parameters['between'] );
+			} else $out = implode('', $outs);
+
+			return apply_filters('ccs_loop_final_result', $out, $parameters );
 		}
 
 
