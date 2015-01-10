@@ -164,7 +164,7 @@ class CCS_Content {
 
 			// Fomatting
 
-			'format' => '', 'shortcode' => '',
+			'format' => '', 'shortcode' => '', 'escape' => '',
 			'embed' => '',
 			'align' => '', 'class' => '', 'height' => '',
 			'words' => '', 'len' => '', 'length' => '',
@@ -246,6 +246,9 @@ class CCS_Content {
 			$parameters['id'] = CCS_To_WCK::$state['current_wck_post_id'];
 		}
 
+		if ( $parameters['escape'] == 'true' && empty($parameters['shortcode']) ) {
+			$parameters['shortcode'] = 'false';
+		}
 
 		return $parameters;
 	}
@@ -746,6 +749,18 @@ class CCS_Content {
 			// Support multi-byte character code
 			$result = mb_substr($result, 0, $parameters['length'], 'UTF-8');
 		}
+
+
+		/*========================================================================
+		 *
+		 * Escape HTML and shortcodes
+		 *
+		 */
+		
+		if ( $parameters['escape'] == 'true' ) {
+			$result = str_replace(array('[',']'), array('&#91;','&#93;'), esc_html($result));
+		}
+
 
 		/*========================================================================
 		 *
