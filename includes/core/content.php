@@ -145,9 +145,6 @@ class CCS_Content {
 			// Menu
 			'menu' => '', 'ul' => '',
 
-			// ACF gallery
-			'row' => '', 'sub' => '',
-			'acf_gallery' => '', 'num' => '',
 
 			// Gallery
 			'gallery' => 'false', 'group' => '',
@@ -156,6 +153,11 @@ class CCS_Content {
 
 			'orderby' => '', 'order' => '', 'columns' => '',
 			 'include' => '', 'exclude' => '',
+
+			// ACF gallery
+			'row' => '', 'sub' => '',
+			'acf_gallery' => '', 'num' => '',
+
 
 			// Read more
 			'more' => '', 'link' => 'true', 'dots' => 'true',
