@@ -58,7 +58,7 @@ class CCS_Comments {
 			);
 
 			if (empty($atts)) {
-				$atts = ['content']; // Default field
+				$atts = array('content'); // Default field
 			}
 
 			if( is_array( $atts ) )

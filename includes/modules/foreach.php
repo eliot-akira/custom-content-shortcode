@@ -51,7 +51,7 @@ class CCS_ForEach {
 
 		// Loop through taxonomies
 
-		if ((CCS_Loop::$state['is_loop']=="true") || ($current=="true")) {
+		if ( CCS_Loop::$state['is_loop'] || ($current=="true")) {
 
 			if ($current=="true") {
 

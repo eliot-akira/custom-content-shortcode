@@ -91,7 +91,7 @@ class CCS_If {
 		 *
 		 */
 
-		if (CCS_Loop::$state['is_loop']=="true") {
+		if ( CCS_Loop::$state['is_loop'] ) {
 
 			if (!empty($every)) {
 
@@ -140,7 +140,7 @@ class CCS_If {
 			 *
 			 */
 
-			if (CCS_Loop::$state['is_loop']=="true") {
+			if ( CCS_Loop::$state['is_loop'] ) {
 				$current_id = CCS_Loop::$state['current_post_id'];
 			} else {
 				$current_id = $current_post_id;
@@ -373,12 +373,30 @@ class CCS_If {
 			else $condition = false;
 		}
 
+
+		/*---------------------------------------------
+		 *
+		 * If children
+		 *
+		 */
+		
+		if (isset($atts['children'])) {
+			if (!empty($post)) {
+				$children_array = get_children( array(
+						'post_parent' => $post->ID,
+						'posts_per_page' => '1',
+						'post_status' => 'publish' )
+				);
+				$condition = ( count( $children_array ) > 0 );
+			}
+		}
+
+
 		/*---------------------------------------------
 		 *
 		 * If exists
 		 *
 		 */
-
 
 		if (isset($atts['exists'])) {
 
@@ -403,7 +421,7 @@ class CCS_If {
 			$condition =  CCS_Gallery_Field::has_gallery();
 		}
 
-		$condition = isset($atts['loop']) ? (CCS_Loop::$state['is_loop']=='true') : $condition;
+		$condition = isset($atts['loop']) ? ( CCS_Loop::$state['is_loop'] ) : $condition;
 		$condition = isset($atts['archive']) ? is_archive() : $condition;
 		$condition = isset($atts['single']) ? is_single() : $condition;
 		$condition = isset($atts['search']) ? is_search() : $condition;

@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1
-Stable tag: 1.6.4
+Stable tag: 1.6.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,11 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.6.5 =
+
+* [comments] - Compatibility with PHP <5.4 - avoid array literal
+* [if children] - If the post has child posts
 
 = 1.6.4 =
 
