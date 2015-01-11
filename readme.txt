@@ -85,6 +85,8 @@ Support for other plugins:
 
 = 1.6.4 =
 
+* [comments] - If inside loop, display comments from current post
+* [if exists] - Check if a post exists; takes the same parameters as loop
 * [content escape] - Escape HTML and shortcodes
 
 = 1.6.3 =

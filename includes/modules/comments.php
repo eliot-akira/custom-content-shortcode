@@ -172,6 +172,7 @@ class CCS_Comments {
 				'status' => 'approve',
 				'type' => '',
 				'user_id' => '',
+				'count' => '',
 			);
 
 			$args = array();
@@ -179,6 +180,8 @@ class CCS_Comments {
 				if (!empty($atts[$key])) {
 					if ($key=='status' && $atts[$key]=='all') {
 						// Don't set status value
+					} elseif ($key=='count') {
+						$args['number'] = $atts[$key]; // Alias
 					} else {
 						$args[$key] = $atts[$key];
 					}
