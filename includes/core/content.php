@@ -160,7 +160,7 @@ class CCS_Content {
 
 
 			// Read more
-			'more' => '', 'link' => 'true', 'dots' => 'true',
+			'more' => '', 'link' => '', 'dots' => 'true',
 			'between' => 'false',
 
 
@@ -220,6 +220,12 @@ class CCS_Content {
 
 		if (!empty($parameters['status'])) {
 			$parameters['status'] = CCS_Loop::explode_list($parameters['status']); // multiple values
+		}
+
+		// ACF page link
+		if (!empty($parameters['link']) && empty($parameters['more'])) {
+			$parameters['field'] = $parameters['link'];
+			$parameters['return'] = 'page-link';
 		}
 
 		// Image field
@@ -866,23 +872,18 @@ class CCS_Content {
 
 			if ($more!='none') {
 
-				if ($parameters['link'] != 'false') {
-//					if ($parameters['field']=='excerpt') {
+				if ($parameters['link'] == 'false') {
 
-						if (empty($parameters['between']))
-							$result .= '<br>';
-						elseif ($parameters['between']!='false')
-							$result .= $parameters['between'];
-
-	/*				if ((substr($out, -3)!='</p>') && (substr($out, -4)!='</br>'))
-						$out .= '<br>';
-	*/
-						$result .= '<a class="more-tag" href="'. get_permalink($post_id) . '">'
-							. $more . '</a>';
-
-//					}
-				} else {
 					$result .= $more;
+
+				} else {
+					if (empty($parameters['between']))
+						$result .= '<br>';
+					elseif ($parameters['between']!='false')
+						$result .= $parameters['between'];
+
+					$result .= '<a class="more-tag" href="'. get_permalink($post_id) . '">'
+						. $more . '</a>';
 				}
 			}
 		}
@@ -1239,12 +1240,20 @@ class CCS_Content {
 
 				if ( is_numeric($result) && !empty($parameters['return']) ) {
 
-					// Get attachment field
+					if ($parameters['return']=='page-link') {
 
-					$parameters['id'] = $result;
-					$parameters['field'] = $parameters['return'];
+						// ACF page link: get URL from post ID
+						$result = get_permalink( $result );
 
-					$result = self::get_the_attachment_field($parameters);
+					} else {
+
+						// Get attachment field
+
+						$parameters['id'] = $result;
+						$parameters['field'] = $parameters['return'];
+
+						$result = self::get_the_attachment_field($parameters);
+					}
 				}
 
 				break;
@@ -1409,26 +1418,27 @@ class CCS_Content {
 
 		$out = null; $rest='';
 
-		if (isset($atts) && ( !empty($atts[0]) || !empty($atts['image'])) ) {
+		if (!isset($atts)) return;
 
-			if (!empty($atts['image'])) {
-				$field_param = 'image="'.$atts['image'].'"';
-			} else {
-				$field_param = 'field="'.$atts[0].'"';
+		if (!empty($atts['image'])) {
+			$field_param = 'image="'.$atts['image'].'"';
+		} elseif (!empty($atts['link'])) {
+			$field_param = 'link="'.$atts['link'].'"';
+		} elseif (!empty($atts[0])) {
+			$field_param = 'field="'.$atts[0].'"';
+		} else return;
+
+		if (count($atts)>1) { // Combine additional parameters
+			$i=0;
+			foreach ($atts as $key => $value) {
+				$rest .= ' ';
+				if ($i>0) $rest .= $key.'="'.$value.'"'; // Skip the first parameter
+				$i++;
 			}
-
-			if (count($atts)>1) { // Combine additional parameters
-				$i=0;
-				foreach ($atts as $key => $value) {
-					$rest .= ' ';
-					if ($i>0) $rest .= $key.'="'.$value.'"'; // Skip the first parameter
-					$i++;
-				}
-			}
-
-			// Pass it to [content]
-			$out = do_shortcode('[content '.$field_param.$rest.']');
 		}
+
+		// Pass it to [content]
+		$out = do_shortcode('[content '.$field_param.$rest.']');
 
 		return $out;
 	}
