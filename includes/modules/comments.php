@@ -142,6 +142,11 @@ class CCS_Comments {
 			if ((empty($count)) || ($count=='all')) $count = 999;
 			$atts['number'] = $count;
 
+			if ( CCS_Loop::$state['is_loop'] && empty($id) ) {
+				$id = 'this';
+			}
+
+
 			if ($id=='this') {
 
 				$atts['post_id'] = get_the_ID();

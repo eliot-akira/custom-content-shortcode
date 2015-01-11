@@ -27,7 +27,7 @@ class CCS_Loop {
 
 
 		// Initialize global
-		$this->init();
+		self::init();
 
 
 	/*========================================================================
@@ -55,7 +55,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function init() {
+	public static function init() {
 
 		self::$state['is_loop'] = false;
 		self::$state['is_attachment_loop'] = false;
@@ -70,53 +70,53 @@ class CCS_Loop {
 	 * 
 	 */
 
-	function the_loop_shortcode( $parameters, $template ) {
+	public static function the_loop_shortcode( $parameters, $template ) {
 
 		// Initialize loop state
-		$this->init_loop();
+		self::init_loop();
 
 			// Store original parameters
 			self::$original_parameters = $parameters;
 
 			// Merge parameters with defaults
-			$parameters = $this->merge_with_defaults( $parameters );
+			$parameters = self::merge_with_defaults( $parameters );
 			// Store merged parameters
 			self::$parameters = $parameters;
 
 
 			// Check cache - if loaded, return result
-			if ( ($result = $this->check_cache( $parameters )) !== false ) {
-				$this->close_loop();
+			if ( ($result = self::check_cache( $parameters )) !== false ) {
+				self::close_loop();
 				return $result;
 			}
 
 			// If there's already result based on parameters, return it
-			$result = $this->before_query( $parameters, $template );
+			$result = self::before_query( $parameters, $template );
 			if ( !empty( $result ) ) {
-				$this->close_loop();
+				self::close_loop();
 				return $result;
 			}
 
 
 			// Set up query based on parameters
-			$query = $this->prepare_query( $parameters );
+			$query = self::prepare_query( $parameters );
 
 			if (!empty($query)) {
 
 				// Get posts from query
-				$posts = $this->run_query( $query );
+				$posts = self::run_query( $query );
 			
 				// Pre-process posts
-				$posts = $this->prepare_posts( $posts );
+				$posts = self::prepare_posts( $posts );
 
 				// Loop through each post and compile shortcode template
-				$results = $this->compile_templates( $posts, $template );
+				$results = self::compile_templates( $posts, $template );
 
 				// Combine results and process to final output
-				$result = $this->process_results( $results );
+				$result = self::process_results( $results );
 			}
 
-		$this->close_loop();
+		self::close_loop();
 
 		return $result;
 	}
@@ -129,7 +129,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function init_loop() {
+	public static function init_loop() {
 
 		$state = self::$state;
 
@@ -163,7 +163,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function merge_with_defaults( $parameters ){
+	public static function merge_with_defaults( $parameters ){
 
 		$defaults = array(
 
@@ -277,7 +277,7 @@ class CCS_Loop {
 	 * 
 	 */
 
-	function check_cache( $parameters ) {
+	public static function check_cache( $parameters ) {
 
 		$result = false;
 
@@ -317,7 +317,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function before_query( $parameters, $template = null ) {
+	public static function before_query( $parameters, $template = null ) {
 
 
 
@@ -388,7 +388,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function prepare_query( $parameters ) {
+	public static function prepare_query( $parameters ) {
 
 		$query = array();
 
@@ -421,7 +421,7 @@ class CCS_Loop {
 		
 		if ( !empty($parameters['type']) ) {
 
-			$query['post_type'] = $this->explode_list($parameters['type']);
+			$query['post_type'] = self::explode_list($parameters['type']);
 
 		} else {
 
@@ -436,7 +436,7 @@ class CCS_Loop {
 		
 		if ( !empty($parameters['id']) ) {
 
-			$id_array = $this->explode_list($parameters['id']);
+			$id_array = self::explode_list($parameters['id']);
 
 			$query['post__in'] = $id_array;
 			$query['orderby'] = 'post__in'; // Preserve ID order
@@ -449,7 +449,7 @@ class CCS_Loop {
 
 		} elseif ( !empty($parameters['exclude']) ) {
 
-			$id_array = $this->explode_list($parameters['exclude']);
+			$id_array = self::explode_list($parameters['exclude']);
 
 			// Exclude current post
 
@@ -484,7 +484,7 @@ class CCS_Loop {
 
 				// Multiple IDs
 
-				$parents = $this->explode_list( $parent ); // Convert to array
+				$parents = self::explode_list( $parent ); // Convert to array
 				$parent_IDs = array();
 
 				foreach ($parents as $each_parent) {
@@ -530,7 +530,7 @@ class CCS_Loop {
 		
 		if ( !empty($parameters['author']) ) {
 
-			$authors = $this->explode_list( $parameters['author'] );
+			$authors = self::explode_list( $parameters['author'] );
 
 			foreach ($authors as $author) {
 				if (is_numeric($author)) {
@@ -556,7 +556,7 @@ class CCS_Loop {
 
 		if ( !empty($parameters['author_exclude']) ) {
 
-			$authors = $this->explode_list( $parameters['author_exclude'] );
+			$authors = self::explode_list( $parameters['author_exclude'] );
 
 			foreach ($authors as $author) {
 				if (is_numeric($author)) {
@@ -590,7 +590,7 @@ class CCS_Loop {
 
 		if ( !empty($parameters['status']) ) {
 
-			$query['post_status'] = $this->explode_list( $parameters['status'] );
+			$query['post_status'] = self::explode_list( $parameters['status'] );
 
 		} else {
 
@@ -678,7 +678,7 @@ class CCS_Loop {
 			// Category can be slug, ID, multiple
 
 			$category = $parameters['category'];
-			$categories = $this->explode_list( $category, ',+' );
+			$categories = self::explode_list( $category, ',+' );
 
 			$check_category = array_pop($categories); // Check one item
 
@@ -704,7 +704,7 @@ class CCS_Loop {
 
 			// Remove extra space in a list
 
-			$tags = $this->clean_list( $parameters['tag'] );
+			$tags = self::clean_list( $parameters['tag'] );
 			if (!empty($parameters['compare']) && strtoupper($parameters['compare'])=='AND') {
 				$tags = str_replace(',', '+', $tags);
 			}
@@ -738,7 +738,7 @@ class CCS_Loop {
 			else
 				$term = $parameters['value']; // Alias, if field value is not used
 
-			$terms = $this->explode_list($term); // Multiple terms possible
+			$terms = self::explode_list($term); // Multiple terms possible
 
 			if ( !empty($parameters['compare']) ) {
 
@@ -777,7 +777,7 @@ class CCS_Loop {
 				$relation = !empty($relation) ? strtoupper($relation) : 'AND';
 				$query['tax_query']['relation'] = $relation;
 
-				$terms = $this->explode_list($parameters['value_2']); // Multiple terms possible
+				$terms = self::explode_list($parameters['value_2']); // Multiple terms possible
 
 				if ( !empty($parameters['compare_2']) ) {
 
@@ -812,7 +812,7 @@ class CCS_Loop {
 				$taxonomy = $parameters['taxonomy_3'];
 				if ($taxonomy == 'tag') $taxonomy = 'post_tag';
 
-				$terms = $this->explode_list($parameters['value_3']); // Multiple terms possible
+				$terms = self::explode_list($parameters['value_3']); // Multiple terms possible
 
 				if ( !empty($parameters['compare_3']) ) {
 
@@ -923,7 +923,7 @@ class CCS_Loop {
 
 			// Store posts IDs and key
 
-			self::$state['sort_posts'] = $this->explode_list($series);
+			self::$state['sort_posts'] = self::explode_list($series);
 			self::$state['sort_key'] = $parameters['key'];
 
 			// Get the posts to be sorted later
@@ -1072,7 +1072,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function run_query( $query ) {
+	public static function run_query( $query ) {
 
 		self::$query = $query; // Store query parameters
 
@@ -1082,7 +1082,7 @@ class CCS_Loop {
 	}
 
 
-	function prepare_posts( $posts ) {
+	public static function prepare_posts( $posts ) {
 
 		$parameters = self::$parameters;
 
@@ -1110,7 +1110,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function compile_templates( $posts, $template ) {
+	public static function compile_templates( $posts, $template ) {
 
 		global $post;
 
@@ -1119,12 +1119,11 @@ class CCS_Loop {
 
 		$posts = apply_filters( 'ccs_loop_posts', $posts );
 
-
-		$template = $this->pre_process_template($template);
+		$template = self::pre_process_template($template);
 
 		if ( $posts->have_posts() ) {
 
-			$posts = $this->prepare_all_posts( $posts );
+			$posts = self::prepare_all_posts( $posts );
 
 			while ( $posts->have_posts() ) {
 
@@ -1133,26 +1132,30 @@ class CCS_Loop {
 
 				self::$state['current_post_id'] = get_the_ID();
 
-				$this_post = $this->prepare_each_post( $post );
+				$this_post = self::prepare_each_post( $post );
 
 				if (!empty($this_post)) {
 
 					self::$state['loop_count']++;
 
-					$this_template = $this->prepare_each_template($template);
-					$templates[] = $this->render_template($this_template);
+					$this_template = self::prepare_each_template($template);
+					$templates[] = self::render_template($this_template);
 
 				} // End: if this post not empty
 
 			} // End: while loop through each post
 
+			if (isset(self::$state['if_empty_else'])) {
+				$this_template = self::prepare_each_template(self::$state['if_empty_else']);
+				$templates[] = self::render_template($this_template);
+			}				
 		} else {
 
 			// No post found: do [if empty]
 
 			if (!empty(self::$state['if_empty'])) {
-				$this_template = $this->prepare_each_template(self::$state['if_empty']);
-				$templates[] = $this->render_template($this_template);
+				$this_template = self::prepare_each_template(self::$state['if_empty']);
+				$templates[] = self::render_template($this_template);
 			}
 		}
 
@@ -1166,7 +1169,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function pre_process_template( $template ) {
+	public static function pre_process_template( $template ) {
 
 		$state = self::$state;
 
@@ -1174,11 +1177,11 @@ class CCS_Loop {
 
 		$start = '[if empty]'; $end = '[/if]';
 		$middle = self::get_between($start, $end, $template);
+		$template = str_replace($middle, '', $template);
 		$else = self::extract_else( $middle );
 
 		$state['if_empty'] = $middle;
 		$state['if_empty_else'] = $else;
-
 
 		// If first
 
@@ -1211,7 +1214,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function extract_else( &$template ) {
+	public static function extract_else( &$template ) {
 		// Get [else] if it exists
 		$content_array = explode('[else]', $template);
 
@@ -1233,7 +1236,7 @@ class CCS_Loop {
 	 *
 	 */
 	
-	function prepare_all_posts( $query_object ) {
+	public static function prepare_all_posts( $query_object ) {
 
 		$parameters = self::$parameters;
 		$query = self::$query;
@@ -1377,7 +1380,7 @@ class CCS_Loop {
 
 				$skip_2 = false;
 				if ( !empty($parameters['checkbox_2']) && !empty($parameters['value_2']) ) {
-					$values = $this->explode_list($parameters['value_2']);
+					$values = self::explode_list($parameters['value_2']);
 					$check_field = get_post_meta( $current_id, $parameters['checkbox_2'], $single=true );
 
 					if (!empty($parameters['compare_2'])) $compare_2 = strtolower($parameters['compare_2']);
@@ -1439,7 +1442,7 @@ class CCS_Loop {
 		return $query_object;
 	}
 
-	function prepare_each_post( $post ) {
+	public static function prepare_each_post( $post ) {
 
 		$post_id = $post->ID;
 
@@ -1455,7 +1458,7 @@ class CCS_Loop {
 	}
 
 
-	function prepare_each_template( $template ) {
+	public static function prepare_each_template( $template ) {
 
 		$state = self::$state;
 		$parameters = self::$parameters;
@@ -1519,7 +1522,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function render_template( $template ) {
+	public static function render_template( $template ) {
 
 		$post_id = self::$state['current_post_id'];
 
@@ -1545,7 +1548,7 @@ class CCS_Loop {
 	 *
 	 */
 	
-	function process_results( $results ) {
+	public static function process_results( $results ) {
 
 		$parameters = self::$parameters;
 
@@ -1664,7 +1667,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function close_loop(){
+	public static function close_loop(){
 
 		$state =& self::$state;
 		$parameters = self::$parameters;
@@ -1814,7 +1817,7 @@ class CCS_Loop {
 	 *
 	 */
 
-	function pass_shortcode( $atts, $content, $shortcode_name ) {
+	public static function pass_shortcode( $atts, $content, $shortcode_name ) {
 
 		$args = array(
 			'field' => '',
@@ -2099,7 +2102,7 @@ class CCS_Loop {
 
 
 
-	function render_field_tags( $template, $parameters ) {
+	public static function render_field_tags( $template, $parameters ) {
 
 		$post_id = !empty($parameters['id']) ? $parameters['id'] : get_the_ID();
 
@@ -2147,7 +2150,7 @@ class CCS_Loop {
 
 
 
-	function render_default_field_tags( $template ) {
+	public static function render_default_field_tags( $template ) {
 
 		/*========================================================================
 		 *
@@ -2323,19 +2326,19 @@ class CCS_Loop {
 	 *
 	 */
 	
-	function loop_count_shortcode() {
+	public static function loop_count_shortcode() {
 
 		return CCS_Loop::$state['loop_count'];
 	}
 
-	function found_posts_shortcode() {
+	public static function found_posts_shortcode() {
 		global $wp_query;
 
 		if (!empty($wp_query))
 			return $wp_query->post_count;
 	}
 
-	function search_keyword_shortcode() {
+	public static function search_keyword_shortcode() {
 		global $wp_query;
 
 		if (!empty($wp_query)) {

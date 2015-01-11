@@ -29,6 +29,8 @@ class CCS_If {
 
 	function if_shortcode( $atts, $content = null, $shortcode_name ) {
 
+		$atts_original = $atts;
+
 		$args = array(
 			'every' => '',
 			'flag' => '',
@@ -55,7 +57,7 @@ class CCS_If {
 
 		extract( shortcode_atts( $args , $atts, true ) );
 
-		if (is_array($atts)) $atts = array_flip($atts); /* To allow check for parameters with no value set */
+		if (is_array($atts)) $atts = array_flip($atts); /* Check parameters with no value */
 /*
 //		if ( (empty($flag))&&(empty($no_flag)) || (isset($atts['empty']))) return;
 		if ((isset($atts['empty'])) || (isset($atts['last'])) ) return; // [if empty] [if last] is processed by [loop]
@@ -371,6 +373,19 @@ class CCS_If {
 			else $condition = false;
 		}
 
+		/*---------------------------------------------
+		 *
+		 * If exists
+		 *
+		 */
+
+
+		if (isset($atts['exists'])) {
+
+			$result = CCS_Loop::the_loop_shortcode($atts_original, '[if empty][else]Yes[/if]');
+			$condition = !empty($result);
+		}
+		
 		
 		/*========================================================================
 		 *
