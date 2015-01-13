@@ -752,6 +752,8 @@ class CCS_Loop {
 					$compare = strtoupper($compare);
 					if ( $compare == 'NOT' )
 						$compare = 'NOT IN';
+					if ( $compare == 'OR' )
+						$compare = ''; // It's OR by default
 					$operator = $compare;
 				}
 
