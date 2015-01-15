@@ -191,7 +191,7 @@ class CCS_Loop {
 			'field' => '', 'value' => '',
 			'compare' => '',
 			'start' => '', // If field value starts with
-			'in' => '', // ??
+
 			// Additional field value query
 			'field_2' => '', 'compare_2' => '', 'relation' => '',
 			'f' => '', 'v' => '', 'c' => '', 'f2' => '', 'v2' => '', 'c2' => '', 'r' => '', // Alias
@@ -208,6 +208,9 @@ class CCS_Loop {
 			// Format
 
 			'date_format' => '',
+			'in' => '', // in="string" - Date field stored as string
+			'acf_date' => '',
+
 			'strip_tags' => '', 'strip' => '', 'allow' => '',
 			'clean' => 'false', 'trim' => '',
 
@@ -1015,12 +1018,12 @@ class CCS_Loop {
 				);
 
 			if ( $compare!='EXISTS' && $compare!='NOT EXISTS') {
-				$query['meta_query']['value'] = $value;
+				$query['meta_query'][0]['value'] = $value;
 			} elseif ($compare!='NOT EXISTS') {
-				$query['meta_query']['value'] = ' '; // NOT EXISTS needs some value
+				$query['meta_query'][0]['value'] = ' '; // NOT EXISTS needs some value
+			} else {
+				// $compare=='EXISTS' then no value
 			}
-
-
 
 			// Additional query by field value
 

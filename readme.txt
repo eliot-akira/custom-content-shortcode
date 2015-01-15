@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1
-Stable tag: 1.6.7
+Stable tag: 1.6.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,12 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.6.8 =
+
+* [loop] - Correctly build field value query
+* [loop acf_date] - Query by ACF date field
+* [field acf_date] - Display an ACF date field with selected formatting
 
 = 1.6.7 =
 

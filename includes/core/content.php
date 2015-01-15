@@ -158,6 +158,8 @@ class CCS_Content {
 			'row' => '', 'sub' => '',
 			'acf_gallery' => '', 'num' => '',
 
+			// ACF date field
+			'acf_date' => '',
 
 			// Read more
 			'more' => '', 'link' => '', 'dots' => 'true',
@@ -196,6 +198,8 @@ class CCS_Content {
 			$parameters['size'] = isset($parameters['size']) ? $parameters['size'] : 'thumbnail';
 		}
 
+		if (!empty($parameters['acf_date']))
+			$parameters['field'] = $parameters['acf_date'];
 
 
 		// Merge with defaults
@@ -705,6 +709,14 @@ class CCS_Content {
 		 *
 		 */
 		
+		// Format ACF date field
+
+		if (!empty($parameters['acf_date'])) {
+			if ( class_exists('acf_field_date_picker') ) {
+				$result = get_field( $parameters['field'], $post_id = false, $format_value = true );
+			}
+		}
+
 		if (!empty($parameters['timestamp']) && ($parameters['timestamp']=='ms') ) {
 			$result = $result / 1000;
 		}
@@ -1424,6 +1436,8 @@ class CCS_Content {
 			$field_param = 'image="'.$atts['image'].'"';
 		} elseif (!empty($atts['link'])) {
 			$field_param = 'link="'.$atts['link'].'"';
+		} elseif (!empty($atts['acf_date'])) {
+			$field_param = 'acf_date="'.$atts['acf_date'].'"';
 		} elseif (!empty($atts[0])) {
 			$field_param = 'field="'.$atts[0].'"';
 		} else return;
