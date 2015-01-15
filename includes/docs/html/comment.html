@@ -26,7 +26,7 @@ Available parameters for the <b>[comments] </b>shortcode are:
 Inside the comments loop, use <b>[comment]</b> to display the following fields.
 
 <ul>
-	<li><b>content</b> - content of the comment</li>
+	<li><b>content</b> - comment content; default if not parameter is specified</li>
 	<li><b>date</b> - date of comment</li>
 </ul><ul>
 	<li><b>title</b> - title of the post where the comment is</li>
@@ -36,10 +36,10 @@ Inside the comments loop, use <b>[comment]</b> to display the following fields.
 	<li><b>author</b> - author name</li>
 	<li><b>author-url</b> - author URL</li>
 	<li><b>author-link</b> - author name with link to URL; if no URL, then displays just name</li>
+  <li><b>avatar</b> - author avatar image; optional <i>size</i> parameter (default 96, max 512)</li>
 </ul><ul>
 	<li><b>total</b> - total comment count; use after the loop is finished</li>
 </ul>
-If no parameter is specified, it will display comment content by default.
 
 <br>
 <hr>

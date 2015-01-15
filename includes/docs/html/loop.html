@@ -79,16 +79,9 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 	<li><b>field</b> - field name</li>
 	<li><b>value</b> - field value</li>
 	<li><b>compare</b> - <i>equal</i> (default), <i>not</i> (not equal), <i>more</i> (greater than), <i>less</i> (less than)</li>
-</ul><ul>
-	<li><b>value="now"</b> - compare to now</li>
-	<li><b>value="future"</b> or <b>"past"</b> - find future or past values; no need to set <i>compare</i> parameter</li>
-	<li><b>in="string"</b> - if the date field is stored as string, for example: 2014-08-15</li>
-
-<!--	<li><b>date_format</b> - instead of using <i>in="string"</i>, you can set a date format, for example: "Y-m-d h:i A"</li>
--->
-
-By default, it's assumed that the field is stored as a UNIX timestamp. See the examples section below.
-
+  <li><b>in="string"</b> - if the date field is stored as string; by default, UNIX timestamp is assumed</li>
+  <li><b>value="today"</b> - compare to today; use <i>now</i> if your field contains date <i>and</i> time</li>
+	<li><b>value="future"</b> or <b>"past"</b> - future or past dates; no need to set <i>compare</i> parameter; use <i>future-time</i> and <i>past-time</i> if your field contains date <i>and</i> time</li>
 </ul>
 
 <h4>Sorting and series</h4>
@@ -176,13 +169,17 @@ Multiple values are possible: <i>value="first, second"</i>. This will return all
 <hr>
 <h3>Query by date field</h3>
 
-<h4>Show future events</h4>
+<h4>Show future events; field is stored as timestamp</h4>
 
-<code>[loop type="events" field="event_date" compare=">" value="now"]</code>
+<code>[loop type="events" field="event_date" value="future"]</code>
 
-<h4>Show past events, when the field is stored as a string</h4>
+<h4>Show future events, when the field is stored as a string, i.e., 2015-03-12</h4>
 
-<code>[loop type="events" field="event_date" value="past" in="string"]</code>
+<code>[loop type="events" field="event_date" value="future" in="string"]</code>
+
+<h4>Show future events, when the field is a string with date and time, i.e., 2015-03-12 13:00</h4>
+
+<code>[loop type="events" field="event_date" value="future-time" in="string"]</code>
 
 <h4>Show future events in descending order</h4>
 

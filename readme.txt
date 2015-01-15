@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1
-Stable tag: 1.6.6
+Stable tag: 1.6.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,11 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.6.7 =
+
+* [comment avatar] - Author avatar image; optional *size* parameter
+* [loop]- Improve date field comparison for *future* and *past* when stored as string; by default, assume that time is not included
 
 = 1.6.6 =
 

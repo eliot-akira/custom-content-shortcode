@@ -743,11 +743,8 @@ class CCS_Loop {
 			if ( !empty($parameters['compare']) ) {
 
 				$compare = $parameters['compare'];
-
-				if ( $compare=='=' )
-					$operator = 'IN';
-				elseif ( $compare=='!=' )
-					$operator = 'NOT IN';
+				if ( $compare == '=' ) $operator = 'IN';
+				elseif ( $compare == '!=' ) $operator = 'NOT IN';
 				else {
 					$compare = strtoupper($compare);
 					if ( $compare == 'NOT' )
@@ -807,6 +804,9 @@ class CCS_Loop {
 			}
 
 			// Additional taxonomy query
+
+			// @todo Better way to combine taxonomy_2, 3, 4..
+
 			if ( !empty($parameters['taxonomy_3']) && !empty($parameters['value_3']) ) {
 
 				$taxonomy = $parameters['taxonomy_3'];
@@ -953,10 +953,16 @@ class CCS_Loop {
 
 			// Support for date values
 
-			if ($value=='future') {
+			if ($value == 'future') {
+				$value = 'today';
+				$compare = '>';
+			} elseif ($value == 'future-time') {
 				$value = 'now';
 				$compare = '>';
-			} elseif ($value=='past') {
+			} elseif ($value == 'past') {
+				$value = 'today';
+				$compare = '<';
+			} elseif ($value == 'past-time') {
 				$value = 'now';
 				$compare = '<';
 			}
@@ -967,15 +973,19 @@ class CCS_Loop {
 
 					// default date format
 					if ($value == 'today')
-						$parameters['date_format'] = 'Y-m-d'; // Y-m-d h:i A
-					if ($value == 'now')
-						$parameters['date_format'] = 'Y-m-d h:i A'; 
+						$parameters['date_format'] = 'Y-m-d'; // 2014-01-24
+					elseif ($value == 'now')
+						$parameters['date_format'] = 'Y-m-d H:i'; // 2014-01-24 13:05
 				}
 
 				if (($value == 'today') || ($value == 'now')){
 					$value = date($parameters['date_format'],time());
 				}
+
 			} else {
+
+				// It's a timestamp so today/now is the same
+
 				if (($value == 'today') || (($value == 'now'))){
 					$value = time();
 				}
