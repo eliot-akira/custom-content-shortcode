@@ -44,6 +44,7 @@ class CCS_If {
 			'taxonomy' => '',
 			'term' => '',
 			'compare' => 'OR',
+			'tax_archive' => '',
 
 			'parent' => '',
 
@@ -175,7 +176,9 @@ class CCS_If {
 			$term = $tag;
 		}
 
-		if (!empty($taxonomy)) {
+		// Check if current post has taxonomy term
+
+		if ( !empty($taxonomy) && !empty($term) ) {
 
 			if ($taxonomy == 'tag') $taxonomy = 'post_tag';
 
@@ -208,7 +211,7 @@ class CCS_If {
 				}
 			}
 
-		} // End taxonomy conditions
+		}
 
 
 		/*========================================================================
@@ -426,6 +429,12 @@ class CCS_If {
 		$condition = isset($atts['single']) ? is_single() : $condition;
 		$condition = isset($atts['search']) ? is_search() : $condition;
 		$condition = isset($atts['none']) ? !have_posts() : $condition;
+
+		if (isset($atts['tax_archive'])) {
+			if ($tax_archive == 'true') $tax_archive = '';
+			$condition = is_tax( $tax_archive );
+		}
+
 
 		/*========================================================================
 		 *
