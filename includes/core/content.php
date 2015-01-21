@@ -581,18 +581,17 @@ class CCS_Content {
 						// Get taxonomy field
 
 						switch ($parameters['field']) {
-							case 'id':
-								$results[] = $term->term_id;
-								break;
-							case 'slug':
-								$results[] = $term->slug;
-								break;
-							case 'name':
-								$results[] = $term->name;
-								break;
-							case 'description':
-								$results[] = $term->description;
-								break;
+							case 'id': $results[] = $term->term_id; break;
+							case 'slug': $results[] = $term->slug; break;
+							case 'name': $results[] = $term->name; break;
+							case 'description': $results[] = $term->description; break;
+							case 'url':
+								$results[] = get_term_link( $term );
+							break;
+							case 'link':
+								$url = get_term_link( $term );
+								$results[] = '<a href="'.$url.'">'.$term->name.'</a>';
+							break;
 							default:
 
 								// Support custom taxonomy meta fields
@@ -604,7 +603,7 @@ class CCS_Content {
 									}
 								}
 
-								break;
+							break;
 						}
 					} else {
 						$results[] = $term->name; // Default: taxonomy name

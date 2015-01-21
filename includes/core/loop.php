@@ -22,6 +22,7 @@ class CCS_Loop {
 	private static $parameters;				// After merge with default
 	private static $query;					// The query
 	public static $state;					// Loop state array
+	public static $previous_state;			// For nested loop
 
 	function __construct() {
 
@@ -38,6 +39,10 @@ class CCS_Loop {
 
 		add_shortcode( 'loop', array($this, 'the_loop_shortcode') );
 		add_shortcode( 'pass', array($this, 'pass_shortcode') );
+
+		// A workaround for nested shortcodes
+		add_shortcode( '-loop', array($this, 'the_loop_shortcode') );
+		add_shortcode( '--loop', array($this, 'the_loop_shortcode') );
 		add_shortcode( '-pass', array($this, 'pass_shortcode') );
 		add_shortcode( '--pass', array($this, 'pass_shortcode') );
 
@@ -58,10 +63,11 @@ class CCS_Loop {
 	public static function init() {
 
 		self::$state['is_loop'] = false;
+		self::$state['is_nested_loop'] = false;
 		self::$state['is_attachment_loop'] = false;
 		self::$state['do_reset_postdata'] = false;
+		self::$previous_state = array();
 	}
-
 
 
 	/*========================================================================
@@ -133,7 +139,16 @@ class CCS_Loop {
 
 		$state = self::$state;
 
-		$state['is_loop'] 				= true;
+		if ( $state['is_loop'] ) {
+
+			self::$previous_state[] = $state;
+			$state['is_nested_loop']	= true;
+
+		} else {
+
+			$state['is_loop'] 			= true;
+			$state['is_nested_loop']	= false;
+		}
 
 		$state['do_reset_postdata'] 	= false;
 		$state['do_cache'] 				= false;
@@ -1721,9 +1736,14 @@ class CCS_Loop {
 			restore_current_blog();
 		}
 
-		self::$state['is_loop'] = false;
-		self::$state['is_attachment_loop'] = false;
+		// If nested, restore previous state
 
+		if ( self::$state['is_nested_loop'] ) {
+			self::$state = array_pop(self::$previous_state);
+		} else {
+			self::$state['is_loop'] = false;
+			self::$state['is_attachment_loop'] = false;
+		}
 	}
 
 
