@@ -85,8 +85,11 @@ Support for other plugins:
 
 = 1.6.9 =
 
-* [loop] - Support for nested loop with [-loop]
-* [taxonomy field] - Display term archive URL, or term name linked to the archive
+* [for each="child"] - Loop through children of current term; use inside a parents loop
+* [for parents="true"] - Loop through parents only
+* [-for] - Support for nested loop
+* [-loop] - Support for nested loop
+* [taxonomy field] - Add *url* and *link* fields: display term archive URL, or term name linked to the archive
 
 = 1.6.8 =
 

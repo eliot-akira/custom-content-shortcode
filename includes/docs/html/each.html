@@ -10,7 +10,7 @@ This is a feature to create a loop for each category, tag, or taxonomy term.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title-link]
 &nbsp;&nbsp;&nbsp;&nbsp;[/loop]
 [/for]</code>
-It gets all existing terms of a given taxonomy, in this case <i>category</i>, and loops through each term.
+The [for] shortcode loops through all existing terms of a given taxonomy, in this case <i>category</i>. The current term is automatically passed to the [loop] inside.
 <br>
 <hr>
 <h3>Parameters</h3>
@@ -20,7 +20,8 @@ Available parameters for the <b>[for]</b> shortcode are:
 	<li><b>each</b> - <i>category</i>, <i>tag</i>, or custom taxonomy</li>
 </ul><ul>
 	<li><b>count</b> - limit number of terms: <i>count="3"</i></li>
-	<li><b>parent</b> - get child categories by parent slug</li>
+  <li><b>parent</b> - get child categories by parent slug</li>
+  <li><b>parents</b> - set <i>true</i> to get only parent terms; see section below on child terms</li>
 	<li><b>exclude</b> - exclude taxonomy term by ID or slug; <i>exlude="uncategorized"</i></li>
 	<li><b>empty</b> - set <i>true</i> to include terms that have no associated posts; use outside the loop</li>
 </ul><ul>
@@ -36,48 +37,64 @@ Available parameters for the <b>[for]</b> shortcode are:
 Available parameters for the <b>[each]</b> shortcode are:
 <ul>
 	<li><b>name</b> - name of category, tag, or taxonomy term</li>
-	<li><b>name-link</b> - name of taxonomy term with link to the archive</li>
 	<li><b>url</b> - URL of the taxonomy term archive</li>
+  <li><b>link</b> - name of taxonomy term with link to the archive</li>
 	<li><b>slug</b> - term slug</li>
 	<li><b>id</b> - term ID</li>
 </ul>
-If no parameter is specified, [each] will display the term name.
+If no parameter is specified, the term name is displayed.
 <br>
 <hr>
 <h3>Inside loop</h3>
 
-It's possible to use <b>[for]</b> and <b>[each]</b> inside a loop.
+Inside a loop, the <b>[for]</b> shortcode gets taxonomy terms from the current post in the loop.
 
 <h4>Display a link for each category assigned to a post</h4>
 <code>[loop type="post"]
 &nbsp;&nbsp;&nbsp;&nbsp;[field title]
 &nbsp;&nbsp;&nbsp;&nbsp;[for each="category"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url]/category/[each slug]"&gt;[each name]&lt;/a&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[each link]
 &nbsp;&nbsp;&nbsp;&nbsp;[/for]
 [/loop]</code><br>
 <hr>
 <h3>Current post</h3>
 
-Outside the loop, <b>[for each]</b> displays all terms that have any posts associated. Use the <i>current</i> parameter to display terms of the current post only. 
+Outside the loop, the <b>[for]</b> shortcode gets all terms that have any posts associated. Use the <i>current</i> parameter to display terms of the current post only. 
 
 <h4>Display a link for each category assigned to the current post</h4>
 <code>[for each="category" current="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[url]/category/[each slug]"&gt;[each name]&lt;/a&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;[each link]
 [/for]
 </code><br>
+
 <hr>
+<h3>Child terms</h3>
+
+To display child terms separately from parents, use a nested <b>[for]</b> loop.
+
+<h4>List parent categories, with children</h4>
+<code>[for each="category" parents="true"]
+&nbsp;&nbsp;&nbsp;&nbsp;Parent: [each link]
+&nbsp;&nbsp;&nbsp;&nbsp;[-for each="child"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Child: [-each link]
+&nbsp;&nbsp;&nbsp;&nbsp;[/-for]
+[/for]
+</code><br>
+
+<hr>
+
 <h3>List</h3>
 
-You can use the <i>trim</i> parameter to create a list of terms. It removes extra space or comma at the end.
+Use the <i>trim</i> parameter to create a list of terms. It removes extra space or comma at the end.
 
 <h4>Display a list of categories</h4>
 <code>[for each="category" trim="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;[each name], 
+&nbsp;&nbsp;&nbsp;&nbsp;[each], 
 [/for]</code>
 
 <h4>Trim other characters</h4>
 <code>[for each="category" trim="/"]
-&nbsp;&nbsp;&nbsp;&nbsp;[each name] / 
+&nbsp;&nbsp;&nbsp;&nbsp;[each] / 
 [/for]</code>
 <br>
 <a id="related-posts" name="related-posts" href="#"></a>
