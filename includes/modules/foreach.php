@@ -34,6 +34,8 @@ class CCS_ForEach {
 		// Nested shortcodes
 		add_shortcode( '-for', array( $this, 'for_shortcode' ) );
 		add_shortcode( '--for', array( $this, 'for_shortcode' ) );
+		add_shortcode( '-each', array( $this, 'each_shortcode' ) );
+		add_shortcode( '--each', array( $this, 'each_shortcode' ) );
 	}
 
 	function for_shortcode( $atts, $content = null, $shortcode_name ) {
