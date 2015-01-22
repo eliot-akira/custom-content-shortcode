@@ -733,16 +733,19 @@ class CCS_Loop {
 		/*========================================================================
 		 *
 		 * Taxonomy
-		 * @todo Refactor this somehow
 		 *
 		 */
 
+		// In a [for] loop, filter by each taxonomy term unless specified otherwise
 		if ( CCS_ForEach::$state['is_for_loop'] ) {
-			// In a [for each] loop, filter by each taxonomy term
-			// unless it's specified otherwise
 
-			$parameters['taxonomy'] = empty($parameters['taxonomy']) ? CCS_ForEach::$state['each']['taxonomy'] : $parameters['taxonomy'];
-			$parameters['term'] = empty($parameters['term']) ? CCS_ForEach::$state['each']['slug'] : $parameters['term'];
+			$parameters['taxonomy'] = empty($parameters['taxonomy']) ?
+				CCS_ForEach::$current_term[ CCS_ForEach::$index ]['taxonomy'] :
+					$parameters['taxonomy'];
+
+			$parameters['term'] = empty($parameters['term']) ?
+				CCS_ForEach::$current_term[ CCS_ForEach::$index ]['slug'] :
+					$parameters['term'];
 
 		}
 

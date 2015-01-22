@@ -254,6 +254,13 @@ class CCS_Comments {
 		if( isset( $atts['count'] ) ) {
 			return get_comments_number();
 		}
+		if( isset( $atts['counted'] ) ) {
+			$count = get_comments_number();
+			if ($count == 0) return 'No comments';
+			if ($count == 1) return '1 comment';
+			return $count.' comments';
+		}
+
 		if( isset( $atts['total'] ) ) {
 			return CCS_Loop::$state['comment_count'];
 		}
