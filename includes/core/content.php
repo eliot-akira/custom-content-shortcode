@@ -795,6 +795,9 @@ class CCS_Content {
 			case "edit-link":
 				$result = '<a target="_blank" href="' . get_edit_post_link( $post_id ) . '">' . $result . '</a>';
 				break;
+			case "edit-link-self":
+				$result = '<a href="' . get_edit_post_link( $post_id ) . '">' . $result . '</a>';
+				break;
 
 			case "image-link":				// Link image to post
 			case "thumbnail-link":			// Link thumbnail to post
