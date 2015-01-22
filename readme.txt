@@ -82,7 +82,7 @@ Support for other plugins:
 
 == Changelog ==
 
-= 1.7.0 =
+= 1.7.1 =
 
 * [loop] - Correctly filter by taxonomy term when inside [for each], nested or not
 

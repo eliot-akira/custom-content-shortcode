@@ -15,8 +15,8 @@ new CCS_ForEach;
 class CCS_ForEach {
 
 	public static $state;
-	private static $index; // Support nested loop
-	private static $current_term;
+	public static $index; // Support nested loop
+	public static $current_term;
 
 	function __construct() {
 
