@@ -15,18 +15,27 @@ new CCS_ForEach;
 class CCS_ForEach {
 
 	public static $state;
+	private static $index; // Support nested loop
+	private static $current_term;
 
 	function __construct() {
 
+		self::$index = 0;
 		self::$state['is_for_loop'] = false;
 
 		add_action( 'init', array( $this, 'register' ) );
 	}
 
 	function register() {
+
 		add_shortcode( 'for', array( $this, 'for_shortcode' ) );
 		add_shortcode( 'each', array( $this, 'each_shortcode' ) );
-		add_shortcode( 'for-loop', array( $this, 'for_loop_status' ) );
+
+		// Nested shortcodes
+		add_shortcode( '-for', array( $this, 'for_shortcode' ) );
+		add_shortcode( '--for', array( $this, 'for_shortcode' ) );
+		add_shortcode( '-each', array( $this, 'each_shortcode' ) );
+		add_shortcode( '--each', array( $this, 'each_shortcode' ) );
 	}
 
 	function for_shortcode( $atts, $content = null, $shortcode_name ) {
@@ -37,6 +46,7 @@ class CCS_ForEach {
 			'order' => '',
 			'count' => '',
 			'parent' => '',
+			'parents' => '', // Don't return term children
 			'current' => '',
 			'trim' => '',
 			'empty' => 'true', // Show taxonomy terms with no post
@@ -45,36 +55,58 @@ class CCS_ForEach {
 
 		extract( shortcode_atts( $args , $atts, true ) );
 
-		self::$state['is_for_loop'] = true;
+		// Top parent loop
+		if ( ! self::$state['is_for_loop'] ) {
+
+			self::$state['is_for_loop'] = true;
+
+		// Nested loop
+		} else {
+
+			$parent_term = self::$current_term[ self::$index ];
+
+			// Same taxonomy as parent
+			if ( $each=='child' && isset( $parent_term['taxonomy'] ) )
+				$each = $parent_term['taxonomy'];
+
+			// Get parent term unless specified
+			if ( empty( $parent ) && isset( $parent_term['id'] ) )
+				$parent = $parent_term['id'];
+			// Nest index
+			self::$index++;
+		}
+
 		if ($each=='tag') $each='post_tag';
 		$out = '';
 
-		// Loop through taxonomies
+		// Get [else] block
+		$if_else = CCS_If::get_if_else( $content, $shortcode_name );
+		$content = $if_else['if'];
+		$else = $if_else['else'];
+
+
+		// Get terms according to parameters
+		// @todo Refactor - keep it DRY
+		// @todo Consolidate to CCS_Content::get_taxonomies
+
+		$query = array(
+			'orderby' => $orderby,
+			'order' => $order,
+			'number' => $count,
+			'parent' => ( $parents=='true' ) ? 0 : '', // Exclude children or not
+			'hide_empty' => ( $empty=='true' ) ? 0 : 1,
+		);
 
 		if ( CCS_Loop::$state['is_loop'] || ($current=="true")) {
 
-			if ($current=="true") {
+			if ($current=="true") $post_id = get_the_ID();
+			else $post_id = CCS_Loop::$state['current_post_id']; // Inside [loop]
 
-				$post_id = get_the_ID();
-
-			} else {
-
-				// Inside [loop]
-				$post_id = CCS_Loop::$state['current_post_id'];
-			}
-
-			$taxonomies = wp_get_post_terms(
-				$post_id,
-				$each, array(
-				'orderby' => $orderby,
-				'order' => $order,
-				'number' => $count,
-				'hide_empty' => ($empty=='true' ? 0 : 1),
-				) );
+			$taxonomies = wp_get_post_terms( $post_id, $each, $query );
 
 			// Current and parent parameters together
 
-			if (!empty($parent)) {
+			if ( !empty($parent) ) {
 				
 				if ( is_numeric($parent) ) {
 
@@ -90,7 +122,7 @@ class CCS_ForEach {
 					else $parent_term_id = null;
 				}
 
-				if (!empty($parent_term_id)) {
+				if ( !empty($parent_term_id) ) {
 					/* Filter out terms that do not have the specified parent */
 					foreach($taxonomies as $key => $term) {
 						if ($term->parent != $parent_term_id) {
@@ -103,14 +135,9 @@ class CCS_ForEach {
 
 		} else {
 
-			if (empty($parent)) {
+			if ( empty($parent) ) {
 
-				$taxonomies = get_terms( $each, array(
-					'orderby' => $orderby,
-					'order' => $order,
-					'number' => $count,
-					'hide_empty' => ($empty=='true' ? 0 : 1),
-					) );
+				$taxonomies = get_terms( $each, $query );
 
 			} else {
 
@@ -128,26 +155,22 @@ class CCS_ForEach {
 				}
 
 				if (!empty($parent_term_id)) {
-					/* Get direct children */
-					$taxonomies = get_terms( $each, array(
-						'orderby' => $orderby,
-						'order' => $order,
-						'number' => $count,
-						'parent' => $parent_term_id,
-						'hide_empty' => ($empty=='true' ? 0 : 1),
-						) );
 
-				} else { /* No parent found */
-					$taxonomies = null;
-				}
+					/* Get direct children */
+
+					$query['parent'] = $parent_term_id;
+					$taxonomies = get_terms( $each, $query );
+
+				} else $taxonomies = null; // No parent found
+
 			}
 		}
 
+		// Array and not empty
+		if ( is_array($taxonomies) && ( $taxonomies != array() ) ) {
 
-		if (is_array($taxonomies)) {
-
-			self::$state['each']['type']='taxonomy';
-			self::$state['each']['taxonomy']=$each;
+			$each_term = array();
+			$each_term['taxonomy'] = $each; // Taxonomy name
 
 			$excludes = CCS_Loop::explode_list( $exclude );
 
@@ -170,34 +193,41 @@ class CCS_ForEach {
 					}
 				}
 
-				if ($condition) {
-					self::$state['each']['id'] = $term_object->term_id;
-					self::$state['each']['name'] = $term_object->name;
-					self::$state['each']['slug'] = $term_object->slug;
-					self::$state['each']['description'] = $term_object->description;
+				if ( $condition ) {
+
+					$each_term['id'] = $term_object->term_id;
+					$each_term['name'] = $term_object->name;
+					$each_term['slug'] = $term_object->slug;
+					$each_term['description'] = $term_object->description;
 
 					$term_link = get_term_link( $term_object );
 					if ( is_wp_error( $term_link ) ) $term_link = null;
 
-					self::$state['each']['url'] = $term_link;
-
-					self::$state['each']['name-link'] = '<a href="'.self::$state['each']['url'].'">'
-						. self::$state['each']['name'].'</a>';
+					$each_term['url'] = $term_link;
+					$each_term['link'] = '<a href="'.$each_term['url'].'">'
+						. $each_term['name'] . '</a>';
+					// Alias for backward compatibility
+					$each_term['name-link'] = $each_term['link'];
 
 					// Replace {TAGS}
 
-					// @todo Create a more efficient general-purpose function for this
+					// @todo Use a general-purpose function in CCS_Loop for replacing tags
 
 					$replaced_content = str_replace('{TERM}',
-						self::$state['each']['slug'], $content);
+						$each_term['slug'], $content);
 					$replaced_content = str_replace('{TERM_ID}',
-						self::$state['each']['id'], $replaced_content);
+						$each_term['id'], $replaced_content);
 					$replaced_content = str_replace('{TERM_NAME}',
-						self::$state['each']['name'], $replaced_content);
+						$each_term['name'], $replaced_content);
+
+					// Make term data available to [each]
+					self::$current_term[ self::$index ] = $each_term;
 
 					$out .= do_shortcode($replaced_content);
 				}
 			}
+		} else {
+			$out .= do_shortcode($else);
 		}
 
 		// Trim final output
@@ -207,11 +237,14 @@ class CCS_ForEach {
 			$out = trim($out, " \t\n\r\0\x0B,".$trim);
 		}
 
-		self::$state['is_for_loop'] = false;
-		self::$state['each'] = null;
+		// Return to parent loop
+		if ( self::$index > 0 ) self::$index--;
+		// Or finished
+		else self::$state['is_for_loop'] = false;
 
 		return $out;
 	}
+
 
 	function each_shortcode( $atts, $content = null, $shortcode_name ) {
 
@@ -219,7 +252,10 @@ class CCS_ForEach {
 				return; // Must be inside a for loop
 
 		$field = isset($atts[0]) ? $atts[0] : 'name'; // Default: name
-        $out = isset( self::$state['each'][$field] ) ? self::$state['each'][$field] : null;
+
+		// Get term data for current nest level
+		$term = self::$current_term[ self::$index ];
+        $out = isset( $term[$field] ) ? $term[$field] : null;
 
         return $out;
 	}

@@ -7,11 +7,11 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1
-Stable tag: 1.6.8
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Display posts, pages, custom post types, fields, images, attachments, comments, files, menus, widget areas
+Display posts, pages, custom post types, fields, attachments, comments, images, files, menus, sidebars
 
 == Description ==
 
@@ -24,7 +24,6 @@ The **[content]** shortcode displays any of the following: *posts, pages, custom
 The **[loop]** shortcode performs query loops. It can display, for example, available products in a category, or excerpts from the 5 most recent posts. You can query by parameters such as: *post type, taxonomy, date,* and *field values*.
 
 There is a reference section under Settings -> Custom Content.
-
 
 = Included =  
 <br />
@@ -82,6 +81,18 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.7.0 =
+
+* [loop] - Correctly filter by taxonomy term when inside [for each], nested or not
+
+= 1.6.9 =
+
+* [for parents="true"] - Loop through parent taxonomies only
+* [for each="child"] - Loop through children of current taxonomy term; use inside a parents loop
+* [-for] - Support for nested loop
+* [-loop] - Support for nested loop
+* [taxonomy field] - Add *url* and *link* fields: display term archive URL, or term name linked to the archive
 
 = 1.6.8 =
 

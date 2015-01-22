@@ -65,26 +65,14 @@ class CCS_If {
 */
 		if (!empty($no_flag)) $flag = $no_flag;
 
-		if ( substr($shortcode_name, 0, 2)=='--' ) {
-			$else_prefix = '--';
-		} elseif ( substr($shortcode_name, 0, 1)=='-' ) {
-			$else_prefix = '-';
-		} else
-			$else_prefix = null; // Top level
-
 		$out = '';
 		$condition = false;
 		$compare = strtoupper($compare);
 
-		// Get [else] if it exists
-
-		$content_array = explode('['.$else_prefix.'else]', $content);
-		$content = $content_array[0];
-		if (count($content_array)>1) {
-			$else = $content_array[1];
-		} else {
-			$else = null;
-		}
+		// Get [else] block
+		$if_else = self::get_if_else( $content, $shortcode_name );
+		$content = $if_else['if'];
+		$else = $if_else['else'];
 
 		/*========================================================================
 		 *
@@ -133,7 +121,9 @@ class CCS_If {
 		$current_post_name = isset($post->post_name) ? $post->post_name : null;
 		$current_post_id = isset($post->ID) ? $post->ID : null;
 
-		if (!empty($flag)) {
+
+		// @todo Combine with [if field] without value
+		if ( !empty($flag) ) {
 
 			/*========================================================================
 			 *
@@ -146,7 +136,7 @@ class CCS_If {
 			} else {
 				$current_id = $current_post_id;
 			}
-			if ($flag!="image")
+			if ( $flag != 'image' )
 				$check = get_post_meta( $current_id, $flag, true );
 			else
 				$check = has_post_thumbnail( $current_id );
@@ -459,6 +449,35 @@ class CCS_If {
 	}
 
 
+	// Returns array with if and else blocks
+	public static function get_if_else( $content, $shortcode_name = '' ) {
+
+		// Get [else] if it exists
+
+		if ( substr($shortcode_name, 0, 2)=='--' ) {
+			$prefix = '--';
+		} elseif ( substr($shortcode_name, 0, 1)=='-' ) {
+			$prefix = '-';
+		} else
+			$prefix = null; // Top level
+
+		$content_array = explode('['.$prefix.'else]', $content);
+		$content = $content_array[0];
+		if ( count($content_array)>1 ) {
+			$else = $content_array[1];
+		} else {
+			$else = '';
+		}
+
+		return array(
+			'if' => $content,
+			'else' => $else
+		);
+	}
+
+
+
+	// @todo Put this in CCS_Loop or Content as general-purpose function
 	function comma_list_to_array( $string ) {
 
 		// Explode comma-separated list and trim white space
@@ -466,6 +485,8 @@ class CCS_If {
 		return array_map("trim", explode(",", $string));
 	}
 
+
+	// @todo Put this in CCS_Loop or Content as general-purpose function
 	function slug_from_id( $id ) {
 		$post_data = get_post($id);
 		if (!empty($post_data)) {
