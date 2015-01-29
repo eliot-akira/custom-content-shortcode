@@ -235,7 +235,7 @@ class CCS_Loop {
 
 			// List
 
-			'list' => 'false',
+			'list' => '',
 			'list_class' => '', 'list_style' => '',
 			'item' => '',
 			'item_class' => '', 'item_style' => '',
@@ -262,7 +262,7 @@ class CCS_Loop {
 
 
 			// ? Clarify purpose
-			'if' => '', 'list' => '', 'posts_separator' => '',
+			'if' => '', 'posts_separator' => '',
 			'variable' => '', 'var' => '',
 			'content_limit' => 0,
 			'thumbnail_size' => 'thumbnail',
@@ -1662,17 +1662,31 @@ class CCS_Loop {
 			$new_results = null;
 
 			$item_tag = !empty($parameters['item']) ? $parameters['item'] : 'li';
-			$item_class = !empty($parameters['item_class']) ? ' class="'.$parameters['item_class'].'"' : null;
-			$item_style = !empty($parameters['item_style']) ? ' style="'.$parameters['item_style'].'"' : null;
-
-			foreach ($results as $result) {
-				$new_results .= '<'.$item_tag.$item_class.$item_style.'>'.$result.'</'.$item_tag.'>';
-			}
+			$item_class = !empty($parameters['item_class']) ?
+				' class="'.$parameters['item_class'].'"' : null;
+			$item_style = !empty($parameters['item_style']) ?
+				' style="'.$parameters['item_style'].'"' : null;
 
 			$list_tag = ($parameters['list']=='true') ? 'ul' : $parameters['list'];
-			$list_class = !empty($parameters['list_class']) ? ' class="'.$parameters['list_class'].'"' : null;
-			$list_style = !empty($parameters['list_style']) ? ' style="'.$parameters['list_style'].'"' : null;
-			$result = '<'.$list_tag.$list_class.$list_style.'>'.$new_results.'</'.$list_tag.'>';
+			$list_class = !empty($parameters['list_class']) ?
+				' class="'.$parameters['list_class'].'"' : null;
+			$list_style = !empty($parameters['list_style']) ?
+				' style="'.$parameters['list_style'].'"' : null;
+
+			$parameters['item_count'] = count($results);
+
+			foreach ($results as $result) {
+				$item = '<'.$item_tag.$item_class.$item_style.'>'.$result.'</'.$item_tag.'>';
+
+				if ( !empty($parameters['paginate']) )
+					$item = '<'.$list_tag.$list_class.$list_style.'>'.$item.'</'.$list_tag.'>';
+
+				$new_results .= apply_filters( 'ccs_loop_each_item', $item, $parameters );
+			}
+
+			if ( empty($parameters['paginate']) )
+				$result = '<'.$list_tag.$list_class.$list_style.'>'.$new_results.'</'.$list_tag.'>';
+			else $result = $new_results;
 		}
 
 
