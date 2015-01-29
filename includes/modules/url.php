@@ -69,6 +69,10 @@ class CCS_URL {
 				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = content_url());
 				break;
 
+			case 'admin':
+				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = admin_url());
+				break;
+
 			case 'parent': // Parent Theme
 			case 'theme':
 				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = get_bloginfo('template_directory'));
