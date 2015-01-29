@@ -42,7 +42,8 @@ class CCS_ForEach {
 
 		$args = array(
 			'each' => '',
-			'orderby' => 'name',
+			'term' => '', 'terms' => '', // Alias
+			'orderby' => '',
 			'order' => '',
 			'count' => '',
 			'parent' => '',
@@ -76,26 +77,61 @@ class CCS_ForEach {
 			self::$index++;
 		}
 
+
+
+
 		if ($each=='tag') $each='post_tag';
 		$out = '';
 
 		// Get [else] block
-		$if_else = CCS_If::get_if_else( $content, $shortcode_name );
+		$if_else = CCS_If::get_if_else( $content, $shortcode_name, 'for-else' );
 		$content = $if_else['if'];
 		$else = $if_else['else'];
-
 
 		// Get terms according to parameters
 		// @todo Refactor - keep it DRY
 		// @todo Consolidate to CCS_Content::get_taxonomies
 
 		$query = array(
-			'orderby' => $orderby,
+			'orderby' => !empty($orderby) ? $orderby : 'name',
 			'order' => $order,
 			'number' => $count,
 			'parent' => ( $parents=='true' ) ? 0 : '', // Exclude children or not
 			'hide_empty' => ( $empty=='true' ) ? 0 : 1,
 		);
+
+
+		$term_ids = array();
+
+		if ( !empty($terms) ) $term = $terms; // Alias
+		if ( !empty($term) ) {
+
+			$terms = CCS_Loop::explode_list($term); // Multiple values support
+
+			foreach ($terms as $this_term) {
+				if ( is_numeric($this_term) ) {
+					$term_ids[] = $this_term;
+				} else {
+					/* Get term ID from slug */
+					$term_id = get_term_by( 'slug', $this_term, $each );
+					if (!empty($term_id))
+						$term_ids[] = $term_id->term_id;
+				}
+			}
+			if ($term_ids != array()) {
+				$query['include'] = $term_ids;
+			}
+			else {
+				// Nothing found
+
+				// Return to parent loop
+				if ( self::$index > 0 ) self::$index--;
+				// Or finished
+				else self::$state['is_for_loop'] = false;
+				return do_shortcode($else);
+			}
+		}
+
 
 		if ( CCS_Loop::$state['is_loop'] || ($current=="true")) {
 
@@ -166,6 +202,19 @@ class CCS_ForEach {
 			}
 		}
 
+		if ($term_ids != array()) {
+
+			$new_taxonomies = array();
+			// Sort terms according to given ID order: get_terms doesn't do order by ID
+			foreach ($term_ids as $term_id) {
+				foreach ($taxonomies as $term_object) {
+					if ($term_object->term_id == $term_id)
+						$new_taxonomies[] = $term_object;
+				}
+			}
+			$taxonomies = $new_taxonomies;
+		}
+
 		// Array and not empty
 		if ( is_array($taxonomies) && ( $taxonomies != array() ) ) {
 
@@ -210,7 +259,6 @@ class CCS_ForEach {
 					$each_term['name-link'] = $each_term['link'];
 
 					// Replace {TAGS}
-
 					// @todo Use a general-purpose function in CCS_Loop for replacing tags
 
 					$replaced_content = str_replace('{TERM}',

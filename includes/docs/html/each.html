@@ -25,6 +25,8 @@ Available parameters for the <b>[for]</b> shortcode are:
 	<li><b>exclude</b> - exclude taxonomy term by ID or slug; <i>exlude="uncategorized"</i></li>
 	<li><b>empty</b> - set <i>true</i> to include terms that have no associated posts; use outside the loop</li>
 </ul><ul>
+  <li><b>term/terms</b> - specify which term(s) to get, by ID or slug; can be a comma-separated list</li>
+</ul><ul>
 	<li><b>orderby</b> - order by <i>name</i> (default), <i>count</i> (post count), <i>id</i>, or <i>slug</i></li>
 	<li><b>order</b> - <i>ASC</i> (ascending - default), or <i>DESC</i> (descending)</li>
 </ul><ul>
@@ -68,6 +70,18 @@ Outside the loop, the <b>[for]</b> shortcode gets all terms that have any posts 
 </code><br>
 
 <hr>
+<h3>No term</h3>
+
+To display something if there's no term found, use <b>[for-else]</b>.
+
+<code>[for each="category" current="true"]
+&nbsp;&nbsp;&nbsp;&nbsp;[each link]
+[for-else]
+&nbsp;&nbsp;&nbsp;&nbsp;No category found
+[/for]
+</code><br>
+
+<hr>
 <h3>Child terms</h3>
 
 To display child terms separately from parents, use a nested <b>[for]</b> loop.
@@ -78,6 +92,19 @@ To display child terms separately from parents, use a nested <b>[for]</b> loop.
 &nbsp;&nbsp;&nbsp;&nbsp;[-for each="child"]
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Child: [-each link]
 &nbsp;&nbsp;&nbsp;&nbsp;[/-for]
+[/for]
+</code>
+You can use <b>[if children]</b> to display something only if the current term has child terms.
+
+<code>[for each="category"]
+&nbsp;&nbsp;&nbsp;&nbsp;[if children]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Parent: [each link]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-for each="child"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Child: [-each link]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/-for]
+&nbsp;&nbsp;&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[each link]
+&nbsp;&nbsp;&nbsp;&nbsp;[/if]
 [/for]
 </code><br>
 

@@ -203,6 +203,25 @@ class CCS_If {
 
 		}
 
+		/*---------------------------------------------
+		 *
+		 * Check if current term in the for loop has children
+		 *
+		 */
+		
+
+		if ( isset($atts['children']) && CCS_ForEach::$state['is_for_loop'] ) {
+			$current_term = CCS_ForEach::$current_term[ CCS_ForEach::$index ];
+			$current_taxonomy = $current_term['taxonomy'];
+
+			$terms = get_terms( $current_taxonomy, array('parent' => $current_term['id']) );
+
+			if (!empty($terms) && $terms!=array())
+				$condition = true;
+			else $condition = false;
+		}
+
+
 
 		/*========================================================================
 		 *
@@ -369,11 +388,12 @@ class CCS_If {
 
 		/*---------------------------------------------
 		 *
-		 * If children
+		 * If child post exists
 		 *
 		 */
 		
-		if (isset($atts['children'])) {
+		if ( isset($atts['children']) && !CCS_ForEach::$state['is_for_loop'] ) {
+
 			if (!empty($post)) {
 				$children_array = get_children( array(
 						'post_parent' => $post->ID,
@@ -450,7 +470,7 @@ class CCS_If {
 
 
 	// Returns array with if and else blocks
-	public static function get_if_else( $content, $shortcode_name = '' ) {
+	public static function get_if_else( $content, $shortcode_name = '', $else_name = '' ) {
 
 		// Get [else] if it exists
 
@@ -461,7 +481,12 @@ class CCS_If {
 		} else
 			$prefix = null; // Top level
 
-		$content_array = explode('['.$prefix.'else]', $content);
+		if (empty($else_name))
+			$else_name = $prefix.'else';
+		else
+			$else_name = $prefix.$else_name;
+
+		$content_array = explode('['.$else_name.']', $content);
 		$content = $content_array[0];
 		if ( count($content_array)>1 ) {
 			$else = $content_array[1];
