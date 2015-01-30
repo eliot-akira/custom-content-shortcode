@@ -417,7 +417,13 @@ class CCS_If {
 			$condition = !empty($result);
 		}
 		
-		
+
+		// Has CCS gallery field
+
+		if ( isset($atts['gallery']) && class_exists('CCS_Gallery_Field')) {
+			$condition =  CCS_Gallery_Field::has_gallery();
+		}		
+
 		/*========================================================================
 		 *
 		 * Template: home, archive, single..
@@ -428,16 +434,11 @@ class CCS_If {
 		$condition = isset($atts['home']) ? is_front_page() : $condition;
 		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : $condition;
 		$condition = isset($atts['image']) ? has_post_thumbnail() : $condition;
-
-		if ( isset($atts['gallery']) && class_exists('CCS_Gallery_Field')) {
-
-			$condition =  CCS_Gallery_Field::has_gallery();
-		}
-
 		$condition = isset($atts['loop']) ? ( CCS_Loop::$state['is_loop'] ) : $condition;
 		$condition = isset($atts['archive']) ? is_archive() : $condition;
 		$condition = isset($atts['single']) ? is_single() : $condition;
 		$condition = isset($atts['search']) ? is_search() : $condition;
+		$condition = isset($atts['404']) ? is_404() : $condition;
 		$condition = isset($atts['none']) ? !have_posts() : $condition;
 
 		if (isset($atts['tax_archive'])) {
