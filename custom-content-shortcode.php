@@ -3,7 +3,7 @@
 Plugin Name: Custom Content Shortcode
 Plugin URI: http://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 1.7.3
+Version: 1.7.4-beta
 Shortcodes: loop, content, field, taxonomy, if, for, each, comments, user, url, load
 Author: Eliot Akira
 Author URI: eliotakira.com
@@ -44,18 +44,15 @@ class CCS_Plugin {
 
 			// Default settings
 
-			self::$settings['load_acf_module'] = 'on';
+			self::$settings['load_acf_module']       = 'on';
 			self::$settings['load_bootstrap_module'] = 'on';
-			self::$settings['load_file_loader'] = 'on';
-			self::$settings['load_gallery_field'] = 'on';
-
-			self::$settings['load_mobile_detect'] = 'off';
-
-			self::$settings['shortcodes_in_widget'] = 'on';
-
-			self::$settings['raw_shortcode'] = 'off';
-			self::$settings['move_wpautop'] = 'off';
-			self::$settings['shortcode_unautop'] = 'off';
+			self::$settings['load_file_loader']      = 'on';
+			self::$settings['load_gallery_field']    = 'on';
+			self::$settings['load_mobile_detect']    = 'off';
+			self::$settings['shortcodes_in_widget']  = 'on';
+			self::$settings['raw_shortcode']         = 'off';
+			self::$settings['move_wpautop']          = 'off';
+			self::$settings['shortcode_unautop']     = 'off';
 
 			update_option( $option_key, self::$settings );
 		}
@@ -70,7 +67,7 @@ class CCS_Plugin {
 
 	function load_module( $module ) {
 
-		require_once (CCS_PATH.'/includes/'.$module.'.php');
+		require_once ( CCS_PATH.'/includes/'.$module.'.php' );
 
 	}
 
@@ -91,6 +88,8 @@ class CCS_Plugin {
 			'modules/user',			// User shortcodes
 			'optional/wck',			// WCK support
 		//	'widget'				// Widget shortcode (not ready)
+
+			'optional/shortcake',	// Shortcake: shortcode UI @testing
 		);
 
 		foreach ($modules as $module) {
