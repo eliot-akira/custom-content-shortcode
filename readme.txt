@@ -82,8 +82,9 @@ Support for other plugins:
 
 == Changelog ==
 
-= 1.7.4-beta =
+= 1.7.4 =
 
+* [attached] - Improve processing of gallery field
 * Testing integration with Shortcake
 
 = 1.7.3 =

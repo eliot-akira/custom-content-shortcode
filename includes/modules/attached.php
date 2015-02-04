@@ -31,71 +31,80 @@ class CCS_Attached {
 		);
 		extract( shortcode_atts( $args , $atts, true ) );		
 
-		$attachment_ids = array();
-		$out = array();
-		$current_id = get_the_ID();
+		/*---------------------------------------------
+		 *
+		 * Get attachments
+		 *
+		 */
 
-		$attach_args = array (
-			'post_parent' => $current_id,
-			'post_type' => 'attachment',
-			'post_status' => 'any',
-			'posts_per_page' => '-1' // Get all attachments
-			);
+		$attachment_ids = array();
+		$current_id = get_the_ID();
 
 		if ( isset($atts[0]) && ($atts[0]=='gallery') ){
 
 			// Get attachment IDs from gallery field
-			$gallery_field_ids = CCS_Gallery_Field::get_image_ids( $current_id );
-
-			if (count($gallery_field_ids)==0) {
-
-				return null; // No images in gallery field
-			}
-
-			unset($attach_args['post_parent']);
-
-			$attach_args['post__in'] = $gallery_field_ids;
-			$attach_args['orderby'] = 'post__in'; // Preserve ID order
+			$attachment_ids = CCS_Gallery_Field::get_image_ids( $current_id );
 
 		} else {
-			if (empty($orderby)) $orderby = 'date';
-			$attach_args['orderby'] = $orderby;
-			if (($orderby=='title')&&(empty($order)))
-				$order='ASC'; // default for titles
-		}
 
-		if (!empty($order)) $attach_args['order'] = $order;
-		if (!empty($category)) $attach_args['category'] = $category;
-		if (!empty($count)) $attach_args['posts_per_page'] = $count;
-		if (!empty($offset)) $attach_args['offset'] = $offset;
+			$attach_args = array (
+				'post_parent' => $current_id,
+				'post_type' => 'attachment',
+				'post_status' => 'any',
+				'posts_per_page' => '-1' // Get all attachments
+			);
 
-		// Get attachments for current post
+			// default orderby
+			$attach_args['orderby'] = empty($orderby) ? 'date' : $orderby;
 
-		$posts = get_posts($attach_args);
+			// default for titles
+			if ( $orderby == 'title' ) $order = empty($order) ? 'ASC' : $order;
 
-		$index = 0;
-		foreach( $posts as $post ) {
-			$attachment_id = $post->ID;
-			$attachment_ids[$index] = $attachment_id; // Keep it in order
-			$index++;
-		}
+			if (!empty($order)) $attach_args['order'] = $order;
+			if (!empty($category)) $attach_args['category'] = $category;
+			if (!empty($count)) $attach_args['posts_per_page'] = $count;
+			if (!empty($offset)) $attach_args['offset'] = $offset;
 
-		if ((!empty($posts)) && (!empty($attachment_ids))) { 
+			// Get attachments for current post
 
-			self::$state['is_attachment_loop'] = true;
+			$posts = get_posts($attach_args);
 
-//			if (strpos($content, 'image') !== false)
-//			$image_sizes = get_intermediate_image_sizes();
-
-			foreach ( $attachment_ids as $index => $attachment_id ) {
-
-				self::$state['current_attachment_id'] = $attachment_id;
-
-				$out[] = do_shortcode( $content );
-
+			$index = 0;
+			foreach( $posts as $post ) {
+				$attachment_ids[$index] = $post->ID; // Keep it in order
+				$index++;
 			}
+		}
 
-		} // End: not empty post and attachments exist
+		// If no images in gallery field
+		if (count($attachment_ids)==0) return null; 
+
+
+		/*---------------------------------------------
+		 *
+		 * Compile template
+		 *
+		 */
+
+		$out = array();
+
+		self::$state['is_attachment_loop'] = true;
+
+		foreach ( $attachment_ids as $index => $attachment_id ) {
+
+			self::$state['current_attachment_id'] = $attachment_id;
+
+			$out[] = do_shortcode( $content );
+
+		}
+
+		self::$state['is_attachment_loop'] = false;
+
+		/*---------------------------------------------
+		 *
+		 * Post-process
+		 *
+		 */
 
 		if (!empty($columns)) {
 			$out = CCS_Loop::render_columns( $out, $columns, $pad, $between );
@@ -107,7 +116,6 @@ class CCS_Attached {
 			}
 		}
 
-		self::$state['is_attachment_loop'] = false;
 		return $out;
 	}
 
