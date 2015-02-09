@@ -89,7 +89,7 @@ class CCS_Plugin {
 			'optional/wck',			// WCK support
 		//	'widget'				// Widget shortcode (not ready)
 
-			'optional/shortcake',	// Shortcake: shortcode UI @testing
+//			'optional/shortcake',	// Shortcake: shortcode UI @testing
 		);
 
 		foreach ($modules as $module) {
