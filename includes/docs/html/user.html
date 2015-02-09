@@ -80,7 +80,7 @@ Use <b>[if]</b> to check that a user field is not empty, or has specific value.
 	<li><b>include</b> - include users by ID</li>
 	<li><b>exclude</b> - exclude users by ID</li>
 </ul><ul>
-	<li><b>orderby</b> - ID, display_name, name, login, email, url, registered, post_count</li>
+	<li><b>orderby</b> - ID, display_name, name, login, email, url, registered, post_count, field, field_num</li>
 	<li><b>order</b> - <i>ASC</i> - alphabetical (default) or <i>DESC</i> (new to old) </li>
 </ul><ul>
 	<li><b>number</b> - maximum number of returned results</li>
@@ -96,6 +96,19 @@ Use <b>[if]</b> to check that a user field is not empty, or has specific value.
 	<li><b>blog_id</b> - blog ID on a multisite</li>
 
 </ul>
+<hr>
+
+<h3>Sort by user field</h3>
+
+<h4>Field value is string</h4>
+
+<code>[users orderby="field" field="twitter"]</code>
+
+<h4>Field value is number</h4>
+
+<code>[users orderby="field_num" field="position"]</code>
+
+
 <br>
 <a id="user-status" href="#"></a>
 <h3 align="center">User status</h3>

@@ -82,9 +82,10 @@ Support for other plugins:
 
 == Changelog ==
 
-= 1.7.4-beta =
+= 1.7.4 =
 
-* Testing integration with Shortcake
+* [attached] - Preserve image order of gallery fields
+* [users] - Support order by field value, string or number
 
 = 1.7.3 =
 

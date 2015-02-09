@@ -2,7 +2,10 @@
 
 /*========================================================================
  *
- * User shortcodes: user, is/isnt, list_shortcodes, search_form, blog
+ * User shortcodes: users, user, is/isnt
+ * 
+ * @todo Move these elsewhere
+ * Other shortcodes: list_shortcodes, search_form, blog
  *
  */
 
@@ -48,7 +51,26 @@ class CCS_User {
 		$args = array();
 
 		// Just pass these
-		$pass_args = array('orderby','search','number','offset');
+		$pass_args = array('orderby','search','number','offset','meta_key');
+
+		// Order by field value
+
+		$sort_field_num = false;
+		if ( isset($atts['orderby']) && isset($atts['field'])
+			&& ( $atts['orderby']=='field' || $atts['orderby']=='field_num' ) ) {
+
+			if ( $atts['orderby']=='field' ) {
+				$atts['orderby'] = 'meta_value';
+				$atts['meta_key'] = $atts['field'];
+			} else {
+				// Sort by field value number
+				$sort_field_num = $atts['field'];
+			}
+
+			unset($atts['orderby']);
+			unset($atts['field']);
+		}
+
 
 		foreach ($pass_args as $arg) {
 			if (isset($atts[$arg]))
@@ -114,13 +136,37 @@ class CCS_User {
 
 		$users = get_users( $args );
 
-
-		/*========================================================================
+		
+		/*---------------------------------------------
 		 *
-		 * Custom query to filter results
+		 * Filter results
 		 *
 		 */
 		
+		// Sort by field value number
+		if ( $sort_field_num !== false ) {
+			// This is necessary because get_users doesn't do meta_value_num query
+			$new_users = array();
+
+			foreach ( $users as $user ) {
+
+				$key = $user->get( $sort_field_num );
+				$new_users[] = array(
+					'user' => $user,
+					'key' => $key
+				);
+			}
+
+			usort($new_users, array(__CLASS__, 'sortByFieldNum'));
+
+			$users = array();
+			foreach ( $new_users as $user_array ) {
+				$users[] = $user_array['user'];
+			}
+			
+		}
+
+
 		// Users Loop
 		foreach ( $users as $user ) {
 			self::$state['current_user_object'] = $user;
@@ -131,6 +177,9 @@ class CCS_User {
 		return implode('', $outputs);
 	}
 
+	public static function sortByFieldNum($a, $b) {
+	    return $a['key'] - $b['key'];
+	}
 
 
 	/*========================================================================
