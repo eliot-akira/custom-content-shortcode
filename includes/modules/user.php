@@ -159,6 +159,9 @@ class CCS_User {
 
 			usort($new_users, array(__CLASS__, 'sortByFieldNum'));
 
+			if (isset($args['order']) && $args['order'] == 'DESC')
+				$new_users = array_reverse($new_users);
+
 			$users = array();
 			foreach ( $new_users as $user_array ) {
 				$users[] = $user_array['user'];
@@ -178,7 +181,7 @@ class CCS_User {
 	}
 
 	public static function sortByFieldNum($a, $b) {
-	    return $a['key'] - $b['key'];
+	    return intval( $a['key'] ) - intval( $b['key'] );
 	}
 
 
