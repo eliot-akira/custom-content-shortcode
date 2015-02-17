@@ -45,7 +45,7 @@ class CCS_Plugin {
 			// Default settings
 
 			self::$settings['load_acf_module']       = 'on';
-			self::$settings['load_bootstrap_module'] = 'on';
+			self::$settings['load_bootstrap_module'] = 'off';
 			self::$settings['load_file_loader']      = 'on';
 			self::$settings['load_gallery_field']    = 'on';
 			self::$settings['load_mobile_detect']    = 'off';
@@ -111,13 +111,13 @@ class CCS_Plugin {
 
 			// Option name => module name
 
-			'load_acf_module'		=> 'optional/acf',			// Advanced Custom Fields support
-			'load_bootstrap_module'	=> 'optional/bootstrap',	// Bootstrap support
-			'load_gallery_field'	=> 'optional/gallery',		// Gallery field
-			'load_file_loader'		=> 'optional/load',			// Load HTML, CSS, JS fields
-			'load_mobile_detect'	=> 'optional/mobile',		// Mobile detect shortcodes
-			'raw_shortcode'			=> 'optional/raw',			// [raw]
-			'shortcode_unautop'		=> 'optional/unautop',		// Shortcode unautop
+      'load_acf_module'       => 'optional/acf',			  // Advanced Custom Fields support
+      'load_bootstrap_module' => 'optional/bootstrap',  // Bootstrap support
+      'load_gallery_field'    => 'optional/gallery',		// Gallery field
+      'load_file_loader'      => 'optional/load',			  // Load HTML, CSS, JS fields
+      'load_mobile_detect'    => 'optional/mobile',		  // Mobile detect shortcodes
+      'raw_shortcode'         => 'optional/raw',        // [raw]
+      'shortcode_unautop'     => 'optional/unautop',    // Shortcode unautop
 		);
 
 		foreach ($optional_modules as $option => $module) {
@@ -201,10 +201,10 @@ if (!function_exists('start_short')) {
 		ob_start();
 	}
 }
+
 if (!function_exists('end_short')) {
 	function end_short() {
-		$out = ob_get_clean();
-		do_short($out);
+		do_short( ob_get_clean() );
 	}
 }
 
