@@ -715,8 +715,8 @@ class CCS_Content {
 		// Format ACF date field
 
 		if (!empty($parameters['acf_date'])) {
-			if ( class_exists('acf_field_date_picker') ) {
-				$result = get_field( $parameters['field'], $post_id = false, $format_value = true );
+			if ( function_exists('get_field') ) {
+				$result = get_field( $parameters['field'], $post_id = false, $format_value = false );
 			}
 		}
 

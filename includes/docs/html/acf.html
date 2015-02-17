@@ -6,11 +6,21 @@
 
 Use the <i>acf_date</i> parameter to query the date field.
 
-<code>[loop type="event" acf_date="date_field" value="future"]</code><br>
+<code>[loop type="event" acf_date="date_field" value="future"]</code>
 
 Use the <i>acf_date</i> parameter to display the date field with the selected formatting.
 
-<code>[field acf_date="date_field"]</code><br>
+<code>[field acf_date="date_field"]</code>
+
+<b>Date and time field</b>
+
+For fields created with ACF Date & Time Picker, it works best if you save as timestamp and use the <i>field</i> parameter for loop.
+
+<code>[loop type="event" field="date_and_time_field" value="future"]</code>
+
+To display the field formatted, you can still use the <i>acf_date</i> parameter.
+
+<code>[field acf_date="date_and_time_field"]</code><br>
 
 <hr>
 

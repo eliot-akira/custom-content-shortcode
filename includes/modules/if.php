@@ -50,7 +50,8 @@ class CCS_If {
 
 			'field' => '',
 			'user_field' => '',
-			'value' => '',
+      'value' => '',
+      'lowercase' => '',
 
 			'not' => '',
 			'start' => '',
@@ -264,10 +265,13 @@ class CCS_If {
 
 						foreach ($check as $check_this) {
 
-							if ($start=='true') {
+							if ( $start == 'true' ) {
+
 								// Only check beginning of field value
 								$check_this = substr($check_this, 0, strlen($this_value));
 							}
+
+              if ($lowercase == 'true') $check_this = strtolower($check_this);
 
 							if ($compare == 'OR') {
 								$condition = ($this_value==$check_this) ? true : $condition;
