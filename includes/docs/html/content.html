@@ -60,10 +60,11 @@ You can display custom fields as well as predefined fields:
 	<li><b>words</b> or <b>length</b> - limit output by number of words or characters</li>
 	<li><b>class</b> - add &lt;div&gt; class to the output</li>
 	<li><b>format</b> - add paragraph tags &lt;p&gt; and preserve line breaks &lt;br&gt; - set to <i>true</i>/<i>false</i> - by default, post content is formatted and for all other fields, it's set to <i>false</i></li>
-	<li><b>date_format</b> - use a custom format when displaying <i>field="date"</i>, <i>"modified", or a custom field</i></li>
 	<li><b>embed</b> - auto-embed URLs like YouTube, Vimeo, etc - set to <i>true</i>/<i>false</i> - by default, such URLs in post content are auto-embedded</li>
 
-	For example, "d.m.Y" will display as <i>18.11.2013</i>. Use double backslashes to escape characters - "Y/m/d \\a\\t g:i A" will show as <i>2013/11/17 at 11:06 PM</i>. <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Codex: Formatting Date and Time</a>
+  <li><b>date_format</b> - use a custom format when displaying <i>field="date"</i>, <i>"modified", or a custom field</i></li>
+	
+	For example, "d.m.Y" will display as <i>18.11.2013</i>. Please refer to the codex: <a href="http://codex.wordpress.org/Formatting_Date_and_Time" target="_blank">Formatting Date and Time</a>. Note: instead of backslash, use double slashes to escape characters - "Y/m/d //a//t g:i A" will show as <i>2013/11/17 at 11:06 PM</i>.
 
 	To format a unix timestamp value, use: <i>in="timestamp"</i>
 	</li>

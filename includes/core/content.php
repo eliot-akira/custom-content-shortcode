@@ -201,11 +201,9 @@ class CCS_Content {
 		if (!empty($parameters['acf_date']))
 			$parameters['field'] = $parameters['acf_date'];
 
-
 		// Merge with defaults
 
 		$parameters = shortcode_atts($defaults, $parameters);
-
 
 		/*========================================================================
 		 *
@@ -258,9 +256,15 @@ class CCS_Content {
 			$parameters['id'] = CCS_To_WCK::$state['current_wck_post_id'];
 		}
 
+    // HTML escape
 		if ( $parameters['escape'] == 'true' && empty($parameters['shortcode']) ) {
 			$parameters['shortcode'] = 'false';
 		}
+
+    // Date format: allow escape via "//" because "\" disappears in shortcode parameters
+    if ( !empty($parameters['date_format']) ) {
+      $parameters['date_format'] = str_replace("//", "\\", $parameters['date_format']);
+    }
 
 		return $parameters;
 	}
@@ -734,6 +738,7 @@ class CCS_Content {
 
 			if ($parameters['date_format']=='true') 
 				$parameters['date_format'] = get_option('date_format');
+
 
 			$result = mysql2date($parameters['date_format'], $result);
 
