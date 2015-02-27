@@ -62,6 +62,26 @@ If you're passing a field that could be empty, specify the <i>empty</i> paramete
 
 This is necessary because if the value is empty, the [if] statement by default only checks to see if the field exists.<br>
 <hr>
+
+<h3>Check passed field value</h3>
+
+<code>[pass field="some_field"]
+&nbsp;&nbsp;[if pass="{FIELD}" value="blue"]
+&nbsp;&nbsp;&nbsp;&nbsp;It's blue.
+&nbsp;&nbsp;[/if]
+[/pass]</code>
+
+<h4>Check if passed field value is not empty</h4>
+
+<code>[pass field="some_field"]
+&nbsp;&nbsp;[if pass="{FIELD}" pass_empty="false"]
+&nbsp;&nbsp;&nbsp;&nbsp;The field is not empty.
+&nbsp;&nbsp;[/if]
+[/pass]</code>
+
+
+<hr>
+
 <h3>Field loop</h3>
 
 You can loop through a comma-separated list stored in a field, and pass each item.
@@ -139,8 +159,31 @@ For further flexibility, you can pass multiple items for each loop.
 &nbsp;&nbsp;[/loop]
 [/pass]</code>
 
-<br>
+<hr>
 
+<h3>Pass global variable</h3>
+
+To pass a global variable or its array value, use the <i>global</i> parameter.
+
+<code>[pass global="_GET" field="q"]
+&nbsp;&nbsp;Current URL request: {FIELD}
+[/pass]</code>
+
+<h4>If the global variable is a nested array</h4>
+
+<code>[pass global="first_array" field="second_array" sub="field_name"]
+&nbsp;&nbsp;Here it is: {FIELD}
+[/pass]</code>
+
+<h4>If the global variable is not an array</h4>
+
+<code>[pass global="some_var" field="this"]
+&nbsp;&nbsp;Variable value: {FIELD}
+[/pass]</code>
+
+
+
+<br>
 <h3 align="center">Other notes</h3>
 <hr>
 <h3>Search form</h3>

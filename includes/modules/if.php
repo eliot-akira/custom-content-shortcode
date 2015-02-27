@@ -57,6 +57,9 @@ class CCS_If {
 
 			'not' => '',
 			'start' => '',
+
+      'pass' => '',
+      'pass_empty' => 'true',
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -458,6 +461,24 @@ class CCS_If {
 			if ($tax_archive == 'true') $tax_archive = '';
 			$condition = is_tax( $tax_archive );
 		}
+
+
+    /*---------------------------------------------
+     *
+     * Passed value
+     *
+     */
+    
+    if ( !empty($pass) || ($pass_empty!='true') ) {
+
+      if ( ($pass_empty!='true') && empty($pass) ) {
+          $condition = false;
+      } elseif ( !empty($value) ) {
+        $condition = ($pass == $value);
+      } else {
+        $condition = true;
+      }
+    }
 
 
 		/*========================================================================

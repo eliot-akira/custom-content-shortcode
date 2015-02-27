@@ -1888,7 +1888,10 @@ class CCS_Loop {
 			'post_render' => 'true', 	// do_shortcode at the end
 
 			'trim' => 'false',
-			'count' => '9999'			// Max number of taxonomy terms
+			'count' => '9999',			// Max number of taxonomy terms
+
+      'global' => '',
+      'sub' => ''
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -1907,17 +1910,28 @@ class CCS_Loop {
 		}
 
 
-		/*========================================================================
-		 *
-		 * Pass single field to {FIELD}
-		 *
-		 */
+    /*---------------------------------------------
+     *
+     * Pass single field to {FIELD}
+     *
+     */
 
 		if ( !empty($field) ) {
 
 			if ($field=='gallery') $field = '_custom_gallery'; // Support CCS gallery field
 
-			if (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true') {
+      if ( !empty($global) ) {
+
+        $field_value = '';
+        if ( $field == 'this' ) {
+          $field_value = $GLOBALS[$global];
+        } elseif ( !empty($sub) && isset($GLOBALS[$global][$field][$sub]) ) {
+          $field_value = $GLOBALS[$global][$field][$sub];
+        } elseif (isset($GLOBALS[$global][$field])) {
+          $field_value = $GLOBALS[$global][$field];
+        }
+
+			} elseif (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true') {
 				// Repeater or flexible content field: then get sub field
 				if (function_exists('get_sub_field')) {
 					$field_value = get_sub_field( $field );
@@ -2117,6 +2131,7 @@ class CCS_Loop {
 			}
 
 			$content = $contents;
+
 		}
 
 		if ( !empty($fields) ) {

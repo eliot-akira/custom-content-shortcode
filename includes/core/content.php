@@ -1499,15 +1499,20 @@ class CCS_Content {
 
 		extract( shortcode_atts( array(
 			'each'  => 'false', // Loop through each array
-			'debug' => 'false' // Print array for debug purpose
+			'debug' => 'false', // Print array for debug purpose
+      'global' => ''
 		), $atts ) );
+
+    if (!empty($global)) $atts[0] = 'GLOBAL';
 
 		if ( isset($atts) && !empty($atts[0]) ) {
 
 			$field = $atts[0];
 
-			if ( class_exists('CCS_To_ACF')
-				&& CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true' ) {
+			if ( class_exists('CCS_To_ACF') &&
+        CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true' &&
+        $field != 'GLOBAL'
+        ) {
 //				&& CCS_To_ACF::$state['is_relationship_loop']!='true' ) {
 
 				// Inside ACF repeater/flex
@@ -1518,8 +1523,16 @@ class CCS_Content {
 
 			} else {
 
-				// Normal field
-				$array = get_post_meta( get_the_ID(), $field, true );
+        if ( $field == 'GLOBAL' ) {
+          $array = $GLOBALS[$global];
+          if (!is_array($array)) {
+            $array = array('value'=>$array);
+          }
+
+        } else {
+          // Normal field
+          $array = get_post_meta( get_the_ID(), $field, true );
+        }
 
 				// IF value is not array
 				if ( !empty($array) && !is_array($array)) {
