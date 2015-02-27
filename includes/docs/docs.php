@@ -158,7 +158,7 @@ class CCS_Docs {
 
 		<tr>
 			<td>
-				<hr class="setting-section">
+				<hr style="margin-bottom:20px">
 				<input type="checkbox" value="on" name="ccs_content_settings[raw_shortcode]"
 					<?php checked( $raw_shortcode, 'on' ); ?>
 				/>
@@ -174,7 +174,7 @@ class CCS_Docs {
 				&nbsp;&nbsp;Enable shortcodes inside Text widget
 			</td>
 		</tr>
-
+<!--
 		<tr>
 			<td class="grey">
 				<hr class="setting-section">
@@ -192,7 +192,7 @@ class CCS_Docs {
 				&nbsp;&nbsp;Move <i>wp_autop</i> to after shortcodes - <i>No longer recommended</i></i>
 			</td>
 		</tr>
-
+-->
 		<?php
 
 	}
@@ -295,7 +295,7 @@ class CCS_Docs {
 							'other', 'settings' );
 
 		?>
-			<div class="wrap">
+			<div class="wrap" style="opacity:0">
 			<h1 class="plugin-title">Custom Content Shortcode</h1>
 			<br>
 
@@ -344,11 +344,14 @@ class CCS_Docs {
 
 					// Show the doc file for active tab
 
-					echo wpautop(
-						@file_get_contents(
-								dirname(__FILE__) .'/html/' . strtolower($active_tab) . '.html'
-							)
-					);
+          $doc_file = dirname(__FILE__) .'/html/' . strtolower($active_tab) . '.html';
+
+          if ( ! file_exists($doc_file) ) {
+            $doc_file = dirname(__FILE__) .'/html/welcome.html';
+            $active_tab = 'welcome';
+          }
+
+          echo wpautop( @file_get_contents( $doc_file ) );
 				}
 
 				if ( $active_tab == 'welcome' ) {

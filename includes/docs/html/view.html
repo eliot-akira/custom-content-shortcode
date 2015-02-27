@@ -35,7 +35,7 @@ They can also be loaded from a number of places.
 
 <ul>
 	<li><b>Custom post type</b>: [content type="template" name="home-page"]</li>
-	<li><b>Custom field</b>: [field code_block]</li>
+	<li><b>Custom field</b>: [field code_block shortcode="true"]</li>
 	<li><b>Sidebar</b>: <a href="options-general.php?page=ccs_reference&tab=settings"><i>Enable shortcodes inside Text widget</i></a></li>
 	<li><b>File</b>: [load dir="views" file="recent-posts.html"]</li>
 </ul>
@@ -43,7 +43,7 @@ They can also be loaded from a number of places.
 There are a couple points to keep in mind:
 
 <ul>
-	<li>The content of the post editor is automatically formatted, which can create unwanted tags inside multi-line shortcodes. Try wrapping the section with the <a href="options-general.php?page=ccs_reference&tab=other#raw">[raw] shortcode</a> to prevent this.</li>
+	<li>The content of the post editor is automatically formatted, which can create unwanted tags inside multi-line shortcodes. Wrap the section with the <a href="options-general.php?page=ccs_reference&tab=other#raw">[raw] shortcode</a> to prevent this.</li>
 	<li><b>Don't use the Visual mode</b> when editing HTML, as the code can sometimes be wrongly interpreted. You can disable the visual editor per page or post type with the plugin <a target="_blank" href="http://wordpress.org/plugins/raw-html/">Raw HTML</a>, or move the code outside the post content with one of the methods above.</li>
 </ul>
 

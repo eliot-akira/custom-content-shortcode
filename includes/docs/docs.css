@@ -4,6 +4,12 @@
 	margin-left: -5px;
 	max-width: 760px; /*margin: 0 auto;*/
 	font-weight: 300;
+  opacity: 1 !important;
+
+  -webkit-transition: opacity 100ms;
+  -moz-transition: opacity 100ms;
+  -o-transition: opacity 100m;
+  transition: opacity 100ms;
 }
 .wrap .plugin-title {
 	font-size: 2.2em;
