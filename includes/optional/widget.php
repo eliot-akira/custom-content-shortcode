@@ -27,7 +27,7 @@ class CCS_Widget {
 		extract( shortcode_atts( $default_args, $atts ) );
 /*
         if ( is_array( $atts ) ) {
-            $atts = array_flip( $atts );
+            $atts = CCS_Content::get_all_atts( $atts );
         }
 */
 		if (empty($instance)) {

@@ -62,8 +62,8 @@ class CCS_Comments {
 				$atts = array('content'); // Default field
 			}
 
-			if( is_array( $atts ) )
-				$atts = array_flip( $atts ); // check for parameters without value
+      // Check for parameters without value
+			if(is_array($atts))	$atts = CCS_Content::get_all_atts( $atts );
 
 			$post_id = $comment->comment_post_ID;
 

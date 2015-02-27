@@ -35,7 +35,8 @@ class CCS_URL {
 
 		$arg = $atts[0];
 
-        if ( is_array($atts ) ) $atts = array_flip( $atts ); // Allow checking empty parameters
+    // Allow checking empty parameters
+    if ( is_array($atts) ) $atts = CCS_Content::get_all_atts( $atts ); 
 
         // Find where to go after login/out
 

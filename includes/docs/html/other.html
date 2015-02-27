@@ -25,7 +25,7 @@ Available parameters:
 To protect a page section from default formatting, wrap it in the [raw] shortcode.
 
 <code>[raw]
-&nbsp;&nbsp;&nbsp;&nbsp;This area will not have &lt;p&gt; or &lt;br&gt; tags added.
+&nbsp;&nbsp;This area will not have &lt;p&gt; or &lt;br&gt; tags added.
 [/raw]</code>
 
 This feature can be enabled under <a href="options-general.php?page=ccs_reference&tab=settings">Settings</a>. If you have the <a target="_blank" href="http://wordpress.org/plugins/raw-html/">Raw HTML</a> plugin installed, it has the same shortcode so you can disable this setting.
@@ -41,14 +41,26 @@ Use the <b>[pass] </b>shortcode to pass a field value to another shortcode.
 <h4>Display a map according to the address entered in a custom field</h4>
 
 <code>[pass field="address"]
-&nbsp;&nbsp;&nbsp;&nbsp;[google_map address="{FIELD}"]
+&nbsp;&nbsp;[google_map address="{FIELD}"]
 [/pass]</code>
 
 <h4>Pass image IDs in the gallery field</h4>
 
 <code>[pass field="gallery"]
-&nbsp;&nbsp;&nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
-[/pass]</code><br>
+&nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
+[/pass]</code>
+
+<h3>Pass field value to [if]</h3>
+
+If you're passing a field that could be empty, specify the <i>empty</i> parameter with the [if] statement.
+
+<code>[pass field="id_field"]
+&nbsp;&nbsp;[if user_field="id" value="{FIELD}" empty="false"]
+&nbsp;&nbsp;&nbsp;&nbsp;You're the user we're looking for.
+&nbsp;&nbsp;[/if]
+[/pass]</code>
+
+This is necessary because if the value is empty, the [if] statement by default only checks to see if the field exists.<br>
 <hr>
 <h3>Field loop</h3>
 
@@ -57,10 +69,10 @@ You can loop through a comma-separated list stored in a field, and pass each ite
 <h4>Display products from a list of serial numbers</h4>
 
 <code>[pass field_loop="serial_numbers"]
-&nbsp;&nbsp;&nbsp;&nbsp;[loop type="product" field="serial_number" value="{FIELD}"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
-&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+&nbsp;&nbsp;[loop type="product" field="serial_number" value="{FIELD}"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
+&nbsp;&nbsp;[/loop]
 [/pass]</code><br>
 <hr>
 
@@ -69,9 +81,9 @@ You can loop through a comma-separated list stored in a field, and pass each ite
 Pass values from multiple fields using the <i>fields</i> parameter.
 
 <code>[pass fields="post_type_field, category_field"]
-&nbsp;&nbsp;&nbsp;&nbsp;[loop type="{POST_TYPE_FIELD}" category="{CATEGORY_FIELD}"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+&nbsp;&nbsp;[loop type="{POST_TYPE_FIELD}" category="{CATEGORY_FIELD}"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[/loop]
 [/pass]</code>
 
 This works in the same way as <a href="options-general.php?page=ccs_reference&tab=loop#field-tags">field tags</a> for the <b>[loop]</b> shortcode.
@@ -85,11 +97,11 @@ You can loop through all terms in a taxonomy, and pass each item.
 <h4>Display products from each category</h4>
 
 <code>[pass taxonomy_loop="category"]
-&nbsp;&nbsp;&nbsp;&nbsp;Category: {TERM_NAME}
-&nbsp;&nbsp;&nbsp;&nbsp;[loop type="product" category="{TERM}"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
-&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+&nbsp;&nbsp;Category: {TERM_NAME}
+&nbsp;&nbsp;[loop type="product" category="{TERM}"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
+&nbsp;&nbsp;[/loop]
 [/pass]</code>
 
 The available tags are: TERM, TERM_NAME and TERM_ID.
@@ -110,10 +122,10 @@ Available parameters:
 This is a feature to loop through a list of items.
 
 <code>[pass list="blue, red, green"]
-&nbsp;&nbsp;&nbsp;&nbsp;{Item} products
-&nbsp;&nbsp;&nbsp;&nbsp;[loop type="product" taxonomy="color" term="{ITEM}"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+&nbsp;&nbsp;{Item} products
+&nbsp;&nbsp;[loop type="product" taxonomy="color" term="{ITEM}"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;[/loop]
 [/pass]</code>
 
 {ITEM} is replaced by the item, and {Item} capitalizes the first letter - for example: Blue.
@@ -121,10 +133,10 @@ This is a feature to loop through a list of items.
 For further flexibility, you can pass multiple items for each loop.
 
 <code>[pass list="Beautiful blue:blue, Bright red:red, Lush green:green"]
-&nbsp;&nbsp;&nbsp;&nbsp;{ITEM_1} products
-&nbsp;&nbsp;&nbsp;&nbsp;[loop type="product" taxonomy="color" term="{ITEM_2}"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+&nbsp;&nbsp;{ITEM_1} products
+&nbsp;&nbsp;[loop type="product" taxonomy="color" term="{ITEM_2}"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;[/loop]
 [/pass]</code>
 
 <br>
@@ -151,7 +163,7 @@ For a custom search form, place <i>searchform.php</i> in your theme and build yo
 <h4>Display a menu in a Bootstrap navbar with dropdown</h4>
 
 <code>[navbar menu="Main Menu"]
-&nbsp;&nbsp;&nbsp;&nbsp;Brand
+&nbsp;&nbsp;Brand
 [/navbar]</code>
 
 The <i>menu</i> parameter is the title of the menu to be displayed. You can put text or image for the brand/logo area.

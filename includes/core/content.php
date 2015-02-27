@@ -1559,6 +1559,12 @@ class CCS_Content {
 		return $out;
 	}
 
+  /*---------------------------------------------
+   *
+   * Utilities
+   *
+   */
+ 
 	// For debug purpose: Print an array in a human-readable format
 
 	public static function print_array( $array, $echo = true ) {
@@ -1569,5 +1575,17 @@ class CCS_Content {
 		echo '</pre>';
 		if ( !$echo ) return ob_get_clean();
 	}
+
+  public static function get_all_atts( $atts ) {
+    $new_atts = array();
+    foreach ($atts as $key => $value) {
+      if (is_numeric($key)) {
+        $new_atts[$value] = true;
+      } else {
+        $new_atts[$key] = $value;
+      }
+    }
+    return $new_atts;
+  }
 
 } // End CCS_Content

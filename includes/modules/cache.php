@@ -37,7 +37,7 @@ class CCS_Cache {
 		if (empty($name)) return; // Needs a transient name
 
 		$result = false;
-		if (is_array($atts)) $atts = array_flip($atts);
+		if (is_array($atts)) $atts = CCS_Content::get_all_atts($atts);
 		$update = (isset($atts['update'])) ? 'true' : $update;
 
 		if ($update != 'true') {

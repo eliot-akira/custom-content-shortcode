@@ -53,13 +53,16 @@ class CCS_If {
       'value' => '',
       'lowercase' => '',
 
+      'empty' => 'true',
+
 			'not' => '',
 			'start' => '',
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
 
-		if (is_array($atts)) $atts = array_flip($atts); /* Check parameters with no value */
+    $atts = CCS_Content::get_all_atts( $atts );
+
 /*
 //		if ( (empty($flag))&&(empty($no_flag)) || (isset($atts['empty']))) return;
 		if ((isset($atts['empty'])) || (isset($atts['last'])) ) return; // [if empty] [if last] is processed by [loop]
@@ -251,11 +254,13 @@ class CCS_If {
 				$start = 'true';
 			}
 
-			if (empty($check) || ($check==false))
-				$condition = false;
-			else {
+			if ( empty($check) || ($check==false) ) {
 
-				if (!is_array($check)) $check = array($check);
+				$condition = false;
+
+      }	else {
+
+				if ( !is_array($check) ) $check = array($check);
 
 				if ( !empty($value) ) {
 
@@ -283,9 +288,12 @@ class CCS_If {
 					}
 
 				} else {
-
 					// No value specified - just check that there is field value
-					$condition = !empty($check) ? true : false;
+          if ($empty=='true') {
+            $condition = !empty($check) ? true : false;
+          } else {
+            $condition = false;
+          }
 				}
 			}
 		}
@@ -443,6 +451,7 @@ class CCS_If {
 		$condition = isset($atts['single']) ? is_single() : $condition;
 		$condition = isset($atts['search']) ? is_search() : $condition;
 		$condition = isset($atts['404']) ? is_404() : $condition;
+
 		$condition = isset($atts['none']) ? !have_posts() : $condition;
 
 		if (isset($atts['tax_archive'])) {

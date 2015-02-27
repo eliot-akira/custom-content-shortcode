@@ -366,7 +366,7 @@ class CCS_User {
 		}
 
 
-		if (is_array($atts)) $atts = array_flip( $atts );
+		if (is_array($atts)) $atts = CCS_Content::get_all_atts( $atts );
 
 		if (( isset( $atts['admin'] ) && current_user_can( 'manage_options' ) ) ||
 			( isset( $atts['login'] ) && is_user_logged_in() ) ||
