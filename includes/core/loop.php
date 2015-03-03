@@ -120,7 +120,10 @@ class CCS_Loop {
 
 				// Combine results and process to final output
 				$result = self::process_results( $results );
-			}
+			} else {
+        $results = self::compile_templates( null, $template, false );
+        $result = self::process_results( $results );
+      }
 
 		self::close_loop();
 
@@ -448,7 +451,7 @@ class CCS_Loop {
 
 		/*========================================================================
 		 *
-		 * Post ID, exclude ID, name, or parent(s)
+		 * Post ID, exclude ID, name
 		 *
 		 */
 		
@@ -483,18 +486,36 @@ class CCS_Loop {
 
 			$query['name'] = $parameters['name'];
 
-		} elseif ( !empty($parameters['parent']) || $parameters['parent']=='0' ) {
+		}
+
+    /*---------------------------------------------
+     *
+     * Parent
+     *
+     */
+
+    if ( !empty($parameters['parent']) || $parameters['parent']=='0' ) {
 
 			$parent = $parameters['parent'];
 
 			if ( $parent=='this' ) {
 
-				// Get children of current post
-				$query['post_parent'] = get_the_ID();
-				if (!$query['post_parent'])
-					$query['post_parent'] = '-1'; // If no current post
+        // Get children of current post
 
-			} elseif ( is_numeric($parent) ) {
+        $query['post_parent'] = get_the_ID();
+        if (!$query['post_parent'])
+          $query['post_parent'] = '-1'; // If no current post
+
+      } elseif ( $parent=='same' ) {
+
+        // Get siblings of current post
+
+        $query['post_parent'] = wp_get_post_parent_id( get_the_ID() );
+
+        if (!$query['post_parent'])
+          $query['post_parent'] = '-1'; // If current post has no parent
+
+      } elseif ( is_numeric($parent) ) {
 
 				$query['post_parent'] = intval( $parent ); // Single parent ID
 
@@ -512,7 +533,13 @@ class CCS_Loop {
 						// Get children of current post
 						$parent_IDs[] = get_the_ID();
 
-					} elseif ( is_numeric($each_parent) ) {
+					} elseif ( $parent=='same' ) {
+
+            // Get siblings of current post, if it has parent
+            $parent_ID = wp_get_post_parent_id( get_the_ID() );
+            if ($parent_ID) $parent_IDs[] = $parent_ID;
+
+          } elseif ( is_numeric($each_parent) ) {
 
 						// by ID
 						$parent_IDs[] = intval( $each_parent );
@@ -961,7 +988,6 @@ class CCS_Loop {
 		}
 
 
-
 		/*========================================================================
 		 *
 		 * Field value
@@ -1143,18 +1169,17 @@ class CCS_Loop {
 	 *
 	 */
 
-	public static function compile_templates( $posts, $template ) {
+	public static function compile_templates( $posts, $template, $check_posts = true ) {
 
 		global $post;
 
 		$templates = array();
 
-
 		$posts = apply_filters( 'ccs_loop_posts', $posts );
 
 		$template = self::pre_process_template($template);
 
-		if ( $posts->have_posts() ) {
+		if ( $check_posts && $posts->have_posts() ) {
 
 			$posts = self::prepare_all_posts( $posts );
 
@@ -1185,7 +1210,6 @@ class CCS_Loop {
 		} else {
 
 			// No post found: do [if empty]
-
 			if (!empty(self::$state['if_empty'])) {
 				$this_template = self::prepare_each_template(self::$state['if_empty']);
 				$templates[] = self::render_template($this_template);

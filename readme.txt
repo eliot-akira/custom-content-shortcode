@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1.1
-Stable tag: 1.8.1
+Stable tag: 1.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,10 +82,15 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.8.2 =
+
+* [loop] - Improve handling of [if empty]
+* [loop parent="same"] - Get posts which share the same parent as current post
+
 = 1.8.1 =
 
 * [loop] - Use EQUAL instead of LIKE for field value query
-* Documentation - Make sure browser loads newest CSS, if updated
+* Documentation - Make sure browser loads newest CSS when updated
 
 = 1.8.0 =
 

@@ -84,9 +84,14 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 	<li><b>value="future"</b> or <b>"past"</b> - future or past dates; no need to set <i>compare</i> parameter; use <i>future-time</i> and <i>past-time</i> if your field contains date <i>and</i> time</li>
 </ul>
 
+<h4>Parent</h4>
+
+<ul>
+  <li><b>parent</b> - display all children of a parent, specified by ID or slug. Use <i>parent="this"</i> to get current post's children. Use <i>parent="same"</i> to get current post's siblings: posts which share the same parent as current post; if you want to exclude the current post, also set <i>exclude="this"</i>.</li>
+</ul>
+
 <h4>Sorting and series</h4>
 <ul>
-	<li><b>parent</b> - display all children of a parent, specified by ID or slug; use <i>this</i> to specify current post</li>
 	<li><b>orderby</b> - order by<i> ID</i>,<i> author</i>,<i> title</i>,<i> name</i>,<i> date</i>,<i> rand</i> (randomized),<i> modified</i>,<i> menu_order</i>,<i> parent</i>,<i> field</i> (field value: string), or<i> field_num</i> (field value: number)</li>
 	<li><b>order</b> - ASC (ascending/alphabetical) or DESC (descending/from most recent date) when using the <i>orderby</i> parameter</li>
 	<li><b>key</b> - when ordering by<i> field</i> or<i> field_num</i>, specify<b> key</b> as the name of the custom field to order by</li>
