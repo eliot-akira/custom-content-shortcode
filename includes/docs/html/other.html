@@ -82,6 +82,26 @@ This is necessary because if the value is empty, the [if] statement by default o
 
 <hr>
 
+<h3>User field</h3>
+
+<h4>Pass a single user field</h4>
+
+<code>[pass user_field="twitter"]
+&nbsp;&nbsp;Your twitter address: {USER_FIELD}
+[/pass]</code>
+
+For a list of default user fields, see <a href="options-general.php?page=ccs_reference&tab=user">the [user] shortcode</a>.
+
+<h4>Pass several user fields</h4>
+
+<code>[pass user_fields="name,email"]
+&nbsp;&nbsp;Hello {NAME}, you email is {EMAIL}.
+[/pass]</code>
+
+This works in the same way as multiple post fields, explained below. The replaced tag is an uppercase version of the field name.
+
+<hr>
+
 <h3>Field loop</h3>
 
 You can loop through a comma-separated list stored in a field, and pass each item.

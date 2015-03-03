@@ -228,9 +228,13 @@ class CCS_Docs {
 		global $ccs_content_overview_page_hook;
 
 		if ( $this->is_current_plugin_screen() ) {
-			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/docs/docs.css");
+
+			wp_enqueue_style( 'ccs-docs', CCS_URL.'/includes/docs/docs.css',array(),'1.8.1');
+
 		} elseif ( $this->is_current_plugin_screen($ccs_content_overview_page_hook) ) {
-			wp_enqueue_style( "ccs-docs", CCS_URL."/includes/overview/content-overview.css");
+
+			wp_enqueue_style( 'ccs-docs', CCS_URL.'/includes/overview/content-overview.css',
+        array(),'1.8.1');
 		}
 	}
 

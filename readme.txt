@@ -6,8 +6,8 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
-Tested up to: 4.1
-Stable tag: 1.7.9
+Tested up to: 4.1.1
+Stable tag: 1.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,16 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.8.1 =
+
+* [loop] - Use EQUAL instead of LIKE for field value query
+* Documentation - Make sure browser loads newest CSS, if updated
+
+= 1.8.0 =
+
+* [pass user_field] - Pass a user field as {USER_FIELD}
+* [pass user_fields] - Pass multiple user fields
 
 = 1.7.9 =
 

@@ -1019,10 +1019,10 @@ class CCS_Loop {
 			switch ($compare) {
 				case '':
 				case '=':
-				case 'EQUAL': $compare = "LIKE"; break;
+				case 'EQUAL': $compare = '='; break;
 				case 'NOT':
 				case '!=':
-				case 'NOT EQUAL': $compare = 'NOT LIKE'; break;
+				case 'NOT EQUAL': $compare = '!='; break;
 				case 'MORE': $compare = '>'; break;
 				case 'LESS': $compare = '<'; break;
 				default: break;
@@ -1074,10 +1074,10 @@ class CCS_Loop {
 					switch ($compare_2) {
 						case '':
 						case '=':
-						case 'EQUAL': $compare_2 = 'LIKE'; break;
+						case 'EQUAL': $compare_2 = '='; break;
 						case 'NOT':
 						case '!=':
-						case 'NOT EQUAL': $compare_2 = 'NOT LIKE'; break;
+						case 'NOT EQUAL': $compare_2 = '!='; break;
 						case 'MORE': $compare_2 = '>'; break;
 						case 'LESS': $compare_2 = '<'; break;
 						default: break;
@@ -1890,6 +1890,9 @@ class CCS_Loop {
 			'trim' => 'false',
 			'count' => '9999',			// Max number of taxonomy terms
 
+      'user_field' => '',
+      'user_fields' => '', // Multiple
+
       'global' => '',
       'sub' => ''
 		);
@@ -2134,16 +2137,35 @@ class CCS_Loop {
 
 		}
 
+
+    /*========================================================================
+     *
+     * Pass user field(s)
+     *
+     */
+    
+    if (!empty($user_field)) {
+      $user_field_value = do_shortcode('[user '.$user_field.']');
+      // Replace it
+      $content = str_replace('{'.$prefix.'USER_FIELD}', $user_field_value, $content);
+    }
+
+    if (!empty($user_fields)) {
+      $user_fields_array = self::explode_list($user_fields);
+
+      foreach ($user_fields_array as $this_field) {
+        $user_field_value = do_shortcode('[user '.$this_field.']');
+        // Replace {FIELD_NAME}
+        $content = str_replace('{'.$prefix.strtoupper($this_field).'}', $user_field_value, $content);
+      }
+    }
+
+
 		if ( !empty($fields) ) {
-
 			// Replace these fields (+default)
-
 			$content = self::render_field_tags( $content, array('fields' => $fields) );
-
 		} else {
-
 			$content = self::render_default_field_tags( $content );
-
 		}
 
 		if ( $post_render == 'true' ) $content = do_shortcode($content);
