@@ -585,10 +585,18 @@ class CCS_Loop {
 
 					if ( $author == 'this' ) {
 
-						// Current user ID
-						$query['author__in'][] = CCS_User::get_user_field('id');
+            // Current user ID
+            $query['author__in'][] = CCS_User::get_user_field('id');
 
-					} else {
+          } elseif ( $author == 'same' ) {
+
+            // Same author as current post
+            $current_post = get_post( get_the_ID() );
+            if ( $current_post ) {
+              $query['author__in'][] = $current_post->post_author;
+            }
+
+          } else {
 						// Get author ID from login name
 						$author_data = get_user_by('login', $author);
 						if ($author_data) {
