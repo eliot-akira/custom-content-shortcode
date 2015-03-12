@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1.1
-Stable tag: 1.8.3
+Stable tag: 1.8.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,13 @@ Support for other plugins:
 
 
 == Changelog ==
+
+= 1.8.4 =
+
+* [if before], [if after] - Support comparisons with post publish date
+* [loop before], [loop after] - Support comparisons with post publish date
+* [loop blog] - Switch to given blog ID on multi-site
+* Mobile Detect - Update to latest version 2.8.12
 
 = 1.8.3 =
 

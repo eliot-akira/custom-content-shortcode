@@ -9,7 +9,8 @@ The following shortcodes are used to display content based on device type.
 [isnt_phone]
 [is_tablet]
 [is_mobile]
-[is_computer]</code>
+[is_computer]
+[isnt_computer]</code>
 
 The <b>[is_mobile]</b> shortcode includes both tablet/phone, and <b>[is_computer]</b> is for all other devices, for example, laptops and PCs.
 
@@ -43,10 +44,8 @@ These last two would be placed in a custom field named <i>css</i>, to load in th
 <br>
 <h3>Body class</h3>
 
-There are CSS classes added to the &lt;body&gt; element, for styling purposes: <i>.is_phone, .isnt_phone, .is_tablet, .is_mobile,</i> and <i>.is_computer</i>.
+There are CSS classes added to the &lt;body&gt; element, for styling purposes: <i>.is_phone, .isnt_phone, .is_tablet, .is_mobile,</i> <i>.is_computer</i> and <i>.isnt_computer</i>.
 <br>
 <h3>Library</h3>
 
-The detection algorithm is based on <a href="http://mobiledetect.net/" target="_blank">Mobile Detect</a>, a lightweight PHP class.
-
-<h4>Note: This feature is currently under testing. Any feedback is welcome.</h4>
+The detection algorithm is based on a lightweight PHP class, <a href="http://mobiledetect.net/" target="_blank">Mobile Detect</a> version 2.8.12.

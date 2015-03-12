@@ -214,6 +214,11 @@ class CCS_Loop {
 			'field_2' => '', 'compare_2' => '', 'relation' => '',
 			'f' => '', 'v' => '', 'c' => '', 'f2' => '', 'v2' => '', 'c2' => '', 'r' => '', // Alias
 
+
+      // Published date
+      'after' => '',
+      'before' => '',
+
 			// Checkbox
 
 			'checkbox' => '', 'checkbox_2' => '', 
@@ -996,6 +1001,53 @@ class CCS_Loop {
 		}
 
 
+    /*---------------------------------------------
+     *
+     * Date query: before and after
+     *
+     */
+    
+    if ( !empty($parameters['before']) ) {
+
+      // Published date
+      if ( empty($parameters['field']) || $parameters['field']=='date') {
+
+        if ( !isset($query['date_query']) ) {
+          $query['date_query'] = array();
+        }
+        $query['date_query'][] = array(
+          'before' => $parameters['before']
+        );
+
+      } else {
+        // Other field
+        $parameters['value'] = strtotime($parameters['before']);
+        $parameters['compare'] = 'OLD';
+      }
+    } 
+
+    if (!empty( $parameters['after']) ) {
+
+      if ( empty($parameters['field']) || $parameters['field']=='date') {
+
+        if ( !isset($query['date_query']) ) {
+          $query['date_query'] = array();
+        }
+        $query['date_query'][] = array(
+          'after' => $parameters['after']
+        );
+
+      } else {
+        // Other field
+        $parameters['value'] = strtotime($parameters['after']);
+        $parameters['compare'] = 'NEW';
+      }
+    }
+
+
+
+
+
 		/*========================================================================
 		 *
 		 * Field value
@@ -1024,6 +1076,7 @@ class CCS_Loop {
 				$compare = '<';
 			}
 
+
 			if ( ($parameters['in'] == 'string') || (!empty($parameters['date_format'])) ) {
 
 				if (empty($parameters['date_format'])) {
@@ -1048,6 +1101,7 @@ class CCS_Loop {
 				}
 			}
 
+
 			$compare = strtoupper($compare);
 
 			switch ($compare) {
@@ -1057,10 +1111,16 @@ class CCS_Loop {
 				case 'NOT':
 				case '!=':
 				case 'NOT EQUAL': $compare = '!='; break;
-				case 'MORE': $compare = '>'; break;
-				case 'LESS': $compare = '<'; break;
+				case 'MORE': 
+        case 'NEW': 
+        case 'NEWER': $compare = '>'; break;
+				case 'LESS': 
+        case 'OLD': 
+        case 'OLDER': $compare = '<'; break;
 				default: break;
 			}
+
+      if (!isset($query['meta_query'])) $query['meta_query'] = array();
 
 			$query['meta_query'][] =
 				array(
@@ -1076,6 +1136,12 @@ class CCS_Loop {
 			} else {
 				// $compare=='EXISTS' then no value
 			}
+
+      if ($field == 'date') {
+        $query['meta_query'][0]['type'] = 'DATE';
+      }
+
+
 
 			// Additional query by field value
 
@@ -1117,7 +1183,6 @@ class CCS_Loop {
 						default: break;
 					}					
 				}
-
 
 				$query['meta_query'][] =
 					array(

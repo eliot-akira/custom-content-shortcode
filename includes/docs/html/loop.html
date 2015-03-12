@@ -49,6 +49,8 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 <h4>Published date</h4>
 <ul>
 	<li><b>year, month, day</b> - display posts by specific year, month, day; you can use <i>today</i> as a value, for example <i>month="today"</i> will show posts from this month</li>
+  <li><b>before</b> - display posts before a relative or specific date, for example: <i>2 weeks ago</i>, or <i>2015-02-01</i></li>
+  <li><b>after</b> - display posts after a date</li>
 </ul>
 
 <h4>Category, tags and taxonomies</h4>
@@ -134,7 +136,8 @@ Multiple values are possible: <i>value="first, second"</i>. This will return all
 
 <h4>Other parameters</h4>
 <ul>
-	<li><b>name</b> - show one post by slug</li>
+  <li><b>name</b> - show one post by slug</li>
+  <li><b>blog</b> - switch to given blog ID on multi-site</li>
 	<li><b>columns</b> - display output in columns: <i>columns="3"</i>; use <i>pad</i> for padding: <i>pad="0px 10px"</i></li>
 	<li><b>timer</b> - set <i>true</i> to display resource info at the end of loop; see <a href="options-general.php?page=ccs_reference&tab=cache#timer">here</a> for details</li>
 	<li><b>x</b> - repeat the loop <i>x</i> times - no query</li>

@@ -4,10 +4,10 @@
 Use the <b>[if]</b> shortcode to display content based on certain conditions.
 
 <code>[loop type="films"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if category="recommend"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Recommended)
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[if category="recommend"]
+&nbsp;&nbsp;&nbsp;&nbsp;(Recommended)
+&nbsp;&nbsp;[/if]
 [/loop]</code><br>
 <hr>
 
@@ -77,14 +77,32 @@ For category, tag, taxonomy, field or user field, you can query for multiple val
 Use the <b>[else]</b> shortcode to display something else when the condition is false.
 
 <code>[loop type="product"]
-&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
-&nbsp;&nbsp;&nbsp;&nbsp;[if tag="discount"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;On Sale!
-&nbsp;&nbsp;&nbsp;&nbsp;[else]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Regular Price
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;Price: [field price]
+&nbsp;&nbsp;[if tag="discount"]
+&nbsp;&nbsp;&nbsp;&nbsp;On Sale!
+&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;Regular Price
+&nbsp;&nbsp;[/if]
 [/loop]</code>
+
+<a id="date" name="date"></a>
+
+<br>
+
+<h3 align="center">Published date</h3>
+<hr>
+
+You can use the parameter <i>before</i> or <i>after</i> to compare post publish date.
+
+<h4>If post was published in the last 2 weeks</h4>
+<code>[if after="2 weeks ago"]
+&nbsp;&nbsp;New!
+[else]
+&nbsp;&nbsp;Old!
+[/if]</code>
+
+The value can be a specific date like <i>2015-02-01</i>, or a relative date: <i>1 month ago</i>.
 
 <br>
 <h3 align="center">Other conditions</h3>
@@ -96,11 +114,11 @@ Use <b>[if empty]</b> to display something when there is no post matching the qu
 <h4>Display a message for no query result</h4>
 
 <code>[loop type="events" category="weekend"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[field description]
-&nbsp;&nbsp;&nbsp;&nbsp;[if empty]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There is no event for this category.
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[field description]
+&nbsp;&nbsp;[if empty]
+&nbsp;&nbsp;&nbsp;&nbsp;There is no event for this category.
+&nbsp;&nbsp;[/if]
 [/loop]</code>
 
 If there's no post found, the loop displays only what's inside <b>[if empty]</b>.
@@ -111,21 +129,21 @@ If there's no post found, the loop displays only what's inside <b>[if empty]</b>
 <h4>Add an extra break line for every 3 posts</h4>
 
 <code>[loop type="post" count="9"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if every="3"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;br&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[if every="3"]
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;br&gt;
+&nbsp;&nbsp;[/if]
 [/loop]</code>
 
 <h4>Display something for the first or last post</h4>
 <code>[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if first]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(first post)
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
-&nbsp;&nbsp;&nbsp;&nbsp;[if last]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(last post)
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[if first]
+&nbsp;&nbsp;&nbsp;&nbsp;(first post)
+&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[if last]
+&nbsp;&nbsp;&nbsp;&nbsp;(last post)
+&nbsp;&nbsp;[/if]
 [/loop]</code><br>
 <hr>
 <h3>If a field value exists</h3>
@@ -135,10 +153,10 @@ To check if a field has any value, use the <i>field</i> parameter.
 <h4>Display only products that have serial numbers</h4>
 
 <code>[loop type="product"]
-&nbsp;&nbsp;&nbsp;&nbsp;[if field="serial_number"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [field serial_number]
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[if field="serial_number"]
+&nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
+&nbsp;&nbsp;&nbsp;&nbsp;Serial #: [field serial_number]
+&nbsp;&nbsp;[/if]
 [/loop]</code>
 
 If you specify the <i>value</i> parameter, it will check for that specific value only.
@@ -151,16 +169,16 @@ To check if the post has any term in a given taxonomy, use the <i>taxonomy</i> p
 <h4>Display tags if any exists</h4>
 
 <code>[loop type="book"]
-&nbsp;&nbsp;&nbsp;&nbsp;Book: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;Author: [field author_name]
-&nbsp;&nbsp;&nbsp;&nbsp;[if taxonomy="tag"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tags:
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[for each="tag" trim="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[each name-link],
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/for]
-&nbsp;&nbsp;&nbsp;&nbsp;[else]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;There's no tag.
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;Book: [field title]
+&nbsp;&nbsp;Author: [field author_name]
+&nbsp;&nbsp;[if taxonomy="tag"]
+&nbsp;&nbsp;&nbsp;&nbsp;Tags:
+&nbsp;&nbsp;&nbsp;&nbsp;[for each="tag" trim="true"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[each name-link],
+&nbsp;&nbsp;&nbsp;&nbsp;[/for]
+&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;There's no tag.
+&nbsp;&nbsp;[/if]
 [/loop]</code>
 
 <br>
@@ -170,16 +188,16 @@ To check if the post has any term in a given taxonomy, use the <i>taxonomy</i> p
 For nested conditions, use [-if][-else][/-if].
 
 <code>[loop type="product"]
-&nbsp;&nbsp;&nbsp;&nbsp;[if category="books"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The book [field title-link] is
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-if field="status" value="in-stock"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in stock.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-else]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not available.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/-if]
-&nbsp;&nbsp;&nbsp;&nbsp;[else]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title-link] is not a book.
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[if category="books"]
+&nbsp;&nbsp;&nbsp;&nbsp;The book [field title-link] is
+&nbsp;&nbsp;&nbsp;&nbsp;[-if field="status" value="in-stock"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in stock.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-else]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not available.
+&nbsp;&nbsp;&nbsp;&nbsp;[/-if]
+&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title-link] is not a book.
+&nbsp;&nbsp;[/if]
 [/loop]</code>
 
 
