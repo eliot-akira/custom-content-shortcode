@@ -36,6 +36,7 @@ Here are some of the included features:
 * **Relative URLs** for links and images
 * Simple **gallery field** for any post type
 * **Cache** the result of query loops
+* Option to enable **Mobile Detect**
 
 Support for other plugins:
 
