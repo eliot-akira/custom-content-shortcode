@@ -1194,7 +1194,8 @@ class CCS_Content {
       case 'image':       // image
       case 'image-link':      // image with link to post
       case 'image-link-self':   // image with link to attachment page
-
+        $parameters['size'] = (isset($parameters['size']) && !empty($parameters['size'])) ?
+          $parameters['size'] : 'full';
         $result = get_the_post_thumbnail( $post_id, $parameters['size'], $attr );
         break;
         
@@ -1205,6 +1206,8 @@ class CCS_Content {
       case 'thumbnail':     // thumbnail
       case 'thumbnail-link':    // thumbnail with link to post
       case 'thumbnail-link-self': // thumbnail with link to attachment page
+        $parameters['size'] = (isset($parameters['size']) && !empty($parameters['size'])) ?
+          $parameters['size'] : 'thumbnail';
 
         $result = get_the_post_thumbnail( $post_id, $parameters['size'], $attr );
         break;
