@@ -131,6 +131,7 @@ class CCS_Content {
       'alt' => '', 'title' => '',
       'height' => '', 'width' => '', 
       'image_class' => '',
+      'nopin' => '',
       'url' => '', // Option for image-link
 
       // Author meta
@@ -953,6 +954,8 @@ class CCS_Content {
       $parameters['size'] = array($parameters['width'], $parameters['height']);
     if (!empty($parameters['image_class']))
       $attr['class'] = $parameters['image_class'];
+    if (!empty($parameters['nopin']))
+      $attr['nopin'] = $parameters['nopin'];
     if (!empty($parameters['alt']))
       $attr['alt'] = $parameters['alt'];
     if (!empty($parameters['title']))
@@ -969,7 +972,7 @@ class CCS_Content {
           $image_id = $field; // Assume it's ID
         }
 
-        $result = wp_get_attachment_image( $image_id , $parameters['size'], $icon=0, $attr );
+        $result = wp_get_attachment_image( $image_id , $parameters['size'], $icon=false, $attr );
 
         break;
 
@@ -990,6 +993,8 @@ class CCS_Content {
             $result .= ' height="' . $parameters['height'] . '"';
           if (!empty($parameters['width']))
             $result .= ' width="' . $parameters['width'] . '"';
+          if (!empty($parameters['nopin']))
+            $result .= ' nopin="' . $parameters['nopin'] . '"';
           $result .= '>';
         }
         break;
@@ -1001,7 +1006,7 @@ class CCS_Content {
         } else {
           $image_id = $field;
         }
-        $result = wp_get_attachment_image( $image_id, $parameters['size'], $icon=0, $attr );
+        $result = wp_get_attachment_image( $image_id, $parameters['size'], $icon=false, $attr );
         break;
     }
 
@@ -1114,6 +1119,8 @@ class CCS_Content {
         $parameters['size'] = array((int)$parameters['width'], (int)$parameters['height']);
       if (!empty($parameters['image_class']))
         $attr['class'] = $parameters['image_class'];
+      if (!empty($parameters['nopin']))
+        $attr['nopin'] = $parameters['nopin'];
       if (!empty($parameters['alt']))
         $attr['alt'] = $parameters['alt'];
       if (!empty($parameters['title']))
@@ -1234,7 +1241,7 @@ class CCS_Content {
           if (empty($parameters['size']))
             $parameters['size'] = 'full';
 
-          $result = wp_get_attachment_image( $attachment_ids[$parameters['num']-1], $parameters['size'], $icon=0, $attr );
+          $result = wp_get_attachment_image( $attachment_ids[$parameters['num']-1], $parameters['size'], $icon=false, $attr );
         }
 
         break;
@@ -1340,6 +1347,8 @@ class CCS_Content {
         $parameters['size'] = array($parameters['width'], $parameters['height']);
       if (!empty($parameters['image_class']))
         $attr['class'] = $parameters['image_class'];
+      if (!empty($parameters['nopin']))
+        $attr['nopin'] = $parameters['nopin'];
       if (!empty($parameters['alt']))
         $attr['alt'] = $parameters['alt'];
       if (!empty($parameters['title']))
@@ -1377,13 +1386,19 @@ class CCS_Content {
         break;
       case 'title' : $result = $post->post_title;
         break;
-      case 'image' : $result = wp_get_attachment_image( $post_id, $parameters['size'], $attr );
+      case 'image' :
+        $result = wp_get_attachment_image(
+          $post_id, $parameters['size'], $icon = false, $attr
+        );
         break;
       case 'image-url' :
         $src = wp_get_attachment_image_src( $post_id, $parameters['size'] );
         $result = $src[0];
         break;
-      case 'thumbnail' : $result = wp_get_attachment_image( $post_id, 'thumbnail', $icon = 0, $attr );;
+      case 'thumbnail' :
+        $result = wp_get_attachment_image(
+          $post_id, 'thumbnail', $icon = false, $attr
+        );
         break;
       case 'thumbnail-url' : $result = wp_get_attachment_thumb_url( $post_id ) ;
         break;
