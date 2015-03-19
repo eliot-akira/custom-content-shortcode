@@ -190,7 +190,7 @@ class CCS_Loop {
 			'id' => '', 'exclude' => '',
 			'status' => '',
 			'include' => '',
-			'parent' => '0', // Exclude children by default
+			'parent' => '',
 			'count' => '', 'offset' => '',
 			'year' => '', 'month' => '', 'day' => '',
 			'author' => '', 'author_exclude' => '',
@@ -477,12 +477,17 @@ class CCS_Loop {
 
 			$id_array = self::explode_list($parameters['exclude']);
 
-			// Exclude current post
-
 			foreach ($id_array as $key => $value) {
+
+        // Exclude current post
 				if ($value=='this') {
 					$id_array[$key] = self::$state['original_post_id']; // ID of post that contains the loop
-				}
+
+        // Top-level posts only
+				} elseif ($value=='children') {
+          unset($id_array[$key]);
+          $parameters['parent']='0';
+        }
 			}
 
 			$query['post__not_in'] = $id_array;

@@ -30,7 +30,11 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 <h4>Post ID</h4>
 <ul>
 	<li><b>id</b> - show post by ID; <i>id="1,3,5,7"</i></li>
-	<li><b>exclude</b> - exclude post by ID; <i>exclude="1,3,5,7"</i> - use <i>this</i> to exlude current post</li>
+	<li><b>exclude</b> - exclude post by ID; <i>exclude="1,3,5,7"</i></li>
+  <div class="indent">
+    <i>this</i> to exclude current post
+    <i>children</i> to show only top-level posts
+  </div>
 </ul>
 
 <h4>Post count and status</h4>
@@ -90,6 +94,7 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 
 <ul>
   <li><b>parent</b> - display all children of a parent, specified by ID or slug. Use <i>parent="this"</i> to get current post's children. Use <i>parent="same"</i> to get current post's siblings: posts which share the same parent as current post; if you want to exclude the current post, also set <i>exclude="this"</i>.</li>
+  <li><b>exclude="children"</b> - display top-level posts only</li>
 </ul>
 
 <h4>Sorting and series</h4>

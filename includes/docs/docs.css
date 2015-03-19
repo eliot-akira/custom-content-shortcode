@@ -89,6 +89,9 @@ h2 .nav-tab {
 	list-style: none;
 	padding-left: 20px;
 }
+.doc-style .indent {
+  padding-left: 20px;
+}
 .doc-style .overview-logo-pad {
 	margin: 15px auto;
 }
