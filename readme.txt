@@ -85,7 +85,7 @@ Support for other plugins:
 
 = 1.8.6 =
 
-* [field] - Add parameter *nopin="nopin"* to prevent Pintest pinning of image
+* [field] - Add parameter *nopin="nopin"* to prevent Pinterest pinning of image
 
 = 1.8.5 =
 

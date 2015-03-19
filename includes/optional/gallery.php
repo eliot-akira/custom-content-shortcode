@@ -61,6 +61,10 @@ class CCS_Gallery_Field {
 	box-shadow: none;
 }
 
+.gallery_images .attachment a.edit div {
+  vertical-align: top;
+}
+
 .gallery_images .attachment-preview .thumbnail {
 	cursor: move;
 }
