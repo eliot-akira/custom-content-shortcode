@@ -1201,7 +1201,15 @@ class CCS_Content {
         
       case 'image-url':
         $result = wp_get_attachment_url(get_post_thumbnail_id($post_id));
-        break;
+      break;
+
+      case 'image-title':
+      case 'image-caption':
+      case 'image-alt':
+      case 'image-description':
+        $image_field_name = substr($field, 6); // Remove "image-"
+        $result = self::wp_get_featured_image_field( $post_id, $image_field_name );
+      break;
 
       case 'thumbnail':     // thumbnail
       case 'thumbnail-link':    // thumbnail with link to post
@@ -1574,6 +1582,49 @@ class CCS_Content {
    *
    */
  
+
+  public static function wp_get_attachment_array( $attachment_id ) {
+
+    $attachment = get_post( $attachment_id );
+    return array(
+      'alt' => get_post_meta( $attachment->ID, '_wp_attachment_image_alt', true ),
+      'caption' => $attachment->post_excerpt,
+      'description' => $attachment->post_content,
+      'href' => get_permalink( $attachment->ID ),
+      'src' => $attachment->guid,
+      'title' => $attachment->post_title
+    );
+  }
+
+  public static function wp_get_attachment_field( $attachment_id, $field_name ) {
+
+    if (empty($attachment_id)) return null;
+
+    $attachment = get_post( $attachment_id );
+    $attachment_array = array(
+      'alt' => get_post_meta( $attachment->ID, '_wp_attachment_image_alt', true ),
+      'caption' => $attachment->post_excerpt,
+      'description' => $attachment->post_content,
+      'href' => get_permalink( $attachment->ID ),
+      'src' => $attachment->guid,
+      'title' => $attachment->post_title
+    );
+
+    if (isset($attachment_array[$field_name])) {
+      return $attachment_array[$field_name];
+    } else {
+      return null;
+    }
+  }
+
+  public static function wp_get_featured_image_field( $post_id, $field_name ) {
+
+    // Get featured image ID from post ID
+    $attachment_id = get_post_thumbnail_id( $post_id );
+    return self::wp_get_attachment_field( $attachment_id, $field_name );
+  }
+
+
   // For debug purpose: Print an array in a human-readable format
 
   public static function print_array( $array, $echo = true ) {
