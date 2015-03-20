@@ -170,6 +170,7 @@ class CCS_Content {
       // Fomatting
 
       'format' => '', 'shortcode' => '', 'escape' => '',
+      'filter' => '',
       'embed' => '',
       'align' => '', 'class' => '', 'height' => '',
       'words' => '', 'len' => '', 'length' => '',
@@ -847,13 +848,18 @@ class CCS_Content {
       }
     }
 
-    // Then format
+    // Then the_content filter or format
 
-    if ($parameters['format'] == 'true') {    // Then format
+    if ($parameters['filter']=='true') {
+
+      $result = apply_filters( 'the_content', $result );
+
+    } elseif ($parameters['format'] == 'true') {
+
       $result = wpautop( $result );
     }
-    
-    
+
+
     /*========================================================================
      *
      * Read more tag

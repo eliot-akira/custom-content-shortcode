@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1.1
-Stable tag: 1.9.0
+Stable tag: 1.9.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,10 +83,15 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.9.1 =
+
+* [content] - Add parameter *filter="true"*, to apply *the_content* filter; this can be useful when using plugins that filter the content, i.e., Page Builder
+
 = 1.9.0 =
 
 * [field] - Add default fields for featured image: title, caption, alt and description
-* [loop] - Hierarchical posts: include children by default; **please note** that this is different behavior than previous versions; to get top-level parents only, set *exclude="children"*
+* [loop] - Hierarchical posts: include children by default
+* **Please note** that the above behavior is different from previous versions; to get top-level parents only, set *exclude="children"*
 
 = 1.8.6 =
 
