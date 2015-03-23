@@ -92,9 +92,10 @@ ul.gallery_images {
 	cursor: move;
 }
 .gallery_images li.image img {
-	width: 100%; /*150px*/
-	height: auto;
-	}
+  position: relative;
+/*	width: 100%; */
+  height: auto;
+}
 .gallery_images a.edit {
 	text-decoration: none;
 	position: absolute;
