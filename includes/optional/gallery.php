@@ -195,7 +195,7 @@ ul.gallery_images {
 			            echo '<li class="image attachment details" data-attachment_id="'
 			            	. $attachment_id
 			            	. '"><div class="attachment-preview"><div class="thumbnail">'
-			            	. wp_get_attachment_image( $attachment_id )
+                    . wp_get_attachment_image( $attachment_id )
 			            	. '</div><a href="#" class="delete check" title="'
 			            	. 'Remove image'
 			            	. '"><div class="media-modal-icon"></div></a><a href="#" class="edit check" title="Edit image"><div class="dashicons dashicons-search"></div></a></div></li>';
