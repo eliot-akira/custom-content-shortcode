@@ -54,8 +54,8 @@ class CCS_Comments {
 
 			$fields = array(
 				'ID', 'post_ID', 'author', 'author_email', 'author_url', 'date',
-				'content', 'user_id', 'avatar',
-				'title', 'url', 'title_link', 'author_link'
+				'content', 'user_id', 'avatar', 'count', 'counted',
+				'title', 'url', 'post-url', 'title_link', 'author_link', 'link'
 			);
 
 			if (empty($atts)) {
@@ -72,10 +72,11 @@ class CCS_Comments {
 				$arg_field = strtolower($field);
 				$arg_field = str_replace('_', '-', $field);
 
-				if ($arg_field=='user-id')
+				if ($arg_field=='user-id') {
 					$field = 'user_id';
-				else
+        }	else {
 					$field = 'comment_'.$field; // name of property in comment object
+        }
 
 				// Check first parameter [comment ~]
 
@@ -86,11 +87,23 @@ class CCS_Comments {
 							$out = get_the_title($post_id);
 						break;
 
-						case 'url':
-							$out = get_permalink($post_id);
-						break;
+            case 'url':
+              $comment_id = $comment->comment_ID;
+              $out = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
+            break;
 
-						case 'title-link':
+            case 'link':
+              $title = get_the_title($post_id);
+              $comment_id = $comment->comment_ID;
+              $url = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
+            break;
+
+            case 'post-url':
+              $out = get_permalink($post_id); // Just the post URL
+            break;
+
+            case 'title-link':
+            case 'post-link':
 							$title = get_the_title($post_id);
 							$url = get_permalink($post_id);
 							// $out = '<a href="'.$url.'">'.$title.'</a>';
@@ -106,6 +119,16 @@ class CCS_Comments {
 							$author_id = $comment->user_id;
 							$out = get_avatar( $author_id, $size );
 						break;
+
+            case 'count':
+              $out = get_comments_number( $post_id );
+            break;
+            case 'counted':
+              $count = get_comments_number( $post_id );
+              if ($count == 0) return 'No comments';
+              if ($count == 1) return '1 comment';
+              $out = $count.' comments';
+            break;
 
 						case 'content':
 							if (isset($comment->{$field}))
@@ -131,8 +154,13 @@ class CCS_Comments {
 				$out = mb_substr($the_excerpt, 0, $length, 'UTF-8');
 			}
 
-			// Wrap in link after trimming?
-			if (isset($atts['title-link']) || isset($atts['author-link'])) {
+			// Wrap in link after trimming
+			if (
+            isset($atts['title-link']) ||
+            isset($atts['post-link']) ||
+            isset($atts['author-link']) ||
+            isset($atts['link']) )
+      {
 				if (!empty($title) && !empty($url))
 					$out = '<a href="'.$url.'">'.$title.'</a>';
 				elseif (!empty($title))

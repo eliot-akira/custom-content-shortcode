@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.1.1
-Stable tag: 1.9.1
+Stable tag: 1.9.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -83,9 +83,14 @@ Support for other plugins:
 
 == Changelog ==
 
+= 1.9.2 =
+
+* [comment] - Add fields: count, link, post-url, counted
+* [field] - Add parameter *nl="true"* to strip new lines from field value
+
 = 1.9.1 =
 
-* [content] - Add parameter *filter="true"*, to apply *the_content* filter; this can be useful when using plugins that filter the content, i.e., Page Builder
+* [content] - Add parameter *filter="true"* to apply *the_content* filter; this can be useful for other plugins that filter the content, i.e., Page Builder
 
 = 1.9.0 =
 
