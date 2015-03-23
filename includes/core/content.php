@@ -172,6 +172,7 @@ class CCS_Content {
       'format' => '', 'shortcode' => '', 'escape' => '',
       'filter' => '',
       'embed' => '',
+      'nl' => '', // Remove \r and \n
       'align' => '', 'class' => '', 'height' => '',
       'words' => '', 'len' => '', 'length' => '',
       'date_format' => '', 'timestamp' => '',
@@ -859,6 +860,9 @@ class CCS_Content {
       $result = wpautop( $result );
     }
 
+    if ($parameters['nl']=='true') {
+      $result = trim(preg_replace('/\s+/', ' ', $result));
+    }
 
     /*========================================================================
      *
