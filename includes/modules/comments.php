@@ -167,8 +167,17 @@ class CCS_Comments {
 					$out = $title; // no link found
 			}
 
-			if ( !empty($out) && !empty($date_format) ) {
-				$out = date($date_format, strtotime($out));
+
+      if (isset($atts['date'])) {
+
+        if (!empty($date_format)) {
+          $out = mysql2date($date_format, $out);
+        }
+        else { // Default date format under Settings -> General
+          $out = mysql2date(get_option('date_format'), $out);
+        }
+      } elseif ( !empty($out) && !empty($date_format) ) {
+				$out = mysql2date($date_format, $out); // date($date_format, strtotime($out));
 			} elseif ( $format=='true' ) {
 				$out = apply_filters('the_content', $out);
 			}
