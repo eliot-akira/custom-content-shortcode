@@ -3,49 +3,54 @@
 
 Enable the mobile detect module under <a href="options-general.php?page=ccs_reference&tab=settings">Settings</a>.
 
-The following shortcodes are used to display content based on device type.
+Use the <b>[is]</b> shortcode to display content based on device type.
 
-<code>[is_phone]
-[isnt_phone]
-[is_tablet]
-[is_mobile]
-[is_computer]
-[isnt_computer]</code>
+<code>[is mobile]
+&nbsp;&nbsp;User is on a phone or tablet.
+[else]
+&nbsp;&nbsp;User is not on a mobile device.
+[/is]</code>
 
-The <b>[is_mobile]</b> shortcode includes both tablet/phone, and <b>[is_computer]</b> is for all other devices, for example, laptops and PCs.
+The parameters available are: <i>mobile</i>, <i>phone</i>, <i>tablet</i>, and <i>computer</i>. 
 
 Using these in combination, you can selectively load images, page sections, stylesheets, etc. You can even redirect users to another URL.
 
-<h4>Show differently sized images</h4>
+<hr>
 
-<code>[is_mobile]
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;img src="[url uploads]/birds-150x150.jpg"&gt;
-[/is_mobile]
-[is_computer]
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;img src="[url uploads]/birds-600x600.jpg"&gt;
-[/is_computer]
+<h3>Examples</h3>
+
+<h4>Image sizes</h4>
+
+<code>[is mobile]
+&nbsp;&nbsp;[field image size="medium"]
+[else]
+&nbsp;&nbsp;[field image size="large"]
+[/is]
 </code>
 
-<h4>Load stylesheets according to device type</h4>
+<h4>Stylesheets</h4>
 
-<code>[is_computer]
-&nbsp;&nbsp;&nbsp;&nbsp;[load css="style.css"]
-[/is_computer]
-[is_mobile]
-&nbsp;&nbsp;&nbsp;&nbsp;[load css="style-mobile.css"]
-[/is_mobile]</code>
+<code>[is computer]
+&nbsp;&nbsp;[load css="style.css"]
+[else]
+&nbsp;&nbsp;[load css="style-mobile.css"]
+[/is]</code>
 
-<h4>Redirect mobile visitors to a different location</h4>
-<code>[is_mobile]
-&nbsp;&nbsp;&nbsp;&nbsp;[redirect][url site]/mobile/[/redirect]
-[/is_mobile]</code>
+<h4>Redirect visitors on mobile</h4>
+<code>[is mobile]
+&nbsp;&nbsp;[redirect][url site]/mobile/[/redirect]
+[/is]</code>
 
-These last two would be placed in a custom field named <i>css</i>, to load in the header of the page.
-<br>
+These last two would be placed in a custom field named <i>css</i>, to load in the head of the page.
+
+<hr>
+
 <h3>Body class</h3>
 
 There are CSS classes added to the &lt;body&gt; element, for styling purposes: <i>.is_phone, .isnt_phone, .is_tablet, .is_mobile,</i> <i>.is_computer</i> and <i>.isnt_computer</i>.
-<br>
+
+<hr>
+
 <h3>Library</h3>
 
-The detection algorithm is based on a lightweight PHP class, <a href="http://mobiledetect.net/" target="_blank">Mobile Detect</a> version 2.8.12.
+Device detection is based on a lightweight PHP class, <a href="http://mobiledetect.net/" target="_blank">Mobile Detect</a> version 2.8.12.

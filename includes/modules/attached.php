@@ -1,6 +1,6 @@
 <?php
 
-/*========================================================================
+/*---------------------------------------------
  *
  * Attached shortcode
  *
@@ -45,6 +45,10 @@ class CCS_Attached {
 			// Get attachment IDs from gallery field
 			$attachment_ids = CCS_Gallery_Field::get_image_ids( $current_id );
 
+      // Support for orderby title
+      if ( $orderby=='title' ) {
+        usort($attachment_ids, array($this, 'sort_gallery_by_title'));
+      }
 		} else {
 
 			$attach_args = array (
@@ -93,9 +97,7 @@ class CCS_Attached {
 		foreach ( $attachment_ids as $index => $attachment_id ) {
 
 			self::$state['current_attachment_id'] = $attachment_id;
-
 			$out[] = do_shortcode( $content );
-
 		}
 
 		self::$state['is_attachment_loop'] = false;
@@ -118,5 +120,14 @@ class CCS_Attached {
 
 		return $out;
 	}
+
+
+  public static function sort_gallery_by_title( $a, $b ) {
+
+    $a_title = CCS_Content::wp_get_attachment_field( $a, 'title' );
+    $b_title = CCS_Content::wp_get_attachment_field( $b, 'title' );
+
+    return ( $a_title < $b_title ) ? -1 : 1;
+  }
 
 }

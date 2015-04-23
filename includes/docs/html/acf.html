@@ -38,8 +38,8 @@ Use the <b>[related]</b> shortcode to loop through a relationship field.
 
 <h4>Display titles and thumbnails of related posts</h4>
 <code>[related field="relationship"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[field thumbnail]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[field thumbnail]
 [/related]
 </code>
 
@@ -53,9 +53,9 @@ Use the <b>[repeater]</b> shortcode to loop through a repeater field.
 
 <h4>Display repeater fields</h4>
 <code>[repeater field="boxes"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[field image="image"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field description format="true"]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[field image="image"]
+&nbsp;&nbsp;[field description format="true"]
 [/repeater]</code>
 
 For an image field inside, use the <i>image</i> parameter to display the field. You can set the <i>size</i> parameter to:<i> thumbnail</i>,<i> medium</i>,<i> large</i> - default is full-size. If the image field returns as URL, set <i>in="url"</i>.
@@ -80,9 +80,9 @@ This is a quick way to display a sub-field from a specific repeater field. Use b
 <h4>Nested repeater fields</h4>
 
 <code>[repeater field="boxes"]
-&nbsp;&nbsp;&nbsp;&nbsp;[-repeater field="inner_boxes"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
-&nbsp;&nbsp;&nbsp;&nbsp;[/-repeater]
+&nbsp;&nbsp;[-repeater field="inner_boxes"]
+&nbsp;&nbsp;&nbsp;&nbsp;...
+&nbsp;&nbsp;[/-repeater]
 [/repeater]</code>
 
 To display a repeater inside a repeater, use <b>[-repeater]</b>.  Please note that the inner repeater field must have a different name than its parent.
@@ -92,22 +92,22 @@ To display a repeater inside a repeater, use <b>[-repeater]</b>.  Please note th
 
 <code>[flex field="flexible_content"]
 &nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;[layout name="title_text"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field text]
-&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;&nbsp;[layout name="title_text"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[field text]
+&nbsp;&nbsp;[/layout]
 &nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;[layout name="title_image_text"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field image="image" size="thumbnail"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field text]
-&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;&nbsp;[layout name="title_image_text"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[field image="image" size="thumbnail"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field text]
+&nbsp;&nbsp;[/layout]
 &nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;[layout name="gallery"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_gallery field="gallery"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_image size="thumbnail"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/acf_gallery]
-&nbsp;&nbsp;&nbsp;&nbsp;[/layout]
+&nbsp;&nbsp;[layout name="gallery"]
+&nbsp;&nbsp;&nbsp;&nbsp;[acf_gallery field="gallery"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[acf_image size="thumbnail"]
+&nbsp;&nbsp;&nbsp;&nbsp;[/acf_gallery]
+&nbsp;&nbsp;[/layout]
 &nbsp;
 [/flex]</code><br>
 
@@ -119,9 +119,9 @@ For gallery fields, use the <b>[acf_gallery]</b>  shortcode.
 
 <h4>Display images with title</h4>
 <code>[acf_gallery field="images"]
-&nbsp;&nbsp;&nbsp;&nbsp;[acf_image]
-&nbsp;&nbsp;&nbsp;&nbsp;[acf_image field="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;[acf_image size="thumbnail"]
+&nbsp;&nbsp;[acf_image]
+&nbsp;&nbsp;[acf_image field="title"]
+&nbsp;&nbsp;[acf_image size="thumbnail"]
 [/acf_gallery]
 </code>
 
@@ -132,7 +132,7 @@ The<b> [acf_image]</b> shortcode displays each image in the gallery field. It c
 You can pass the image IDs to another shortcode.
 <h4>Pass the images to another shortcode</h4>
 <code>[pass acf_gallery="images"]
-&nbsp;&nbsp;&nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
+&nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
 [/pass]</code><br>
 
 
@@ -142,11 +142,11 @@ You can pass the image IDs to another shortcode.
 Display ACF fields from other posts, using the loop.
 
 <code>[loop name="hello-world"]
-&nbsp;&nbsp;&nbsp;&nbsp;[repeater field="boxes"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field image="image"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field description format="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;[/repeater]
+&nbsp;&nbsp;[repeater field="boxes"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;&nbsp;&nbsp;[field image="image"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field description format="true"]
+&nbsp;&nbsp;[/repeater]
 [/loop]
 </code><br>
 
@@ -156,9 +156,9 @@ Display ACF fields from other posts, using the loop.
 If the field value is stored as an array - for example, a file field - you can use the <a href="options-general.php?page=ccs_reference&tab=content#array">[array]</a> shortcode to access its contents.
 
 <code>[array file_field]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[field description]
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;a href="[field url]" download&gt;Download Link&lt;/a&gt;
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[field description]
+&nbsp;&nbsp;&lt;a href="[field url]" download&gt;Download Link&lt;/a&gt;
 [/array]
 </code><br>
 

@@ -1,6 +1,6 @@
 <?php
 
-/*========================================================================
+/*---------------------------------------------
  *
  * User shortcodes: users, user, is/isnt
  * 
@@ -30,7 +30,7 @@ class CCS_User {
 	}
 
 
-	/*========================================================================
+	/*---------------------------------------------
 	 *
 	 * Users loop
 	 *
@@ -39,10 +39,28 @@ class CCS_User {
 	function users_shortcode( $atts, $content ) {
 
 		self::$state['is_users_loop'] = true;
+    self::$state['user_query'] = '';
+
+
+    /*---------------------------------------------
+     *
+     * [if empty]
+     *
+     */
+    
+
+    // If empty
+    $middle = CCS_Loop::get_between('[if empty]', '[/if]', $content);
+    $content = str_replace($middle, '', $content);
+    $else = CCS_Loop::extract_else( $middle );
+    self::$state['if_empty'] = $middle;
+    self::$state['if_empty_else'] = $else;
+
+
 
 		$outputs = array();
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Prepare parameters
 		 *
@@ -134,8 +152,17 @@ class CCS_User {
 			}
 		}
 
+    if (isset($args['search'])) {
+      self::$state['user_query'] = $args['search'];
+      add_action( 'pre_user_query', array(__CLASS__, 'extend_search') );
+    }
+
 		$users = get_users( $args );
 
+    if (isset($args['search'])) {
+      self::$state['user_query'] = '';
+      remove_action( 'pre_user_query', array(__CLASS__, 'extend_search') );
+    }
 		
 		/*---------------------------------------------
 		 *
@@ -176,6 +203,13 @@ class CCS_User {
 			$outputs[] = do_shortcode( $content );
 		}
 
+    // [if empty]..[else]..[/if]
+    if (count($users) == 0 && isset(self::$state['if_empty'])) {
+      $outputs[] = do_shortcode( self::$state['if_empty'] );
+    } elseif (isset(self::$state['if_empty_else']) && count($users) > 0) {
+      $outputs[] = do_shortcode( self::$state['if_empty_else'] );
+    } 
+
 		self::$state['is_users_loop'] = false;
 		return implode('', $outputs);
 	}
@@ -185,7 +219,24 @@ class CCS_User {
 	}
 
 
-	/*========================================================================
+  static function extend_search( $query ) {
+
+    global $wpdb;
+ 
+    if (!empty(self::$state['user_query'])) {
+
+      $display_name = self::$state['user_query'];
+
+      $query->query_where .= $wpdb->prepare(
+        " OR $wpdb->users.display_name LIKE %s", '%'
+        .$wpdb->esc_like($display_name).'%');
+    }
+    return $query;
+  }
+
+
+
+	/*---------------------------------------------
 	 *
 	 * [user]
 	 *
@@ -207,7 +258,8 @@ class CCS_User {
 		extract(shortcode_atts(array(
 			'field' => '',
 			'meta' => '', // Alias
-			'size' => ''
+			'size' => '',
+      'out' => ''
 		), $atts));
 
 		if(empty($current_user)) return; // no current user
@@ -249,8 +301,30 @@ class CCS_User {
 				return strval( count_user_posts( $current_user->ID ) );
 				break;
 			case 'role':
-				return rtrim(implode(',',array_map('ucwords', $current_user->roles)),',');
+        if ($out=='slug') {
+          return rtrim(implode(',', $current_user->roles),',');
+        } else {
+          return rtrim(implode(',',array_map('ucwords', $current_user->roles)),',');
+        }
 				break;
+      case 'agent':
+        return $_SERVER["HTTP_USER_AGENT"];
+        break;
+      case 'device':
+        if (class_exists('CCS_Mobile_Detect')) {
+          return CCS_Mobile_Detect::$device;
+        } else return null;
+        break;
+      case 'device-type':
+        if (class_exists('CCS_Mobile_Detect')) {
+          return CCS_Mobile_Detect::$device_type;
+        } else return null;
+        break;
+      case 'browser':
+        if (class_exists('CCS_Mobile_Detect')) {
+          return CCS_Mobile_Detect::$browser;
+        } else return null;
+        break;
 			default:
 				return get_user_meta( $current_user->ID, $field, true );
 				break;
@@ -274,7 +348,7 @@ class CCS_User {
 	}
 
 
-	/*========================================================================
+	/*---------------------------------------------
 	 *
 	 * [is]
 	 *
@@ -291,6 +365,7 @@ class CCS_User {
 			'role' => '',
 			'capable' => '',
 			'compare' => 'OR',
+      'device' => ''
 		), $atts));
 
 		$condition = false;
@@ -384,6 +459,20 @@ class CCS_User {
 			}
 		}
 
+    if (class_exists('CCS_Mobile_Detect')) {
+      if ( !empty($device) ) {
+        $condition = (strtolower(CCS_Mobile_Detect::$device) == strtolower($device));
+      } elseif ( isset( $atts['mobile'] ) ) {
+        $condition = CCS_Mobile_Detect::$is_mobile;
+      } elseif ( isset( $atts['phone'] ) ) {
+        $condition = (CCS_Mobile_Detect::$device_type == 'phone');
+      } elseif ( isset( $atts['tablet'] ) ) {
+        $condition = (CCS_Mobile_Detect::$device_type == 'tablet');
+      } elseif ( isset( $atts['computer'] ) ) {
+        $condition = (CCS_Mobile_Detect::$device_type == 'computer');
+      }
+    }
+
 
 		if ( ($tag=='isnt') || (isset($atts['not'])) )
 			$condition = !$condition;
@@ -401,12 +490,12 @@ class CCS_User {
 	}
 
 
-	/*========================================================================
-	 *
-	 * [blog]
-	 *
-	 */
-
+  /*---------------------------------------------
+   *
+   * [blog]
+   *
+   */
+  
 	function blog_shortcode( $atts, $content ){
 
 		extract(shortcode_atts(array(
@@ -426,11 +515,11 @@ class CCS_User {
 	}
 
 
-	/*========================================================================
-	 *
-	 * [list_shortcodes]
-	 *
-	 */
+  /*---------------------------------------------
+   *
+   * [list_shortcodes]
+   *
+   */
 
 	function list_shortcodes( ) {
 		global $shortcode_tags;
@@ -449,13 +538,14 @@ class CCS_User {
 	}
 
 
-	/**
-	 *
-	 * [search_form]
-	 *
-	 * @param type Search only this post type
-	 *
-	 */
+  /*---------------------------------------------
+   *
+   * [search_form]
+   *
+   * @param type Search only this post type
+   *
+   */
+  
 
 	function search_form_shortcode( $atts, $content ) {
 
@@ -479,6 +569,12 @@ class CCS_User {
 
 }
 
+
+/*---------------------------------------------
+ *
+ * Utility
+ *
+ */
 
 if ( ! function_exists( 'blog_exists' ) ) {
 

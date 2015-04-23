@@ -50,6 +50,8 @@ Use the <b>[pass] </b>shortcode to pass a field value to another shortcode.
 &nbsp;&nbsp;[isotope_gallery ids="{FIELD}"]
 [/pass]</code>
 
+<hr>
+
 <h3>Pass field value to [if]</h3>
 
 If you're passing a field that could be empty, specify the <i>empty</i> parameter with the [if] statement.
@@ -79,26 +81,19 @@ This is necessary because if the value is empty, the [if] statement by default o
 &nbsp;&nbsp;[/if]
 [/pass]</code>
 
-
 <hr>
 
-<h3>User field</h3>
+<h3>Multiple fields</h3>
 
-<h4>Pass a single user field</h4>
+Pass values from multiple fields using the <i>fields</i> parameter.
 
-<code>[pass user_field="twitter"]
-&nbsp;&nbsp;Your twitter address: {USER_FIELD}
+<code>[pass fields="post_type_field, category_field"]
+&nbsp;&nbsp;[loop type="{POST_TYPE_FIELD}" category="{CATEGORY_FIELD}"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[/loop]
 [/pass]</code>
 
-For a list of default user fields, see <a href="options-general.php?page=ccs_reference&tab=user">the [user] shortcode</a>.
-
-<h4>Pass several user fields</h4>
-
-<code>[pass user_fields="name,email"]
-&nbsp;&nbsp;Hello {NAME}, you email is {EMAIL}.
-[/pass]</code>
-
-This works in the same way as multiple post fields, explained below. The replaced tag is an uppercase version of the field name.
+This works in the same way as <a href="options-general.php?page=ccs_reference&tab=loop#field-tags">field tags</a> for the <b>[loop]</b> shortcode.
 
 <hr>
 
@@ -113,20 +108,7 @@ You can loop through a comma-separated list stored in a field, and pass each ite
 &nbsp;&nbsp;&nbsp;&nbsp;Product: [field title]
 &nbsp;&nbsp;&nbsp;&nbsp;Price: [field price]
 &nbsp;&nbsp;[/loop]
-[/pass]</code><br>
-<hr>
-
-<h3>Multiple fields</h3>
-
-Pass values from multiple fields using the <i>fields</i> parameter.
-
-<code>[pass fields="post_type_field, category_field"]
-&nbsp;&nbsp;[loop type="{POST_TYPE_FIELD}" category="{CATEGORY_FIELD}"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;[/loop]
 [/pass]</code>
-
-This works in the same way as <a href="options-general.php?page=ccs_reference&tab=loop#field-tags">field tags</a> for the <b>[loop]</b> shortcode.
 
 <hr>
 
@@ -153,6 +135,26 @@ Available parameters:
   <li><b>order</b> - ASC or DESC</li>
   <li><b>orderby</b> - <i>id</i>, <i>count</i>, <i>name</i> (default), <i>slug</i></li>
 </ul>
+
+<hr>
+
+<h3>User field</h3>
+
+<h4>Pass a single user field</h4>
+
+<code>[pass user_field="twitter"]
+&nbsp;&nbsp;Your twitter address: {USER_FIELD}
+[/pass]</code>
+
+For a list of default user fields, see <a href="options-general.php?page=ccs_reference&tab=user">the [user] shortcode</a>.
+
+<h4>Pass several user fields</h4>
+
+<code>[pass user_fields="name,email"]
+&nbsp;&nbsp;Hello {NAME}, you email is {EMAIL}.
+[/pass]</code>
+
+This works in the same way as multiple post fields, explained below. The replaced tag is an uppercase version of the field name.
 
 <hr>
 
@@ -187,6 +189,12 @@ To pass a global variable or its array value, use the <i>global</i> parameter.
 
 <code>[pass global="_GET" field="q"]
 &nbsp;&nbsp;Current URL request: {FIELD}
+[/pass]</code>
+
+<h4>Multiple fields</h4>
+
+<code>[pass global="_GET" fields="type, category, status"]
+&nbsp;&nbsp;Queries: {TYPE}, {CATEGORY}, {STATUS}
 [/pass]</code>
 
 <h4>If the global variable is a nested array</h4>

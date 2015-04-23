@@ -6,8 +6,8 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
-Tested up to: 4.1.1
-Stable tag: 1.9.3
+Tested up to: 4.2
+Stable tag: 2.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,13 +30,14 @@ There is a reference section under Settings -> Custom Content.
 Here are some of the included features:
 
 * **Dynamic templates** with shortcodes
+* **Pagination** for post loops
 * View your site's **content structure**
 * Display **comments** and **attachments**
 * **User info** and content based on user status
 * **Relative URLs** for links and images
-* Simple **gallery field** for any post type
 * **Cache** the result of query loops
-* Option to enable **Mobile Detect**
+* **Gallery field** (optional)
+* **Mobile Detect** (optional)
 
 Support for other plugins:
 
@@ -82,6 +83,56 @@ Support for other plugins:
 * [loop] - Hierarchical posts: include children by default; **please note** that this is different behavior than previous versions; to get top-level parents only, set *exclude="children"*
 
 == Changelog ==
+
+= 2.1.2 =
+
+* [content words] - No HTML or formatting for trimmed content by default
+* [if], [pass] - Improve pass and check for user field: role
+
+= 2.1.1 =
+
+* Finally, a pagination feature for the loop! Please refer to the documentation for details
+* Option to enable HTML Block module
+* Numerous internal improvements
+
+= 2.0.5 =
+
+* [attached] - Enable setting image size for attachment URL
+* [content words] - Apply formatting to post content by default, before it's trimmed
+* [field] - Add parameter *property* to get value from field when it's an object
+* [field currency] - Format currency value; see documentation under Content -> Currency
+* [field image-url] - Enable setting image size to return
+* [if] - Improve checking for first/last post in loop
+* [users] - Add support for [if empty]..[else]..[/if]
+* [users search] - Improve users search by keyword
+
+= 2.0.2 =
+
+* [if taxonomy] - If no term is set, check if current post has any term in the taxonomy
+* Mobile Detect - Improve support when module is active
+* [is] - Add parameters: *mobile*, *phone*, *tablet*, and *computer*
+* [user] - Add parameters: *agent*, *browser*, *device*, *device-type*
+
+= 2.0.0 =
+
+* [comment] - Add field *content-link*
+* [comments] - Add parameter *exclude* to exclude post ID
+* [field] - Add predefined field *post-status*
+* [pass] - Pass current post category as {CATEGORY}
+
+= 1.9.8 =
+
+* [loop] - Support for second date field query: *field_2*, *value_2*
+* [loop] - Better control of date field query with *today*, *future* and *past*
+* Improve documentation
+
+= 1.9.6 =
+
+* [attached gallery] - Support *orderby="title"*
+* [content filter] - Working on support for Page Builder by SiteOrigin
+* [comments] - Add parameters: *category*, *tag*, *taxonomy* and *term*
+* [loop orderby] - Sort by comment date: *orderby="comment-date"*
+* [pass global] - Enable multiple fields with parameter *fields*
 
 = 1.9.3 =
 

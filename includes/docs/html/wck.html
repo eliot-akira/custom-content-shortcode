@@ -23,8 +23,8 @@ You must specify a metabox name.
 For multiple fields from the same metabox, you can use the <b>[metabox]</b> shortcode.
 
 <code>[metabox name="metabox_name"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
-&nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
+&nbsp;&nbsp;[field field_name]
+&nbsp;&nbsp;[field another_field]
 [/metabox]
 </code><br>
 
@@ -34,8 +34,8 @@ Use <b>[repeater]</b> to display a repeating metabox.
 
 <h4>Display repeater fields</h4>
 <code>[repeater metabox="metabox_name"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
-&nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
+&nbsp;&nbsp;[field field_name]
+&nbsp;&nbsp;[field another_field]
 [/repeater]
 </code><br>
 
@@ -51,10 +51,10 @@ Use <b>[repeater]</b> to display a repeating metabox.
 
 <h4>Display repeater fields from five recent posts</h4>
 <code>[loop type="post_type" count="5"]
-&nbsp;&nbsp;&nbsp;&nbsp;Post Title: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[repeater metabox="metabox_name"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
-&nbsp;&nbsp;&nbsp;&nbsp;[/repeater]
+&nbsp;&nbsp;Post Title: [field title]
+&nbsp;&nbsp;[repeater metabox="metabox_name"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field field_name]
+&nbsp;&nbsp;&nbsp;&nbsp;[field another_field]
+&nbsp;&nbsp;[/repeater]
 [/loop]
 </code>

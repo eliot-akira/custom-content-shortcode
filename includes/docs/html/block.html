@@ -1,0 +1,66 @@
+<h3 align="center">HTML Blocks</h3>
+
+<hr>
+
+Block shortcodes can be used as placeholders for HTML tags in the post.
+
+The advantage is that the tags will be visible and protected in the post editor in Visual mode.
+
+You can enable this module under <a href="options-general.php?page=ccs_reference&tab=settings">Settings</a>.
+
+Thanks to @szepeviktor for suggesting this feature. 
+
+<hr>
+
+The most basic one is [block].  By default, it creates a &lt;div&gt;.
+
+<code>[block]
+&nbsp;&nbsp;...
+[/block]
+</code>
+
+You can set the <i>tag</i> parameter to create other HTML tags.
+
+<code>[block tag="article"]
+&nbsp;&nbsp;...
+[/block]
+</code>
+
+<hr>
+
+Any HTML attribute can be specified as parameter.
+
+<code>[block id="left-block" class="col-md-6" style="margin-left:0"]
+&nbsp;&nbsp;...
+[/block]
+[block id="right-block" class="col-md-6" style="margin-right:0"]
+&nbsp;&nbsp;...
+[/block]
+</code>
+
+<hr>
+
+To make nested blocks, use the minus prefix.
+
+<code>[block]
+&nbsp;&nbsp;[-block]
+&nbsp;&nbsp;&nbsp;&nbsp;[--block]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+&nbsp;&nbsp;&nbsp;&nbsp;[/--block]
+&nbsp;&nbsp;[/-block]
+[/block]
+</code>
+
+<hr>
+
+Shortcodes are also provided for all major HTML tags.
+
+<code>[article]
+&nbsp;&nbsp;[section]
+&nbsp;&nbsp;&nbsp;&nbsp;[h1]Title[/h1]
+&nbsp;&nbsp;[/section]
+&nbsp;&nbsp;[section]
+&nbsp;&nbsp;&nbsp;&nbsp;[h1]Title[/h1]
+&nbsp;&nbsp;[/section]
+[/article]
+</code>

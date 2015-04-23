@@ -5,10 +5,10 @@ This is a feature to create a loop for each category, tag, or taxonomy term.
 
 <h4>Display 3 most recent posts for each category</h4>
 <code>[for each="category"]
-&nbsp;&nbsp;&nbsp;&nbsp;Category: [each name]
-&nbsp;&nbsp;&nbsp;&nbsp;[loop type="post" count="3"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field title-link]
-&nbsp;&nbsp;&nbsp;&nbsp;[/loop]
+&nbsp;&nbsp;Category: [each name]
+&nbsp;&nbsp;[loop type="post" count="3"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field title-link]
+&nbsp;&nbsp;[/loop]
 [/for]</code>
 The [for] shortcode loops through all existing terms of a given taxonomy, in this case <i>category</i>. The current term is automatically passed to the [loop] inside.
 <br>
@@ -53,10 +53,10 @@ Inside a loop, the <b>[for]</b> shortcode gets taxonomy terms from the current p
 
 <h4>Display a link for each category assigned to a post</h4>
 <code>[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[for each="category"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[each link]
-&nbsp;&nbsp;&nbsp;&nbsp;[/for]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[for each="category"]
+&nbsp;&nbsp;&nbsp;&nbsp;[each link]
+&nbsp;&nbsp;[/for]
 [/loop]</code><br>
 <hr>
 <h3>Current post</h3>
@@ -65,7 +65,7 @@ Outside the loop, the <b>[for]</b> shortcode gets all terms that have any posts 
 
 <h4>Display a link for each category assigned to the current post</h4>
 <code>[for each="category" current="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;[each link]
+&nbsp;&nbsp;[each link]
 [/for]
 </code><br>
 
@@ -75,9 +75,9 @@ Outside the loop, the <b>[for]</b> shortcode gets all terms that have any posts 
 To display something if there's no term found, use <b>[for-else]</b>.
 
 <code>[for each="category" current="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;[each link]
+&nbsp;&nbsp;[each link]
 [for-else]
-&nbsp;&nbsp;&nbsp;&nbsp;No category found
+&nbsp;&nbsp;No category found
 [/for]
 </code><br>
 
@@ -88,23 +88,23 @@ To display child terms separately from parents, use a nested <b>[for]</b> loop.
 
 <h4>List parent categories, with children</h4>
 <code>[for each="category" parents="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;Parent: [each link]
-&nbsp;&nbsp;&nbsp;&nbsp;[-for each="child"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Child: [-each link]
-&nbsp;&nbsp;&nbsp;&nbsp;[/-for]
+&nbsp;&nbsp;Parent: [each link]
+&nbsp;&nbsp;[-for each="child"]
+&nbsp;&nbsp;&nbsp;&nbsp;Child: [-each link]
+&nbsp;&nbsp;[/-for]
 [/for]
 </code>
 You can use <b>[if children]</b> to display something only if the current term has child terms.
 
 <code>[for each="category"]
-&nbsp;&nbsp;&nbsp;&nbsp;[if children]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Parent: [each link]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[-for each="child"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Child: [-each link]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[/-for]
-&nbsp;&nbsp;&nbsp;&nbsp;[else]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[each link]
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[if children]
+&nbsp;&nbsp;&nbsp;&nbsp;Parent: [each link]
+&nbsp;&nbsp;&nbsp;&nbsp;[-for each="child"]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Child: [-each link]
+&nbsp;&nbsp;&nbsp;&nbsp;[/-for]
+&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;[each link]
+&nbsp;&nbsp;[/if]
 [/for]
 </code><br>
 
@@ -116,12 +116,12 @@ Use the <i>trim</i> parameter to create a list of terms. It removes extra space 
 
 <h4>Display a list of categories</h4>
 <code>[for each="category" trim="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;[each], 
+&nbsp;&nbsp;[each], 
 [/for]</code>
 
 <h4>Trim other characters</h4>
 <code>[for each="category" trim="/"]
-&nbsp;&nbsp;&nbsp;&nbsp;[each] / 
+&nbsp;&nbsp;[each] / 
 [/for]</code>
 <br>
 <a id="related-posts" name="related-posts" href="#"></a>
@@ -133,7 +133,7 @@ Use the <b>[related]</b> shortcode to loop through posts related by taxonomy.
 <h4>Display posts in the same category as current post</h4>
 
 <code>[related taxonomy="category" count="3"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title-link]
+&nbsp;&nbsp;[field title-link]
 [/related]</code>
 
 The current post will not be included in the result.

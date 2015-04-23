@@ -5,16 +5,16 @@ Use <b>[loop]</b> to get posts and loop through them.
 
 <h4>Display five most recent posts</h4>
 <code>[loop type="post" count="5"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[field date]
-&nbsp;&nbsp;&nbsp;&nbsp;[field excerpt]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[field date]
+&nbsp;&nbsp;[field excerpt]
 [/loop]</code>
 
 <h4>Display all posts in a custom post type and category</h4>
 <code>[loop type="apartment" category="suite"]
-&nbsp;&nbsp;&nbsp;&nbsp;Apartment: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;Rent per day: [field price]
-&nbsp;&nbsp;&nbsp;&nbsp;Description: [content]
+&nbsp;&nbsp;Apartment: [field title]
+&nbsp;&nbsp;Rent per day: [field price]
+&nbsp;&nbsp;Description: [content]
 [/loop]</code>
 
 The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop.
@@ -31,10 +31,12 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 <ul>
 	<li><b>id</b> - show post by ID; <i>id="1,3,5,7"</i></li>
 	<li><b>exclude</b> - exclude post by ID; <i>exclude="1,3,5,7"</i></li>
-  <div class="indent">
-    <i>this</i> to exclude current post
-    <i>children</i> to show only top-level posts
-  </div>
+  <li>
+    <ul>
+      <li><i>this</i> - exclude current post</li>
+      <li><i>children</i> - show only top-level posts</li>
+    </ul>
+  </li>
 </ul>
 
 <h4>Post count and status</h4>
@@ -74,9 +76,10 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 	<li><b>field</b> - field name</li>
 	<li><b>value</b> - value to search for</li>
 	<li><b>start</b> - use instead of <b>value</b> to check only the beginning of field value</li>
-	<li><b>compare</b> - <i>equal</i> (default), <i>not</i>, <i>like</i>, <i>more</i>, <i>less</i>, or operators like <i>&gt;=</i> and <i>&lt;=</i>.</li>
-</ul><ul>
-	<li><b>relation</b>, <b>field_2</b>, <b>value_2</b>, <b>compare_2</b> - additional field query, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
+  <li><b>compare</b> - <i>equal</i> (default), <i>not</i>, <i>more</i>, <i>less</i>, or operator like &lt; and &gt;.</li>
+</ul>
+<ul>
+	<li><b>field_2</b>, <b>value_2</b>, <b>compare_2</b>, <b>relation</b> - additional field query, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
 </ul>
 
 <h4>Date field</h4>
@@ -84,22 +87,43 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 <ul>
 	<li><b>field</b> - field name</li>
 	<li><b>value</b> - field value</li>
-	<li><b>compare</b> - <i>equal</i> (default), <i>not</i> (not equal), <i>more</i> (greater than), <i>less</i> (less than)</li>
+  <li>
+    <ul>
+      <li>You can specify exact value, or use the following predefined values.</li>
+      <li><i>today</i> - compare to today</li>
+      <li><i>now</i> - if your field contains date <i>and</i> time</li>
+      <li><i>future</i> - today and after</li>
+      <li><i>past</i> - before today</li>
+      <li><i>past and today</i> - past including today</li>
+    </ul>
+  </li>
+	<li><b>compare</b> - <i>equal</i> (default), <i>not</i>, <i>more</i>, <i>less</i>, or operator like &lt; and &gt;.</li>
+  <li><b>before</b>/<b>after</b> - used in place of <i>value</i> and <i>compare</i>; query for field values before/after a relative or specific date: <i>2 weeks ago</i>, or <i>2015-02-01</i></li>
+  <li><b>date_format</b> - date format of the field value; default is "Y-m-d".</li>
   <li><b>in="string"</b> - if the date field is stored as string; by default, UNIX timestamp is assumed</li>
-  <li><b>value="today"</b> - compare to today; use <i>now</i> if your field contains date <i>and</i> time</li>
-	<li><b>value="future"</b> or <b>"past"</b> - future or past dates; no need to set <i>compare</i> parameter; use <i>future-time</i> and <i>past-time</i> if your field contains date <i>and</i> time</li>
 </ul>
 
 <h4>Parent</h4>
-
 <ul>
-  <li><b>parent</b> - display all children of a parent, specified by ID or slug. Use <i>parent="this"</i> to get current post's children. Use <i>parent="same"</i> to get current post's siblings: posts which share the same parent as current post; if you want to exclude the current post, also set <i>exclude="this"</i>.</li>
-  <li><b>exclude="children"</b> - display top-level posts only</li>
+  <li><b>parent</b> - display all children of a parent specified by ID or slug</li>
+  <li>
+    <ul>
+      <li><i>this</i> - get current post's children</li>
+      <li><i>same</i> - get current post's siblings (posts which share the same parent)</li>
+    </ul>
+  </li>
+  <li><b>exclude</b></li>
+  <li>
+     <ul>
+       <li><i>children</i> - display top-level posts only</li>
+       <li><i>this</i> - don't include current post</li>
+     </ul>
+  </li>
 </ul>
 
 <h4>Sorting and series</h4>
 <ul>
-	<li><b>orderby</b> - order by<i> ID</i>,<i> author</i>,<i> title</i>,<i> name</i>,<i> date</i>,<i> rand</i> (randomized),<i> modified</i>,<i> menu_order</i>,<i> parent</i>,<i> field</i> (field value: string), or<i> field_num</i> (field value: number)</li>
+	<li><b>orderby</b> - order by<i> ID</i>,<i> author</i>,<i> title</i>,<i> name</i>,<i> date</i>,<i> comment-date</i>,<i> rand</i> (randomized),<i> modified</i>,<i> menu_order</i>,<i> parent</i>,<i> field</i> (field value: string), or<i> field_num</i> (field value: number)</li>
 	<li><b>order</b> - ASC (ascending/alphabetical) or DESC (descending/from most recent date) when using the <i>orderby</i> parameter</li>
 	<li><b>key</b> - when ordering by<i> field</i> or<i> field_num</i>, specify<b> key</b> as the name of the custom field to order by</li>
 	<li><b>series</b>, <b>key</b> - order posts by a series of custom field values, where <i>key</i> is the name of the field - the series can include ranges, for example: <i>1-15,30-40,42,44</i>.</li>
@@ -128,6 +152,16 @@ Multiple values are possible: <i>value="first, second"</i>. This will return all
 	<li><b>list_class</b>, <b>list_style</b> - add class or style to the list
 	<li><b>item</b> - tag to wrap each loop item; default is <i>li</i>, or specify tag like <i>span</i></li>
 	<li><b>item_class</b>, <b>item_style</b> - add class or style to each item
+</ul>
+
+
+<h4>Paged</h4>
+<ul>
+  <li><b>paged</b> - number of posts per page</li>
+  <li><b>maxpage</b> - maximum number of pages</li>
+
+  These are used with the <a href="options-general.php?page=ccs_reference&tab=paged">[loopage] shortcode</a> to create pagination.
+
 </ul>
 
 <h4>Cache</h4>
@@ -223,12 +257,12 @@ Multiple values are possible: <i>value="first, second"</i>. This will return all
 This is a feature to expand a list of fields to their values.
 
 <code>[loop type="post" fields="custom_field, another_field"]
-&nbsp;&nbsp;&nbsp;&nbsp;Display {CUSTOM_FIELD} and {ANOTHER_FIELD}
+&nbsp;&nbsp;Display {CUSTOM_FIELD} and {ANOTHER_FIELD}
 [/loop]</code>
 
 The {FIELD} tags are uppercase versions of the field names.
 
-There are also predefined tags: COUNT, URL, ID, TITLE, AUTHOR, AUTHOR_URL, DATE, THUMBNAIL, THUMBNAIL_URL, CONTENT, EXCERPT, COMMENT_COUNT, TAGS, IMAGE, IMAGE_ID, IMAGE_URL.
+There are also predefined tags: COUNT, URL, ID, TITLE, AUTHOR, AUTHOR_URL, DATE, THUMBNAIL, THUMBNAIL_URL, CONTENT, EXCERPT, COMMENT_COUNT, CATEGORY, TAGS, IMAGE, IMAGE_ID, IMAGE_URL.
 
 If you want to pass field values to the loop shortcode itself, refer to: <a href="options-general.php?page=ccs_reference&tab=other#field-as-parameter">Field as parameter</a>.
 

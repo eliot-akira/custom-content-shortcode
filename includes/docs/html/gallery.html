@@ -7,9 +7,9 @@ You can add, order, edit details and remove images from the field.
 
 <h4>Display images from the gallery field</h4>
 <code>[attached gallery]
-&nbsp;&nbsp;&nbsp;&nbsp;Title: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;Full-size image: [field image]
-&nbsp;&nbsp;&nbsp;&nbsp;Caption: [field caption]
+&nbsp;&nbsp;Title: [field title]
+&nbsp;&nbsp;Full-size image: [field image]
+&nbsp;&nbsp;Caption: [field caption]
 [/attached]</code>
 For each image, these fields can be displayed: <i>id</i>, <i>title</i>, <i>image</i>, <i>image-url</i>, <i>caption</i>, <i>description</i>,<i> thumbnail</i>, and<i> thumbnail-url</i>.
 <br>
@@ -18,12 +18,16 @@ For each image, these fields can be displayed: <i>id</i>, <i>title</i>, <i>im
 
 <h4>Display gallery fields of each post in a loop</h4>
 <code>[loop type="post" category="colorful"]
-&nbsp;&nbsp;&nbsp;&nbsp;Post Title: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;Description: [content]
-&nbsp;&nbsp;&nbsp;&nbsp;[attached gallery columns="4"]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field thumbnail]
-&nbsp;&nbsp;&nbsp;&nbsp;[/attached]
+&nbsp;&nbsp;Post Title: [field title]
+&nbsp;&nbsp;Description: [content]
+&nbsp;&nbsp;[attached gallery columns="4"]
+&nbsp;&nbsp;&nbsp;&nbsp;[field thumbnail]
+&nbsp;&nbsp;[/attached]
 [/loop]</code><br>
+<hr>
+<h3>Sort by title</h3>
+
+To sort images by title instead of gallery order, use parameter <i>orderby="title"</i>.
 <hr>
 
 <h3>Native or Bootstrap gallery</h3>

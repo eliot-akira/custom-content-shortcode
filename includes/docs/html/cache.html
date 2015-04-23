@@ -4,7 +4,7 @@
 Use the <b>[cache]</b> shortcode to cache page sections.
 
 <code>[cache name="name_of_cache" expire="1 day"]
-&nbsp;&nbsp;&nbsp;&nbsp;...
+&nbsp;&nbsp;...
 [/cache]
 </code>
 
@@ -33,8 +33,8 @@ Please note that the cache only stores the HTML output. Plugin shortcodes with J
 You can cache the result of a loop directly.
 
 <code>[loop type="post" count="5" cache="true" expire="1 day"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title-link]
-&nbsp;&nbsp;&nbsp;&nbsp;[field thumbnail]
+&nbsp;&nbsp;[field title-link]
+&nbsp;&nbsp;[field thumbnail]
 [/loop]
 </code>
 
@@ -47,7 +47,7 @@ A unique cache name is automatically generated based on the query parameters.
 This is a little tool to measure performance.
 
 <code>[timer start]
-&nbsp;&nbsp;&nbsp;&nbsp;...
+&nbsp;&nbsp;...
 [timer stop]
 </code>
 
@@ -68,7 +68,7 @@ Here are the commands available:
 You can time a loop directly.
 
 <code>[loop type="post" timer="true"]
-&nbsp;&nbsp;&nbsp;&nbsp;...
+&nbsp;&nbsp;...
 [/loop]
 </code>
 

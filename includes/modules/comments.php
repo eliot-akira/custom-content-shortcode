@@ -1,7 +1,6 @@
 <?php
 
-
-/*========================================================================
+/*---------------------------------------------
  *
  * Comment shortcodes
  * 
@@ -54,7 +53,7 @@ class CCS_Comments {
 
 			$fields = array(
 				'ID', 'post_ID', 'author', 'author_email', 'author_url', 'date',
-				'content', 'user_id', 'avatar', 'count', 'counted',
+				'content', 'content-link', 'user_id', 'avatar', 'count', 'counted',
 				'title', 'url', 'post-url', 'title_link', 'author_link', 'link'
 			);
 
@@ -136,6 +135,18 @@ class CCS_Comments {
 							if (empty($format)) $format='true'; // Format content by default
 						break;
 
+
+            case 'content-link':
+              $comment_id = $comment->comment_ID;
+              $url = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
+
+              if (isset($comment->comment_content)) {
+                $out = $comment->comment_content;
+              } else {
+                $out = '';
+              }
+              if (empty($format)) $format='true'; // Format content by default
+            break;
 						default:
 							if (isset($comment->{$field}))
 								$out = $comment->{$field};
@@ -154,20 +165,6 @@ class CCS_Comments {
 				$out = mb_substr($the_excerpt, 0, $length, 'UTF-8');
 			}
 
-			// Wrap in link after trimming
-			if (
-            isset($atts['title-link']) ||
-            isset($atts['post-link']) ||
-            isset($atts['author-link']) ||
-            isset($atts['link']) )
-      {
-				if (!empty($title) && !empty($url))
-					$out = '<a href="'.$url.'">'.$title.'</a>';
-				elseif (!empty($title))
-					$out = $title; // no link found
-			}
-
-
       if (isset($atts['date'])) {
 
         if (!empty($date_format)) {
@@ -182,10 +179,31 @@ class CCS_Comments {
 				$out = apply_filters('the_content', $out);
 			}
 
+      // Wrap in link after trimming and format
+      if (
+            isset($atts['title-link']) ||
+            isset($atts['post-link']) ||
+            isset($atts['author-link']) ||
+            isset($atts['link']) )
+      {
+        if (!empty($title) && !empty($url))
+          $out = '<a href="'.$url.'">'.$title.'</a>';
+        elseif (!empty($title))
+          $out = $title; // no link found
+      } elseif (isset($atts['content-link']) && !empty($out) && !empty($url) ) {
+        $out = '<a href="'.$url.'">'.$out.'</a>';
+      }
+
 			return $out;
 		}
 
-		// Start a comments loop?
+
+    /*---------------------------------------------
+     *
+     * Comments loop
+     *
+     */
+
 		if ( !empty($count) || !empty($id) ||
 			 ( ($tag=='comments') && !empty($content) ) ) {
 
@@ -222,11 +240,46 @@ class CCS_Comments {
 				'post_status' => '',
 				'post_type' => '',
 				'status' => 'approve',
+        'post__not_in' => '',
 				'type' => '',
 				'user_id' => '',
 			);
 
 			$args = array();
+
+      // Aliases
+      if ( isset($atts['type']) ) {
+        $atts['post_type'] = CCS_Loop::explode_list($atts['type']);
+        unset($atts['type']);
+      }
+      if ( isset($atts['exclude']) ) {
+        $atts['post__not_in'] = CCS_Loop::explode_list($atts['exclude']);
+        unset($atts['exclude']);
+      }
+
+      $taxonomy_filter = false;
+      if ( isset($atts['category']) ) {
+        $atts['taxonomy'] = 'category';
+        $atts['term'] = $atts['category'];
+        unset($atts['category']);
+      } elseif ( isset($atts['tag']) ) {
+        $atts['taxonomy'] = 'tag';
+        $atts['term'] = $atts['tag'];
+        unset($atts['tag']);
+      }
+
+      $max = 999;
+      if ( isset($atts['taxonomy']) && isset($atts['term']) ) {
+        $taxonomy_filter = true;
+        $max = $atts['number'];
+        $atts['number'] = $max; // Max posts
+        unset($atts['number']);
+        $taxonomy = $atts['taxonomy'];
+        $terms = CCS_Loop::explode_list($atts['term']);
+        unset($atts['taxonomy']);
+        unset($atts['term']);
+      }
+
 			foreach ($defaults as $key => $value) {
 				if (!empty($atts[$key])) {
 					if ($key=='status' && $atts[$key]=='all') {
@@ -241,10 +294,30 @@ class CCS_Comments {
 
 			$comments = get_comments( $args );
 
+      $index = 0;
 			// Loop through each comment
 			foreach ($comments as $comment) {
-				self::$state['current_comment'] = $comment;
-				$out .= do_shortcode( $content );
+
+        if ($index > $max) break;
+
+        $matches = true;
+        if ($taxonomy_filter) {
+          $matches = false;
+          $pid = $comment->comment_post_ID;
+          $post_tax = do_shortcode('[taxonomy '.$taxonomy.' id="'.$pid.'" out="slug"]');
+          $post_tax = explode(' ', $post_tax); // Convert to array
+          foreach ($terms as $term) {
+            if (in_array($term, $post_tax)) {
+              $matches = true;
+              $index++;
+            }
+          }
+        }
+
+        if ($matches) {
+          self::$state['current_comment'] = $comment;
+          $out .= do_shortcode( $content );
+        }
 			}
 			self::$state['is_comments_loop'] = false;
 			return $out;

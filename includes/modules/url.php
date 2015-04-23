@@ -1,6 +1,6 @@
 <?php
 
-/*========================================================================
+/*---------------------------------------------
  *
  * Relative URL shortcodes - [url site/theme/child/views/content/uploads]
  *
@@ -104,10 +104,17 @@ class CCS_URL {
 				}
 				break;
 
-			case 'layout':
-			case 'views':
-				$url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = content_url().'/'.$arg);
-				break;
+      case 'layout':
+        $url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = content_url().'/'.$arg);
+        break;
+      case 'views':
+        if (defined('VIEWS_URL')) {
+          $url = VIEWS_URL;
+        } else {
+          $url = isset($urls[$arg]) ?
+            $urls[$arg] : ($urls[$arg] = content_url().'/'.$arg);
+        }
+        break;
 
 			case 'login':
 				$url = wp_login_url( $go ); // Don't store this, as go parameter could be different

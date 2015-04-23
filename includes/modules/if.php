@@ -1,9 +1,9 @@
 <?php
-
-
-/*========================================================================
+/*---------------------------------------------
  *
  * [if] - Display content based on conditions
+ *
+ * @todo Add filters
  *
  */
 
@@ -88,7 +88,7 @@ class CCS_If {
 		$content = $if_else['if'];
 		$else = $if_else['else'];
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * If we're inside loop shortcode
 		 *
@@ -98,7 +98,7 @@ class CCS_If {
 
 			if (!empty($every)) {
 
-				/*========================================================================
+				/*---------------------------------------------
 				 *
 				 * Every X number of posts in [loop]
 				 *
@@ -121,7 +121,7 @@ class CCS_If {
 
 		} // End [loop] only conditions
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Get global post info
 		 *
@@ -140,7 +140,7 @@ class CCS_If {
 		// @todo Combine with [if field] without value
 		if ( !empty($flag) ) {
 
-			/*========================================================================
+			/*---------------------------------------------
 			 *
 			 * Check field as condition [if flag="field"]
 			 *
@@ -165,7 +165,7 @@ class CCS_If {
 		}
 
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Taxonomy: category, tags, ..
 		 *
@@ -183,7 +183,7 @@ class CCS_If {
 
 		// Check if current post has taxonomy term
 
-		if ( !empty($taxonomy) && !empty($term) ) {
+		if ( !empty($taxonomy) ) {
 
 			if ($taxonomy == 'tag') $taxonomy = 'post_tag';
 
@@ -237,7 +237,7 @@ class CCS_If {
 
 
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Field: field="field_slug" value="this,that"
 		 *
@@ -255,9 +255,6 @@ class CCS_If {
          */
         
         if ( $field == 'date' ) {
-
-          // Get published date in format 2015-03-11 so we can do comparisons
-          // $check = mysql2date('Y-m-d', $post->post_date);
 
           // Get timestamps for publish date and today
           $check = strtotime( $post->post_date );
@@ -304,7 +301,8 @@ class CCS_If {
 			} else {
 
 				$field = $user_field;
-				$check = CCS_User::get_user_field( $field );
+				$check = strtolower(CCS_User::get_user_field( $field ));
+        $value = strtolower($value); // lowercase for user role
 			}
 
 			// start=".."
@@ -389,7 +387,7 @@ class CCS_If {
 		} // End field value condition
 
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Post type, name
 		 *
@@ -415,7 +413,7 @@ class CCS_If {
 		}
 
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Post parent
 		 *
@@ -466,7 +464,7 @@ class CCS_If {
 		}
 
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Attachments
 		 *
@@ -526,7 +524,7 @@ class CCS_If {
 			$condition =  CCS_Gallery_Field::has_gallery();
 		}		
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Template: home, archive, single..
 		 * [if comment] - current post has comment
@@ -541,14 +539,28 @@ class CCS_If {
 		$condition = isset($atts['single']) ? is_single() : $condition;
 		$condition = isset($atts['search']) ? is_search() : $condition;
 		$condition = isset($atts['404']) ? is_404() : $condition;
-
-		$condition = isset($atts['none']) ? !have_posts() : $condition;
+    $condition = isset($atts['none']) ? !have_posts() : $condition;
 
 		if (isset($atts['tax_archive'])) {
 			if ($tax_archive == 'true') $tax_archive = '';
 			$condition = is_tax( $tax_archive );
 		}
 
+    /*---------------------------------------------
+     *
+     * First and last post in loop
+     *
+     */
+    
+    if (CCS_Loop::$state['is_loop']) {
+
+      $condition = isset($atts['first']) ?
+        CCS_Loop::$state['loop_count'] == 1 : $condition;
+
+      $condition = isset($atts['last']) ?
+        CCS_Loop::$state['loop_count'] == CCS_Loop::$state['post_count'] : $condition;
+
+    }
 
     /*---------------------------------------------
      *
@@ -568,7 +580,7 @@ class CCS_If {
     }
 
 
-		/*========================================================================
+		/*---------------------------------------------
 		 *
 		 * Not
 		 *

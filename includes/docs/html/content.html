@@ -28,7 +28,8 @@ You can display custom fields as well as predefined fields:
 	<ul>
 		<li><i>id</i> - post ID</li>
 		<li><i>slug</i> - post slug</li>
-		<li><i>post-type</i> - post type</li>
+    <li><i>post-type</i> - post type</li>
+    <li><i>post-status</i> - post status</li>
 	</ul><ul>
 		<li><i>url</i> - post URL</li>
 		<li><i>edit-url</i> - post edit URL</li>
@@ -64,11 +65,13 @@ You can display custom fields as well as predefined fields:
 <h3>More parameters</h3>
 <h4>Formatting</h4>
 <ul>
-	<li><b>words</b> or <b>length</b> - limit output by number of words or characters</li>
-	<li><b>class</b> - add &lt;div&gt; class to the output</li>
+	<li><b>words</b> or <b>length</b> - trim by number of words or letters; content is not formatted by default: set <i>format="true"</i> if you need</li>
 	<li><b>format</b> - add paragraph tags &lt;p&gt; and preserve line breaks &lt;br&gt; - set to <i>true</i>/<i>false</i> - by default, post content is formatted and for all other fields, it's set to <i>false</i></li>
   <li><b>filter</b> - set <i>true</i> to apply <i>the_content</i> filter; this might be useful when using plugins that filter the post content, for example, <a href="https://wordpress.org/plugins/siteorigin-panels/" target="_blank">Page Builder</a></li>
 	<li><b>embed</b> - auto-embed URLs like YouTube, Vimeo, etc - set to <i>true</i>/<i>false</i> - by default, such URLs in post content are auto-embedded</li>
+  <li><b>class</b> - add &lt;div&gt; class to the output</li>
+
+  <li><b>currency</b> - format as currency, for example <i>currency="usd"</i>; see <a href="#currency">this section</a> for details</li>
 
   <li><b>date_format</b> - use a custom format when displaying <i>field="date"</i>, <i>"modified", or a custom field</i></li>
 	
@@ -143,8 +146,8 @@ Instead of [content field="<i>field_name</i>"] you can write <b>[field <i>field_
 You can loop through an array of key-value pairs stored in a field, using the <b>[array]</b> shortcode.
 
 <code>[array field_name]
-&nbsp;&nbsp;&nbsp;&nbsp;[field key_1]
-&nbsp;&nbsp;&nbsp;&nbsp;[field key_2]
+&nbsp;&nbsp;[field key_1]
+&nbsp;&nbsp;[field key_2]
 [/array]
 </code>
 
@@ -154,3 +157,33 @@ You can loop through an array of key-value pairs stored in a field, using the <b
 	<li><b>debug</b> - set <i>true</i> to print the whole array and see how it's structured</li>
   <li><b>global</b> - access global variable with given name</li>
 </ul>
+
+
+<br><a href="#" id="currency" name="currency"></a>
+<h3 align="center">Currency format</h3>
+<hr>
+
+To manually format a currency value, use these parameters.
+
+<ul>
+  <li><b>decimals</b> - number of decimal points; default is 2</li>
+  <li><b>point</b> - separator for the decimal point; default is "."</li>
+  <li><b>thousands</b> - separator for thousands; default is ","</li>
+</ul>
+
+For example:
+
+<code>[field field_name point="," thousands="."]</code>
+
+This will display a number like: 2.500,00
+
+<hr>
+
+To use a predefined currency format, use the parameter <i>currency</i>.
+
+<code>[field field_name currency="USD"]</code>
+
+Please note that the currency symbol is not included in the output.
+
+Most <a target="_blank" href="http://en.wikipedia.org/wiki/ISO_4217#Active_codes">currency codes</a> are defined for your convenience.
+

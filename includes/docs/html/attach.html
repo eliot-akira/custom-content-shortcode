@@ -5,9 +5,9 @@ Use the <b>[attached]</b> shortcode to loop through attachments.
 
 <h4>Display all attachments of the current post</h4>
 <code>[attached orderby="title"]
-&nbsp;&nbsp;&nbsp;&nbsp;[field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[field image] or [content]
-&nbsp;&nbsp;&nbsp;&nbsp;[field caption]
+&nbsp;&nbsp;[field title]
+&nbsp;&nbsp;[field image] or [content]
+&nbsp;&nbsp;[field caption]
 [/attached]
 </code><br>
 <hr>
@@ -47,10 +47,10 @@ Use <b>[attached]</b> inside a query loop to display attachments of specific pos
 
 <h4>Display attachment thumbnails of all posts in a category</h4>
 <code>[loop type="post" category="special"]
-&nbsp;&nbsp;&nbsp;&nbsp;Post title: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[attached]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[field thumbnail]
-&nbsp;&nbsp;&nbsp;&nbsp;[/attached]
+&nbsp;&nbsp;Post title: [field title]
+&nbsp;&nbsp;[attached]
+&nbsp;&nbsp;&nbsp;&nbsp;[field thumbnail]
+&nbsp;&nbsp;[/attached]
 [/loop]
 </code><br>
 <hr>
@@ -60,12 +60,12 @@ Use <b>[attached]</b> inside a query loop to display attachments of specific pos
 Use <b>[if attached]</b> to display something if the post has any attachments.
 
 <code>[loop type="post"]
-&nbsp;&nbsp;&nbsp;&nbsp;Post title: [field title]
-&nbsp;&nbsp;&nbsp;&nbsp;[if attached]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This post has attachments:
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[attached][field thumbnail][/attached]
-&nbsp;&nbsp;&nbsp;&nbsp;[else]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This post has no attachments.
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;Post title: [field title]
+&nbsp;&nbsp;[if attached]
+&nbsp;&nbsp;&nbsp;&nbsp;This post has attachments:
+&nbsp;&nbsp;&nbsp;&nbsp;[attached][field thumbnail][/attached]
+&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;This post has no attachments.
+&nbsp;&nbsp;[/if]
 [/loop]
 </code>

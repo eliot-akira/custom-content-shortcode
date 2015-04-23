@@ -5,7 +5,7 @@ Use the <b>[comments] </b>shortcode to display recent comments, or those of th
 
 <h4>Display five most recent comments</h4>
 <code>[comments count="5"]
-&nbsp;&nbsp;&nbsp;&nbsp;[comment] by [comment author]
+&nbsp;&nbsp;[comment] by [comment author]
 [/comments]
 </code><br>
 <hr>
@@ -13,12 +13,18 @@ Use the <b>[comments] </b>shortcode to display recent comments, or those of th
 Available parameters for the <b>[comments] </b>shortcode are:
 
 <ul>
-	<li><b>status</b> - <i>approve</i> (default), <i>hold</i> (unapproved) or set to <i>all</i></li>
+  <li><b>type</b> - post type(s) to include; default is <i>all</i></li>
 	<li><b>count</b> - number of comments to show, or set to <i>all</i></li>
+  <li><b>status</b> - <i>approve</i> (default), <i>hold</i> (unapproved) or set to <i>all</i></li>
 	<li><b>id</b> - set to <i>this</i> to display comments from the current post only</li>
+  <li><b>exclude</b> - exclude post ID</li>
 	<li><b>format</b> - set to <i>false</i> to prevent formatting comment content</li>
 	<li><b>words/length</b> - trim by number of words or characters (for comment content or post title)</li>
-</ul><br>
+</ul>
+<ul>
+  <li><b>category</b>, <b>tag</b> - filter by category or tag</li>
+  <li><b>taxonomy</b>, <b>term</b> - filter by taxonomy term</li>
+</ul>
 <hr>
 <h3>Comment fields</h3>
 
@@ -68,11 +74,11 @@ Use <b>[if comment]</b> to display something if the current post has any comment
 <h4>Display comment count if the post has comment</h4>
 
 <code>[loop type="post" category="news"]
-&nbsp;&nbsp;&nbsp;&nbsp;[if comment]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[comment count]
-&nbsp;&nbsp;&nbsp;&nbsp;[else]
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No comment yet.
-&nbsp;&nbsp;&nbsp;&nbsp;[/if]
+&nbsp;&nbsp;[if comment]
+&nbsp;&nbsp;&nbsp;&nbsp;[comment count]
+&nbsp;&nbsp;[else]
+&nbsp;&nbsp;&nbsp;&nbsp;No comment yet.
+&nbsp;&nbsp;[/if]
 [/loop]
 </code><br>
 <hr>
