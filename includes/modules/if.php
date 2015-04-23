@@ -254,14 +254,23 @@ class CCS_If {
          *
          */
         
-        if ( $field == 'date' ) {
+        if ( $field == 'date' || !empty($before) || !empty($after) ) {
 
-          // Get timestamps for publish date and today
-          $check = strtotime( $post->post_date );
+          if ( $field == 'date' ) {
+            // Get timestamps for publish date and today
+            $check = strtotime( $post->post_date );
+          } else {
+            // Normal field
+            $check = strtotime( CCS_Content::get_prepared_field( $field ) );
+          }
+
           $today = strtotime('now'); // Lazy way
 
-          if (!empty($before)) {
-
+          if (!empty($before) && !empty($after)) {
+            $value_1 = strtotime($after);
+            $value_2 = strtotime($before);
+            $compare = 'BETWEEN';
+          } elseif (!empty($before)) {
             $value = strtotime($before);
             $compare = 'OLD';
 
@@ -288,7 +297,14 @@ class CCS_If {
 
           // Convert to format 20150311 so we can compare as number
           $check = date('Ymd',$check);
-          $value = date('Ymd',$value);
+
+          if (!empty($before) && !empty($after)) {
+            $value_1 = date('Ymd',$value_1);
+            $value_2 = date('Ymd',$value_2);
+            $value = $value_1 . ' - ' . $value_2;
+          } else {
+            $value = date('Ymd',$value);
+          }
 
           // echo 'Check field: '.$field.' '.$check.' = '.$value.'<br>';
 
@@ -362,6 +378,14 @@ class CCS_If {
                   break;
                   case '<=':
                     $condition = ($check_this <= $this_value) ? true : $condition;
+                  break;
+                  case 'BETWEEN':
+                    $values = explode(' - ', $this_value);
+                    if (isset($values[0]) && isset($values[1])) {
+                      $condition = 
+                        ($values[0] <= $check_this && $check_this <= $values[1]) ?
+                          true : $condition;
+                    }
                   break;
                   case 'EQUAL':
                   case '=':
