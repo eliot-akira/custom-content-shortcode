@@ -40,10 +40,12 @@ There are a couple points to keep in mind.
 
 1. The content of the post editor is <b>automatically formatted</b>, which can create unwanted paragraphs and breaklines with multi-line shortcodes. Wrap the section with the <a href="options-general.php?page=ccs_reference&tab=other#raw">[raw] shortcode</a> to prevent this.
 
-2. <b>The Visual mode is not suited for editing HTML</b>, because the code is invisible and easy to accidentally delete. Possible solutions are:
+2. <b>The Visual mode is not suited for editing HTML</b>, because the code is invisible and easy to accidentally delete. This can be a challenge if the post content must be editable by a client.
+
+Possible solutions are:
 
 <ul>
-  <li><b>&bullet;</b>&nbsp;&nbsp;Use <a href="options-general.php?page=ccs_reference&tab=block">HTML Block shortcodes</a></li>
+  <li><b>&bullet;</b>&nbsp;&nbsp;Use <a href="options-general.php?page=ccs_reference&tab=block">HTML Block shortcodes</a>, so the tags are clearly visible</li>
   <li><b>&bullet;</b>&nbsp;&nbsp;Disable the Visual mode per page or post type, with the plugin <a target="_blank" href="http://wordpress.org/plugins/raw-html/">Raw HTML</a></li>
   <li><b>&bullet;</b>&nbsp;&nbsp;Move the code outside the post content with one of the methods below</li>
 </ul>
@@ -55,5 +57,19 @@ Shortcode templates can be loaded from a number of places.
   <li><b>Custom field</b>: [field code_block shortcode="true"]</li>
   <li><b>Sidebar</b>: <a href="options-general.php?page=ccs_reference&tab=settings">Enable shortcodes inside Text widget</a></li>
   <li><b>File</b>: [load dir="views" file="recent-posts.html"]</li>
-</ul>
+</ul><br>
 
+<h3 align="center">Notes</h3>
+
+<hr>
+<h3>HTML attribute</h3>
+
+When using a shortcode in an HTML attribute, use single quotes for passing parameters.
+
+<code>&lt;div class="[taxonomy category field='slug']"&gt;
+</code>
+
+If a field value may include characters like "quotes" and &lt;brackets&gt;, use the <i>escape</i> parameter.
+
+<code>&lt;a href="[field url]" title="[field title escape='true']"&gt;
+</code>

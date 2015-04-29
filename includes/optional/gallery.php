@@ -81,7 +81,7 @@ ul.gallery_images {
 	/* max-width: 665px; */
 	margin: 0 auto;
 }
-.gallery_images > li {
+.gallery_images > li.image, .gallery_images > li.add_gallery_images {
 	float: left;
 	width: 150px;
 	height: 150px;

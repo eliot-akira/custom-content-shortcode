@@ -19,33 +19,30 @@ class CCS_To_ACF {
 		self::$state['is_relationship_loop'] = 'false';
 		self::$state['is_repeater_or_flex_loop'] = 'false';
 
-		if (!function_exists('get_field')) return; // If ACF is not installed
-
-		add_shortcode('acf_sub', array($this, 'acf_sub_field'));
-		add_shortcode('flex', array($this, 'loop_through_acf_field'));
-
-		// This will be called by [repeater] if not inside WCK metabox
-//		add_shortcode('repeater', array($this, 'loop_through_acf_field'));
-		add_shortcode('-repeater', array($this, 'loop_through_acf_field')); // Nested repeater
-
-		add_shortcode('acf_gallery', array($this, 'loop_through_acf_gallery_field'));
-		add_shortcode('acf_image', array($this, 'get_image_details_from_acf_gallery'));
-		// add_shortcode('sub_image', array($this, 'get_image_details_from_acf_gallery')); // Alias
-		add_shortcode('layout', array($this, 'if_get_row_layout'));
-
-		// This will be called by [related] when relationship field is specified
-//		add_shortcode('related', array($this, 'loop_relationship_field'));
-
-
-		add_filter( 'ccs_loop_parameters', array($this, 'acf_date_parameters_for_loop') );
-		
-
-
-
-
-		// Legacy - to be removed in a future update
-		// add_shortcode('live-edit', array($this, 'call_live_edit'));
+    add_action( 'init', array($this, 'init') ); // Wait until plugins and theme loaded
 	}
+
+  function init() {
+
+    if (!class_exists('acf')) return; // If ACF is not installed
+
+    add_shortcode('acf_sub', array($this, 'acf_sub_field'));
+    add_shortcode('flex', array($this, 'loop_through_acf_field'));
+
+    // This will be called by [repeater] if not inside WCK metabox
+    // add_shortcode('repeater', array($this, 'loop_through_acf_field'));
+    add_shortcode('-repeater', array($this, 'loop_through_acf_field')); // Nested repeater
+
+    add_shortcode('acf_gallery', array($this, 'loop_through_acf_gallery_field'));
+    add_shortcode('acf_image', array($this, 'get_image_details_from_acf_gallery'));
+    // add_shortcode('sub_image', array($this, 'get_image_details_from_acf_gallery')); // Alias
+    add_shortcode('layout', array($this, 'if_get_row_layout'));
+
+    // This will be called by [related] when relationship field is specified
+    // add_shortcode('related', array($this, 'loop_relationship_field'));
+
+    add_filter( 'ccs_loop_parameters', array($this, 'acf_date_parameters_for_loop') );
+  }
 
 	public static function acf_sub_field( $atts ) {
 
@@ -109,6 +106,10 @@ class CCS_To_ACF {
 			$start = $num;
 			$count = 1;
 		}
+
+    if (empty($field) && isset($atts[0])) {
+      $field = $atts[0];
+    }
 
 		if ( empty($content) && (!empty($sub) || !empty($sub_image))) {
 
@@ -223,7 +224,7 @@ class CCS_To_ACF {
 				}
 			}
 		}
-		if( !empty($outputs) && is_array($outputs)) {
+		if( is_array($outputs)) {
 
 			if (!empty($columns))
 				$output = CCS_Loop::render_columns( $outputs, $columns, $pad, $between );
@@ -244,15 +245,23 @@ class CCS_To_ACF {
 			'size' => '',
 		), $atts));
 
-		if ( $field!='' ) {
-				$output = self::$state['current_image'][$field];
-		} else {
+    if ( empty($size) || 
+      (!empty($size) && !isset(self::$state['current_image']['sizes'][$size]))) {
 
-			if ($size=='') {
-				$image_url = self::$state['current_image']['url'];
-			} else {
-				$image_url = self::$state['current_image']['sizes'][$size];
-			}
+      $image_url = self::$state['current_image']['url'];
+    } else {
+      $image_url = self::$state['current_image']['sizes'][$size];
+    }
+
+		if ( !empty($field) ) {
+
+        if ($field == 'url') {
+          $output = $image_url;
+        } else {
+          $output = self::$state['current_image'][$field];
+        }
+
+		} else {
 
 			$output = '<img src="' . $image_url . '">';
 
@@ -338,73 +347,6 @@ class CCS_To_ACF {
 			unset($parameters['acf_date']);
 		}
 		return $parameters;
-	}
-
-
-
-
-
-	/*---------------------------------------------============================
-	 *
-	 * Live Edit shortcode (legacy)
-	 *
-	 *---------------------------------------------============================*/
-
-	public static function call_live_edit($atts, $inside_content = null) {
-		extract(shortcode_atts(array(
-			'field' => '',
-			'admin' => '',
-			'editor' => '',
-			'edit' => '',
-			'only' => '',
-			'content' => '',
-			'title' => '',
-			'all' => '',
-		), $atts));
-
-		if( (function_exists('live_edit') && ( (current_user_can('edit_posts')) || ($all=='true') ) &&
-			($edit!='off')) ){
-
-			$edit_field = '';
-
-			if(($title!='false')&&($title!='off')) {
-				$edit_field .= 'post_title,';	
-			}
-			if(($content!='false')&&($content!='off')) {
-				$edit_field .= 'post_content,';	
-			}
-
-			if($admin!=''){
-				if ( current_user_can( 'manage_options' ) ) { // Admin user
-					$edit_field .= $admin;
-				} else { // Editor
-					if(($editor=='') && ($only=='')) { // Edit only for admin
-						return do_shortcode($inside_content);
-					}
-					if($editor!='') {
-						$edit_field .= $editor;
-					}
-					if($only != '') {
-						$edit_field = $only;
-					}
-				}
-			} else {			if($field != '') {
-					$edit_field .= $field;
-				}
-				if($only != '') {
-					$edit_field = $only;
-				}
-			}
-			$edit_field = trim($edit_field, ',');
-			$output = '<div ';
-			$output .= live_edit($edit_field);
-			$output .= '>';
-			$output .= do_shortcode($inside_content) . '</div>';
-
-			return $output;
-		} else {
-			return do_shortcode($inside_content);
-		}
 	}
 
 }

@@ -27,8 +27,7 @@ class CCS_To_WCK {
 
 
 		// Wait until all plugins are loaded
-
-		add_action( 'plugins_loaded', array($this, 'wck_exists') );
+		add_action( 'init', array($this, 'wck_exists') );
 	}
 
 	function wck_exists() {

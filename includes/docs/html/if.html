@@ -62,49 +62,46 @@ For category, tag, taxonomy, field or user field, you can query for multiple val
 	<li><b>comment</b> - if the post has any comments</li>
 	<li><b>image</b> - if the post has a featured image</li>
 	<li><b>gallery</b> - if the post has any image in the gallery field</li>
-	<li><b>flag</b> - if custom field value exists; for example: <i>flag="field_name"</i></li>
+  <li><b>field</b> - if the post has any value in this field</li>
+  <li><b>taxonomy</b> - if the post has any term in this taxonomy</li>
 </ul>
 <h4>Loop conditions</h4>
 <ul>
 	<li><b>empty</b> - if the loop is empty (no post found)</li>
 	<li><b>first, last</b> - if it's the first or last post found</li>
-	<li><b>every</b> - for every X post in the loop</li>
+	<li><b>every</b> - for every number of posts in the loop</li>
 </ul>
 <h4>Other</h4>
 <ul>
-	<li><b>not</b> - when the condition is not met, for example: [if not first]</li>
+	<li><b>not</b> - when the condition is not true, for example: [if not first]</li>
 </ul>
 <br>
 
 <h3 align="center">Else</h3>
 <hr>
 
-Use the <b>[else]</b> shortcode to display something else when the condition is false.
+Use the <b>[else]</b> shortcode to display something when the condition is false.
 
-<code>[loop type="product"]
-&nbsp;&nbsp;Product: [field title]
-&nbsp;&nbsp;Price: [field price]
-&nbsp;&nbsp;[if tag="discount"]
-&nbsp;&nbsp;&nbsp;&nbsp;On Sale!
-&nbsp;&nbsp;[else]
-&nbsp;&nbsp;&nbsp;&nbsp;Regular Price
-&nbsp;&nbsp;[/if]
-[/loop]</code>
+<code>[if tag="discount"]
+&nbsp;&nbsp;On Sale!
+[else]
+&nbsp;&nbsp;Regular Price
+[/if]</code>
 
 <a id="date" name="date"></a>
 
 <br>
 
-<h3 align="center">Published date</h3>
+<h3 align="center">Date field</h3>
 <hr>
 
-You can use the parameter <i>before</i> or <i>after</i> to compare post publish date.
+You can use the parameter <i>before</i> or <i>after</i> to compare dates.
 
 <h4>If post was published in the last 2 weeks</h4>
-<code>[if after="2 weeks ago"]
-&nbsp;&nbsp;New!
+<code>[if field="date" after="2 weeks ago"]
+&nbsp;&nbsp;New post
 [else]
-&nbsp;&nbsp;Old!
+&nbsp;&nbsp;Old post
 [/if]</code>
 
 The value can be a specific date like <i>2015-02-01</i>, or a relative date: <i>1 month ago</i>.

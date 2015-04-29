@@ -19,8 +19,8 @@ Use <b>[loop]</b> to get posts and loop through them.
 
 The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop.
 <br>
+<h3 align="center">Parameters</h3>
 <hr>
-<h3>Parameters</h3>
 
 <h4>Post type</h4>
 <ul>
@@ -48,8 +48,9 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 
 <h4>Author</h4>
 <ul>
-	<li><b>author</b> - show posts by author ID, login name; multiple values possible; use <i>this</i> for current logged-in user, and <i>same</i> for the same author as current post</li>
+	<li><b>author</b> - show posts by author ID, login name; multiple values possible; use <i>this</i> for current user, and <i>same</i> for the same author as current post</li>
 	<li><b>author_exclude</b> - exclude posts by author ID, login name, or <i>this</i> for current user</li>
+  <li><b>role</b> - show posts by user role, such as <i>administrator</i> and <i>editor</i>. Use <i>role="this"</i> to get posts by authors in the same role as current user</li>
 </ul>
 
 <h4>Published date</h4>
@@ -65,10 +66,12 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 	<li><b>tag</b> - display posts with one or more tags: <i>tag="apples, green"</i></li>
 	<li><b>compare</b> - for multiple categories or tags, set <i>compare="and"</i> to get posts that have all terms
 </ul><ul>
-	<li><b>taxonomy</b>, <b>value</b> - display posts by taxonomy value: <i>taxonomy="product" value="book"</i></li>
-	<li><b>compare</b> - optional for taxonomy query: use <i>compare="not"</i> for posts whose <i>taxonomy</i> is <b>not</b> <i>value</i>; use <i>compare="and"</i> when you want posts whose <i>taxonomy</i> contains all values</li>
+	<li><b>taxonomy</b>, <b>term</b> - display posts by taxonomy term: <i>taxonomy="product" term="book"</i></li>
+	<li><b>compare</b> - use <i>compare="not"</i> for posts whose <i>taxonomy</i> is <b>not</b> <i>term</i>; use <i>compare="and"</i> when you want posts whose <i>taxonomy</i> contains all terms; default is <i>compare="or"</i> to get posts whose <i>taxonomy</i> contains any of the given terms</li>
 </ul><ul>
-	<li><b>relation</b>, <b>taxonomy_2</b>, <b>value_2</b>, <b>compare_2</b> - additional taxonomy query, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
+  <h4>Multiple taxonomy queries</h4>
+  <li><b>relation</b> - additional taxonomy query, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
+	<li><b>taxonomy_2</b>, <b>term_2</b>, <b>compare_2</b>...</li>
 </ul>
 
 <h4>Field value</h4>
@@ -77,9 +80,12 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
 	<li><b>value</b> - value to search for</li>
 	<li><b>start</b> - use instead of <b>value</b> to check only the beginning of field value</li>
   <li><b>compare</b> - <i>equal</i> (default), <i>not</i>, <i>more</i>, <i>less</i>, or operator like &lt; and &gt;.</li>
+  <li><b>compare="between"</b> - query for a range of values; for example, <i>value="0,100"</i></li>
 </ul>
 <ul>
-	<li><b>field_2</b>, <b>value_2</b>, <b>compare_2</b>, <b>relation</b> - additional field query, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
+  <h4>Multiple field queries</h4>
+  <li><b>relation</b> - additional field query, where <i>relation</i> is <i>and</i> (default) or <i>or</i></li>
+	<li><b>field_2</b>, <b>value_2</b>, <b>compare_2</b>...</li>
 </ul>
 
 <h4>Date field</h4>
@@ -98,9 +104,12 @@ The <b>[content]</b> and <b>[field]</b> shortcodes target each post in the loop
     </ul>
   </li>
 	<li><b>compare</b> - <i>equal</i> (default), <i>not</i>, <i>more</i>, <i>less</i>, or operator like &lt; and &gt;.</li>
-  <li><b>before</b>/<b>after</b> - used in place of <i>value</i> and <i>compare</i>; query for field values before/after a relative or specific date: <i>2 weeks ago</i>, or <i>2015-02-01</i></li>
-  <li><b>date_format</b> - date format of the field value; default is "Y-m-d".</li>
-  <li><b>in="string"</b> - if the date field is stored as string; by default, UNIX timestamp is assumed</li>
+  <li><b>before</b>, <b>after</b> - used in place of <i>value</i> and <i>compare</i>; query for field values before/after a relative or specific date: <i>2 weeks ago</i>, or <i>2015-02-01</i></li>
+  <li><b>date_format</b> - date format of the field value; default is "Y-m-d". For ACF date field, set it to "Ymd".</li>
+</ul>
+<ul>
+  <h4>Multiple date fields</h4>
+  <li><b>field_2</b>, <b>value_2</b>, <b>compare_2</b>, <b>date_format_2</b>, <b>after_2</b>, <b>before_2</b>...</li>
 </ul>
 
 <h4>Parent</h4>

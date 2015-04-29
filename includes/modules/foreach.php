@@ -100,7 +100,6 @@ class CCS_ForEach {
 			'hide_empty' => ( $empty=='true' ) ? 0 : 1,
 		);
 
-
 		$term_ids = array();
 
 		if ( !empty($terms) ) $term = $terms; // Alias
@@ -216,7 +215,7 @@ class CCS_ForEach {
 		}
 
 		// Array and not empty
-		if ( is_array($taxonomies) && ( $taxonomies != array() ) ) {
+		if ( is_array($taxonomies) && count($taxonomies) > 0 ) {
 
 			$each_term = array();
 			$each_term['taxonomy'] = $each; // Taxonomy name
@@ -299,13 +298,30 @@ class CCS_ForEach {
 		if ( !self::$state['is_for_loop'] )
 				return; // Must be inside a for loop
 
-		$field = isset($atts[0]) ? $atts[0] : 'name'; // Default: name
+    if (isset($atts['image'])) {
+      $field = $atts['image'];
+    } else {
+      $field = isset($atts[0]) ? $atts[0] : 'name'; // Default: name
+    }
 
 		// Get term data for current nest level
 		$term = self::$current_term[ self::$index ];
-        $out = isset( $term[$field] ) ? $term[$field] : null;
 
-        return $out;
+    $out = '';
+
+    // Field value exists
+    if ( isset( $term[$field] ) ) {
+
+      $out = $term[$field];
+
+    // Try custom taxonomy field
+    } else {
+      $out = CCS_Content::get_the_taxonomy_field(
+        $term['taxonomy'], $term['id'], $field, $atts
+      );
+    }
+
+    return $out;
 	}
 
 }

@@ -199,7 +199,14 @@ class CCS_User {
 
 		// Users Loop
 		foreach ( $users as $user ) {
+
 			self::$state['current_user_object'] = $user;
+
+      // Support tags
+
+      $content = str_replace('{USER_ID}', do_shortcode('[user id]'), $content);
+      $content = str_replace('{USER_ROLE}', do_shortcode('[user role out="slug"]'), $content);
+
 			$outputs[] = do_shortcode( $content );
 		}
 
@@ -210,9 +217,19 @@ class CCS_User {
       $outputs[] = do_shortcode( self::$state['if_empty_else'] );
     } 
 
+    $result = implode('', $outputs);
+
+    if (isset($atts['trim'])) {
+
+      $trim = $atts['trim'];
+      if ($trim=='true') $trim = null;
+      $result = trim($result, " \t\n\r\0\x0B,".$trim);
+    }
+
 		self::$state['is_users_loop'] = false;
-		return implode('', $outputs);
+		return $result;
 	}
+
 
 	public static function sortByFieldNum($a, $b) {
 	    return intval( $a['key'] ) - intval( $b['key'] );

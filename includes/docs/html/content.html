@@ -10,20 +10,21 @@ Use <b>[content]</b> to display post content or a field.
 <h4>Display a field from a custom post type</h4>
 <code>[content type="apartment" name="lux-suite-22" field="rent-per-day"]</code><br>
 
+<h3 align="center">Parameters</h3>
+
 <hr>
-<h3>Basic parameters</h3>
 
 <h4>Post</h4>
 
 <ul>
 	<li><b>type</b> - post type: <i>post</i>, <i>page</i>, or <i>custom post type</i> - default is <i>any</i></li>
-	<li><b>name</b>, <b>title</b>, or <b>id</b> -  get post by <i>name/slug</i>, <i>title</i>, or <i>ID</i> - default is <i>current post</i></li>
+	<li><b>name</b>, <b>title</b>, or <b>id</b> -  get post by <i>slug</i>, <i>title</i>, or <i>ID</i> - default is <i>current post</i></li>
 </ul>
 <h4>Fields</h4>
 <ul>
 	<li><b>field</b> - name of field to display - if empty, the default is the <i>post content</i></li>
 
-You can display custom fields as well as predefined fields:
+You can display custom fields as well as the following predefined fields:
 
 	<ul>
 		<li><i>id</i> - post ID</li>
@@ -60,13 +61,17 @@ You can display custom fields as well as predefined fields:
 		<li><i>author-url</i> - post author URL</li>
 		<li><i>avatar</i> - post author avatar</li>
 	</ul>
+
+  When displaying a field from the current post, you can also use <b>[field <i>field_name</i>]</b>.
+
 </ul>
+
 <hr>
-<h3>More parameters</h3>
+
 <h4>Formatting</h4>
 <ul>
 	<li><b>words</b> or <b>length</b> - trim by number of words or letters; content is not formatted by default: set <i>format="true"</i> if you need</li>
-	<li><b>format</b> - add paragraph tags &lt;p&gt; and preserve line breaks &lt;br&gt; - set to <i>true</i>/<i>false</i> - by default, post content is formatted and for all other fields, it's set to <i>false</i></li>
+	<li><b>format</b> - add paragraph tags &lt;p&gt; and preserve line breaks &lt;br&gt;; set to <i>true</i>/<i>false</i> - by default, post content is formatted, and for all other fields, it's set to <i>false</i></li>
   <li><b>filter</b> - set <i>true</i> to apply <i>the_content</i> filter; this might be useful when using plugins that filter the post content, for example, <a href="https://wordpress.org/plugins/siteorigin-panels/" target="_blank">Page Builder</a></li>
 	<li><b>embed</b> - auto-embed URLs like YouTube, Vimeo, etc - set to <i>true</i>/<i>false</i> - by default, such URLs in post content are auto-embedded</li>
   <li><b>class</b> - add &lt;div&gt; class to the output</li>
@@ -94,18 +99,23 @@ You can display custom fields as well as predefined fields:
 	<li><b>image_class</b> - add class to the &lt;img&gt; tag</li>
   <li><b>alt</b>, <b>title</b> - additional &lt;img&gt; attributes</li>
 	<li><b>in</b> - type of image field: <i>id</i> (default), <i>url</i>, or <i>object</i></li>
+  <li><b>out</b> - image detail to output: <i>id</i>, <i>url</i>, <i>title</i>, <i>caption</i>, <i>description</i></li>
   <li><b>nopin</b> - set <i>nopin="nopin"</i> to prevent Pinterest pinning of image</li>
 </ul>
 
 <h4>Taxonomy</h4>
 <ul>
-	<li><b>taxonomy</b> - display <i>category</i>, <i>tag</i>, or a custom taxonomy of the post</li>
-
-	You can also use <b>[taxonomy <i>tax_name</i>]</b>.
-
+	<li><b>taxonomy</b> - display <i>category</i>, <i>tag</i>, or custom taxonomy of the post: <i>taxonomy="product_type"</i></li>
 	<li><b>field</b> - taxonomy field to display: <i>name</i> (default), <i>id</i>, <i>slug</i>, <i>description</i>, or custom taxonomy field</li>
+
+By default, terms are displayed as a list of term names, like "Category, Another Category". If you need the term slugs, set <i>field="slug"</i>.
+
+  <li><b>image</b> - custom taxonomy image field; see description above for image field parameters</li>
 	<li><b>term</b> - get taxonomy term by ID or slug, regardless of current post</li>
-	<li><b>term_name</b> - get taxonomy term by name/label</li>
+  <li><b>term_name</b> - get taxonomy term by name/label</li>
+
+  When displaying terms from the current post, you can also use <b>[taxonomy <i>tax_name</i>]</b>.
+
 </ul>
 
 <h4>Other field types</h4>
@@ -116,20 +126,15 @@ You can display custom fields as well as predefined fields:
 <i>Other content types</i>
 <ul>
 	<li><b>area</b> or <b>sidebar</b> - display a widget area/sidebar by <i>title</i></li>
-	<li><b>menu</b> - display a menu list by <i>name/slug</i>, <i>title</i>, or <i>ID</i>.
-
-	Also see: <a href="options-general.php?page=ccs_reference&tab=other#bootstrap-navbar">Bootstrap tabs and navbar</a>.
-
+	<li><b>menu</b> - display a menu list by <i>slug</i>, <i>title</i>, or <i>ID</i>. Also see: <a href="options-general.php?page=ccs_reference&tab=other#bootstrap-navbar">Bootstrap tabs and navbar</a>.</li>
 </ul><br>
 <h3 align="center">Field</h3>
 <hr>
 
-Use <b>[field]</b> as a shorter way to display a field from the current post.
+Use <b>[field]</b> as a short way to display a field from the current post.
 
 <h4>Display fields</h4>
 <code>The Article &lt;b&gt;[field title]&lt;/b&gt; by [field author] was written on [field date].</code>
-
-Instead of [content field="<i>field_name</i>"] you can write <b>[field <i>field_name</i>]</b>.
 
 <h4>Additional parameters</h4>
 
@@ -160,7 +165,7 @@ You can loop through an array of key-value pairs stored in a field, using the <b
 
 
 <br><a href="#" id="currency" name="currency"></a>
-<h3 align="center">Currency format</h3>
+<h3 align="center">Currency</h3>
 <hr>
 
 To manually format a currency value, use these parameters.

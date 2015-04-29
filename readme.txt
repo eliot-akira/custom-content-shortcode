@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.2
-Stable tag: 2.1.3
+Stable tag: 2.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,9 +80,23 @@ Support for other plugins:
 
 == Upgrade Notice ==
 
-* [loop] - Hierarchical posts: include children by default; **please note** that this is different behavior than previous versions; to get top-level parents only, set *exclude="children"*
 
 == Changelog ==
+
+= 2.1.7 =
+
+* [loop] - Add parameter *role* for getting posts by user role; use *role="this"* for current user's role
+
+= 2.1.5 =
+
+* [attached] - Add parameter *title-link* for attachment field
+* [field] - Add parameters *embed* and *http*; for example, to embed video links
+* [loop] - Add parameter *compare="between"* for range of values: *value="0,100"*
+* [loop] - Improved support for multiple field and taxonomy queries
+
+= 2.1.4 =
+
+* [taxonomy], [each] - Support custom taxonomy fields made in Advanced Custom Fields
 
 = 2.1.3 =
 
