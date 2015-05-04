@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, taxonomy
 Requires at least: 3.6
 Tested up to: 4.2
-Stable tag: 2.1.7
+Stable tag: 2.1.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,20 +29,18 @@ There is a reference section under Settings -> Custom Content.
 <br />
 Here are some of the included features:
 
-* **Dynamic templates** with shortcodes
+* Overview of your site's **content structure**
 * **Pagination** for post loops
-* View your site's **content structure**
 * Display **comments** and **attachments**
 * **User info** and content based on user status
 * **Relative URLs** for links and images
-* **Cache** the result of query loops
-* **Gallery field** (optional)
-* **Mobile Detect** (optional)
+* **Cache** the result of a query
+* Optional: **Gallery field**, **Mobile Detect**
 
 Support for other plugins:
 
-* [Advanced Custom Fields](http://wordpress.org/plugins/advanced-custom-fields/) - Image, relationship, gallery, repeater, flexible content
-* [WCK Fields and Post Types](http://wordpress.org/plugins/wck-custom-fields-and-custom-post-types-creator/) - Text, select, checkbox, radio, upload, repeater
+* [Advanced Custom Fields](http://wordpress.org/plugins/advanced-custom-fields/)
+* [WCK Fields and Post Types](http://wordpress.org/plugins/wck-custom-fields-and-custom-post-types-creator/)
 
 
 == Installation ==
@@ -67,9 +65,11 @@ Support for other plugins:
 
 **A:** The visual editor (TinyMCE) sometimes misinterprets HTML tags placed in the text editor. There are several ways to address this issue.
 
-* Disable the visual editor for certain posts or post types, with the [Raw HTML](http://wordpress.org/plugins/raw-html/) plugin. However, if the post needs to be editable by the client, this won't be ideal.
+* Use the built-in HTML block shortcodes. See under Settings.
 
-* Put all code in a custom post type, then include it into the post. For example: *[content type="template" name="recent-posts"]*
+* Disable the visual editor for specific posts or post types, with the [Raw HTML](http://wordpress.org/plugins/raw-html/) plugin. However, if the post needs to be editable by the client, this won't be ideal.
+
+* Put the code in a custom post type, then include it into the post. For example: *[content type="template" name="recent-posts"]*
 
 * Put the code in a custom field, then include it in the post. For example: *[field code_block]*
 
@@ -83,9 +83,17 @@ Support for other plugins:
 
 == Changelog ==
 
+= 2.1.9 =
+
+* [loop] - If *orderby* is not one of the default values, assume it's a field name
+
+= 2.1.8 =
+
+* [related] - Add parameter *trim* to remove trailing white space or comma; for example, to make a comma-separated list
+
 = 2.1.7 =
 
-* [loop] - Add parameter *role* for getting posts by user role; use *role="this"* for current user's role
+* [loop] - Add parameter *role* for getting posts by user role, such as *administrator* and *editor*; use *role="this"* for current user's role
 
 = 2.1.5 =
 

@@ -104,7 +104,7 @@ class CCS_Loop {
         // Get posts from query
         $posts = self::run_query( $query );
 
-        // Pre-process posts
+        // Process posts
         $posts = self::prepare_posts( $posts );
 
         // Loop through each post and compile shortcode template
@@ -229,6 +229,7 @@ class CCS_Loop {
 
       'orderby' => '', 'order' => '',
       'series' => '', 'key' => '',
+      'meta_type' => '',
 
       // Format
 
@@ -368,10 +369,10 @@ class CCS_Loop {
       for ($i=0; $i <$x ; $i++) { 
         self::$state['loop_count']++;
 
-        $outs[] =
-        apply_filters('ccs_loop_each_result',
+        $outs[] = apply_filters( 'ccs_loop_each_result',
           do_shortcode( self::render_field_tags( $template, $parameters ) ),
-        $parameters );
+          $parameters
+        );
 
       }
 
@@ -385,7 +386,7 @@ class CCS_Loop {
 
     /*---------------------------------------------
      *
-     * Switch to blog on multisite - restore during close_loop
+     * Switch to blog on multisite - restore during close_loop()
      * 
      */
 
@@ -714,6 +715,7 @@ class CCS_Loop {
         $query['paged'] = isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
       }
     }
+
     if ( !empty($parameters['page']) ) {
       $query['paged'] = $parameters['page']; // Manually set
     }
@@ -883,9 +885,10 @@ class CCS_Loop {
 
       // WP_Query doesn't support it, so sort after getting all posts
       self::$parameters['orderby_comment_date'] = 'true';
-      $parameters['orderby'] = '';
       self::$parameters['order_comment_date'] = !empty($parameters['order']) ?
         strtoupper($parameters['order']) : 'DESC';
+
+      $parameters['orderby'] = '';
 
     } elseif ( !empty($parameters['order']) ) {
       
@@ -897,9 +900,25 @@ class CCS_Loop {
 
       $orderby = $parameters['orderby'];
 
+      $default_orderby = array(
+        'none', 'id', 'author', 'title', 'name', 'type', 'date', 'modified',
+        'parent', 'rand', 'comment_count', 'menu_order', 'meta_value', 'meta_value_num'
+      );
+
       // Alias
-      if ($orderby=="field") $orderby = 'meta_value';
       if ($orderby=="field_num") $orderby = 'meta_value_num';
+      elseif ($orderby=="field") $orderby = 'meta_value';
+      elseif ( !in_array(strtolower($orderby), $default_orderby) ) {
+
+        // If not default orderby value, assume field name
+
+        $orderby = 'meta_value';
+        if (empty($parameters['field'])) {
+          $parameters['field'] = $orderby;
+        } else {
+          $parameters['key'] = $orderby;
+        }
+      }
 
       $query['orderby'] = $orderby;
 
@@ -907,10 +926,14 @@ class CCS_Loop {
 
         if ( !empty($parameters['key']) )
           $key = $parameters['key'];
-        else
+        elseif ( !empty($parameters['field']) )
           $key = $parameters['field']; // If no key is specified, order by field
 
         $query['meta_key'] = $key;
+
+        if ( !empty($parameters['meta_type'])) {
+          $query['meta_type'] = $parameters['meta_type'];
+        }
       }
 
       if ( empty($parameters['order']) ) {
@@ -1203,7 +1226,7 @@ class CCS_Loop {
     if ($field == 'date') {
       $meta_query['type'] = 'DATE';
     } elseif ( $compare == 'BETWEEN' && empty($args['type'])) {
-      $meta_query['type'] = 'numeric';
+      $meta_query['type'] = 'NUMERIC';
     }
 
     return $meta_query;
@@ -1524,7 +1547,8 @@ class CCS_Loop {
           $check_field = get_post_meta( $current_id, $parameters['checkbox'], $single=true );
 
           if (empty($parameters['compare'])) $compare="or";
-//          elseif (empty($parameters['checkbox_2'])) $compare = strtolower($parameters['compare']);
+//          elseif (empty($parameters['checkbox_2']))
+//            $compare = strtolower($parameters['compare']);
 //          else $compare="or";
           else $compare = strtolower($parameters['compare']);
 
@@ -1755,16 +1779,17 @@ class CCS_Loop {
     if ( !empty($parameters['trim']) ) {
 
       $trim = $parameters['trim'];
-      if ($trim=='true') $trim = null;
 
       if ( empty($parameters['columns']) && $parameters['list']!='true' ) {
-        $result = trim($result, " \t\n\r\0\x0B,".$trim);
+
+        $result = CCS_Format::trim($result, $trim);
+
       } else {
 
-        // Trim each item for columns/list
+        // Trim each item for columns or list
         $new_results = array();
         foreach ($results as $result) {
-          $new_results[] = trim($result, " \t\n\r\0\x0B,".$trim);
+          $new_results[] = CCS_Format::trim($result, $trim);
         }
         $results = $new_results;
       }
@@ -1802,14 +1827,16 @@ class CCS_Loop {
       foreach ($results as $result) {
         $item = '<'.$item_tag.$item_class.$item_style.'>'.$result.'</'.$item_tag.'>';
 
-        if ( !empty($parameters['paginate']) )
+        if ( !empty($parameters['paginate']) ) {
           $item = '<'.$list_tag.$list_class.$list_style.'>'.$item.'</'.$list_tag.'>';
+        }
 
         $new_results .= apply_filters( 'ccs_loop_each_item', $item, $parameters );
       }
 
-      if ( empty($parameters['paginate']) )
+      if ( empty($parameters['paginate']) ) {
         $result = '<'.$list_tag.$list_class.$list_style.'>'.$new_results.'</'.$list_tag.'>';
+      }
       else $result = $new_results;
     }
 

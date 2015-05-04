@@ -189,8 +189,7 @@ class CCS_Related {
 		$out = implode('', $outputs);
 
 		if (!empty($trim)) {
-			if ($trim=='true') $trim = null;
-			$out = trim($out, " \t\n\r\0\x0B,".$trim);
+      $out = CCS_Format::trim($out, $trim);
 		}
 
 		return $out;

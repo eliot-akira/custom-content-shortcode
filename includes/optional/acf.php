@@ -287,6 +287,7 @@ class CCS_To_ACF {
 		extract( shortcode_atts( array(
 			'field' => '',
 			'subfield' => '',
+      'trim' => ''
 		), $atts ) );
 
 		$output = array();
@@ -329,8 +330,13 @@ class CCS_To_ACF {
 
 		self::$state['is_relationship_loop'] = 'false';
 
-		if (is_array($output))
+		if (is_array($output)) {
 			$output = implode('', $output);
+    }
+    if (!empty($trim)) {
+      $output = CCS_Format::trim($output, $trim);
+    }
+
 		return $output;
 	}
 
