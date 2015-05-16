@@ -451,19 +451,24 @@ class CCS_Loop {
      * Post ID, exclude ID, name
      *
      */
+
+    if ( !empty($parameters['include']) ) {
+      $parameters['id'] = $parameters['include'];
+    }
     
     if ( !empty($parameters['id']) ) {
 
       $id_array = self::explode_list($parameters['id']);
 
+      if (isset($id_array['children'])) {
+        if ( $parameters['parent']=='0' ) {
+          $parameters['parent'] = '';
+        }
+        unset($id_array['children']);
+      }
+
       $query['post__in'] = $id_array;
       $query['orderby'] = 'post__in'; // Preserve ID order
-
-    } elseif ( $parameters['include'] == 'children' ) {
-
-      if ( $parameters['parent']=='0' ) {
-        $parameters['parent'] = '';
-      }
 
     } elseif ( !empty($parameters['exclude']) ) {
 
@@ -629,6 +634,9 @@ class CCS_Loop {
             $author_data = get_user_by('login', $author);
             if ($author_data) {
               $query['author__in'][] = $author_data->ID;
+            } else {
+              // No author by that name: use an arbitrary ID
+              $query['author__in'][] = 9999;
             }
           }
         }

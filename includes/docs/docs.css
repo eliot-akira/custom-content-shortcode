@@ -1,8 +1,9 @@
 /* Included only for Settings -> Custom Content */
-
+#wpbody-content {
+  padding-bottom: 30px;
+}
 .wrap {
-	margin-left: -5px;
-	max-width: 760px; /*margin: 0 auto;*/
+	max-width: 700px; /*margin: 0 auto;*/
 	font-weight: 300;
   opacity: 1 !important;
 
@@ -14,7 +15,7 @@
 .wrap .plugin-title {
 	font-size: 24px;
 	font-weight: 300;
-	margin: 1em 0 0;
+	margin: 23px 0 13px 10px;
 	text-align: center;
 }
 .wrap h1, .wrap h2, .wrap h3, .wrap h4, .wrap h5, .wrap h6 {
@@ -23,79 +24,154 @@
 .wrap h2 {
 	margin-bottom: -10px;
 }
-h2 .nav-tab {
-	font-size: 12px;
-	line-height: 16px;
-	margin-right: 1px;
-	padding: 4px 6px;
-	font-weight: 400;
-}
+
 .doc-style {
 	padding-top:10px;
-	padding-left:10px;
+/*	padding-left:10px; */
 }
 .doc-style .nav-tab-wrapper {
 	padding-top: 0;
 	padding-left: 0;
 	padding-right: 0;
 	margin-bottom: 20px;
-	border-bottom: 1px solid #ddd;
+	/* border-bottom: 1px solid #ddd; */
+  border-bottom: 0;
 	text-align: center;
 }
 .doc-style .nav-tab-wrapper a {
 	color: #555;
-	border-color: #ddd; border-bottom: 0;
+  border: 0;
+	border: 1px solid #e4e4e4;  /* border-bottom: 0; */
+  background-color: transparent;
 }
-.doc-style .nav-tab-wrapper a {
+.doc-style .nav-tab-wrapper a,
+.doc-style .nav-tab-wrapper a:focus,
+.doc-style .nav-tab-wrapper a:active,
+.doc-style .nav-tab-wrapper a:active:focus {
 	outline: 0; /* prevent dotted-line in Firefox */
+  /* box-shadow: none !important; */
+}
+.doc-style .menu-wrap {
+  position: relative;
+  display: inline-block;
 }
 
-.doc-style h3 {
-	font-size: 1.2em;
+.doc-style .sub-menu {
+  position: absolute;
+  left: 0;
+  text-align: left;
+  /* background-color: #DADADA;
+  padding: 0 10px; */
+  width: 100%;
+  min-width: 90px;
+  display: none;
 }
-.doc-style, .doc-style p, .doc-style .form-table td {
-	font-size: 16px;
-	line-height: 1.4em; 
+.doc-style .menu-wrap.menu-open .sub-menu {
+  display: block;
 }
+.doc-style .sub-menu a {
+  background-color: #e4e4e4;
+  cursor: pointer;
+  padding: 0 9px;
+  width: 100%;
+  display: block;
+  font-size: 13px;
+  font-weight: 300;
+  border: 0;
+  line-height: 25px;
+  box-shadow:  1px 3px 4px #555; /* 2px 2px 4px #ccc; */
+  min-width: 115px;
+}
+.doc-style .sub-menu a:first-child {
+  margin-top: 5px;
+}
+.doc-style .sub-menu a:last-child {
+  margin-bottom: 5px;
+}
+.doc-style .nav-tab-wrapper .nav-tab-active,
+.doc-style .nav-tab-wrapper a:hover,
+.doc-style .menu-wrap.menu-open > a,
+.doc-style .sub-menu a:hover {
+  background-color: #fff !important;
+}
+
 .doc-style .remove-height {
-	margin-bottom: -50px;
+  margin-bottom: -50px;
 }
 .doc-style a {
-	text-decoration: none;
-	color: #0074A2;
+  text-decoration: none;
+  color: #0074A2;
 }
 .doc-style a:hover {
-	color: #000;
+  color: #000;
 }
-.doc-style code {
-	font-family: monospace,Consolas,Monaco;
-	font-size: 16px;
-	padding: 10px 15px;
-    line-height: 24px;
-    display: block;
+.doc-style b, .doc-style strong {
+  font-weight: 400;
 }
+.doc-style, .doc-style p, .doc-style .form-table td {
+  font-size: 16px;
+  line-height: 1.4em; 
+}
+
+
+.doc-style .inner-wrap h2 {
+  font-size: 19px;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+/*  border-bottom: 1px solid #dadada;
+  padding-bottom: 5px;
+  margin-bottom: 10px; */
+}
+
+.doc-style .inner-wrap h3 {
+	font-size: 17px;
+  padding: 7px;
+  background-color: #e9e9e9;
+  text-align: center;
+  border-radius: 4px;
+}
+
 .doc-style h4 {
-	font-weight:300;
-	font-style:italic;
-	font-size: 16px;
-	color: #555;
+	/*font-weight:300;
+	 font-style:italic; */
+	font-size: 18px;
+	color: #000;
+  margin: 1em 0;
 }
+
+h2 .nav-tab {
+  font-size: 13px; /* 12px */
+  line-height: 16px;
+  margin-right: 2px;
+  padding: 6px 8px; /* 4px 6px */
+  font-weight: 400;
+}
+
 .doc-style ul {
-	list-style:none;
-	padding-left:20px;
+	/* list-style:none; 
+  padding-left:20px; */
+  list-style: disc;
+  margin-left: 2em;
 }
-.doc-style ul > ul {
-	padding-bottom: 10px;
+.doc-style ul > li > ul {
+  padding-top: 5px;
+	/* padding-bottom: 10px; */
 	list-style: none;
 	padding-left: 20px;
 }
+
 .doc-style .indent {
   padding-left: 20px;
 }
 .doc-style .no-indent {
   padding-left: 0px;
 }
-.doc-style .overview-logo-pad {
+.doc-style .footer-notice {
+  font-size:15px;
+  max-width:430px;
+}
+.doc-style .logo-pad {
 	margin: 15px auto;
 }
 .doc-style hr.setting-section {
@@ -116,15 +192,59 @@ h2 .nav-tab {
 	color: #888;
 }
 .doc-style .dashicons {
-  vertical-align: sub;
+  /* vertical-align: sub; */
   color: #777;
+  font-size: 16px;
 }
 .doc-style .dashicons:hover {
   color: #0074A2;
 }
+
+
+
 @media screen and (min-width:830px) {
   .doc-style .col-half {
     width: 50%;
     float: left;
   }
+}
+.doc-style td>input[type=checkbox] {
+  margin-top: -4px;
+}
+.doc-style pre[class*="language-"] {
+  padding: 10px 10px;
+  line-height: 1.35;
+  display: block;
+}
+.doc-style code {
+  font-family: Consolas,Monaco,monospace;
+  font-size: 16px;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+
+.doc-style .inner-wrap h2 {
+  margin-top: 50px;
+}
+.doc-style .inner-wrap h2:first-of-type {
+  margin-top: 0px;
+}
+.doc-style .anchor-with-top-pad {
+  display: block; position: relative; top: 0px; visibility: hidden;
+}
+
+.tab-overview,
+.tab-settings p.submit {
+  text-align: center;
+}
+
+.tab-overview {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.doc-style .tab-overview h3 {
+  background-color: transparent;
+  margin-bottom: -5px;
 }

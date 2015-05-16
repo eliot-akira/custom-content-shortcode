@@ -23,7 +23,8 @@ class CCS_If {
 	function register() {
 		add_shortcode( 'if', array( $this, 'if_shortcode' ) );
 		add_shortcode( '-if', array( $this, 'if_shortcode' ) );
-		add_shortcode( '--if', array( $this, 'if_shortcode' ) );
+    add_shortcode( '--if', array( $this, 'if_shortcode' ) );
+    add_shortcode( '---if', array( $this, 'if_shortcode' ) );
 		add_shortcode( 'flag', array( $this, 'flag_shortcode' ) );
 	}
 
@@ -37,7 +38,8 @@ class CCS_If {
 			'no_flag' => '',
 
 			'type' => '',
-			'name' => '',
+      'name' => '',
+      'id' => '',
 
 			'category' => '',
 			'tag' => '',
@@ -63,7 +65,7 @@ class CCS_If {
       'after' => '',
 
       'pass' => '',
-      'pass_empty' => 'true',
+      'pass_empty' => 'true', // deprecated
 		);
 
 		extract( shortcode_atts( $args , $atts, true ) );
@@ -80,7 +82,9 @@ class CCS_If {
 		if (!empty($no_flag)) $flag = $no_flag;
 
 		$out = '';
+
 		$condition = false;
+
 		$compare = strtoupper($compare);
 
 		// Get [else] block
@@ -94,32 +98,7 @@ class CCS_If {
 		 *
 		 */
 
-		if ( CCS_Loop::$state['is_loop'] ) {
 
-			if (!empty($every)) {
-
-				/*---------------------------------------------
-				 *
-				 * Every X number of posts in [loop]
-				 *
-				 */
-
-				$count = CCS_Loop::$state['loop_count'];
-
-				if (substr($every,0,4)=='not ') {
-					$every = substr($every, 4); // Remove first 4 letters
-
-					// not Modulo
- 					$condition = ($every==0) ? false : (($count % $every)!=0);
-				} else {
-
-					// Modulo
-					$condition = ($every==0) ? false : (($count % $every)==0);
-				}
-
-			}
-
-		} // End [loop] only conditions
 
 		/*---------------------------------------------
 		 *
@@ -135,34 +114,10 @@ class CCS_If {
 		$current_post_name = isset($post->post_name) ? $post->post_name : null;
 		$current_post_id = isset($post->ID) ? $post->ID : null;
 
+    if ( CCS_Loop::$state['is_loop'] ) {
+      $current_post_id = CCS_Loop::$state['current_post_id'];
+    }
 
-    // [if flag] - To be deprecated
-		// @todo Combine with [if field] without value
-		if ( !empty($flag) ) {
-
-			/*---------------------------------------------
-			 *
-			 * Check field as condition [if flag="field"]
-			 *
-			 */
-
-			if ( CCS_Loop::$state['is_loop'] ) {
-				$current_id = CCS_Loop::$state['current_post_id'];
-			} else {
-				$current_id = $current_post_id;
-			}
-			if ( $flag != 'image' )
-				$check = get_post_meta( $current_id, $flag, true );
-			else
-				$check = has_post_thumbnail( $current_id );
-
-			if ((!empty($check)) && (!empty($no_flag))) $condition = false;
-			if ((empty($check)) && (empty($no_flag))) $condition = false;
-			else {
-				$condition = true;
-				self::$if_flag = $check;
-			}
-		}
 
 
 		/*---------------------------------------------
@@ -413,25 +368,37 @@ class CCS_If {
 
 		/*---------------------------------------------
 		 *
-		 * Post type, name
+		 * Post type, name, id
 		 *
 		 */
 
-		if (!empty($type)) {
+		if ( !empty($type) ) {
+
 			$types = self::comma_list_to_array($type); // Enable comma-separated list
 			$condition = in_array($current_post_type, $types) ? true : false;
 		}
 
-		if (!empty($name)) {
+    if ( !empty($id) ) {
+
+      $ids = self::comma_list_to_array($id); // Enable comma-separated list
+      $condition = in_array($current_post_id, $ids) ? true : false;
+    }
+
+		if ( !empty($name) ) {
+
 			$names = self::comma_list_to_array($name);
 
 			foreach ($names as $each_name) {
-				if ($start=='true') {
+
+				if ( $start == 'true' ) {
+
 					// Only check beginning of string
 					$this_value = substr($current_post_name, 0, strlen($each_name));
+
 				} else {
 					$this_value = $current_post_name;
 				}
+
 				$condition = ($this_value == $each_name) ? true : $condition;
 			}
 		}
@@ -494,7 +461,7 @@ class CCS_If {
 		 *
 		 */
 
-		if (isset($atts['attached'])) {
+		if ( isset($atts['attached']) ) {
 
 			// Does the current post have any attachments?
 
@@ -542,11 +509,16 @@ class CCS_If {
 		}
 		
 
-		// Has CCS gallery field
+    /*---------------------------------------------
+     *
+     * Has CCS gallery field
+     *
+     */
 
 		if ( isset($atts['gallery']) && class_exists('CCS_Gallery_Field')) {
 			$condition =  CCS_Gallery_Field::has_gallery();
 		}		
+
 
 		/*---------------------------------------------
 		 *
@@ -570,13 +542,44 @@ class CCS_If {
 			$condition = is_tax( $tax_archive );
 		}
 
+
     /*---------------------------------------------
      *
-     * First and last post in loop
+     * Inside [loop]
      *
      */
-    
-    if (CCS_Loop::$state['is_loop']) {
+   
+    if ( CCS_Loop::$state['is_loop'] ) {
+
+
+      /*---------------------------------------------
+       *
+       * Every X number of posts
+       *
+       */
+
+      if ( !empty($every) ) {
+
+        $count = CCS_Loop::$state['loop_count'];
+
+        if (substr($every,0,4)=='not ') {
+          $every = substr($every, 4); // Remove first 4 letters
+
+          // not Modulo
+            $condition = ($every==0) ? false : (($count % $every)!=0);
+        } else {
+
+          // Modulo
+          $condition = ($every==0) ? false : (($count % $every)==0);
+        }
+
+      }
+
+      /*---------------------------------------------
+       *
+       * First and last post in loop
+       *
+       */
 
       $condition = isset($atts['first']) ?
         CCS_Loop::$state['loop_count'] == 1 : $condition;
@@ -584,7 +587,9 @@ class CCS_If {
       $condition = isset($atts['last']) ?
         CCS_Loop::$state['loop_count'] == CCS_Loop::$state['post_count'] : $condition;
 
-    }
+
+    } // End: if inside [loop]
+
 
     /*---------------------------------------------
      *
@@ -592,21 +597,57 @@ class CCS_If {
      *
      */
     
-    if ( !empty($pass) || ($pass_empty!='true') ) {
+    if ( ( isset($atts['pass']) && empty($atts['pass']) && $empty!='true' ) ||
+      ( $pass_empty!='true' && empty($pass) ) ) // @todo deprecated
+    {
 
-      if ( ($pass_empty!='true') && empty($pass) ) {
-          $condition = false;
-      } elseif ( !empty($value) ) {
-        $condition = ($pass == $value);
-      } else {
+      // pass="{FIELD}" empty="false" -- pass is empty
+
+      $condition = false;
+
+    } elseif ( !empty($pass) && empty($value) && $empty!='true' ) {
+
+      // pass="{FIELD}" empty="false" -- no value set
+
+      $condition = true;
+
+    } elseif ( !empty($pass) && !empty($value) ) {
+
+      // pass="{FIELD}" value="something"
+
+      $values = CCS_Loop::explode_list( $value ); // Support multiple values
+
+      $condition = in_array( $pass, $values );
+    }
+
+
+    /*---------------------------------------------
+     *
+     * Check field as condition [if flag="field"]
+     *
+     * @todo To be deprecated
+     *
+     */
+
+    if ( !empty($flag) ) {
+
+      if ( $flag != 'image' )
+        $check = get_post_meta( $current_id, $flag, true );
+      else
+        $check = has_post_thumbnail( $current_id );
+
+      if ((!empty($check)) && (!empty($no_flag))) $condition = false;
+      if ((empty($check)) && (empty($no_flag))) $condition = false;
+      else {
         $condition = true;
+        self::$if_flag = $check;
       }
     }
 
 
 		/*---------------------------------------------
 		 *
-		 * Not
+		 * Not / else
 		 *
 		 */
 
@@ -614,6 +655,7 @@ class CCS_If {
 		$condition = isset($atts['not']) ? !$condition : $condition;
 
 		$out = $condition ? do_shortcode( $content ) : do_shortcode( $else ); // [if]..[else]..[/if]
+
 
 		self::$if_flag = '';
 

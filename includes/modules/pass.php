@@ -66,6 +66,8 @@ class CCS_Pass {
      *
      */
 
+    if ( !empty($global) && empty($field) ) $field = 'this';
+
     if ( !empty($field) ) {
 
       if ($field=='gallery') $field = '_custom_gallery'; // Support CCS gallery field
@@ -89,7 +91,9 @@ class CCS_Pass {
 
       } else {
         // Get normal field
-        $field_value = get_post_meta( $post_id, $field, true );
+
+        $field_value = CCS_Content::get_prepared_field( $field, $post_id );
+        // $field_value = get_post_meta( $post_id, $field, true );
       }
 
       if (is_array($field_value)) {

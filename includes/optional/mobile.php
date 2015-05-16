@@ -45,7 +45,10 @@ class CCS_Mobile_Detect_Extended extends Mobile_Detect {
       }
     }
     // Rough detect
+    if ( !isset($_SERVER["HTTP_USER_AGENT"]) ) return 'Other';
+
     $agent = strtolower($_SERVER["HTTP_USER_AGENT"]);
+
     if (strpos($agent, 'msie')) return 'IE';
     elseif (strpos($agent, 'presto')) return 'Opera';
     elseif (strpos($agent, 'chrome')) return 'Chrome';

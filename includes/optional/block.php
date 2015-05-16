@@ -65,7 +65,7 @@ class CCS_Blocks {
     }
   }
 
-  function block_shortcode( $atts, $content = '', $tag ) {
+  function block_shortcode( $atts = array(), $content = '', $tag ) {
 
     // Remove prefix
     while (isset($tag[0]) && $tag[0]=='-') {
