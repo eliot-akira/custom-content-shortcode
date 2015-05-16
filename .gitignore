@@ -1,0 +1,15 @@
+# .gitignore minimum
+
+# Always ignore
+
+_unused
+node_modules
+.DS_Store
+.svn
+.cvs
+.gitmodules
+.htaccess
+.tweetcache
+*.bak
+*.swp
+Thumbs.db
