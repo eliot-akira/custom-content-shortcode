@@ -81,19 +81,19 @@ var _ = self.Prism = {
 		insertBefore: function (inside, before, insert, root) {
 			root = root || _.languages;
 			var grammar = root[inside];
-			
+
 			if (arguments.length == 2) {
 				insert = arguments[1];
-				
+
 				for (var newToken in insert) {
 					if (insert.hasOwnProperty(newToken)) {
 						grammar[newToken] = insert[newToken];
 					}
 				}
-				
+
 				return grammar;
 			}
-			
+
 			var ret = {};
 
 			for (var token in grammar) {
@@ -113,7 +113,7 @@ var _ = self.Prism = {
 					ret[token] = grammar[token];
 				}
 			}
-			
+
 			// Update references in other language definitions
 			_.languages.DFS(_.languages, function(key, value) {
 				if (value === root[inside] && key != inside) {
@@ -458,7 +458,7 @@ Prism.languages.markup = {
     pattern: /\[[\w\W]*?\]/g,
     inside: {
       'tag': {
-        pattern: /^(\[|\[\/])\/?[\w:-]+/i,
+        pattern: /^(\[|\[\/])\/?[\w\*:-]+/i,
         inside: {
           'punctuation': /^(\[|\[\/])\/?/,
           'namespace': /^[\w-]+?:/
@@ -521,7 +521,7 @@ if (Prism.languages.markup) {
 			alias: 'language-css'
 		}
 	});
-	
+
 	Prism.languages.insertBefore('inside', 'attr-value', {
 		'style-attr': {
 			pattern: /\s*style=("|').+?\1/ig,

@@ -25,7 +25,7 @@ class CCS_If {
 		add_shortcode( '-if', array( $this, 'if_shortcode' ) );
     add_shortcode( '--if', array( $this, 'if_shortcode' ) );
     add_shortcode( '---if', array( $this, 'if_shortcode' ) );
-		add_shortcode( 'flag', array( $this, 'flag_shortcode' ) );
+		// add_shortcode( 'flag', array( $this, 'flag_shortcode' ) );
 	}
 
 	function if_shortcode( $atts, $content = null, $shortcode_name ) {
@@ -58,7 +58,8 @@ class CCS_If {
       'empty' => 'true',
 
 			'not' => '',
-			'start' => '',
+      'start' => '',
+      'end' => '',
 
       // field="date" comparison
       'before' => '',
@@ -94,14 +95,6 @@ class CCS_If {
 
 		/*---------------------------------------------
 		 *
-		 * If we're inside loop shortcode
-		 *
-		 */
-
-
-
-		/*---------------------------------------------
-		 *
 		 * Get global post info
 		 *
 		 */
@@ -110,22 +103,19 @@ class CCS_If {
 
 //		if (empty($post)) return; // Make sure post exists
 
-		$current_post_type = isset($post->post_type) ? $post->post_type : null;
-		$current_post_name = isset($post->post_name) ? $post->post_name : null;
 		$current_post_id = isset($post->ID) ? $post->ID : null;
 
+		// If we're inside loop shortcode
     if ( CCS_Loop::$state['is_loop'] ) {
       $current_post_id = CCS_Loop::$state['current_post_id'];
     }
-
-
 
 		/*---------------------------------------------
 		 *
 		 * Taxonomy: category, tags, ..
 		 *
 		 */
-		
+
 		if (!empty($category)) {
 			$taxonomy = "category";
 			$term = $category;
@@ -178,7 +168,7 @@ class CCS_If {
 		 * Check if current term in [for] loop has children
 		 *
 		 */
-		
+
 		if ( isset($atts['children']) && CCS_ForEach::$state['is_for_loop'] ) {
 			$current_term = CCS_ForEach::$current_term[ CCS_ForEach::$index ];
 			$current_taxonomy = $current_term['taxonomy'];
@@ -208,7 +198,7 @@ class CCS_If {
          * Published date
          *
          */
-        
+
         if ( $field == 'date' || !empty($before) || !empty($after) ) {
 
           if ( $field == 'date' ) {
@@ -276,11 +266,24 @@ class CCS_If {
         $value = strtolower($value); // lowercase for user role
 			}
 
-			// start=".."
-			if ( !empty($start) && ($start!='true') && empty($value) ) {
-				$value = $start;
-				$start = 'true';
-			}
+      // start=".." end=".."
+      if ( !empty($start) && !empty($end) ) {
+
+        $value = $start.'..'.$end; // Placeholder
+        $start_value = $start;
+        $end_value = $end;
+        $start = 'true';
+        $end = 'true';
+
+      // start=".."
+      } elseif ( !empty($start) && ($start!='true') && empty($value) ) {
+        $value = $start;
+        $start = 'true';
+      // end=".."
+      } elseif ( !empty($end) && ($end!='true') && empty($value) ) {
+        $value = $end;
+        $end = 'true';
+      }
 
 			if ( empty($check) || ( $check == false ) ) {
 
@@ -300,11 +303,24 @@ class CCS_If {
 
 						foreach ($check as $check_this) {
 
-							if ( $start == 'true' ) {
+              if ( $start == 'true' && $end == 'true' ) {
+                // Check beginning and end of field value
+                if ( substr($check_this, 0, strlen($start_value)) == $start_value &&
+                  substr($check_this, strlen($check_this) - strlen($end_value) ) == $end_value ) {
+                  $condition = true;
+                  continue;
+                } else {
+                  $condition = false;
+                  break;
+                }
 
-								// Only check beginning of field value
-								$check_this = substr($check_this, 0, strlen($this_value));
-							}
+              } elseif ( $start == 'true' ) {
+                // Only check beginning of field value
+                $check_this = substr($check_this, 0, strlen($this_value));
+              } elseif ( $end == 'true' ) {
+                // Only check end of field value
+                $check_this = substr($check_this, strlen($check_this) - strlen($this_value));
+              }
 
               if ($lowercase == 'true') $check_this = strtolower($check_this);
 
@@ -337,7 +353,7 @@ class CCS_If {
                   case 'BETWEEN':
                     $values = explode(' - ', $this_value);
                     if (isset($values[0]) && isset($values[1])) {
-                      $condition = 
+                      $condition =
                         ($values[0] <= $check_this && $check_this <= $values[1]) ?
                           true : $condition;
                     }
@@ -375,18 +391,24 @@ class CCS_If {
 		if ( !empty($type) ) {
 
 			$types = self::comma_list_to_array($type); // Enable comma-separated list
+
+			$current_post_type = isset($post->post_type) ? $post->post_type : null;
 			$condition = in_array($current_post_type, $types) ? true : false;
 		}
 
     if ( !empty($id) ) {
 
       $ids = self::comma_list_to_array($id); // Enable comma-separated list
+			if ( CCS_Loop::$state['is_loop'] && ($find_key = array_search('this', $ids)) !== false ) {
+				$ids[$find_key] = CCS_Loop::$state['original_post_id'];
+			}
       $condition = in_array($current_post_id, $ids) ? true : false;
     }
 
 		if ( !empty($name) ) {
 
 			$names = self::comma_list_to_array($name);
+			$current_post_name = isset($post->post_name) ? $post->post_name : null;
 
 			foreach ($names as $each_name) {
 
@@ -409,7 +431,7 @@ class CCS_If {
 		 * Post parent
 		 *
 		 */
-		
+
 		if (!empty($parent)) {
 
 			$current_post_parent = isset($post->post_parent) ? $post->post_parent : 0;
@@ -482,7 +504,7 @@ class CCS_If {
 		 * If child post exists
 		 *
 		 */
-		
+
 		if ( isset($atts['children']) && !CCS_ForEach::$state['is_for_loop'] ) {
 
 			if (!empty($post)) {
@@ -507,7 +529,7 @@ class CCS_If {
 			$result = CCS_Loop::the_loop_shortcode($atts_original, '[if empty][else]Yes[/if]');
 			$condition = !empty($result);
 		}
-		
+
 
     /*---------------------------------------------
      *
@@ -517,7 +539,7 @@ class CCS_If {
 
 		if ( isset($atts['gallery']) && class_exists('CCS_Gallery_Field')) {
 			$condition =  CCS_Gallery_Field::has_gallery();
-		}		
+		}
 
 
 		/*---------------------------------------------
@@ -526,7 +548,7 @@ class CCS_If {
 		 * [if comment] - current post has comment
 		 *
 		 */
-		
+
 		$condition = isset($atts['home']) ? is_front_page() : $condition;
 		$condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : $condition;
 		$condition = isset($atts['image']) ? has_post_thumbnail() : $condition;
@@ -548,7 +570,7 @@ class CCS_If {
      * Inside [loop]
      *
      */
-   
+
     if ( CCS_Loop::$state['is_loop'] ) {
 
 
@@ -596,7 +618,7 @@ class CCS_If {
      * Passed value
      *
      */
-    
+
     if ( ( isset($atts['pass']) && empty($atts['pass']) && $empty!='true' ) ||
       ( $pass_empty!='true' && empty($pass) ) ) // @todo deprecated
     {
@@ -720,4 +742,3 @@ class CCS_If {
 	}
 
 }
-

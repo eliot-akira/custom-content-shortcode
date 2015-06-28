@@ -10,14 +10,26 @@ Use `[taxonomy]` to display taxonomy terms from the current post.
 [taxonomy category]
 ~~~
 
-If there is more than one category, they will be displayed as a comma-separated list.
+Optionally, you can specify the *field* parameter.
 
-To display term slugs instead of names, set *field="slug"*. This will display the slugs separated by white space.
+~~~
+[taxonomy category field="id"]
+~~~
+
+Available fields are: *name* (default), *id*, *slug*, *description*, *url*, *link*, or custom taxonomy field.
+
+---
+
+If there is more than one term, they will be displayed as a comma-separated list.
+
+You can also use [`[for/each]`](#for--each) to loop through a list of terms.
+
+---
 
 ## Related posts
 ---
 
-Use the `[related]` shortcode to loop through posts related by taxonomy.
+Use `[related]` to loop through posts related by taxonomy.
 
 *Display posts in the same category as current post*
 
@@ -62,7 +74,7 @@ This is a feature to create a loop for each category, tag, or taxonomy term.
 [/for]
 ~~~
 
-The `[for]` shortcode loops through all existing terms of a given taxonomy.
+The `[for]` shortcode loops through *all existing terms* of a given taxonomy. To limit by terms associated with the current post, set *current="true"*.
 
 The `[each]`shortcode displays the term name.
 
@@ -78,6 +90,8 @@ Available parameters for the **[for]** shortcode are:
 
 
 > **each** - *category*, *tag*, or custom taxonomy
+
+> **current** - set *current="true"* to limit by terms associated with the current post
 
 > **count** - limit number of terms: *count="3"*
 
@@ -141,7 +155,7 @@ Inside a loop, the **[for]** shortcode gets taxonomy terms from the current post
 
 ### Current post
 
-Outside the loop, the **[for]** shortcode gets all terms that have any posts associated. Use the *current* parameter to display terms of the current post only. 
+Outside the loop, the **[for]** shortcode gets all terms that have any posts associated. Use the *current* parameter to display terms of the current post only.
 
 *Display a link for each category assigned to the current post*
 
@@ -216,7 +230,7 @@ Use the *trim* parameter to create a list of terms. It removes extra space or co
 
 ~~~
 [for each="category" trim="true"]
-  [each], 
+  [each],
 [/for]
 ~~~
 
@@ -224,6 +238,6 @@ Use the *trim* parameter to create a list of terms. It removes extra space or co
 
 ~~~
 [for each="category" trim="/"]
-  [each] / 
+  [each] /
 [/for]
 ~~~

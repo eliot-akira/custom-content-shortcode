@@ -6,12 +6,9 @@
 Use the **[if]** shortcode to display content based on post conditions.
 
 ~~~
-[loop type="films"]
-  [field title]
-  [if category="recommend"]
-    Must watch!
-  [/if]
-[/loop]
+[if category="recommend"]
+  Must watch!
+[/if]
 ~~~
 
 ## Parameters
@@ -79,6 +76,12 @@ Use the **[if]** shortcode to display content based on post conditions.
 ---
 
 ### If it exists
+
+~~~
+[if attached]
+  There are attachments.
+[/if]
+~~~
 
 > **attached** - if the post has any attachments
 

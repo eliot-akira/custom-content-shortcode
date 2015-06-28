@@ -37,6 +37,7 @@ When inside a loop, it can be used without parameter to show each post's content
 
 
 ## Parameters
+
 ---
 
 ### Type, name, ID
@@ -53,7 +54,47 @@ When inside a loop, it can be used without parameter to show each post's content
 
 >> You can display custom fields as well as [predefined fields](options-general.php?page=ccs_reference&tab=field#predefined-fields).
 
->> When displaying a field from the current post, you can use the [**[field]** shortcode](options-general.php?page=ccs_reference&tab=field).
+>> When displaying a field from the current post, you can use [`[field]`](options-general.php?page=ccs_reference&tab=field) as a shortcut.
+
+> **meta** - display author meta: *field="author" meta="user_email"* - see [the codex](http://codex.wordpress.org/Function_Reference/get_the_author_meta) for available author meta fields
+
+---
+
+### Image field
+
+> **image** - display an image field; for example: *image="product_image"*
+
+> **size** - size of image: *thumbnail*, *medium*, *large*, *full* (default) or [custom defined size](http://codex.wordpress.org/Function_Reference/add_image_size)
+
+> **width**, **height** - set both to resize image by pixels; set *size* parameter with same proportion
+
+> **image_class** - add class to the &lt;img&gt; tag
+
+> **alt**, **title** - additional image attributes
+
+> **in** - type of image field: *id* (default), *url*, or *object*
+
+> **out** - image detail to output: *id*, *url*, *title*, *caption*, *description*
+
+> **nopin** - set *nopin="nopin"* to prevent Pinterest pinning of image
+
+---
+
+### Taxonomy
+
+> **taxonomy** - display *category*, *tag*, or custom taxonomy of the post: *taxonomy="product_type"*
+
+>> When displaying terms of the current post, you can use [`[taxonomy]`](options-general.php?page=ccs_reference&tab=taxonomy) as a shortcut.
+
+>> If there is more than one term, you can use [`[for/each]`](options-general.php?page=ccs_reference&tab=taxonomy#for--each) to loop through a list of terms.
+
+> **field** - taxonomy field to display: *name* (default), *id*, *slug*, *description*, *url*, *link*, or custom taxonomy field
+
+> **image** - custom taxonomy image field; see description above for [image field parameters](#image-field)
+
+> **term** - get taxonomy term by ID or slug, regardless of current post
+
+> **term_name** - get taxonomy term by name/label
 
 ---
 
@@ -94,58 +135,6 @@ When inside a loop, it can be used without parameter to show each post's content
 > **dots** - set *false* to disable dots at the end of excerpt
 
 > **link** - set *false* to disable link to the post
-
-
----
-
-### Image field
-
-> **image** - display an image field; for example: *image="product_image"*
-
-> **size** - size of image: *thumbnail*, *medium*, *large*, *full* (default) or [custom defined size](http://codex.wordpress.org/Function_Reference/add_image_size)
-
-> **width**, **height** - set both to resize image by pixels; set *size* parameter with same proportion
-
-> **image_class** - add class to the &lt;img&gt; tag
-
-> **alt**, **title** - additional image attributes
-
-> **in** - type of image field: *id* (default), *url*, or *object*
-
-> **out** - image detail to output: *id*, *url*, *title*, *caption*, *description*
-
-> **nopin** - set *nopin="nopin"* to prevent Pinterest pinning of image
-
-
----
-
-### Taxonomy
-
-> **taxonomy** - display *category*, *tag*, or custom taxonomy of the post: *taxonomy="product_type"*
-
-> **field** - taxonomy field to display: *name* (default), *id*, *slug*, *description*, or custom taxonomy field
-
->> By default, terms are displayed as a list of term names, like "Category, Another Category". If you need the term slugs, set *field="slug"*.
-
-> **image** - custom taxonomy image field; see description above for image field parameters
-
-> **term** - get taxonomy term by ID or slug, regardless of current post
-
-> **term_name** - get taxonomy term by name/label
-
->> When displaying terms from the current post, you can use the [**[taxonomy]** shortcode](options-general.php?page=ccs_reference&tab=taxonomy).
-
-
----
-
-### Other field types
-
-> **meta** - display author meta: *field="author" meta="user_email"*
-
->> See [the codex](http://codex.wordpress.org/Function_Reference/get_the_author_meta) for available author meta fields.
-
-> **out="label"** - when displaying checkboxes or select fields made in ACF, this parameter isplays their labels instead of values
-
 
 ---
 

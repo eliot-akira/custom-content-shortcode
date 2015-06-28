@@ -10,7 +10,11 @@ Use `[field]` to display a field from the current post.
 [field title] by [field author] was written on [field date].
 ~~~
 
-*Additional parameters*
+You can display custom fields as well as [predefined fields](#predefined-fields).
+
+---
+
+Additional parameters can be placed after the field name.
 
 ~~~
 [field title words="10"]
@@ -22,7 +26,7 @@ Use `[field]` to display a field from the current post.
 [field image="image_field" size="thumbnail"]
 ~~~
 
-You can display custom fields as well as the following predefined fields.
+For available parameters, refer to [`[content]`](options-general.php?page=ccs_reference&tab=content#field).
 
 ## Predefined fields
 
@@ -98,20 +102,30 @@ You can display custom fields as well as the following predefined fields.
 
 > *avatar* - post author avatar
 
+### Previous / Next
+
+> *prev-link* - previous post in the loop (title with link)
+
+> *next-link* - next post in the loop
+
+
+
 
 ## Currency
 
 ---
 
-To format a currency value, use these parameters.
+To format a currency value, you can use the following parameters.
 
-> **decimals** - number of decimal points; default is 2
+> **decimals** - number of decimal points; for example, 2
 
-> **point** - separator for the decimal point; default is "."
+> **point** - separator for the decimal point; for example, "."
 
-> **thousands** - separator for thousands; default is ","
+> **thousands** - separator for thousands; for example, ","
 
-For example:
+---
+
+*Format a field value as currency*
 
 ~~~
 [field field_name point="," thousands="."]
@@ -129,7 +143,7 @@ To use a predefined currency format, use the parameter *currency*.
 
 Please note that the currency symbol is not included in the output.
 
-Most <a target="_blank" href="http://en.wikipedia.org/wiki/ISO_4217#Active_codes">currency codes</a> are defined for your convenience.
+Most [currency codes](http://en.wikipedia.org/wiki/ISO_4217#Active_codes) are defined for your convenience.
 
 
 
@@ -154,4 +168,3 @@ Use `[array]` to loop through an array of key-value pairs stored in a field.
 > **debug** - set *true* to print the whole array and see how it's structured
 
 > **global** - access global variable with given name
-

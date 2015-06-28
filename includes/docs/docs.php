@@ -83,7 +83,7 @@ class CCS_Docs {
 
 		$page = isset($_GET['page']) ? $_GET['page'] : null;
 
-		if ( $pagenow == 'options-general.php' && $page == self::$state['settings_page_name'] ) { 
+		if ( $pagenow == 'options-general.php' && $page == self::$state['settings_page_name'] ) {
 
 			if ( (isset($_GET['updated']) && $_GET['updated'] == 'true') ||
 				(isset($_GET['settings-updated']) && $_GET['settings-updated'] == 'true') ) {
@@ -110,10 +110,10 @@ class CCS_Docs {
 		$screen = get_current_screen();
 		$check_hook = empty($hook) ? self::$state['settings_page_hook'] : $hook;
 
-		if (is_object($screen) && $screen->id == $check_hook) {  
-	        return true;  
-	    } else {  
-	        return false;  
+		if (is_object($screen) && $screen->id == $check_hook) {
+	        return true;
+	    } else {
+	        return false;
 	    }
 	}
 
@@ -135,7 +135,7 @@ class CCS_Docs {
    * Docs style and script
    *
    */
-  
+
 	function docs_admin_css() {
 
 		if ( $this->is_current_plugin_screen() ) {
@@ -188,6 +188,7 @@ class CCS_Docs {
           'attach' => 'Attachment',
           'comment' => '',
           'user' => '',
+          'url' => 'URL',
         )
       ),
 
@@ -201,7 +202,7 @@ class CCS_Docs {
           'raw' => '',
           'load' => '',
           'pass' => '',
-          'url' => 'URL',
+          'extras' => '',
         )
       ),
 
@@ -225,7 +226,7 @@ class CCS_Docs {
     $tab_folders = array(
 
       '/' => array(
-        'overview', 
+        'overview',
         'start',
         'settings'
       ),
@@ -237,7 +238,8 @@ class CCS_Docs {
         'taxonomy',
         'attach',
         'comment',
-        'user'
+        'user',
+        'url'
       ),
 
       'advanced' => array(
@@ -248,7 +250,7 @@ class CCS_Docs {
         'raw',
         'load',
         'pass',
-        'url'
+        'extras'
       ),
 
       'optional' => array(
@@ -261,7 +263,7 @@ class CCS_Docs {
       )
     );
 
-    // @todo Put this in a template or something.. 
+    // @todo Put this in a template or something..
 
     ?>
     <div class="wrap" style="opacity:0">
@@ -269,7 +271,7 @@ class CCS_Docs {
       <h1 class="plugin-title">Custom Content Shortcode</h1>
 
     	<div class="doc-style">
-    		<h2 class="nav-tab-wrapper">  
+    		<h2 class="nav-tab-wrapper">
     		<?php
 
     			foreach ($all_tabs as $tab => $tab_title) {
@@ -299,7 +301,7 @@ class CCS_Docs {
               echo $link;
 
             } else {
-  
+
               /*---------------------------------------------
                *
                * Menu with dropdown
@@ -401,25 +403,30 @@ class CCS_Docs {
               }
             }
 
-            echo Markdown_Module::render( @file_get_contents( $doc_file ) );
+            if ( $active_tab == 'overview' ) {
+              // Escape HTML
+              echo Markdown_Module::render( @file_get_contents( $doc_file ), false, true );
+            } else {
+              echo Markdown_Module::render( @file_get_contents( $doc_file ), false, false );
+            }
 
             // echo wpautop( @file_get_contents( $doc_file ) );
 
     			}
 
     			// if ( $active_tab == $default_tab ) {
+            ?>
 
+            <?php
     			 	// Add footnote
-    			 	?><br><hr>
+            ?><br><hr>
 
     				<div align="center" class="footer-notice logo-pad">
     					<img src="<?php echo CCS_URL;?>/includes/docs/logo.png">
-    					<div class="logo-pad"><b>Custom Content Shortcode</b> is developed by Eliot Akira.</div>
-    					Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin support forum</a> for questions or feedback. 
-    					If you'd like to contribute to this plugin, here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>. 
-    					For commercial development, contact <a href="mailto:me@eliotakira.com">me@eliotakira.com</a>
+    					<div class="logo-pad"><b>Custom Content Shortcode</b> is developed by <a href="mailto:me@eliotakira.com">Eliot Akira.</a></div>
+    					Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin support forum</a> for questions or feedback.
+    					If you'd like to contribute to this plugin, here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>.
     				</div>
-            <br><br>
             <?php
 
     			// }
@@ -436,7 +443,7 @@ class CCS_Docs {
   // Content overview section
 
 	function dashboard_content_overview() {
-		
+
     ?><div class="wrap">
 		<?php include( dirname(dirname(__FILE__)) .'/overview/content-overview.php'); ?>
 		</div><?php
@@ -522,17 +529,23 @@ class CCS_Docs {
     return false;
   });
 
+  // Open external links in new tab
+
+  $(document.links).filter(function() {
+      return this.hostname != window.location.hostname;
+  }).attr('target', '_blank');
+
   // Automatic anchors
   $('.inner-wrap h3, .inner-wrap h2').each(function() {
     var $el = $(this),
-        title = $el.text().toLowerCase().replace(/:|\/|\,|\[|\]/g, '').replace(/\ /g, '-');
+        title = $el.text().toLowerCase().replace(/:|\,|\[|\]/g, '').replace(/\ |\//g, '-');
     $el.before('<a name="'+title+'" class="anchor-with-top-pad">');
   });
 
 })(jQuery);
 </script>
-<?php    
-    
+<?php
+
     }
 
   } // End docs_admin_js

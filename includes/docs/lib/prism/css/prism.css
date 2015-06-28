@@ -1,13 +1,6 @@
-/* http://prismjs.com/download.html?themes=prism-okaidia&languages=markup+css+css-extras+clike+javascript+php+php-extras+scss+bash */
-/**
- * okaidia theme for JavaScript, CSS and HTML
- * Loosely based on Monokai textmate theme by http://www.monokai.nl/
- * @author ocodia
- */
 
 code[class*="language-"],
 pre[class*="language-"] {
-	color: #f8f8f2;
 	text-shadow: 0 1px rgba(0, 0, 0, 0.3);
 	font-family: Consolas, Monaco, 'Andale Mono', monospace;
 	direction: ltr;
@@ -46,15 +39,16 @@ pre[class*="language-"] {
 	border-radius: .3em;
 }
 
+code[class*="language-"],
+pre[class*="language-"] {
+	color: #f8f8f2;
+}
+
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
 	color: slategray;
-}
-
-.token.punctuation {
-	color: #f8f8f2;
 }
 
 .namespace {
@@ -66,21 +60,20 @@ pre[class*="language-"] {
 .token.constant,
 .token.symbol,
 .token.deleted {
-	color: #f92672;
+	color: #cc6666; /* #f92672; #e2777a */
 }
 
 .token.boolean,
 .token.number {
 	color: #ae81ff;
 }
-
+.token.attr-value,
 .token.selector,
-.token.attr-name,
 .token.string,
 .token.char,
 .token.builtin,
 .token.inserted {
-	color: #a6e22e;
+	color: #b5bd68; /* #a6e22e; #7ec699 */
 }
 
 .token.operator,
@@ -92,13 +85,15 @@ pre[class*="language-"] {
 	color: #f8f8f2;
 }
 
-.token.atrule,
-.token.attr-value {
-	color: #e6db74;
+.token.attr-name,
+.token.atrule {
+	color: #f8c555; /* #e6db74; */
 }
 
+.token.punctuation,
+.token.bracket,
 .token.keyword {
-	color: #6193FF; /* 66d9ef */
+	color: #81a2be; /* #6193FF; 66d9ef #6196cc */
 }
 
 .token.regex,
@@ -113,4 +108,3 @@ pre[class*="language-"] {
 .token.entity {
 	cursor: help;
 }
-

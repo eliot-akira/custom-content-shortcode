@@ -7,7 +7,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: loop, query, content, shortcode, post type, field, attachment, comment, sidebar, taxonomy
 Requires at least: 3.6
 Tested up to: 4.2.2
-Stable tag: 2.2.3
+Stable tag: 2.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,7 +15,7 @@ Display posts, pages, custom post types, fields, attachments, comments, images, 
 
 == Description ==
 
-= Overview =  
+= Overview =
 <br />
 From a single field to entire pages, Custom Content Shortcode is a set of commands to display content where you need.
 
@@ -25,7 +25,7 @@ The **[loop]** shortcode performs query loops. It can display, for example, avai
 
 There is a reference section under Settings -> Custom Content.
 
-= Included =  
+= Included =
 <br />
 Here are some of the included features:
 
@@ -81,7 +81,53 @@ Support for other plugins:
 == Upgrade Notice ==
 
 
+
 == Changelog ==
+
+= 2.3.5 =
+
+* [repeater] - Display a random row from a repeater field: *row="rand"*
+
+= 2.3.4 =
+
+* [content] - Detect and prevent infinite loop if showing current post
+* [flex] - Support nested ACF Flexible Content field
+
+= 2.3.3 =
+
+* [loop] - Get previous/next post in the loop with [prev] and [next]
+* [today] - Display today's date
+* [*] - Place comment in the visual editor
+* [br], [p] - These will work without HTML Blocks module enabled
+
+= 2.3.0 =
+
+* [comment template] - Load *comments.php* from theme
+* [loop fields] - Only field tags specified by the *fields* parameter will be rendered, same as the [pass] shortcode
+
+= 2.2.9 =
+
+* [attached] - Support nested attached loop
+* [attached-field] - Display a field from a specific attachment
+* [loop] - Support include/exclude by post name
+
+= 2.2.8 =
+
+* [attached] - Better support for displaying fields when attachment is not an image
+* [if field] - Add parameter *end* to check ending of field value; for example, it can be used to check the file extension of an attachment
+* [if flag] - The *flag* parameter and its shortcode have been deprecated; use *field* instead
+* [taxonomy] - Add predefined taxonomy fields: *url* and *link*
+* Fix compatibility with PHP older than 5.4, which doesn't support array literals
+
+= 2.2.6 =
+
+* [loop include="children"] - Display child posts and descendants of each post
+
+= 2.2.4 =
+
+* [loop date_format] - Apply to multiple date fields
+* [loop fields] - Enable predefined fields as tags
+* Renamed pagination module to *paging.php*
 
 = 2.2.3 =
 

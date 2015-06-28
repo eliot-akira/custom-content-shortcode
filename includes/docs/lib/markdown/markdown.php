@@ -21,7 +21,7 @@ class MarkDown_Module {
 		add_shortcode( 'md', array($this, 'markdown_shortcode') );
 	}
 
-	function markdown_shortcode($atts, $content) {
+	function markdown_shortcode( $atts, $content ) {
 
 		$args = array();
 		extract( shortcode_atts( array(
@@ -40,12 +40,16 @@ class MarkDown_Module {
 		return $out;
 	}
 
-	public static function render( $content, $do_shortcode = false ) {
-		if ($do_shortcode)
-			return self::$parsedown->text(trim(do_shortcode( $content )) );
-		else
-			return self::$parsedown->text(trim($content)); // do_shortcode()
+	public static function render( $content, $do_shortcode = false, $escape = false ) {
 
+    if ( $do_shortcode ) $content = do_shortcode( $content );
+    if ( $escape ) $content = htmlspecialchars($content);
+
+    $result = self::$parsedown->text(trim($content));
+
+    if ( $escape ) $result = self::unescape($result);
+
+		return $result;
 	}
 
 	static function unescape( $out ) {

@@ -132,7 +132,7 @@ class CCS_ForEach {
 		}
 
 
-		if ( CCS_Loop::$state['is_loop'] || ($current=="true")) {
+		if ( CCS_Loop::$state['is_loop'] || ($current=="true") ) {
 
 			if ($current=="true") $post_id = get_the_ID();
 			else $post_id = CCS_Loop::$state['current_post_id']; // Inside [loop]

@@ -95,3 +95,19 @@ Use `[if attached]` to display something if the post has any attachments.
   [/if]
 [/loop]
 ~~~
+
+
+&nbsp;
+
+### Specific attachment field
+
+Use `[attached-field]` to display a single field from a specific attachment.
+
+*Display the URL of the second attachment*
+
+~~~
+[attached-field url offset="1"]
+~~~
+
+The first parameter is the field name. You can use additional parameters, which are the same as `[attached]` - for example, *offset*, *order* and *orderby*.  If you don't specify *offset*, the first attachment will be chosen.
+

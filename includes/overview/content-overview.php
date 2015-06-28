@@ -44,7 +44,7 @@
 
 			/* Generate list of post types */
 
-			$post_type_objects = get_post_types( array('public' => true), 'objects' ); 
+			$post_type_objects = get_post_types( array(/*'public' => true*/), 'objects' ); 
 
 				$exclude_types = array( 'revision', 'plugin_filter', 'plugin_group' );
 /*
@@ -274,13 +274,13 @@
 			$all_supports = array_merge($default_supports, $all_supports);
 /*
 			if (in_array('author', $all_supports)) {
-//				$add_supports = array('avatar'); 
+//				$add_supports = array('avatar');
 //				$add_supports = array('author-id', 'author-url', 'avatar');
 				$all_supports = array_merge($add_supports, $all_supports);
 			}
 */
 			if (in_array('thumbnail', $all_supports)) {
-				$add_supports = array('image'); 
+				$add_supports = array('image');
 /*				$add_supports = array('image', 'image-url', 'thumbnail-url'); */
 				$all_supports = array_merge($add_supports, $all_supports);
 			}
@@ -316,7 +316,7 @@
 		</tr>
 
 		<?php
-		
+
 		} /* For each post type */
 
 		?>
@@ -357,11 +357,11 @@
 
 				<?php
 
-				$post_types = get_post_types( array('public' => true), 'names' ); 
+				$post_types = get_post_types( array('public' => true), 'names' );
 		        $done = array();
 
 				foreach ($post_types as $post_type) {
-				
+
 					$taxonomies = get_object_taxonomies($post_type);
 
 			        foreach ($taxonomies as $row => $taxonomy) {
@@ -526,7 +526,7 @@
 				// Show all roles
 
 				global $wp_roles;
-				 
+
 				// get a role based on role name, does the same thing as get_role()
 
 				$roles = $wp_roles->roles;
@@ -703,7 +703,7 @@
 	</div>
 </div>
 <script type="text/javascript">
-	
+
 // Dropdown action
 
 jQuery(document).ready(function($){

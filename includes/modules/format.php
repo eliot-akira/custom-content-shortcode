@@ -15,11 +15,14 @@ class CCS_Format {
     add_shortcode( 'direct', array($this, 'direct_shortcode') );
     add_shortcode( 'format', array($this, 'format_shortcode') );
 		add_shortcode( 'x', array($this, 'x_shortcode') );
-
-    // @todo Deprecate these
+		add_shortcode( 'clean', array($this, 'clean_shortcode') );
 		add_shortcode( 'br', array($this, 'br_shortcode') );
 		add_shortcode( 'p', array($this, 'p_shortcode') );
-		add_shortcode('clean', array($this, 'clean_shortcode') );
+    add_shortcode( 'slugify', array($this, 'slugify_shortcode') );
+    add_shortcode( 'today', array($this, 'today_shortcode') );
+    add_shortcode( 'http', array($this, 'http_shortcode') );
+    add_shortcode( 'embed', array($this, 'embed_shortcode') );
+    add_shortcode( 'escape', array($this, 'escape_shortcode') );
 	}
 
 
@@ -28,8 +31,39 @@ class CCS_Format {
     return $content;
   }
 
+
+	function br_shortcode() { return '<br />'; }
+
+	function p_shortcode( $atts, $content ) {
+
+		$tag = 'p';
+
+    // Construct block
+    $out = '<'.$tag;
+
+		if (!empty($atts)) {
+	    foreach ($atts as $key => $value) {
+	      if (is_numeric($key)) {
+	        $out .= ' '.$value; // Attribute with no value
+	      } else {
+	        $out .= ' '.$key.'="'.$value.'"';
+	      }
+	    }
+		}
+
+    $out .= '>';
+
+    if (!empty($content)) {
+      $out .= do_shortcode($content);
+      $out .= '</'.$tag.'>';
+    }
+		return $out;
+	}
+
+
+	// Do shortcode, then format
   function format_shortcode( $atts, $content ) {
-    return wpautop(do_shortcode($content)); // Do shortcode, then format
+    return wpautop(do_shortcode($content));
   }
 
   // Repeat x times: [x 10]..[/x]
@@ -39,21 +73,37 @@ class CCS_Format {
 
 		if (isset($atts[0])) {
 			$x = $atts[0];
-			for ($i=0; $i <$x ; $i++) { 
+			for ($i=0; $i <$x ; $i++) {
 				$out .= do_shortcode($content);
 			}
 		}
 		return $out;
 	}
 
-	function br_shortcode( $atts, $content ) {
-		return '<br>';
+	// Display current date
+	function today_shortcode( $atts, $content ) {
+		if ( isset($atts['format']) ) {
+			$format = str_replace("//", "\\", $atts['format']);
+		} else {
+			$format = get_option('date_format');
+		}
+
+		return date($format);
 	}
 
-	function p_shortcode( $atts, $content ) {
-		return '<p>' . do_shortcode($content) . '</p>';
+	// Convert title to slug
+
+	function slugify_shortcode( $atts, $content ) {
+
+  	// The Example Title -> the_example_title
+    return strtolower( str_replace(array(' ','-'), '_', self::alphanumeric(do_shortcode($content)) ) );
 	}
 
+	public static function alphanumeric( $str ) {
+
+		// Remove any character that is not alphanumeric, white-space, or a hyphen
+    	return preg_replace("/[^a-z0-9\s\-_]/i", "", $str );
+	}
 
 	/*---------------------------------------------
 	 *
@@ -62,39 +112,76 @@ class CCS_Format {
 	 */
 
 	function strip_tag_list( $content, $tags ) {
-
 		$tags = implode("|", $tags);
-		$out = preg_replace('!<\s*('.$tags.').*?>((.*?)</\1>)?!is', '\3', $content); 
-
+		$out = preg_replace('!<\s*('.$tags.').*?>((.*?)</\1>)?!is', '\3', $content);
 		return $out;
 	}
 
-	function clean_content($content){   
-
+	function clean_content($content){
 	    $content = self::strip_tag_list( $content, array('p','br') );
-
 	    return $content;
 	}
 
 	function clean_shortcode( $atts, $content ) {
-
 		$content = self::strip_tag_list( $content, array('p','br') );
-
 		return do_shortcode($content);
 	}
 
-
   static function trim( $content, $trim = '' ) {
-
     if ($trim=='true') $trim = '';
-
     return trim($content, " \t\n\r\0\x0B,".$trim);
+  }
+
+
+
+  /*---------------------------------------------
+   *
+   * Add http:// if necessary
+   *
+   * [http]..[/http]
+   *
+   */
+
+  function http_shortcode( $atts, $content ) {
+    $content = do_shortcode($content);
+    if ( substr($content, 0, 4) !== 'http' ) {
+      $content = 'http://'.$content;
+    }
+    return $content;
   }
 
 
   /*---------------------------------------------
    *
+   * Embed audio/video link from field
+   *
+   */
+
+  function embed_shortcode( $atts, $content ) {
+
+    $content = do_shortcode($content);
+
+    if (isset($GLOBALS['wp_embed'])) {
+      $wp_embed = $GLOBALS['wp_embed'];
+      $content = $wp_embed->autoembed($content);
+      // Run [audio], [video] in embed
+      $content = do_shortcode($content);
+    }
+
+    return $content;
+  }
+
+  function escape_shortcode( $atts, $content ) {
+		if ($atts['shortcode']=='true')
+			$content = do_shortcode( $content );
+		return str_replace(array('[',']'), array('&#91;','&#93;'), esc_html($content));
+	}
+
+  /*---------------------------------------------
+   *
    * Currency format
+   *
+   * TODO: Make this optional
    *
    * @param flatcurr  float integer to convert
    * @param curr  string of desired currency format
@@ -199,7 +286,7 @@ class CCS_Format {
       'KRW' => array(0,'',','),     //  South Korea, Won
       'SZL' => array(2,'.',', '),     //  Swaziland, Lilangeni
       'SEK' => array(2,',','.'),      //  Swedish Krona
-      'CHF' => array(2,'.','\''),     //  Swiss Franc 
+      'CHF' => array(2,'.','\''),     //  Swiss Franc
       'TZS' => array(2,'.',','),      //  Tanzanian Shilling
       'THB' => array(2,'.',','),      //  Thailand, Baht
       'TOP' => array(2,'.',','),      //  Tonga, Paanga
@@ -216,14 +303,14 @@ class CCS_Format {
 
     $curr = strtoupper($curr);
 
-    if ($curr == "INR"){  
+    if ($curr == "INR"){
       return self::formatinr($floatcurr);
     } else {
 
       if (!empty($curr)) {
 
         if (!isset($currencies[$curr])) return $floatcurr;
-        
+
         $decimals = $currencies[$curr][0];
         $point = $currencies[$curr][1];
         $thousands = $currencies[$curr][2];
@@ -233,13 +320,13 @@ class CCS_Format {
     }
   }
 
-  // Format Indian Rupees
+  // Format Indian Rupees!
   static function formatinr($input){
     //CUSTOM FUNCTION TO GENERATE ##,##,###.##
     $dec = "";
     $pos = strpos($input, ".");
     if ($pos === false){
-      //no decimals 
+      //no decimals
     } else {
       //decimals
       $dec = substr(round(substr($input,$pos),2),1);

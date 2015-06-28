@@ -1,5 +1,6 @@
-<?php 
+<?php
 
+// ------------ Unused ----------
 
 new Module_Prism_Admin;
 

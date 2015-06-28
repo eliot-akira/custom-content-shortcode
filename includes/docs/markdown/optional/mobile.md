@@ -2,7 +2,7 @@
 ## Mobile Detect
 ---
 
-Enable the mobile detect mobile under [Settings](options-general.php?page=ccs_reference&tab=settings).
+Enable the Mobile Detect under [Settings](options-general.php?page=ccs_reference&tab=settings).
 
 Use `[is]` to display content based on device type.
 

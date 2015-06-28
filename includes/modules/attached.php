@@ -14,11 +14,14 @@ class CCS_Attached {
 
 	function __construct() {
 
-		add_shortcode( 'attached', array( $this, 'attached_shortcode' ) );
+    add_shortcode( 'attached', array( $this, 'attached_shortcode' ) );
+    add_shortcode( '-attached', array( $this, 'attached_shortcode' ) );
+    add_shortcode( 'attached-field', array( $this, 'attached_field_shortcode' ) );
+
 		self::$state['is_attachment_loop'] = false;
 	}
 
-	function attached_shortcode($atts, $content) {
+	public static function attached_shortcode( $atts, $content, $tag ) {
 
 		$args = array(
 			'orderby' => '',
@@ -29,6 +32,7 @@ class CCS_Attached {
 			'trim' => '',
 			'columns' => '', 'pad' => '', 'between' => ''
 		);
+
 		extract( shortcode_atts( $args , $atts, true ) );		
 
 		/*---------------------------------------------
@@ -92,6 +96,10 @@ class CCS_Attached {
 
 		$out = array();
 
+
+    // if nested, save previous state
+    if ($tag[0]=='-') $prev_state = self::$state;
+
 		self::$state['is_attachment_loop'] = true;
 
 		foreach ( $attachment_ids as $index => $attachment_id ) {
@@ -101,6 +109,10 @@ class CCS_Attached {
 		}
 
 		self::$state['is_attachment_loop'] = false;
+
+    // if nested, restore previous state
+    if ($tag[0]=='-') self::$state = $prev_state;
+
 
 		/*---------------------------------------------
 		 *
@@ -128,6 +140,17 @@ class CCS_Attached {
     $b_title = CCS_Content::wp_get_attachment_field( $b, 'title' );
 
     return ( $a_title < $b_title ) ? -1 : 1;
+  }
+
+  // Field from a specific attachment
+  public static function attached_field_shortcode( $atts ) {
+
+    if ( !isset($atts['offset']) ) $atts['offset'] = '0';
+    if ( !isset($atts['count']) ) $atts['count'] = '1';
+
+    $content = '[field '.@$atts[0].']';
+
+    return self::attached_shortcode( $atts, $content, $tag = '-attached' );
   }
 
 }

@@ -27,7 +27,7 @@ class CCS_To_WCK {
 
 
 		// Wait until all plugins are loaded
-		add_action( 'init', array($this, 'wck_exists') );
+		add_action( 'plugins_loaded', array($this, 'wck_exists') );
 	}
 
 	function wck_exists() {
@@ -85,7 +85,7 @@ class CCS_To_WCK {
 			'metabox' => '',
 			'meta' => '', // Alias to metabox
 
-			'field' => '', 
+			'field' => '',
 			'name' => '', // Alias to field
 
 			'id' => '',
@@ -108,7 +108,7 @@ class CCS_To_WCK {
 			if (empty($meta)) {
 				$meta = self::$state['wck_repeater_meta'];
 			}
-		
+
 			$key = self::$state['wck_repeater_key'];
 			if (!empty(self::$state['wck_repeater_id']))
 				$id = self::$state['wck_repeater_id'];
@@ -208,8 +208,8 @@ class CCS_To_WCK {
 
  	function general_repeater_shortcode( $atts, $content ) {
 
-		if ( 
-			( isset($atts['meta']) && !empty($atts['meta']) ) 
+		if (
+			( isset($atts['meta']) && !empty($atts['meta']) )
 			|| ( isset($atts['metabox']) && !empty($atts['metabox']) )
 		) {
 			return self::wck_repeater_shortcode( $atts, $content );

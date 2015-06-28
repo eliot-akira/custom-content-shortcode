@@ -8,7 +8,15 @@ Use `[comments]` and `[comment]` to display recent comments, or those of the cur
 
 ~~~
 [comments count="5"]
-  [comment] by [comment author]
+  [comment] by [comment author] on [comment date]
+[/comments]
+~~~
+
+*Display recent comments for the current post*
+
+~~~
+[comments count="3" id="this"]
+  [comment] by [comment author] on [comment date]
 [/comments]
 ~~~
 
@@ -19,13 +27,13 @@ Use `[comments]` and `[comment]` to display recent comments, or those of the cur
 
 Available parameters for `[comments]` are:
 
+> **id** - set to *this* to display comments from the current post only
+
 > **type** - post type(s) to include; default is *all*
 
 > **count** - number of comments to show, or set to *all*
 
 > **status** - *approve* (default), *hold* (unapproved) or set to *all*
-
-> **id** - set to *this* to display comments from the current post only
 
 > **exclude** - exclude post ID
 

@@ -1,4 +1,12 @@
+
+/*---------------------------------------------
+ *
+ * Title
+ *
+ */
+
 /* Included only for Settings -> Custom Content */
+
 #wpbody-content {
   padding-bottom: 30px;
 }
@@ -95,9 +103,39 @@
   background-color: #fff !important;
 }
 
+
+/*---------------------------------------------
+ *
+ * Utils
+ *
+ */
+
+
+.doc-style .green {
+  color: #00E80B; /* #16DE01; #1abb1e #33DE00 */
+}
+.doc-style .grey {
+  color: #888;
+}
+.doc-style .blue {
+  color: #0074A2;
+}
+.doc-style .bold {
+  font-weight: 400;
+}
+.doc-style .center {
+  text-align: center;
+}
+.doc-style .left {
+  text-align: left;
+}
+
 .doc-style .remove-height {
   margin-bottom: -50px;
 }
+
+/*--- Links ---*/
+
 .doc-style a {
   text-decoration: none;
   color: #0074A2;
@@ -105,14 +143,24 @@
 .doc-style a:hover {
   color: #000;
 }
+
+
+/*---------------------------------------------
+ *
+ * Text styles
+ *
+ */
+
 .doc-style b, .doc-style strong {
   font-weight: 400;
 }
 .doc-style, .doc-style p, .doc-style .form-table td {
   font-size: 16px;
-  line-height: 1.4em; 
+  line-height: 1.4em;
 }
-
+.doc-style .italic {
+  font-style: italic;
+}
 
 .doc-style .inner-wrap h2 {
   font-size: 19px;
@@ -148,17 +196,26 @@ h2 .nav-tab {
   font-weight: 400;
 }
 
+/*---------------------------------------------
+ *
+ * List
+ *
+ */
+
 .doc-style ul {
-	/* list-style:none; 
+	/* list-style:none;
   padding-left:20px; */
   list-style: disc;
   margin-left: 2em;
 }
 .doc-style ul > li > ul {
-  padding-top: 5px;
-	/* padding-bottom: 10px; */
+/*  padding-top: 5px;
+	padding-bottom: 10px;
 	list-style: none;
 	padding-left: 20px;
+*/
+  padding-bottom: 5px;
+  list-style-type: circle;
 }
 
 .doc-style .indent {
@@ -185,12 +242,10 @@ h2 .nav-tab {
 }
 .doc-style .form-table hr {
 }
-.doc-style .green {
-	color: #1abb1e;
-}
-.doc-style .grey {
-	color: #888;
-}
+
+
+
+
 .doc-style .dashicons {
   /* vertical-align: sub; */
   color: #777;
@@ -205,7 +260,7 @@ h2 .nav-tab {
 @media screen and (min-width:830px) {
   .doc-style .col-half {
     width: 50%;
-    float: left;
+    display: inline-block; vertical-align: top;
   }
 }
 .doc-style td>input[type=checkbox] {
@@ -218,7 +273,7 @@ h2 .nav-tab {
 }
 .doc-style code {
   font-family: Consolas,Monaco,monospace;
-  font-size: 16px;
+  font-size: 15px;
   background-color: transparent;
   margin: 0;
   padding: 0;
@@ -235,16 +290,94 @@ h2 .nav-tab {
   display: block; position: relative; top: 0px; visibility: hidden;
 }
 
-.tab-overview,
+.tab-overview .index,
 .tab-settings p.submit {
   text-align: center;
 }
 
+/*---------------------------------------------
+ *
+ * Overview page
+ *
+ */
+
 .tab-overview {
-  max-width: 600px;
+  max-width: 630px;
   margin: 0 auto;
 }
 .doc-style .tab-overview h3 {
   background-color: transparent;
   margin-bottom: -5px;
+  margin-top: 10px;
+}
+.tab-overview .index {
+  margin-top: -10px;
+}
+.tab-overview p {
+  margin: 0.5em 0;
+  padding: 0;
+  font-size: 15px;
+}
+
+.doc-style .tab-overview h2 {
+  margin-top: 30px;
+}
+
+/*---------------------------------------------
+ *
+ * Rainbow!
+ *
+ */
+
+@-moz-keyframes charlieeee {
+  from { background-position:top left; }
+  to {background-position:top right; }
+}
+@-webkit-keyframes charlieeee {
+  from { background-position:top left; }
+  to { background-position:top right; }
+}
+@-o-keyframes charlieeee {
+  from { background-position:top left; }
+  to { background-position:top right; }
+}
+@-ms-keyframes charlieeee {
+  from { background-position:top left; }
+  to { background-position:top right; }
+}
+@-khtml-keyframes charlieeee {
+  from { background-position:top left; }
+  to { background-position:top right; }
+}
+@keyframes charlieeee {
+  from { background-position:top left; }
+  to { background-position:top right; }
+}
+.catchadream{
+  background-image:-webkit-linear-gradient( left, red, orange, yellow, green,
+                                          blue, indigo, violet, indigo, blue,
+                                          green, yellow, orange, red );
+  background-image:-moz-linear-gradient( left, red, orange, yellow, green,
+                                         blue,indigo, violet, indigo, blue,
+                                         green, yellow, orange,red );
+  background-image:-o-linear-gradient( left, red, orange, yellow, green,
+                                         blue,indigo, violet, indigo, blue,
+                                         green, yellow, orange,red );
+  background-image:-ms-linear-gradient( left, red, orange, yellow, green,
+                                         blue,indigo, violet, indigo, blue,
+                                         green, yellow, orange,red );
+  background-image:-khtml-linear-gradient( left, red, orange, yellow, green,
+                                         blue,indigo, violet, indigo, blue,
+                                         green, yellow, orange,red );
+  background-image:linear-gradient( left, red, orange, yellow, green,
+                                         blue,indigo, violet, indigo, blue,
+                                         green, yellow, orange,red );
+  -moz-animation:charlieeee 7s forwards linear infinite;
+  -webkit-animation:charlieeee 7s forwards linear infinite;
+  -o-animation:charlieeee 7s forwards linear infinite;
+  -khtml-animation:charlieeee 7s forwards linear infinite;
+  -ms-animation:charlieeee 7s forwards linear infinite;
+  -lynx-animation:charlieeee 7s forwards linear infinite;
+  animation:charlieeee 7s forwards linear infinite;
+  background-size:50% auto;
 }

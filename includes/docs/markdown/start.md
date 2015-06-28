@@ -8,7 +8,7 @@ Let's imagine a bicycle shop.
 
 1. Create a custom post type called *bicycle*. Add categories and fields such as *model*, *price*, and *description*.
 
-  You can use plugins like <a href="https://wordpress.org/plugins/custom-post-type-ui/" target="_blank">Custom Post Type UI</a> and <a href="https://wordpress.org/plugins/advanced-custom-fields/" target="_blank">Advanced Custom Fields</a> to create your own post types, taxonomies and fields. Themes and plugins often come with built-in content types. To find their exact names to use, see your site's <a href="index.php?page=content_overview">Content Overview</a>.
+  You can use plugins like [Custom Post Type UI](https://wordpress.org/plugins/custom-post-type-ui) and [Advanced Custom Fields](https://wordpress.org/plugins/advanced-custom-fields) to create your own post types, taxonomies and fields. Themes and plugins often come with built-in content types. To find their exact names to use, see your site's [Content Overview](index.php?page=content_overview).
 
 1. Add all bicycles as new posts.
 
@@ -47,8 +47,8 @@ There are some points to keep in mind when using shortcodes.
 
   Possible solutions are:
 
-  - Use <a href="options-general.php?page=ccs_reference&tab=block">HTML Block shortcodes</a>, so the tags are clearly visible
-  - Disable the Visual mode per page or post type, with the plugin <a target="_blank" href="http://wordpress.org/plugins/raw-html/">Raw HTML</a>
+  - Use [HTML Block shortcodes](options-general.php?page=ccs_reference&tab=block), so the tags are clearly visible
+  - Disable the Visual mode per page or post type, with the plugin [Raw HTML](http://wordpress.org/plugins/raw-html)
   - Load the code from outside the post editor using one of the methods below
 
 ---
@@ -57,11 +57,26 @@ There are some points to keep in mind when using shortcodes.
 
 Shortcode templates can be loaded from a number of places.
 
-  - **Custom post type**: [content type="template" name="home-page"]
-  - **Custom field**: [field code_block shortcode="true"]
-  - **Sidebar**: <a href="options-general.php?page=ccs_reference&tab=settings">Enable shortcodes inside Text widget</a>
-  - **File**: [load dir="views" file="recent-posts.html"]
+**Custom post type**
 
+~~~
+[content type="template" name="home-page"]
+~~~
+
+**Custom field**
+
+~~~
+[field code_block shortcode="true"]
+~~~
+
+**File**
+
+~~~
+[load dir="views" file="recent-posts.html"]
+~~~
+
+**Sidebar**: [Enable shortcodes inside Text widget](options-general.php?page=ccs_reference&tab=settings)
+  
 ---
 
 ### HTML attribute

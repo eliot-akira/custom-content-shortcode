@@ -22,10 +22,6 @@ By default, it looks for the file in the current theme directory.
 
 ### Parameters
 
-> **format** - set *true* to format the file with line breaks and paragraph tags
-
-> **shortcode** - set *false* to disable shortcodes
-
 > **dir** - load from a directory
     
 > - *web* - http://
@@ -34,15 +30,20 @@ By default, it looks for the file in the current theme directory.
     
 > - *wordpress* - WordPress directory
     
-> - *content* - wp-content
+> - *content* - *wp-content*
     
-> - *theme* - wp-content/theme
+> - *theme* - *wp-content/theme*
     
-> - *child* - wp-content/child_theme
+> - *child* - *wp-content/child_theme*
     
-> - *views* - wp-content/views
+> - *views* - *wp-content/views*
+
+> **format** - set *true* to format the file with line breaks and paragraph tags
+
+> **shortcode** - set *false* to disable shortcodes
 
 ## Auto-load fields
+
 ---
 
 There are special fields that are automatically loaded into the page.

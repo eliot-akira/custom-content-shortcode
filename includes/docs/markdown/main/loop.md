@@ -30,17 +30,17 @@ Use `[loop]` to get posts and loop through each one.
 
 ### Type, name, ID
 
-> **type** - post type to include; default is *any*
+> **type** - post type to include; default is *any* - it's recommended to always specify post type
 
-> **name** - post slug; usually only one post will match
+> **name** - post slug; if specified, usually only one post will match
 
 > **id** - post ID to include; for example: *id="1,2,3"*
 
 > **exclude** - post ID to exclude
   - *this* - exclude current post
-  - *children* - exclude child posts
+  - *children* - exclude child posts; display top-level posts only
 
-> **count** - number of posts to show; default is all posts
+> **count** - number of posts to show; default is all posts found
 
 > **offset** - offset the loop by a number of posts; for example: *offset="3"* to skip the first three
 
@@ -77,7 +77,11 @@ Use `[loop]` to get posts and loop through each one.
 
 > **category** - display posts from one or more categories; for example: *category="sports, fashion"*
 
+> - *category="this"* - find posts in the same category as current post
+
 > **tag** - display posts with one or more tags; for example: tag="apples, green"
+
+> - *tag="this"* - find posts with the same tag as current post
 
 > **compare** - for multiple categories/tags, set *compare="and"* to get posts that have all terms
 
@@ -86,7 +90,12 @@ Use `[loop]` to get posts and loop through each one.
 ### Taxonomies
 
 > **taxonomy, term** - display posts by taxonomy term
-  - Example: *taxonomy="product" term="book"*
+
+> ~~~
+> [loop type="product" taxonomy="product-type" term="book"]
+>   [field title]
+> [/loop]
+> ~~~
 
 > #### Multiple terms
 
@@ -152,17 +161,29 @@ Use `[loop]` to get posts and loop through each one.
 
 ---
 
-### Parent
+### Parent / children
 
 > **parent** - display all children of a parent specified by ID or slug
   - *this* - get current post's children
   - *same* - get current post's siblings (posts which share the same parent)
 
 > **exclude**
-  - *this* - don't include current post
-  - *children* - display top-level posts only
-     
-  
+  - *this* - exclude current post
+  - *children* - exclude child posts; display top-level posts only
+
+> **include**
+  - *children* - include child posts and descendants of each post; all current query parameters apply, except *id* and *parent*
+
+>> A more flexible way to display child posts is by using a nested loop.
+
+>> ~~~
+>> [loop type="page" orderby="title"]
+>>   [field title]
+>>   [-loop parent="this" orderby="title"]
+>>     Child page: [field title]
+>>   [/-loop]
+>> [/loop]
+>> ~~~
 
 
 ---
@@ -262,14 +283,11 @@ Use `[loop]` to get posts and loop through each one.
 This is a feature to expand a list of fields to their values.
 
 ~~~
-[loop type="post" fields="custom_field, another_field"]
-  Display {CUSTOM_FIELD} and {ANOTHER_FIELD}
+[loop type="post" fields="title, custom_field"]
+  Display {TITLE} and {CUSTOM_FIELD}
 [/loop]
 ~~~
 
-The `{FIELD}` tags are uppercased versions of the field names.
-
-There are also predefined tags: COUNT, URL, ID, TITLE, AUTHOR, AUTHOR_URL, DATE, THUMBNAIL, THUMBNAIL_URL, CONTENT, EXCERPT, COMMENT_COUNT, CATEGORY, TAGS, IMAGE, IMAGE_ID, IMAGE_URL.
+The `{FIELD}` tags are uppercased versions of the field names. You can use [predefined fields](options-general.php?page=ccs_reference&tab=field#predefined-fields) or custom fields that you've created.
 
 If you want to pass field values to the loop shortcode itself, use [the `[pass]` shortcode](options-general.php?page=ccs_reference&tab=pass).
-

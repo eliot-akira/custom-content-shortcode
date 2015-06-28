@@ -3,6 +3,7 @@
 
 ---
 
+### Single field
 
 For WCK fields, use the `[field]` shortcode and specify a metabox name.
 
@@ -25,6 +26,8 @@ For WCK fields, use the `[field]` shortcode and specify a metabox name.
 
 
 ---
+
+### Multiple fields
 
 For multiple fields from the same metabox, you can use the `[metabox]` shortcode.
 
@@ -57,6 +60,7 @@ Use `[repeater]` to display a repeating metabox.
 ### Parameters
 
 > **metabox** - name of metabox
+
 > **id** - post id (default is current post)
 
 ## Inside loop
