@@ -38,15 +38,15 @@ class CCS_To_WCK {
 
 			self::$state['is_wck_loaded'] = 'true';
 
-			add_shortcode( 'metabox', array($this, 'wck_metabox_shortcode') );
-			add_shortcode( 'wck-field', array($this, 'wck_field_shortcode') );
-			add_shortcode( 'post-field', array($this, 'wck_field_shortcode') );
-			add_shortcode( 'wck-repeat', array($this, 'wck_repeater_shortcode') );
-			add_shortcode( 'repeater', array($this, 'general_repeater_shortcode') );
+			add_local_shortcode( 'ccs', 'metabox', array($this, 'wck_metabox_shortcode'), true );
+			add_local_shortcode( 'ccs', 'wck-field', array($this, 'wck_field_shortcode'), true );
+			add_local_shortcode( 'ccs', 'post-field', array($this, 'wck_field_shortcode'), true );
+			add_local_shortcode( 'ccs', 'wck-repeat', array($this, 'wck_repeater_shortcode'), true );
+			add_local_shortcode( 'ccs', 'repeater', array($this, 'general_repeater_shortcode'), true );
 		} else {
 
 			if (class_exists('CCS_To_ACF')) {
-				add_shortcode( 'repeater', array('CCS_To_ACF', 'loop_through_acf_field') );
+				add_local_shortcode( 'ccs', 'repeater', array('CCS_To_ACF', 'loop_through_acf_field'), true );
 			}
 		}
 
@@ -65,7 +65,7 @@ class CCS_To_WCK {
 			self::$state['is_wck_metabox_loop'] = 'true';
 			self::$state['current_wck_metabox'] = $name;
 
-			$out = do_shortcode( $content );
+			$out = do_local_shortcode( 'ccs',  $content, true );
 
 			self::$state['current_wck_metabox'] = '';
 			self::$state['is_wck_metabox_loop'] = 'false';
@@ -184,7 +184,7 @@ class CCS_To_WCK {
 				self::$state['is_wck_post_field'] = 'true';
 				self::$state['current_wck_post_id'] = $this_post->ID;
 
-				$out = do_shortcode($content);
+				$out = do_local_shortcode( 'ccs', $content, true );
 
 				self::$state['is_wck_post_field'] = 'false';
 				self::$state['current_wck_post_id'] = 0;
@@ -197,7 +197,7 @@ class CCS_To_WCK {
 			}
 
 			if ($shortcode == 'true') {
-				$out = do_shortcode( $out );
+				$out = do_local_shortcode( 'ccs',  $out, true );
 
 				// Put back nl2br formatting
 				add_filter( 'wck_output_get_field_textarea', 'wck_preprocess_field_textarea', 10);
@@ -256,7 +256,7 @@ class CCS_To_WCK {
 		foreach ( $metas as $key => $value ) {
 
 			self::$state['wck_repeater_key'] = $key;
-			$out[] = do_shortcode( $content );
+			$out[] = do_local_shortcode( 'ccs',  $content, true );
 		}
 
 		self::$state['is_wck_repeater']='false';

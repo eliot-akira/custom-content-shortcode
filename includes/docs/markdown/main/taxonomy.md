@@ -1,6 +1,8 @@
 
-## Taxonomy
+# Taxonomy
+
 ---
+
 
 Use `[taxonomy]` to display taxonomy terms from the current post.
 
@@ -13,7 +15,7 @@ Use `[taxonomy]` to display taxonomy terms from the current post.
 Optionally, you can specify the *field* parameter.
 
 ~~~
-[taxonomy category field="id"]
+[taxonomy category field=id]
 ~~~
 
 Available fields are: *name* (default), *id*, *slug*, *description*, *url*, *link*, or custom taxonomy field.
@@ -24,30 +26,32 @@ If there is more than one term, they will be displayed as a comma-separated list
 
 You can also use [`[for/each]`](#for--each) to loop through a list of terms.
 
----
+To get posts based on taxonomy terms, see [loop: taxonomies](options-general.php?page=ccs_reference&tab=loop#taxonomies).
+
+&nbsp;
 
 ## Related posts
----
+
 
 Use `[related]` to loop through posts related by taxonomy.
 
 *Display posts in the same category as current post*
 
 ~~~
-[related taxonomy="category" count="3"]
+[related taxonomy=category count=3]
   [field title-link]
 [/related]
 ~~~
 
 The current post is not included in the result.
 
----
+
 
 ### Parameters
 
 > **taxonomy** - *category*, *tag*, or custom taxonomy; multiple values possible
 
-> **relation** - for multiple taxonomies, set *relation="and"* to get posts that share all taxonomies
+> **relation** - for multiple taxonomies, set *relation=and* to get posts that share all taxonomies
 
 > **count** - maximum number of results
 
@@ -59,22 +63,22 @@ The current post is not included in the result.
 
 
 ## For / each
----
+
 
 This is a feature to create a loop for each category, tag, or taxonomy term.
 
 *Display 3 most recent posts for each category*
 
 ~~~
-[for each="category"]
+[for each=category]
   Category: [each name]
-  [loop type="post" count="3"]
+  [loop type=post count=3]
     [field title-link]
   [/loop]
 [/for]
 ~~~
 
-The `[for]` shortcode loops through *all existing terms* of a given taxonomy. To limit by terms associated with the current post, set *current="true"*.
+The `[for]` shortcode loops through *all existing terms* of a given taxonomy. To limit by terms associated with the current post, set *current=true*.
 
 The `[each]`shortcode displays the term name.
 
@@ -91,15 +95,15 @@ Available parameters for the **[for]** shortcode are:
 
 > **each** - *category*, *tag*, or custom taxonomy
 
-> **current** - set *current="true"* to limit by terms associated with the current post
+> **current** - set *current=true* to limit by terms associated with the current post
 
-> **count** - limit number of terms: *count="3"*
+> **count** - limit number of terms: *count=3*
 
 > **parent** - get child categories by parent slug
 
 > **parents** - set *true* to get only parent terms; see section below on child terms
 
-> **exclude** - exclude taxonomy term by ID or slug; *exlude="uncategorized"*
+> **exclude** - exclude taxonomy term by ID or slug; *exlude=uncategorized*
 
 > **empty** - set *true* to include terms that have no associated posts; use outside the loop
 
@@ -141,9 +145,9 @@ Inside a loop, the **[for]** shortcode gets taxonomy terms from the current post
 *Display a link for each category assigned to a post*
 
 ~~~
-[loop type="post"]
+[loop type=post]
   [field title]
-  [for each="category"]
+  [for each=category]
     [each link]
   [/for]
 [/loop]
@@ -160,7 +164,7 @@ Outside the loop, the **[for]** shortcode gets all terms that have any posts ass
 *Display a link for each category assigned to the current post*
 
 ~~~
-[for each="category" current="true"]
+[for each=category current=true]
   [each link]
 [/for]
 
@@ -175,7 +179,7 @@ To display something if there's no term found, use **[for-else]**.
 
 
 ~~~
-[for each="category" current="true"]
+[for each=category current=true]
   [each link]
 [for-else]
   No category found
@@ -193,9 +197,9 @@ To display child terms separately from parents, use a nested **[for]** loop.
 *List parent categories, with children*
 
 ~~~
-[for each="category" parents="true"]
+[for each=category parents=true]
   Parent: [each link]
-  [-for each="child"]
+  [-for each=child]
     Child: [-each link]
   [/-for]
 [/for]
@@ -205,10 +209,10 @@ To display child terms separately from parents, use a nested **[for]** loop.
 You can use **[if children]** to display something only if the current term has child terms.
 
 ~~~
-[for each="category"]
+[for each=category]
   [if children]
     Parent: [each link]
-    [-for each="child"]
+    [-for each=child]
       Child: [-each link]
     [/-for]
   [else]
@@ -229,7 +233,7 @@ Use the *trim* parameter to create a list of terms. It removes extra space or co
 *Display a list of categories*
 
 ~~~
-[for each="category" trim="true"]
+[for each=category trim=true]
   [each],
 [/for]
 ~~~
@@ -237,7 +241,7 @@ Use the *trim* parameter to create a list of terms. It removes extra space or co
 *Trim other characters*
 
 ~~~
-[for each="category" trim="/"]
+[for each=category trim='/']
   [each] /
 [/for]
 ~~~

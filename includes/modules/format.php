@@ -10,19 +10,23 @@ new CCS_Format;
 
 class CCS_Format {
 
+	public static $state;
+
 	function __construct() {
 
-    add_shortcode( 'direct', array($this, 'direct_shortcode') );
-    add_shortcode( 'format', array($this, 'format_shortcode') );
-		add_shortcode( 'x', array($this, 'x_shortcode') );
-		add_shortcode( 'clean', array($this, 'clean_shortcode') );
-		add_shortcode( 'br', array($this, 'br_shortcode') );
-		add_shortcode( 'p', array($this, 'p_shortcode') );
-    add_shortcode( 'slugify', array($this, 'slugify_shortcode') );
-    add_shortcode( 'today', array($this, 'today_shortcode') );
-    add_shortcode( 'http', array($this, 'http_shortcode') );
-    add_shortcode( 'embed', array($this, 'embed_shortcode') );
-    add_shortcode( 'escape', array($this, 'escape_shortcode') );
+    add_local_shortcode( 'ccs', 'direct', array($this, 'direct_shortcode'), true  );
+    add_local_shortcode( 'ccs', 'format', array($this, 'format_shortcode'), true  );
+		add_local_shortcode( 'ccs', 'clean', array($this, 'clean_shortcode'), true  );
+		add_local_shortcode( 'ccs', 'br', array($this, 'br_shortcode'), true  );
+		add_local_shortcode( 'ccs', 'p', array($this, 'p_shortcode'), true  );
+    add_local_shortcode( 'ccs', 'slugify', array($this, 'slugify_shortcode'), true  );
+    add_local_shortcode( 'ccs', 'today', array($this, 'today_shortcode'), true  );
+    add_local_shortcode( 'ccs', 'http', array($this, 'http_shortcode'), true  );
+    add_local_shortcode( 'ccs', 'embed', array($this, 'embed_shortcode'), true  );
+    add_local_shortcode( 'ccs', 'escape', array($this, 'escape_shortcode'), true  );
+    add_local_shortcode( 'ccs', 'random', array($this, 'random_shortcode'), true  );
+		add_local_shortcode( 'ccs', 'x', array($this, 'x_shortcode') );
+		self::$state['x_loop'] = 0;
 	}
 
 
@@ -30,7 +34,6 @@ class CCS_Format {
   function direct_shortcode( $atts, $content ) {
     return $content;
   }
-
 
 	function br_shortcode() { return '<br />'; }
 
@@ -54,7 +57,7 @@ class CCS_Format {
     $out .= '>';
 
     if (!empty($content)) {
-      $out .= do_shortcode($content);
+      $out .= do_local_shortcode( 'ccs', $content, true );
       $out .= '</'.$tag.'>';
     }
 		return $out;
@@ -63,20 +66,25 @@ class CCS_Format {
 
 	// Do shortcode, then format
   function format_shortcode( $atts, $content ) {
-    return wpautop(do_shortcode($content));
+    return wpautop(do_local_shortcode( 'ccs', $content, true ));
   }
 
   // Repeat x times: [x 10]..[/x]
 	function x_shortcode( $atts, $content ) {
 
+		if (!isset($atts[0])) return $content;
+
+		$x = $atts[0];
 		$out = '';
 
-		if (isset($atts[0])) {
-			$x = $atts[0];
-			for ($i=0; $i <$x ; $i++) {
-				$out .= do_shortcode($content);
-			}
+		// Start index from 1
+		for ($i=1; $i <= $x; $i++) {
+			self::$state['x_loop'] = $i;
+			$rendered = str_replace('{X}', $i, $content);
+			$out .= do_local_shortcode( 'ccs', $rendered, true );
 		}
+
+		self::$state['x_loop'] = 0;
 		return $out;
 	}
 
@@ -124,7 +132,7 @@ class CCS_Format {
 
 	function clean_shortcode( $atts, $content ) {
 		$content = self::strip_tag_list( $content, array('p','br') );
-		return do_shortcode($content);
+		return do_local_shortcode( 'ccs', $content, true );
 	}
 
   static function trim( $content, $trim = '' ) {
@@ -173,9 +181,23 @@ class CCS_Format {
 
   function escape_shortcode( $atts, $content ) {
 		if ($atts['shortcode']=='true')
-			$content = do_shortcode( $content );
+			$content = do_local_shortcode( 'ccs',  $content, true );
 		return str_replace(array('[',']'), array('&#91;','&#93;'), esc_html($content));
 	}
+
+	function random_shortcode( $atts, $content ) {
+		if (!isset($atts[0])) $atts[0] = '0-99'; // default
+	  $range = explode('-', $atts[0]);
+		$min = $range[0];
+		$max = @$range[1];
+
+		return rand($min, $max);
+	}
+
+
+
+
+
 
   /*---------------------------------------------
    *

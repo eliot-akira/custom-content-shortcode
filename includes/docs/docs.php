@@ -363,8 +363,9 @@ class CCS_Docs {
           // Settings Page
     			if ( $active_tab == 'settings' ) {
 
-            ?><h2 align="center">Settings</h2>
+            ?>
             <div style="max-width:380px;margin: 0 auto;">
+            <h1>Settings</h1>
             <hr>
             <div style="margin-bottom: -35px"></div>
             <form method="post" action="options.php">
@@ -404,6 +405,7 @@ class CCS_Docs {
             }
 
             if ( $active_tab == 'overview' ) {
+
               // Escape HTML
               echo Markdown_Module::render( @file_get_contents( $doc_file ), false, true );
             } else {

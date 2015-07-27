@@ -155,27 +155,43 @@
   font-weight: 400;
 }
 .doc-style, .doc-style p, .doc-style .form-table td {
-  font-size: 16px;
-  line-height: 1.4em;
+  font-size: 15px;
+  line-height: 1.3em;
 }
 .doc-style .italic {
   font-style: italic;
 }
 
+.doc-style .inner-wrap h1 {
+  text-align: center;
+  font-size: 18px;
+}
+
 .doc-style .inner-wrap h2 {
-  font-size: 19px;
-  padding: 0;
-  margin: 0;
+  font-size: 16px;
+  font-weight: 300;
+  padding: 2px 0;
+  margin: 0 0 10px 0;
   text-align: center;
 /*  border-bottom: 1px solid #dadada;
   padding-bottom: 5px;
   margin-bottom: 10px; */
 }
 
+.doc-style :not(.tab-overview) h2 {
+  background-color:  #81a2be; /* #0073aa; /* #6A7A82; /* #0074A2; */
+  border-radius: 4px;
+  color: white;
+}
+
 .doc-style .inner-wrap h3 {
-	font-size: 17px;
-  padding: 7px;
-  background-color: #e9e9e9;
+  font-size: 14px;
+  margin: 25px auto 0;
+  padding: 4px;
+  font-weight: 300;
+  display: block;
+  background-color: #566A7B; /* green: #68BD7F; /* #e0e0e0; /* #e9e9e9; */
+  color: white;
   text-align: center;
   border-radius: 4px;
 }
@@ -183,7 +199,7 @@
 .doc-style h4 {
 	/*font-weight:300;
 	 font-style:italic; */
-	font-size: 18px;
+	font-size: 16px;
 	color: #000;
   margin: 1em 0;
 }
@@ -305,9 +321,13 @@ h2 .nav-tab {
   max-width: 630px;
   margin: 0 auto;
 }
+.tab-overview h2 {
+  font-weight: 400;
+}
 .doc-style .tab-overview h3 {
+  font-size: 16px;
   background-color: transparent;
-  margin-bottom: -5px;
+  color: #333;
   margin-top: 10px;
 }
 .tab-overview .index {
@@ -321,63 +341,4 @@ h2 .nav-tab {
 
 .doc-style .tab-overview h2 {
   margin-top: 30px;
-}
-
-/*---------------------------------------------
- *
- * Rainbow!
- *
- */
-
-@-moz-keyframes charlieeee {
-  from { background-position:top left; }
-  to {background-position:top right; }
-}
-@-webkit-keyframes charlieeee {
-  from { background-position:top left; }
-  to { background-position:top right; }
-}
-@-o-keyframes charlieeee {
-  from { background-position:top left; }
-  to { background-position:top right; }
-}
-@-ms-keyframes charlieeee {
-  from { background-position:top left; }
-  to { background-position:top right; }
-}
-@-khtml-keyframes charlieeee {
-  from { background-position:top left; }
-  to { background-position:top right; }
-}
-@keyframes charlieeee {
-  from { background-position:top left; }
-  to { background-position:top right; }
-}
-.catchadream{
-  background-image:-webkit-linear-gradient( left, red, orange, yellow, green,
-                                          blue, indigo, violet, indigo, blue,
-                                          green, yellow, orange, red );
-  background-image:-moz-linear-gradient( left, red, orange, yellow, green,
-                                         blue,indigo, violet, indigo, blue,
-                                         green, yellow, orange,red );
-  background-image:-o-linear-gradient( left, red, orange, yellow, green,
-                                         blue,indigo, violet, indigo, blue,
-                                         green, yellow, orange,red );
-  background-image:-ms-linear-gradient( left, red, orange, yellow, green,
-                                         blue,indigo, violet, indigo, blue,
-                                         green, yellow, orange,red );
-  background-image:-khtml-linear-gradient( left, red, orange, yellow, green,
-                                         blue,indigo, violet, indigo, blue,
-                                         green, yellow, orange,red );
-  background-image:linear-gradient( left, red, orange, yellow, green,
-                                         blue,indigo, violet, indigo, blue,
-                                         green, yellow, orange,red );
-  -moz-animation:charlieeee 7s forwards linear infinite;
-  -webkit-animation:charlieeee 7s forwards linear infinite;
-  -o-animation:charlieeee 7s forwards linear infinite;
-  -khtml-animation:charlieeee 7s forwards linear infinite;
-  -ms-animation:charlieeee 7s forwards linear infinite;
-  -lynx-animation:charlieeee 7s forwards linear infinite;
-  animation:charlieeee 7s forwards linear infinite;
-  background-size:50% auto;
 }

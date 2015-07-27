@@ -1,11 +1,13 @@
 
-## Cache
+# Cache
+
 ---
 
-Use the **[cache]** shortcode to cache page sections.
+
+Use `[cache]` to cache page sections.
 
 ~~~
-[cache name="name_of_cache" expire="1 day"]
+[cache name=unique_name expire='1 day']
   ...
 [/cache]
 ~~~
@@ -16,9 +18,7 @@ It can be useful for saving query loop results to improve page load speed.
 
 This feature uses the [Transients API](http://codex.wordpress.org/Transients_API) to store the content with an expiration time. When the cache expires, it is updated the next time the page is displayed.
 
-Please note that the cache only stores the HTML output. Plugin shortcodes with JavaScript functionality -- for example, sliders -- may not work when cached.
-
-&nbsp;
+Please note that the cache only stores the HTML output. Shortcodes with JavaScript functionality (sliders for example) may not work when cached.
 
 ### Parameters
 
@@ -30,14 +30,13 @@ Please note that the cache only stores the HTML output. Plugin shortcodes with J
 
 >> Note: if update is always set *true*, it will update every time and never load content from cache. Set it once, display the page to update the cache, then remove the parameter.
 
----
 
 &nbsp;
 
 ### Cache a loop
 
 ~~~
-[loop type="post" count="5" cache="true" expire="1 day"]
+[loop type=post count=5 cache=true expire='1 day']
   [field title-link]
   [field thumbnail]
 [/loop]
@@ -46,8 +45,9 @@ Please note that the cache only stores the HTML output. Plugin shortcodes with J
 
 A unique cache name is automatically generated based on the query parameters.
 
+&nbsp;
+
 ## Timer
----
 
 This is a little tool to measure performance.
 
@@ -74,7 +74,7 @@ Here are the commands available:
 You can time a loop directly.
 
 ~~~
-[loop type="post" timer="true"]
+[loop type=post timer=true]
   ...
 [/loop]
 ~~~
@@ -86,4 +86,3 @@ This shows the info at the end of the loop.
 #### Note
 
 If you need more extensive measurements, [Query Monitor](https://wordpress.org/plugins/query-monitor) is recommended.
-

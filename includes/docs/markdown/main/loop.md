@@ -1,13 +1,15 @@
 
-## Loop
+# Loop
+
 ---
+
 
 Use `[loop]` to get posts and loop through each one.
 
 *Display five most recent posts*
 
 ~~~
-[loop type="post" count="5"]
+[loop type=post count=5]
   [field title]
   [field date]
   [field excerpt]
@@ -17,16 +19,16 @@ Use `[loop]` to get posts and loop through each one.
 *Display posts from a custom post type and category*
 
 ~~~
-[loop type="apartment" category="suite"]
+[loop type=apartment category=suite]
   Apartment: [field title]
   Rent per day: [field price]
   Description: [content]
 [/loop]
 ~~~
 
-## Parameters
+&nbsp;
 
----
+## Parameters
 
 ### Type, name, ID
 
@@ -34,7 +36,7 @@ Use `[loop]` to get posts and loop through each one.
 
 > **name** - post slug; if specified, usually only one post will match
 
-> **id** - post ID to include; for example: *id="1,2,3"*
+> **id** - post ID to include; for example: *id=1,2,3*
 
 > **exclude** - post ID to exclude
   - *this* - exclude current post
@@ -42,11 +44,12 @@ Use `[loop]` to get posts and loop through each one.
 
 > **count** - number of posts to show; default is all posts found
 
-> **offset** - offset the loop by a number of posts; for example: *offset="3"* to skip the first three
+> **offset** - offset the loop by a number of posts; for example: *offset=3* to skip the first three
 
 > **status** - display posts by status: *any, publish, pending, draft, future, private*
 
----
+> **sticky** - set *true* to include sticky posts
+
 
 ### Author
 
@@ -59,51 +62,51 @@ Use `[loop]` to get posts and loop through each one.
 > **role** - show posts by user role, such as *administrator*, *editor*, *subscriber*
   - *this* - current user's role
 
----
+
 
 ### Published date
 
 > **year, month, day** - display posts by specific year, month, day
-  - *today* - for example: *month="today"* will show posts from this month
+  - *this* - for example: *month=this* will show posts from this month
 
 > **before** - display posts before a relative or specific date
-  - Example: *before="today"*, *before="2015-02-01"*
+  - Example: *before=today*, *before=2015-02-01*
 
 > **after** - display posts after a date
 
----
+
 
 ### Category, tags
 
-> **category** - display posts from one or more categories; for example: *category="sports, fashion"*
+> **category** - display posts from one or more categories; for example: *category=sports,fashion*
 
-> - *category="this"* - find posts in the same category as current post
+> - *this* - find posts in the same category as current post
 
-> **tag** - display posts with one or more tags; for example: tag="apples, green"
+> **tag** - display posts with one or more tags; for example: tag=apples,green
 
-> - *tag="this"* - find posts with the same tag as current post
+> - *this* - find posts with the same tag as current post
 
-> **compare** - for multiple categories/tags, set *compare="and"* to get posts that have all terms
+> **compare** - for multiple categories/tags, set *compare=and* to get posts that have all terms
 
----
+
 
 ### Taxonomies
 
 > **taxonomy, term** - display posts by taxonomy term
 
 > ~~~
-> [loop type="product" taxonomy="product-type" term="book"]
+> [loop type=product taxonomy=product-type term=book]
 >   [field title]
 > [/loop]
 > ~~~
 
 > #### Multiple terms
 
-> Multiple terms may be specified, such as *term="book, lamp"*.
+> Multiple terms may be specified, such as *term=book,lamp*.
 
 > By default, this gets posts whose taxonomy contains *any* of the given terms.
-  - Use *compare="and"* to get posts whose taxonomy contains all terms
-  - Use *compare="not"* to get posts whose taxonomy does not contain the term(s)
+  - Use *compare=and* to get posts whose taxonomy contains all terms
+  - Use *compare=not* to get posts whose taxonomy does not contain the term(s)
 
 > #### Multiple taxonomies
 
@@ -112,20 +115,20 @@ Use `[loop]` to get posts and loop through each one.
 > **taxonomy_2, term_2, compare_2, taxonomy_3, term_3, compare_3, ...**
 
 
----
+
 
 ### Field value
 
 
 > **field** - field name
 
-> **value** - value to search for
+> **value** - field value(s) - if multiple, will match any: *value=this,that*
 
 > **start** - use instead of *value* to check only the beginning of field value
 
 > **compare** - equal (default), not, more, less, or operator like &lt; and &gt;.
 
-> **compare="between"** - query for a range of values; for example, value="0,100"
+> **compare=between** - query for a range of values; for example, value=0,100
 
 > #### Multiple fields
 
@@ -134,7 +137,7 @@ Use `[loop]` to get posts and loop through each one.
 > **field_2, value_2, compare_2, field_3, value_3, compare_3...**
 
 
----
+
 
 ### Date field
 
@@ -147,7 +150,7 @@ Use `[loop]` to get posts and loop through each one.
   - *now* - if your field contains date and time
   - *future* - today and after
   - *past* - before today
-  - *past* and today - past including today
+  - *past and today* - past including today
 
 > **compare** - *equal* (default), *not*, *more*, *less*, or operator like &lt; and &gt;.
 
@@ -159,7 +162,7 @@ Use `[loop]` to get posts and loop through each one.
 
 > **field_2, value_2, compare_2, date_format_2, after_2, before_2...**
 
----
+
 
 ### Parent / children
 
@@ -177,16 +180,16 @@ Use `[loop]` to get posts and loop through each one.
 >> A more flexible way to display child posts is by using a nested loop.
 
 >> ~~~
->> [loop type="page" orderby="title"]
+>> [loop type=page orderby=title]
 >>   [field title]
->>   [-loop parent="this" orderby="title"]
+>>   [-loop parent=this orderby=title]
 >>     Child page: [field title]
 >>   [/-loop]
 >> [/loop]
 >> ~~~
 
 
----
+
 
 ### Sorting and series
 
@@ -200,22 +203,22 @@ Use `[loop]` to get posts and loop through each one.
 > **series, key** - order posts by a series of field values, where *key* is the name of the field; the series can include ranges, for example: *1-15, 30-40, 42, 44*.
 
 
----
+
 
 ### Checkboxes
 
 
 > **checkbox, value** - display posts whose checkbox contains the value
 
->> Multiple values are possible: *value="first, second"*. This will return all posts with checkboxes containing any of the values, i.e., first *or* second.
+>> Multiple values are possible: *value=first,second*. This will return all posts with checkboxes containing any of the values, i.e., first *or* second.
 
->> Optionally, you can set *compare="and"*, which will return all posts with checkboxes containing all of the values, i.e., first *and* second.  See example section below.
+>> Optionally, you can set *compare=and*, which will return all posts with checkboxes containing all of the values, i.e., first *and* second.  See example section below.
 
 > **relation** - additional query for checkbox value, where relation is *and* (default) or *or*
 
 > **checkbox_2, value_2, compare_2, ...**
 
----
+
 
 ### Format
 
@@ -225,10 +228,10 @@ Use `[loop]` to get posts and loop through each one.
 
 > **strip_tags** - set *true* to remove all HTML tags inside the loop
 
-> **allow** - strip all HTML tags except allowed, for example: *allow="&lt;a&gt;&lt;li&gt;&lt;br&gt;"*
+> **allow** - strip all HTML tags except allowed, for example: *allow='&lt;a&gt;&lt;li&gt;&lt;br&gt;'*
 
 
----
+
 
 ### List
 
@@ -241,7 +244,7 @@ Use `[loop]` to get posts and loop through each one.
 > **item_class, item_style** - add class or style to each item
 
 
----
+
 
 ### Pagination
 
@@ -252,11 +255,11 @@ Use `[loop]` to get posts and loop through each one.
 > These are used with the [[loopage] shortcode](options-general.php?page=ccs_reference&tab=paged) to create pagination.
 
 
----
+
 
 ### Cache
 
-> **cache** - set *true* to cache the result of the loop; see [the reference page](options-general.php?page=ccs_reference&tab=cache) for details
+> **cache** - set *true* to cache the result of the loop; see [Advanced: Cache](options-general.php?page=ccs_reference&tab=cache) for details
 
 > **expire** - how often the cache is updated: minutes, hours, days, years - default is *10 minutes*
 
@@ -265,25 +268,30 @@ Use `[loop]` to get posts and loop through each one.
 > **timer** - set *true* to display resource info at the end of loop; see [here](options-general.php?page=ccs_reference&tab=cache#timer) for details
 
 
----
+
 
 ### Other
 
 > **blog** - switch to given blog ID on multi-site
 
-> **columns** - display output in columns; for example, *columns="3"*; for padding: *pad="0px 10px"*
+> **columns** - display output in columns; for example, *columns=3*; for padding: *pad='0px 10px'*
 
 > **x** - repeat the loop x times - no query
 
 
-## Field tags
 
----
+## Loop count
+
+Use `[loop-count]` to display the current index of the loop, starting from 1.
+
+This can be useful, for example, to create unique element ID or class to wrap each post.
+
+## Field tags
 
 This is a feature to expand a list of fields to their values.
 
 ~~~
-[loop type="post" fields="title, custom_field"]
+[loop type=post fields=title,custom_field]
   Display {TITLE} and {CUSTOM_FIELD}
 [/loop]
 ~~~

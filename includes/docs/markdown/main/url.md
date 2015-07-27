@@ -1,7 +1,8 @@
 
-## URL
+# URL
 
 ---
+
 
 Use `[url]` to generate relative URLs.
 
@@ -15,7 +16,7 @@ This could be useful when you're migrating sites, for example, from local server
 
 Replace absolute URLs with the `[url]` shortcode, then the link doesn't depend on where the site is located.
 
----
+
 
 ### Parameters
 
@@ -33,9 +34,10 @@ Replace absolute URLs with the `[url]` shortcode, then the link doesn't depend o
 
 > **child** - *wp-content/child_theme* - child theme directory
 
+&nbsp;
 
 ## Login / logout links
----
+
 
 Use the `[url]` shortcode to display login and logout links.
 
@@ -48,10 +50,10 @@ Use the `[url]` shortcode to display login and logout links.
 *Display a logout link with redirect to home*
 
 ~~~
-<a href="[url logout go='home']">Logout</a>
+<a href="[url logout go=home]">Logout</a>
 ~~~
 
----
+
 
 ### Parameters
 
@@ -61,21 +63,21 @@ Use the `[url]` shortcode to display login and logout links.
 
 > **go** - redirect after login/logout; specify URL, post slug, or *home*
 
----
+
 
 Here is an example using both `[is]` and `[url]` to show a login/logout link based on user status.
 
 ~~~
 [is logout]
-  <a href="[url login go='user-profile']">Login</a>
+  <a href="[url login go=user-profile]">Login</a>
 [else]
-  <a href="[url logout go='home']">Logout Link</a>
+  <a href="[url logout go=home]">Logout Link</a>
 [/is]
 ~~~
 
 
 ## Redirect
----
+
 
 The `[redirect]` shortcode redirects the user to another URL.
 
@@ -83,11 +85,11 @@ The `[redirect]` shortcode redirects the user to another URL.
 
 ~~~
 [is not login]
-  [redirect go="http://example.com/guest/"]
+  [redirect go='http://example.com/guest/']
 [/is]
 ~~~
 
----
+
 
 ### Parameters
 
@@ -95,7 +97,7 @@ The `[redirect]` shortcode redirects the user to another URL.
 
 > **after** - redirect after specified time; for example: *1000 ms*, *30 sec*
 
----
+
 
 You can also specify a relative URL by wrapping it inside.
 

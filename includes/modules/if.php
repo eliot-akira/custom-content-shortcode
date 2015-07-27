@@ -11,21 +11,18 @@ new CCS_If;
 
 class CCS_If {
 
-	public static $if_flag;
+	public static $state;
 
 	function __construct() {
-
-		self::$if_flag = '';
-
 		add_action( 'init', array( $this, 'register' ) );
+		self::$state['is_if_block'] = false;
 	}
 
 	function register() {
-		add_shortcode( 'if', array( $this, 'if_shortcode' ) );
-		add_shortcode( '-if', array( $this, 'if_shortcode' ) );
-    add_shortcode( '--if', array( $this, 'if_shortcode' ) );
-    add_shortcode( '---if', array( $this, 'if_shortcode' ) );
-		// add_shortcode( 'flag', array( $this, 'flag_shortcode' ) );
+		add_local_shortcode( 'ccs',  'if', array( $this, 'if_shortcode' ), true );
+		add_local_shortcode( 'ccs',  '-if', array( $this, 'if_shortcode' ), true );
+    add_local_shortcode( 'ccs',  '--if', array( $this, 'if_shortcode' ), true );
+    add_local_shortcode( 'ccs',  '---if', array( $this, 'if_shortcode' ), true );
 	}
 
 	function if_shortcode( $atts, $content = null, $shortcode_name ) {
@@ -56,6 +53,7 @@ class CCS_If {
       'lowercase' => '',
 
       'empty' => 'true',
+      'sticky' => '',
 
 			'not' => '',
       'start' => '',
@@ -64,6 +62,9 @@ class CCS_If {
       // field="date" comparison
       'before' => '',
       'after' => '',
+
+			// CCS_Format::x_shortcode
+			'x' => '',
 
       'pass' => '',
       'pass_empty' => 'true', // deprecated
@@ -100,8 +101,6 @@ class CCS_If {
 		 */
 
 		global $post;
-
-//		if (empty($post)) return; // Make sure post exists
 
 		$current_post_id = isset($post->ID) ? $post->ID : null;
 
@@ -253,7 +252,14 @@ class CCS_If {
 
           // echo 'Check field: '.$field.' '.$check.' = '.$value.'<br>';
 
-        } else {
+        } elseif ( $field == 'excerpt' ) {
+
+					$check = get_the_excerpt();
+					$empty = 'true';
+					$value = '';
+
+				} else {
+
           // Normal field
           $check = CCS_Content::get_prepared_field( $field );
         }
@@ -291,7 +297,7 @@ class CCS_If {
 
 				$condition = false;
 
-      }	else {
+      } else {
 
 				if ( !is_array($check) ) $check = array($check);
 
@@ -530,6 +536,28 @@ class CCS_If {
 			$condition = !empty($result);
 		}
 
+		/*---------------------------------------------
+		 *
+		 * [x] loop index
+		 *
+		 */
+
+		if (!empty($x)) {
+			$condition = ( $x == CCS_Format::$state['x_loop'] );
+		}
+
+
+		/*---------------------------------------------
+		 *
+		 * Sticky post
+		 *
+		 */
+
+		if (isset($atts['sticky'])) $sticky = 'true';
+		if ( !empty($sticky) ){
+			$is_sticky = is_sticky();
+			$condition = ( $is_sticky && $sticky=='true' ) || ( !$is_sticky && $sticky=='false' );
+		}
 
     /*---------------------------------------------
      *
@@ -573,7 +601,6 @@ class CCS_If {
 
     if ( CCS_Loop::$state['is_loop'] ) {
 
-
       /*---------------------------------------------
        *
        * Every X number of posts
@@ -613,6 +640,17 @@ class CCS_If {
     } // End: if inside [loop]
 
 
+	  /*---------------------------------------------
+	   *
+	   * Every X number of repeater
+	   *
+	   */
+
+    if ( CCS_To_ACF::$state['is_repeater_or_flex_loop'] && !empty($every) ) {
+			$condition = ( CCS_To_ACF::$state['repeater_index'] % $every == 0 );
+		}
+
+
     /*---------------------------------------------
      *
      * Passed value
@@ -643,30 +681,6 @@ class CCS_If {
     }
 
 
-    /*---------------------------------------------
-     *
-     * Check field as condition [if flag="field"]
-     *
-     * @todo To be deprecated
-     *
-     */
-
-    if ( !empty($flag) ) {
-
-      if ( $flag != 'image' )
-        $check = get_post_meta( $current_id, $flag, true );
-      else
-        $check = has_post_thumbnail( $current_id );
-
-      if ((!empty($check)) && (!empty($no_flag))) $condition = false;
-      if ((empty($check)) && (empty($no_flag))) $condition = false;
-      else {
-        $condition = true;
-        self::$if_flag = $check;
-      }
-    }
-
-
 		/*---------------------------------------------
 		 *
 		 * Not / else
@@ -676,18 +690,13 @@ class CCS_If {
 		// Not - also catches compare="not"
 		$condition = isset($atts['not']) ? !$condition : $condition;
 
-		$out = $condition ? do_shortcode( $content ) : do_shortcode( $else ); // [if]..[else]..[/if]
-
-
-		self::$if_flag = '';
+		self::$state['is_if_block'] = true;
+		$out = $condition ?
+			do_local_shortcode( 'ccs',  $content, true ) :
+			do_local_shortcode( 'ccs',  $else, true ); // [if]..[else]..[/if]
+		self::$state['is_if_block'] = false;
 
 		return $out;
-	}
-
-
-	function flag_shortcode() {
-
-		return self::$if_flag;
 	}
 
 

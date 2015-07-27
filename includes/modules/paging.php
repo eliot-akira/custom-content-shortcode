@@ -17,9 +17,9 @@ class CCS_Paged {
   function __construct() {
 
     self::$prefix = 'lpage';
-    add_shortcode( 'loopage', array($this, 'loopage_shortcode') );
-    add_shortcode( 'loopage-now', array($this, 'loopage_now_shortcode') );
-    add_shortcode( 'loopage-total', array($this, 'loopage_total_shortcode') );
+    add_local_shortcode( 'ccs', 'loopage', array($this, 'loopage_shortcode'), true );
+    add_local_shortcode( 'ccs', 'loopage-now', array($this, 'loopage_now_shortcode'), true );
+    add_local_shortcode( 'ccs', 'loopage-total', array($this, 'loopage_total_shortcode'), true );
   }
 
   function loopage_now_shortcode( $atts, $content ) {
@@ -41,8 +41,8 @@ class CCS_Paged {
 
   function loopage_total_shortcode( $atts, $content ) {
 
-    if (!empty(CCS_Loop::$wp_query)) {
-      $max = CCS_Loop::$wp_query->max_num_pages;
+    if (!empty(CCS_Loop::$state['wp_query'])) {
+      $max = CCS_Loop::$state['wp_query']->max_num_pages;
 
       if (!empty(CCS_Loop::$state['maxpage']) &&
         CCS_Loop::$state['maxpage']<$max) {
@@ -75,10 +75,11 @@ class CCS_Paged {
 
     $pagination_return = '';
 
-    if (class_exists('CCS_Loop') && !empty(CCS_Loop::$wp_query)) {
+    if (class_exists('CCS_Loop') && !empty(CCS_Loop::$state['wp_query'])) {
+      $query = CCS_Loop::$state['wp_query'];
 
-      $query = CCS_Loop::$wp_query;
-      $id = CCS_Loop::$state['loop_index'];
+      $id = CCS_Loop::$state['paged_index'];
+
       if (empty($max) && !empty(CCS_Loop::$state['maxpage'])) {
         $max = CCS_Loop::$state['maxpage'];
       }

@@ -3,7 +3,7 @@
 Plugin Name: Custom Content Shortcode
 Plugin URI: http://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 2.3.5
+Version: 2.5.5
 Shortcodes: loop, content, field, taxonomy, if, for, each, comments, user, url, load
 Author: Eliot Akira
 Author URI: eliotakira.com
@@ -121,8 +121,8 @@ class CCS_Plugin {
   function load_main_modules() {
 
     $modules = array(
-      'core/content',       // Content shortcode
       'core/local-shortcodes', // Local shortcodes
+      'core/content',       // Content shortcode
       'core/loop',          // Loop shortcode
       'docs/docs',          // Documentation under Settings -> Custom Content
       'modules/attached',   // Attachment loop
@@ -177,6 +177,11 @@ class CCS_Plugin {
 
     $settings = self::$settings;
 
+
+    // Render plugin shortcodes before content is passed to default filters
+    add_filter( 'the_content', array($this, 'render_local_shortcodes'), 5 );
+
+
     /*---------------------------------------------
      *
      * Enable shortcodes in widget
@@ -200,7 +205,14 @@ class CCS_Plugin {
     return $shortcodes;
   }
 
+
+  function render_local_shortcodes( $content ) {
+    return do_local_shortcode( 'ccs', $content );
+  }
+
+
 } // End CCS_Plugin
+
 
 /*---------------------------------------------
  *

@@ -3,7 +3,7 @@
 /*---------------------------------------------
  *
  * User shortcodes: users, user, is/isnt
- * 
+ *
  * @todo Move these elsewhere
  * Other shortcodes: list_shortcodes, search_form, blog
  *
@@ -14,7 +14,7 @@ new CCS_User;
 class CCS_User {
 
 	public static $state;
-	
+
 	function __construct() {
 
 		add_shortcode('users', array($this, 'users_shortcode'));
@@ -35,7 +35,7 @@ class CCS_User {
 	 * Users loop
 	 *
 	 */
-	
+
 	function users_shortcode( $atts, $content ) {
 
 		self::$state['is_users_loop'] = true;
@@ -47,7 +47,7 @@ class CCS_User {
      * [if empty]
      *
      */
-    
+
 
     // If empty
     $middle = CCS_Loop::get_between('[if empty]', '[/if]', $content);
@@ -140,7 +140,7 @@ class CCS_User {
 			);
 
 			// Additional query
-			if (isset($atts['relation']) && isset($atts['field']) && isset($atts['value'])) {
+			if (isset($atts['relation']) && isset($atts['field_2']) && isset($atts['value_2'])) {
 
 				$args['meta_query']['relation'] = strtoupper($atts['relation']);
 
@@ -152,24 +152,28 @@ class CCS_User {
 			}
 		}
 
+		// Alter query to extend search function
     if (isset($args['search'])) {
       self::$state['user_query'] = $args['search'];
       add_action( 'pre_user_query', array(__CLASS__, 'extend_search') );
     }
 
+
+		// Main action
 		$users = get_users( $args );
+
 
     if (isset($args['search'])) {
       self::$state['user_query'] = '';
       remove_action( 'pre_user_query', array(__CLASS__, 'extend_search') );
     }
-		
+
 		/*---------------------------------------------
 		 *
 		 * Filter results
 		 *
 		 */
-		
+
 		// Sort by field value number
 		if ( $sort_field_num !== false ) {
 			// This is necessary because get_users doesn't do meta_value_num query
@@ -193,7 +197,7 @@ class CCS_User {
 			foreach ( $new_users as $user_array ) {
 				$users[] = $user_array['user'];
 			}
-			
+
 		}
 
 
@@ -215,7 +219,7 @@ class CCS_User {
       $outputs[] = do_shortcode( self::$state['if_empty'] );
     } elseif (isset(self::$state['if_empty_else']) && count($users) > 0) {
       $outputs[] = do_shortcode( self::$state['if_empty_else'] );
-    } 
+    }
 
     $result = implode('', $outputs);
 
@@ -239,7 +243,7 @@ class CCS_User {
   static function extend_search( $query ) {
 
     global $wpdb;
- 
+
     if (!empty(self::$state['user_query'])) {
 
       $display_name = self::$state['user_query'];
@@ -349,7 +353,7 @@ class CCS_User {
 
 /*
 		if ( is_array( $atts ) ) $atts = array_flip( $atts );
-		if ( isset( $atts['name'] ) ) 
+		if ( isset( $atts['name'] ) )
 		if ( isset( $atts['id'] ) ) return $current_user->ID;
 		if ( isset( $atts['email'] ) ) return $current_user->user_email;
 		if ( isset( $atts['fullname'] ) ) return $current_user->display_name;
@@ -512,7 +516,7 @@ class CCS_User {
    * [blog]
    *
    */
-  
+
 	function blog_shortcode( $atts, $content ){
 
 		extract(shortcode_atts(array(
@@ -562,7 +566,7 @@ class CCS_User {
    * @param type Search only this post type
    *
    */
-  
+
 
 	function search_form_shortcode( $atts, $content ) {
 

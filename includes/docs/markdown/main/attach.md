@@ -1,20 +1,22 @@
 
-## Attachment
+# Attachment
+
 ---
+
 
 Use `[attached]` to loop through attachments.
 
 *Display all attachments of the current post*
 
 ~~~
-[attached orderby="title"]
+[attached orderby=title]
   [field title]
   [field image] or [content]
   [field caption]
 [/attached]
 ~~~
 
----
+
 
 ### Parameters
 
@@ -68,7 +70,7 @@ Use `[attached]` inside a loop to display attachments of specific posts.
 *Display attachment thumbnails of all posts in a category*
 
 ~~~
-[loop type="post" category="special"]
+[loop type=post category=special]
   [field title]
   [attached]
     [field thumbnail]
@@ -85,7 +87,7 @@ Use `[attached]` inside a loop to display attachments of specific posts.
 Use `[if attached]` to display something if the post has any attachments.
 
 ~~~
-[loop type="post"]
+[loop type=post]
   [field title]
   [if attached]
     This post has attachments:
@@ -106,8 +108,7 @@ Use `[attached-field]` to display a single field from a specific attachment.
 *Display the URL of the second attachment*
 
 ~~~
-[attached-field url offset="1"]
+[attached-field url offset=1]
 ~~~
 
 The first parameter is the field name. You can use additional parameters, which are the same as `[attached]` - for example, *offset*, *order* and *orderby*.  If you don't specify *offset*, the first attachment will be chosen.
-

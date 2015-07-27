@@ -16,10 +16,10 @@ class CCS_URL {
 
     self::$urls = array();
 
-    add_shortcode( 'url', array($this, 'url_shortcode') );
+    add_local_shortcode( 'ccs', 'url', array($this, 'url_shortcode'), true );
     add_shortcode( 'redirect', array($this, 'redirect_shortcode') );
   }
-    
+
   public static function url_shortcode( $atts ) {
 
     $urls = self::$urls;
@@ -36,7 +36,7 @@ class CCS_URL {
     $arg = $atts[0];
 
     // Allow checking empty parameters
-    if ( is_array($atts) ) $atts = CCS_Content::get_all_atts( $atts ); 
+    if ( is_array($atts) ) $atts = CCS_Content::get_all_atts( $atts );
 
         // Find where to go after login/out
 
@@ -199,19 +199,19 @@ class CCS_URL {
     if (count($expire)>1) {
 
       switch ($expire[1]) {
-        case 'minute': 
-        case 'minutes': 
-        case 'mins': 
+        case 'minute':
+        case 'minutes':
+        case 'mins':
         case 'min': $expire_ms *= 60 * $ms; break;
-        case 'hours': 
+        case 'hours':
         case 'hour': $expire_ms *= 60 * 60 * $ms; break;
-        case 'days': 
+        case 'days':
         case 'day': $expire_ms *= 60 * 60 * 24 * $ms; break;
-        case 'months': 
+        case 'months':
         case 'month': $expire_ms *= 60 * 60 * 24 * 30 * $ms; break;
-        case 'years': 
+        case 'years':
         case 'year': $expire_ms *= 60 * 60 * 24 * 30 * 365 * $ms; break;
-        case 'milliseconds': 
+        case 'milliseconds':
         case 'ms':
         default:
           // In ms already

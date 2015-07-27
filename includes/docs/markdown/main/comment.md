@@ -1,13 +1,15 @@
 
-## Comment
+# Comment
+
 ---
+
 
 Use `[comments]` and `[comment]` to display recent comments, or those of the current post.
 
 *Display five most recent comments*
 
 ~~~
-[comments count="5"]
+[comments count=5]
   [comment] by [comment author] on [comment date]
 [/comments]
 ~~~
@@ -15,7 +17,7 @@ Use `[comments]` and `[comment]` to display recent comments, or those of the cur
 *Display recent comments for the current post*
 
 ~~~
-[comments count="3" id="this"]
+[comments count=3 id=this]
   [comment] by [comment author] on [comment date]
 [/comments]
 ~~~
@@ -117,7 +119,7 @@ Use `[if comment]` to display something if the current post has any comments or 
 *Display comment count if the post has comment*
 
 ~~~
-[loop type="post" category="news"]
+[loop type=post category=news]
   [if comment]
     [comment count]
   [else]
@@ -142,7 +144,7 @@ Comment list: [comment template]
 By default, the comments list is displayed by *comments.php* in the theme directory. If you want to specify a different template:
 
 ~~~
-[comment template="short-comments.php"]
+[comment template=short-comments.php]
 ~~~
 
 This will look for the comments template in the child theme first, then in the parent theme.

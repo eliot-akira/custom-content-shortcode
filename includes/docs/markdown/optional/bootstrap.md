@@ -1,5 +1,5 @@
 
-## Bootstrap
+# Bootstrap
 
 ---
 
@@ -10,7 +10,7 @@ To display a menu in Bootstrap tabs or pills, use the *ul* parameter.
 *Display a menu in stacked pills*
 
 ~~~
-[content menu="Side Menu" ul="nav-pills-stacked"]
+[content menu='Side Menu' ul=nav-pills-stacked]
 ~~~
 
 The available values are: *nav-tabs*, *nav-pills* or *nav-pills-stacked*.
@@ -22,7 +22,7 @@ The available values are: *nav-tabs*, *nav-pills* or *nav-pills-stacked*.
 To display a menu in a Bootstrap navbar, use the `[navbar]` shortcode.
 
 ~~~
-[navbar menu="Main Menu"]
+[navbar menu='Main Menu']
   Brand
 [/navbar]
 ~~~

@@ -1,6 +1,8 @@
 
-## Field
+# Field
+
 ---
+
 
 Use `[field]` to display a field from the current post.
 
@@ -17,20 +19,21 @@ You can display custom fields as well as [predefined fields](#predefined-fields)
 Additional parameters can be placed after the field name.
 
 ~~~
-[field title words="10"]
+[field title words=10]
 ~~~
 
 *Display an image field*
 
 ~~~
-[field image="image_field" size="thumbnail"]
+[field image=image_field size=thumbnail]
 ~~~
 
 For available parameters, refer to [`[content]`](options-general.php?page=ccs_reference&tab=content#field).
 
-## Predefined fields
 
----
+&nbsp;
+
+## Predefined fields
 
 ### Post
 
@@ -40,15 +43,18 @@ For available parameters, refer to [`[content]`](options-general.php?page=ccs_re
 
 > *url* - post URL
 
-> *edit-url* - post edit URL
-
-> *excerpt* - post excerpt
+> *link* - link to post URL; set parameter *link_text* to change link text from post title (default) to, for example, "Read More"
 
 > *post-type* - post type
 
 > *post-status* - post status
 
----
+> *excerpt* - post excerpt; if excerpt doesn't exist, it will display post content with *words=25*
+
+> *edit-url* - post edit URL
+
+> *edit-link* - post title with link to edit URL; set parameter *link_text* to change link text from post title to, for example, "Edit"
+
 
 ### Title
 
@@ -56,9 +62,8 @@ For available parameters, refer to [`[content]`](options-general.php?page=ccs_re
 
 > *title-link* - post title with link to the post
 
-> *title-link-out* - post title with link to the post, in new tab: *target="_blank"*
+> *title-link-out* - post title with link to the post, in new tab: *target=_blank*
 
----
 
 ### Date
 
@@ -66,7 +71,7 @@ For available parameters, refer to [`[content]`](options-general.php?page=ccs_re
 
 > *modified* - last modified date
 
----
+
 
 ### Featured image
 
@@ -84,13 +89,13 @@ For available parameters, refer to [`[content]`](options-general.php?page=ccs_re
 
 > *image-link* - featured image with link to the post
 
-> *image-link-out* - featured image with link to the post, in new tab: *target="_blank"*
+> *image-link-out* - featured image with link to the post, in new tab: *target=_blank*
 
 > *thumbnail* - featured image thumbnail
 
 > *thumbnail-link* - featured image thumbnail with link to the post
 
----
+
 
 ### Author
 
@@ -109,11 +114,10 @@ For available parameters, refer to [`[content]`](options-general.php?page=ccs_re
 > *next-link* - next post in the loop
 
 
-
+&nbsp;
 
 ## Currency
 
----
 
 To format a currency value, you can use the following parameters.
 
@@ -128,7 +132,7 @@ To format a currency value, you can use the following parameters.
 *Format a field value as currency*
 
 ~~~
-[field field_name point="," thousands="."]
+[field field_name point=, thousands=.]
 ~~~
 
 This will display a number like: 2.500,00
@@ -138,7 +142,7 @@ This will display a number like: 2.500,00
 To use a predefined currency format, use the parameter *currency*.
 
 ~~~
-[field field_name currency="USD"]
+[field field_name currency=USD]
 ~~~
 
 Please note that the currency symbol is not included in the output.
@@ -148,7 +152,7 @@ Most [currency codes](http://en.wikipedia.org/wiki/ISO_4217#Active_codes) are de
 
 
 ## Array
----
+
 
 Use `[array]` to loop through an array of key-value pairs stored in a field.
 
@@ -159,9 +163,9 @@ Use `[array]` to loop through an array of key-value pairs stored in a field.
 [/array]
 ~~~
 
----
 
-###Parameters
+
+### Parameters
 
 > **each** - set *true* to loop through multiple arrays of key-value pairs
 

@@ -1,7 +1,9 @@
 
-## User
+# User
 
 ---
+
+
 
 Use `[user]` to display current user's info.
 
@@ -11,7 +13,7 @@ Full name: [user]
 E-mail: [user email]
 ~~~
 
----
+
 
 ### Fields
 
@@ -41,22 +43,21 @@ You can also specify a custom user field.
 [user field_name]
 ~~~
 
-## Users loop
+&nbsp;
 
----
+## Users loop
 
 Use `[users]` to loop through users.
 
 *Make a list of admin users*
 
 ~~~
-[users role="admin"]
+[users role=admin]
   Admin: [user]
   Contact: [user email]
 [/users]
 ~~~
 
----
 
 ### Parameters
 
@@ -68,7 +69,7 @@ Use `[users]` to loop through users.
 
 > **orderby** - ID, display_name, name, login, email, url, registered, post_count, field, field_num
 
-> **order** - *ASC* - alphabetical (default) or *DESC* (new to old) 
+> **order** - *ASC* - alphabetical (default) or *DESC* (new to old)
 
 > **number** - maximum number of returned results
 
@@ -86,25 +87,25 @@ Use `[users]` to loop through users.
 
 > **blog_id** - blog ID on a multisite
 
----
+
 
 ### Sort by user field
 
 *Field value is string*
 
 ~~~
-[users orderby="field" field="twitter"]
+[users orderby=field field=twitter]
 ~~~
 
 *Field value is number*
 
 ~~~
-[users orderby="field_num" field="position"]
+[users orderby=field_num field=position]
 ~~~
 
 ## User field value
 
----
+
 
 Use `[if user_field]` to check if a user field has specific value, or is not empty.
 
@@ -112,7 +113,7 @@ Use `[if user_field]` to check if a user field has specific value, or is not emp
 *If user field has specific value*
 
 ~~~
-[if user_field="school" value="Home Town University"]
+[if user_field=school value='Home Town University']
   Hey, schoolmate!
 [/if]
 ~~~
@@ -120,7 +121,7 @@ Use `[if user_field]` to check if a user field has specific value, or is not emp
 *If user field is not empty*
 
 ~~~
-[if user_field="facebook_profile"]
+[if user_field=facebook_profile]
   <a href="[user facebook_profile]">Facebook profile</a>
 [else]
   No Facebook profile
@@ -130,7 +131,7 @@ Use `[if user_field]` to check if a user field has specific value, or is not emp
 *If user has posts*
 
 ~~~
-[if user_field="post-count"]
+[if user_field=post-count]
   Post count: [user post-count]
 [else]
   No posts yet!
@@ -139,6 +140,6 @@ Use `[if user_field]` to check if a user field has specific value, or is not emp
 
 ## User condition
 
----
+
 
 To display something based on user condition such as ID or role, use the [`[is]` shortcode](options-general.php?page=ccs_reference&tab=is).

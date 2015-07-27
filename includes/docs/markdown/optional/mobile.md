@@ -1,6 +1,8 @@
 
-## Mobile Detect
+# Mobile Detect
+
 ---
+
 
 Enable the Mobile Detect under [Settings](options-general.php?page=ccs_reference&tab=settings).
 
@@ -14,9 +16,9 @@ Use `[is]` to display content based on device type.
 [/is]
 ~~~
 
-The parameters available are: *mobile*, *phone*, *tablet*, and *computer*. 
+The parameters available are: *mobile*, *phone*, *tablet*, and *computer*.
 
----
+
 
 ### Examples
 
@@ -24,9 +26,9 @@ The parameters available are: *mobile*, *phone*, *tablet*, and *computer*.
 
 ~~~
 [is mobile]
-  [field image size="medium"]
+  [field image size=medium]
 [else]
-  [field image size="large"]
+  [field image size=large]
 [/is]
 
 ~~~
@@ -35,9 +37,9 @@ The parameters available are: *mobile*, *phone*, *tablet*, and *computer*.
 
 ~~~
 [is computer]
-  [load css="style.css"]
+  [load css=style.css]
 [else]
-  [load css="style-mobile.css"]
+  [load css=style-mobile.css]
 [/is]
 ~~~
 
@@ -51,15 +53,15 @@ The parameters available are: *mobile*, *phone*, *tablet*, and *computer*.
 
 These last two would be placed in a custom field named *css*, to load in the head of the page.
 
-## Body class
+&nbsp;
 
----
+### Body class
 
 There are CSS classes added to the &lt;body&gt; element, for styling purposes: *.is_phone, .isnt_phone, .is_tablet, .is_mobile,* *.is_computer* and *.isnt_computer*.
 
-## Library
+&nbsp;
 
----
+### Library
 
 Device detection is based on a lightweight PHP class, [Mobile Detect](http://mobiledetect.net) version 2.8.12.
 

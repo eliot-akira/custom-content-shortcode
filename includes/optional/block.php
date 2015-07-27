@@ -52,7 +52,7 @@ class CCS_Blocks {
     );
 
     foreach ($tags as $tag) {
-      add_shortcode($tag, array($this, 'block_shortcode'));
+      add_local_shortcode( 'ccs', $tag, array($this, 'block_shortcode'), true );
     }
 
     $nested = array('div','ol','li','ul');
@@ -60,7 +60,7 @@ class CCS_Blocks {
     foreach ($nested as $tag) {
       for ($i=1; $i < 6; $i++) {
         $prefix = str_repeat('-', $i);
-        add_shortcode($prefix.$tag, array($this, 'block_shortcode'));
+        add_local_shortcode( 'ccs', $prefix.$tag, array($this, 'block_shortcode'), true );
       }
     }
   }
@@ -97,7 +97,7 @@ class CCS_Blocks {
     $out .= '>';
 
     if (!empty($content)) {
-      $out .= do_shortcode($content);
+      $out .= do_local_shortcode( 'ccs', $content, true );
       $out .= '</'.$tag.'>';
     }
 

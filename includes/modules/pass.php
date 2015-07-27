@@ -11,9 +11,9 @@ new CCS_Pass;
 class CCS_Pass {
 
   function __construct() {
-    add_shortcode( 'pass', array($this, 'pass_shortcode') );
-    add_shortcode( '-pass', array($this, 'pass_shortcode') );
-    add_shortcode( '--pass', array($this, 'pass_shortcode') );
+    add_local_shortcode( 'ccs',  'pass', array($this, 'pass_shortcode'), true );
+    add_local_shortcode( 'ccs',  '-pass', array($this, 'pass_shortcode'), true );
+    add_local_shortcode( 'ccs',  '--pass', array($this, 'pass_shortcode'), true );
   }
 
   public static function pass_shortcode( $atts, $content, $shortcode_name ) {
@@ -41,14 +41,16 @@ class CCS_Pass {
       'user_fields' => '', // Multiple
 
       'global' => '',
-      'sub' => ''
+      'sub' => '',
+      'random' => '',
     );
 
     extract( shortcode_atts( $args , $atts, true ) );
 
-    if ( $pre_render == 'true' ) $content = do_shortcode($content);
+    if ( $pre_render == 'true' ) $content = do_local_shortcode( 'ccs', $content, true );
 
-    $post_id = get_the_ID();
+    if (CCS_Loop::$state['is_loop']) $post_id = do_shortcode('[field id]');
+    else $post_id = get_the_ID();
 
     // Support nested
 
@@ -66,21 +68,72 @@ class CCS_Pass {
      *
      */
 
-    if ( !empty($global) && empty($field) ) $field = 'this';
+    if ( !empty($global) && empty($field) && $field!='0' ) $field = 'this';
 
-    if ( !empty($field) ) {
+    if ( !empty($field) || $field=='0' ) {
 
       if ($field=='gallery') $field = '_custom_gallery'; // Support CCS gallery field
 
       if ( !empty($global) ) {
 
         $field_value = '';
-        if ( $field == 'this' ) {
-          $field_value = $GLOBALS[$global];
-        } elseif ( !empty($sub) && isset($GLOBALS[$global][$field][$sub]) ) {
-          $field_value = $GLOBALS[$global][$field][$sub];
-        } elseif (isset($GLOBALS[$global][$field])) {
-          $field_value = $GLOBALS[$global][$field];
+
+        if ( $global=='route' ) {
+          // Parsed URL route
+          global $wp;
+          $request = $wp->request;
+          $requests = explode('/', $request);
+          if ($field=='this') {
+
+            $field_value = $request; // whole thing
+
+            for ($i=0; $i < 6; $i++) {
+              $part = '';
+              if (isset($requests[$i])) {
+                $part = $requests[$i];
+              }
+              $tag = '{'.$prefix.'FIELD_'.($i+1).'}';
+              $content = str_replace($tag, $part, $content);
+            }
+
+          } else {
+            if (isset($requests[ intval($field) ]))
+              $field_value = $requests[ intval($field) ];
+          }
+
+        } elseif ( $global=='query' ) {
+          // Parsed query string
+
+      		// Direct method
+      		$request_url = untrailingslashit( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+      		$url = parse_url( $request_url );
+      		$query_string = isset($url['query']) ? $url['query'] : '';
+      		parse_str( $query_string, $query_array ); // Create array from query string
+      		// $query_array = array_filter($query_array); // Remove any empty keys
+
+          $field_value = $query_string;
+          foreach ($query_array as $key => $value) {
+            $tag = '{'.$prefix.(strtoupper($key)).'}';
+            $content = str_replace($tag, $value, $content);
+          }
+          if (!empty($fields)) {
+            // Remove what was not rendered
+            $fields = CCS_Loop::explode_list($fields);
+            foreach ($fields as $key) {
+              $tag = '{'.$prefix.(strtoupper($key)).'}';
+              $content = str_replace($tag, '', $content);
+            }
+            $fields = '';
+          }
+
+        } else {
+          if ( $field == 'this' && isset($GLOBALS[$global]) ) {
+            $field_value = $GLOBALS[$global];
+          } elseif ( !empty($sub) && isset($GLOBALS[$global][$field][$sub]) ) {
+            $field_value = $GLOBALS[$global][$field][$sub];
+          } elseif (isset($GLOBALS[$global][$field])) {
+            $field_value = $GLOBALS[$global][$field];
+          }
         }
 
       } elseif (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true') {
@@ -91,7 +144,6 @@ class CCS_Pass {
 
       } else {
         // Get normal field
-
         $field_value = CCS_Content::get_prepared_field( $field, $post_id );
         // $field_value = get_post_meta( $post_id, $field, true );
       }
@@ -123,7 +175,7 @@ class CCS_Pass {
 
         // Support gallery field
 
-        $field_values = CCS_Gallery_Field::get_image_ids(); 
+        $field_values = CCS_Gallery_Field::get_image_ids();
 
       } else {
 
@@ -245,7 +297,7 @@ class CCS_Pass {
      * Pass an arbitrary list of items
      *
      */
-    
+
     } elseif (!empty($list)) {
 
       $items = CCS_Loop::explode_list($list); // Comma-separated list -> array
@@ -261,7 +313,7 @@ class CCS_Pass {
 
           $parts = explode(':', $item);
           $count = count($parts);
-          for ($i=0; $i < $count; $i++) { 
+          for ($i=0; $i < $count; $i++) {
 
             $this_item = trim($parts[$i]);
 
@@ -294,7 +346,7 @@ class CCS_Pass {
      * Pass user field(s)
      *
      */
-    
+
     if (!empty($user_field)) {
       $user_field_value = do_shortcode('[user '.$user_field.' out="slug"]');
       // Replace it
@@ -309,6 +361,10 @@ class CCS_Pass {
         // Replace {FIELD_NAME}
         $content = str_replace('{'.$prefix.strtoupper($this_field).'}', $user_field_value, $content);
       }
+    }
+
+    if ( !empty($random) ) {
+      $content = str_replace('{'.$prefix.'RANDOM}', do_shortcode('[random '.$random.']'), $content);
     }
 
 
@@ -336,7 +392,7 @@ class CCS_Pass {
       $content = CCS_Loop::render_default_field_tags( $content );
     }
 
-    if ( $post_render == 'true' ) $content = do_shortcode($content);
+    if ( $post_render == 'true' ) $content = do_local_shortcode( 'ccs', $content, true );
 
     // Trim trailing white space and comma
     if ( $trim != 'false' ) {
@@ -348,5 +404,5 @@ class CCS_Pass {
     return $content;
 
   } // End pass shortcode
-  
+
 } // End CCS_Pass

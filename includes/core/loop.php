@@ -34,9 +34,9 @@ class CCS_Loop {
 
     self::init();
 
-    add_shortcode( 'loop', array($this, 'the_loop_shortcode') );
-    add_shortcode( '-loop', array($this, 'the_loop_shortcode') );
-    add_shortcode( '--loop', array($this, 'the_loop_shortcode') );
+    add_local_shortcode( 'ccs', 'loop', array($this, 'the_loop_shortcode'), true );
+    add_local_shortcode( 'ccs',  '-loop', array($this, 'the_loop_shortcode'), true );
+    add_local_shortcode( 'ccs',  '--loop', array($this, 'the_loop_shortcode'), true );
 
     add_local_shortcode( 'loop', 'prev', array($this, 'prev_shortcode') );
     add_local_shortcode( 'loop', 'next', array($this, 'next_shortcode') );
@@ -45,11 +45,11 @@ class CCS_Loop {
     add_local_shortcode( 'loop', 'newer', array($this, 'prev_shortcode') );
     add_local_shortcode( 'loop', 'older', array($this, 'next_shortcode') );
 
-    add_shortcode( 'prev-next', array($this, 'prev_next_shortcode') );
+    add_local_shortcode( 'ccs', 'prev-next', array($this, 'prev_next_shortcode'), true );
 
-    add_shortcode( 'loop-count', array($this, 'loop_count_shortcode') );
-    add_shortcode( 'found-posts', array($this, 'found_posts_shortcode') );
-    add_shortcode( 'search-keyword', array($this, 'search_keyword_shortcode') );
+    add_local_shortcode( 'ccs', 'loop-count', array($this, 'loop_count_shortcode'), true );
+    add_local_shortcode( 'ccs', 'found-posts', array($this, 'found_posts_shortcode'), true );
+    add_local_shortcode( 'ccs', 'search-keyword', array($this, 'search_keyword_shortcode'), true );
 
     add_shortcode( '*', array($this, 'shortcode_comment') );
     add_shortcode( '!', array($this, 'shortcode_comment') );
@@ -69,8 +69,8 @@ class CCS_Loop {
     self::$state['is_nested_loop'] = false;
     self::$state['is_attachment_loop'] = false;
     self::$state['do_reset_postdata'] = false;
+    self::$state['wp_query'] = null;
     self::$previous_state = array();
-    self::$wp_query = null;
   }
 
 
@@ -149,6 +149,10 @@ class CCS_Loop {
   public static function init_loop() {
 
     $state = self::$state;
+
+    if (!isset($state['loop_index']))  $state['loop_index'] = 0;
+    if (!isset($state['is_loop']))  $state['is_loop'] = false;
+
     $state['loop_index']++; // Starts with 1
 
     global $post;
@@ -204,12 +208,14 @@ class CCS_Loop {
       'type' => '',
       'name' => '',
       'id' => '', 'exclude' => '',
+      'sticky' => '',
       'status' => '',
       'include' => '',
       'parent' => '',
       'count' => '', 'offset' => '',
       'year' => '', 'month' => '', 'day' => '',
-      'author' => '', 'author_exclude' => '', 'role' => '',
+      'author' => '', 'author_exclude' => '',
+      'role' => '',
 
       // Field value
 
@@ -244,6 +250,7 @@ class CCS_Loop {
       'taxonomy_3' => '', 'term_3' => '',
       'taxonomy_4' => '', 'term_4' => '',
       'taxonomy_5' => '', 'term_5' => '',
+      'taxonomy_field' => '', // term_id, name, slug
 
       // Checkbox
 
@@ -398,7 +405,7 @@ class CCS_Loop {
         self::$state['loop_count']++;
 
         $outs[] = apply_filters( 'ccs_loop_each_result',
-          do_shortcode( self::render_field_tags( $template, $parameters ) ),
+          do_local_shortcode( 'ccs',  self::render_field_tags( $template, $parameters ), true ),
           $parameters
         );
 
@@ -655,8 +662,16 @@ class CCS_Loop {
 
     } // End if parent pameter
 
-    $query['ignore_sticky_posts'] = true;
 
+    /*---------------------------------------------
+     *
+     * Sticky posts: ignore by default
+     *
+     */
+
+    if ( empty($parameters['sticky']) ) {
+      $query['ignore_sticky_posts'] = true;
+    }
 
 
     /*---------------------------------------------
@@ -802,8 +817,13 @@ class CCS_Loop {
 
         // Get from query var
         $query_var = CCS_Paged::$prefix;
-        if (self::$state['loop_index']>1)
-          $query_var .= self::$state['loop_index'];
+        if (!isset(self::$state['paged_index']))
+          self::$state['paged_index'] = 1;
+        else
+          self::$state['paged_index']++;
+
+        if (self::$state['paged_index']>1)
+          $query_var .= self::$state['paged_index'];
         $query['paged'] = isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
       }
     }
@@ -842,9 +862,9 @@ class CCS_Loop {
 
       $today = getdate();
 
-      if ($year=='today') $year=$today["year"];
-      if ($month=='today') $month=$today["mon"];
-      if ($day=='today') $day=$today["mday"];
+      if ( $year=='today' || $year=='this' ) $year=$today['year'];
+      if ( $month=='today' || $month=='this' ) $month=$today['mon'];
+      if ( $day=='today' || $day=='this' ) $day=$today['mday'];
 
       $query['date_query'] = array(
         array(
@@ -970,6 +990,8 @@ class CCS_Loop {
 
           $args = array(
             'taxonomy' => $taxonomy,
+            'field' => !empty($parameters['taxonomy_field']) ?
+              $parameters['taxonomy_field'] : 'term_id', // name or slug
             'term' => $term,
             'compare' => !empty($parameters['compare'.$suffix]) ?
               $parameters['compare'.$suffix] : 'IN'
@@ -1020,8 +1042,7 @@ class CCS_Loop {
       elseif ($orderby=="menu") $orderby = 'menu_order';
       elseif ( !in_array(strtolower($orderby), $default_orderby) ) {
 
-        // If not default orderby value, assume field name
-
+        // If not recognized, assume it's a field name
         $orderby = 'meta_value';
         if (empty($parameters['field'])) {
           $parameters['field'] = $orderby;
@@ -1200,7 +1221,6 @@ class CCS_Loop {
 
           $args = array(
             'field' => $parameters['field'.$suffix],
-            'value' => $parameters['value'.$suffix],
             'compare' => $parameters['compare'.$suffix],
           );
 
@@ -1216,7 +1236,21 @@ class CCS_Loop {
             }
           }
 
-          $query['meta_query'][] = self::prepare_meta_query( $args );
+          // Some trickery to support value="1,2,3"
+          $values = CCS_Loop::explode_list($parameters['value'.$suffix]);
+          $j = 0; $_args = array();
+          if (count($values)>1) {
+            $_args['relation'] = 'OR';
+          }
+          foreach ($values as $value) {
+            $args['value'] = $value;
+            $_args[] = self::prepare_meta_query( $args );
+            $j++;
+          }
+          if (count($values)>1)
+            $query['meta_query'][] = $_args;
+          else $query['meta_query'][] = $_args[0];
+          // print_r($query['meta_query']); echo '<hr>';
         }
       }
 
@@ -1413,7 +1447,7 @@ class CCS_Loop {
       self::$state['do_reset_postdata'] = true; // Reset post data at the end of loop
     }
 
-    return self::$wp_query = new WP_Query( $query );
+    return self::$state['wp_query'] = new WP_Query( $query );
   }
 
 
@@ -1495,7 +1529,7 @@ class CCS_Loop {
               $params .= ' '.$key.'="'.$value.'"';
             }
 
-            $this_template .= do_shortcode(
+            $this_template .= do_local_shortcode( 'ccs',
               '[if children]'
                 .'[loop'.$params.']'
                   .$template
@@ -1592,7 +1626,7 @@ class CCS_Loop {
       $state['all_ids'][] = $post->ID;
     }
 
-    if ( isset($query['meta_query'][0]) ) {
+    if ( isset($query['meta_query'][0]) && isset($query['meta_query'][0]['compare'])) {
       $compare = $query['meta_query'][0]['compare'];
       $key = $query['meta_query'][0]['key'];
     } else {
@@ -1652,7 +1686,6 @@ class CCS_Loop {
         if (!empty($parameters['start'])) {
 
           $field_value = CCS_Content::get_prepared_field( $parameters['field'], $current_id );
-
           $skip = true;
 
           if (!empty($field_value)) {
@@ -1691,7 +1724,8 @@ class CCS_Loop {
                 break;
             }
           } // End if there's field value
-        }
+
+        } // field value start
 
 
         /*---------------------------------------------
@@ -1729,53 +1763,54 @@ class CCS_Loop {
             }
 
           }
-        }
 
-        $skip_2 = false;
-        if ( !empty($parameters['checkbox_2']) && !empty($parameters['value_2']) ) {
-          $values = self::explode_list($parameters['value_2']);
-          $check_field = get_post_meta( $current_id, $parameters['checkbox_2'], $single=true );
+          $skip_2 = false;
+          if ( !empty($parameters['checkbox_2']) && !empty($parameters['value_2']) ) {
+            $values = self::explode_list($parameters['value_2']);
+            $check_field = get_post_meta( $current_id, $parameters['checkbox_2'], $single=true );
 
-          if (!empty($parameters['compare_2'])) $compare_2 = strtolower($parameters['compare_2']);
-          else $compare_2 = 'or';
+            if (!empty($parameters['compare_2'])) $compare_2 = strtolower($parameters['compare_2']);
+            else $compare_2 = 'or';
 
-          if ($compare_2 == 'or') $skip_2 = true;
+            if ($compare_2 == 'or') $skip_2 = true;
 
-          foreach ($values as $value) {
+            foreach ($values as $value) {
 
-            $in_array = in_array($value, (array)$check_field);
+              $in_array = in_array($value, (array)$check_field);
 
-            if (($compare_2 == 'or') && ( $in_array )) {
-              $skip_2 = false;
-              break;
-            }
+              if (($compare_2 == 'or') && ( $in_array )) {
+                $skip_2 = false;
+                break;
+              }
 
-            if (($compare_2 == 'and') && ( ! $in_array )) {
-              $skip_2 = true;
+              if (($compare_2 == 'and') && ( ! $in_array )) {
+                $skip_2 = true;
+              }
             }
           }
-        }
 
-        if (!empty($parameters['checkbox_2'])) {
+          if (!empty($parameters['checkbox_2'])) {
 
-          if (!empty($parameters['relation']))
-            $relation = strtoupper($parameters['relation']);
-          else
-            $relation = 'AND'; // default
-
-          if ($relation=='OR') {
-            if ( ( ! $skip_1 ) || ( ! $skip_2 ) )
-              $skip = false;
+            if (!empty($parameters['relation']))
+              $relation = strtoupper($parameters['relation']);
             else
-              $skip = true;
+              $relation = 'AND'; // default
+
+            if ($relation=='OR') {
+              if ( ( ! $skip_1 ) || ( ! $skip_2 ) )
+                $skip = false;
+              else
+                $skip = true;
+            } else {
+              if ( ( ! $skip_1 ) && ( ! $skip_2 ) )
+                $skip = false;
+              else
+                $skip = true;
+            }
           } else {
-            if ( ( ! $skip_1 ) && ( ! $skip_2 ) )
-              $skip = false;
-            else
-              $skip = true;
+            $skip = $skip_1;
           }
-        } else {
-          $skip = $skip_1;
+
         }
 
         if ($skip) {
@@ -1819,7 +1854,6 @@ class CCS_Loop {
     $post_id = $post->ID;
 
     // Skip
-
     if ( in_array($post_id, self::$state['skip_ids']) ) {
       return null;
     }
@@ -1876,9 +1910,9 @@ class CCS_Loop {
      */
 
     $template = self::render_field_tags( $template, self::$parameters );
-
+    $template = do_local_shortcode( 'loop', $template, false );
     return apply_filters('ccs_loop_each_result',
-      do_local_shortcode( 'loop', $template, true ), self::$parameters );
+      do_local_shortcode( 'ccs', $template, true ), self::$parameters );
   }
 
 
@@ -2130,7 +2164,7 @@ class CCS_Loop {
       if (!empty($each_row)) {
         $each_row .= $clear;
         $each_row = apply_filters('ccs_loop_each_row',
-          do_shortcode($each_row), self::$parameters);
+          do_local_shortcode( 'ccs', $each_row, true ), self::$parameters);
         $out .= $each_row;
       }
     }
@@ -2471,7 +2505,7 @@ class CCS_Loop {
       if (isset( $all_ids[$find_key + 1] )) { // Next in loop
         $prev_id = $all_ids[$find_key + 1];
         self::$state['current_post_id'] = $prev_id;
-        $result = do_shortcode($content);
+        $result = do_local_shortcode( 'ccs', $content, true );
         self::$state['current_post_id'] = $current_id; // Restore
       }
     }
@@ -2494,7 +2528,7 @@ class CCS_Loop {
       if (isset( $all_ids[$find_key - 1] )) { // Prev in loop
         $prev_id = $all_ids[$find_key - 1];
         self::$state['current_post_id'] = $prev_id;
-        $result = do_shortcode($content);
+        $result = do_local_shortcode( 'ccs', $content, true );
         self::$state['current_post_id'] = $current_id; // Restore
       }
     }

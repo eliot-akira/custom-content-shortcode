@@ -14,9 +14,9 @@ class CCS_Attached {
 
 	function __construct() {
 
-    add_shortcode( 'attached', array( $this, 'attached_shortcode' ) );
-    add_shortcode( '-attached', array( $this, 'attached_shortcode' ) );
-    add_shortcode( 'attached-field', array( $this, 'attached_field_shortcode' ) );
+    add_local_shortcode( 'ccs',  'attached', array( $this, 'attached_shortcode' ), true  );
+    add_local_shortcode( 'ccs',  '-attached', array( $this, 'attached_shortcode' ), true  );
+    add_local_shortcode( 'ccs',  'attached-field', array( $this, 'attached_field_shortcode' ), true  );
 
 		self::$state['is_attachment_loop'] = false;
 	}
@@ -33,7 +33,7 @@ class CCS_Attached {
 			'columns' => '', 'pad' => '', 'between' => ''
 		);
 
-		extract( shortcode_atts( $args , $atts, true ) );		
+		extract( shortcode_atts( $args , $atts, true ) );
 
 		/*---------------------------------------------
 		 *
@@ -85,7 +85,7 @@ class CCS_Attached {
 		}
 
 		// If no images in gallery field
-		if (count($attachment_ids)==0) return null; 
+		if (count($attachment_ids)==0) return null;
 
 
 		/*---------------------------------------------

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*---------------------------------------------
  *
@@ -15,7 +15,7 @@ class CCS_Related {
 	function __construct() {
 
 		$this->init();
-		add_shortcode('related', array($this, 'loop_related_posts'));
+		add_local_shortcode( 'ccs', 'related', array($this, 'loop_related_posts'), true );
 	}
 
 	function init() {
@@ -30,7 +30,10 @@ class CCS_Related {
 		$outputs = array();
 		$current_count = 0;
 
-		if (!empty($post)) {
+		if (CCS_Loop::$state['is_loop']) {
+      $post_id = CCS_Loop::$state['current_post_id'];
+			$post_type = do_local_shortcode( 'ccs', '[field post-type]');
+		} elseif (!empty($post)) {
 			$post_id = $post->ID;
 			$post_type = $post->post_type;
 		} else {
@@ -39,8 +42,10 @@ class CCS_Related {
 		}
 
 		extract( shortcode_atts( array(
+			'type' => '',
 			'taxonomy' => 'category', // Default
-			'field' => '', 
+			'field' => '',
+			'taxonomy_field' => '',
 			'value' => '', // For future update: related post by field value
 			'subfield' => '',
 			'count' => '',
@@ -48,9 +53,36 @@ class CCS_Related {
 			'order' => 'DESC',
 			'orderby' => 'date',
 			'relation' => 'or',
+			'operator' => 'in',
 			'trim' => '' // Trim extra space and comma
 		), $atts ) );
 
+		if (!empty($type)) {
+			$post_type = CCS_Loop::explode_list($type);
+		}
+
+		if ( !empty($field) && isset($atts[0]) ) $field = $atts[0];
+
+		if ( !empty($taxonomy_field) ) {
+
+			$terms = do_local_shortcode( 'ccs', '[field '.$taxonomy_field.']' );
+			$terms = CCS_Loop::explode_list($terms);
+
+			if (empty($terms) || count($terms)==0) return;
+
+			$taxonomies = array();
+			$term_objects = array();
+			foreach ($terms as $term) {
+				$term = self::get_term_by_id($term);
+				$tax = $term->taxonomy;
+				if (!in_array($tax, $taxonomies)) {
+					$taxonomies[] = $term->taxonomy;
+				}
+				$term_objects[] = $term;
+			}
+			$taxonomy = implode(',', $taxonomies);
+			$terms = $term_objects;
+		}
 
 		/*---------------------------------------------
 		 *
@@ -64,15 +96,13 @@ class CCS_Related {
 			}
 		}
 
-
-
 		/*---------------------------------------------
 		 *
 		 * Related posts by taxonomy
 		 *
 		 */
-		
-		if (empty($count)) $count = 99999; // Maximum number of posts
+
+		if (empty($count)) $count = 99999; // Hypothetical maximum number of posts
 
 		if ( !empty($taxonomy) ) {
 
@@ -93,21 +123,24 @@ class CCS_Related {
 				'tax_query' => array ()
 			);
 
-			$terms = array();
+			$target_terms = array();
 
 			foreach ($taxonomies as $current_taxonomy) {
 
 				if ($current_taxonomy == 'tag')
 					$current_taxonomy = 'post_tag';
 
-				// Get current post's taxonomy terms
-				$term_objects = get_the_terms( $post_id, $current_taxonomy );
+				// Get current post's taxonomy terms - unless given
+				if (!isset($terms)) {
+					$term_objects = get_the_terms( $post_id, $current_taxonomy );
+				} else {
+					$term_objects = $terms;
+				}
 
 				if (is_array($term_objects)) {
 
 					foreach ($term_objects as $term) {
-
-						$terms[$current_taxonomy][] = $term->term_id;
+						$target_terms[$current_taxonomy][] = $term->term_id;
 					}
 
 					if ($tax_count == 1) {
@@ -117,13 +150,17 @@ class CCS_Related {
 					$query['tax_query'][] = array(
 						'taxonomy' => $current_taxonomy,
 						'field' => 'id',
-						'terms' => $terms[$current_taxonomy],
-						'operator' => 'IN'
+						'terms' => $target_terms[$current_taxonomy],
+						'operator' => strtoupper($operator)
 					);
 
 					$tax_count++;
 				}
+
+				$terms = $target_terms;
 			}
+
+			// print_r($query); echo '<br><br>';
 
 			$posts = new WP_Query( $query );
 
@@ -163,7 +200,7 @@ class CCS_Related {
 								} else {
 									if ( has_term( $terms[$current_taxonomy], $current_taxonomy )) {
 										$condition = true;
-									}								
+									}
 								}
 							}
 						}
@@ -175,7 +212,7 @@ class CCS_Related {
 							self::$state['current_related_post_id'] = $post->ID;
 							$current_count++;
 							if ($current_count<=$count) {
-								$outputs[] = do_shortcode( $content );
+								$outputs[] = do_local_shortcode( 'ccs',  $content, true );
 							}
 						}
 					}
@@ -195,6 +232,20 @@ class CCS_Related {
 		return $out;
 
 	}
+
+	public static function get_term_by_id($term, $output = OBJECT, $filter = 'raw') {
+	    global $wpdb;
+	    $null = null;
+
+	    if ( empty($term) ) return;
+
+	    $_tax = $wpdb->get_row( $wpdb->prepare( "SELECT t.* FROM $wpdb->term_taxonomy AS t WHERE t.term_id = %s LIMIT 1", $term) );
+	    $taxonomy = $_tax->taxonomy;
+
+	    return get_term($term, $taxonomy, $output, $filter);
+
+	}
+
 
 	function change_key( $array, $old_key, $new_key) {
 
