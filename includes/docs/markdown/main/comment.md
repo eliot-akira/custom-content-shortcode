@@ -35,6 +35,8 @@ Available parameters for `[comments]` are:
 
 > **count** - number of comments to show, or set to *all*
 
+> **author** - get comments on posts by author ID or user name; set to *this* for current user
+
 > **status** - *approve* (default), *hold* (unapproved) or set to *all*
 
 > **exclude** - exclude post ID
@@ -128,6 +130,24 @@ Use `[if comment]` to display something if the current post has any comments or 
 [/loop]
 ~~~
 
+
+&nbsp;
+
+### If comment author
+
+Use `[if comment_author]` to check current comment's author in a comments loop.
+
+Combined with a post loop, you can list newest comment by *other users* on a post that the current user commented on.
+
+~~~
+[loop type=post comment_author=this]
+  [comments count=1]
+    [if not comment_author=this]
+      New comment on [field title] by [comment author] ([comment date])
+    [/if]
+  [/comments]
+[/loop]
+~~~
 
 &nbsp;
 

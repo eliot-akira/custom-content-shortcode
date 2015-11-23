@@ -11,16 +11,25 @@ new CCS_Pass;
 class CCS_Pass {
 
   function __construct() {
-    add_local_shortcode( 'ccs',  'pass', array($this, 'pass_shortcode'), true );
-    add_local_shortcode( 'ccs',  '-pass', array($this, 'pass_shortcode'), true );
-    add_local_shortcode( 'ccs',  '--pass', array($this, 'pass_shortcode'), true );
+
+    add_ccs_shortcode( array(
+      'pass' => array($this, 'pass_shortcode'),
+      '-pass' => array($this, 'pass_shortcode'),
+      '--pass' => array($this, 'pass_shortcode'),
+    ));
   }
 
   public static function pass_shortcode( $atts, $content, $shortcode_name ) {
 
     $args = array(
+
       'field' => '',
+      'date_format' => '',
+      'in' => '', // in=timestamp
+
       'fields' => '',
+      'array' => '',
+      'debug' => '', // For inspecting array
       'field_loop' => '',     // Field is array or comma-separated list
       'taxonomy_loop' => '',    // Loop through each term in taxonomy
       'list' => '',         // Loop through an arbitrary list of items
@@ -62,6 +71,12 @@ class CCS_Pass {
     }
 
 
+    if ( !empty($date_format) ) {
+      // Date format: allow escape via "//" because "\" disappears in shortcode parameters
+      $date_format = str_replace("//", "\\", $date_format );
+    }
+
+
     /*---------------------------------------------
      *
      * Pass single field to {FIELD}
@@ -69,20 +84,23 @@ class CCS_Pass {
      */
 
     if ( !empty($global) && empty($field) && $field!='0' ) $field = 'this';
+    if ( !empty($array) ) $field = $array;
 
     if ( !empty($field) || $field=='0' ) {
 
       if ($field=='gallery') $field = '_custom_gallery'; // Support CCS gallery field
 
+      // Pass global variable
       if ( !empty($global) ) {
 
         $field_value = '';
 
         if ( $global=='route' ) {
+
           // Parsed URL route
-          global $wp;
-          $request = $wp->request;
-          $requests = explode('/', $request);
+          $request = CCS_URL::get_route();
+          $requests = CCS_URL::get_routes();
+
           if ($field=='this') {
 
             $field_value = $request; // whole thing
@@ -102,16 +120,11 @@ class CCS_Pass {
           }
 
         } elseif ( $global=='query' ) {
+
           // Parsed query string
+          $field_value = CCS_URL::get_query();
+          $query_array = CCS_URL::get_queries();
 
-      		// Direct method
-      		$request_url = untrailingslashit( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
-      		$url = parse_url( $request_url );
-      		$query_string = isset($url['query']) ? $url['query'] : '';
-      		parse_str( $query_string, $query_array ); // Create array from query string
-      		// $query_array = array_filter($query_array); // Remove any empty keys
-
-          $field_value = $query_string;
           foreach ($query_array as $key => $value) {
             $tag = '{'.$prefix.(strtoupper($key)).'}';
             $content = str_replace($tag, $value, $content);
@@ -124,6 +137,10 @@ class CCS_Pass {
               $content = str_replace($tag, '', $content);
             }
             $fields = '';
+          } elseif (!empty($field)) {
+            $tag = '{'.$prefix.'FIELD'.'}';
+            $value = isset($query_array[$field]) ? $query_array[$field] : '';
+            $content = str_replace($tag, $value, $content);
           }
 
         } else {
@@ -135,27 +152,62 @@ class CCS_Pass {
             $field_value = $GLOBALS[$global][$field];
           }
         }
+      // end global
 
-      } elseif (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop']=='true') {
-        // Repeater or flexible content field: then get sub field
-        if (function_exists('get_sub_field')) {
+      // Repeater or flexible content field
+      } elseif (class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop'] ) {
+        if ($field == 'index'){
+          $field_value = CCS_To_ACF::$state['repeater_index'];
+        } elseif (function_exists('get_sub_field')) {
           $field_value = get_sub_field( $field );
         } else $field_value = null;
 
+      // Predefined or custom field
       } else {
-        // Get normal field
         $field_value = CCS_Content::get_prepared_field( $field, $post_id );
-        // $field_value = get_post_meta( $post_id, $field, true );
       }
 
       if (is_array($field_value)) {
 
-        $field_value = implode(",", $field_value);
+        if (!empty($array)) {
+
+          if ($debug=='true') {
+
+            ob_start();
+            echo '<pre><code>';
+            print_r($field_value);
+            echo '</code></pre>';
+            return ob_get_clean();
+          }
+
+          // array parameter
+          foreach ($field_value as $key => $value) {
+            $content = str_replace('{'.strtoupper($key).'}', $value, $content);
+          }
+        } else {
+          // field parameter
+          foreach ($field_value as $key => $value) {
+            $content = str_replace('{'.$prefix.'FIELD:'.strtoupper($key).'}', $value, $content);
+          }
+        }
+
+        $field_value = '(Array)';
+        //$field_value = implode(",", $field_value);
 
       } else {
 
         // Clean extra spaces if it's a list
         $field_value = CCS_Loop::clean_list($field_value);
+      }
+
+
+      if ( !empty($date_format) ) {
+        // Date format for custom field
+        if ( !empty($in) && ($in=='timestamp') && is_numeric($field_value) ) {
+          $field_value = gmdate("Y-m-d H:i:s", $field_value);
+        }
+        if ($date_format=='true') $date_format = get_option('date_format');
+        $field_value = mysql2date($date_format, $field_value);
       }
 
       // Replace it

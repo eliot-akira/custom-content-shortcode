@@ -57,15 +57,12 @@ When inside a loop, it can be used without parameter to show each post's content
 
 >> When displaying a field from the current post, you can use [`[field]`](options-general.php?page=ccs_reference&tab=field) as a shortcut.
 
-> **meta** - display author meta: *field=author meta=user_email*
-
->> Author meta fields include: *user_login, user_email, display_name, first_name, last_name, description*. See [the codex](http://codex.wordpress.org/Function_Reference/get_the_author_meta) for more.
-
-
 
 ### Image field
 
 > **image** - display an image field; for example: *image=product_image*
+
+> **in** - type of image field: *id* (default), *url*, or *object*
 
 > **size** - size of image: *thumbnail*, *medium*, *large*, *full* (default) or [custom defined size](http://codex.wordpress.org/Function_Reference/add_image_size)
 
@@ -75,12 +72,16 @@ When inside a loop, it can be used without parameter to show each post's content
 
 > **alt**, **title** - additional image attributes
 
-> **in** - type of image field: *id* (default), *url*, or *object*
-
-> **out** - image detail to output: *id*, *url*, *title*, *caption*, *description*
+> **out** - if field is stored as attachment ID, output image detail: *id*, *url*, *title*, *caption*, *description*
 
 > **nopin** - set *nopin=nopin* to prevent Pinterest pinning of image
 
+
+### Author field
+
+> **meta** - display author meta: *field=author meta=user_email*
+
+>> Author meta fields include: *user_login, user_email, display_name, first_name, last_name, description*. See [the codex](http://codex.wordpress.org/Function_Reference/get_the_author_meta) for more.
 
 
 ### Taxonomy
@@ -107,19 +108,31 @@ When inside a loop, it can be used without parameter to show each post's content
 
 >> By default, post content is formatted, and fields are not.
 
+> **texturize** - apply text transformations like smart quotes, apostrophes, dashes, ellipses, etc. See [the Codex: wptexturize](https://codex.wordpress.org/Function_Reference/wptexturize#Notes) for details.
+
 > **words** or **length** - trim by number of words or characters
 
->> Trimmed content is not formatted by default; set *format=true* if you need.
+>> Trimmed content is not formatted by default; set *format=true* if you need. Also, HTML tags are stripped from trimmed content by default; you can set *html=true* to keep HTML tags - however, trimming content with HTML tags may have unexpected results.
 
-> **sentence=true** - trim to the last sentence
+>> **sentence** - set *true* to trim to last sentence
 
-> **filter** - set *true* to apply *the_content* filter; this may be useful when using plugins that filter the post content, for example, [Page Builder](https://wordpress.org/plugins/siteorigin-panels).
+>> **word** - set *true* to trim to last word
+
+> **class** - add `<div>` class to the output
+
+> **slugify** - set *true* to create a sanitized slug from field value
+
+> **glue** - if field is array, implode with given separator; default is a comma with space after
+
+> **escape** or **unescape** - Escape/unescape HTML special characters; this also sets *shortcode=false* unless specified otherwise
+
+> **shortcode** - set *true/false* for shortcodes inside post content or field
+
+> **http** - set *true* to add `http://` in front of field value, if it's not there already
 
 > **embed** - set *true* to embed URLs like YouTube, Vimeo, etc. By default, such URLs in post content are auto-embedded.
 
-> **escape** or **unescape** - Escape/unescape HTML special characters
-
-> **class** - add &lt;div&gt; class to the output
+> **filter** - set *true* to apply *the_content* filter; this may be useful when using plugins that filter the post content, for example, [Page Builder](https://wordpress.org/plugins/siteorigin-panels).
 
 > **currency** - format as currency; see [the field section](options-general.php?page=ccs_reference&tab=field#currency) for details
 
@@ -133,8 +146,6 @@ When inside a loop, it can be used without parameter to show each post's content
 
 >> Use *in=timestamp* to format a unix timestamp value.
 
-
-
 ### Read more
 
 > **more** - set *true* to display content up to the &lt;!--more--&gt; tag, or an excerpt if the tag doesn't exist. This will add the text "Read More" at the end, with a link to the post. To change the text, use: *more=...*
@@ -144,9 +155,13 @@ When inside a loop, it can be used without parameter to show each post's content
 > **link** - set *false* to disable link to the post
 
 
+### Template
+
+> **import** - set *true* to use another post's content as a template and run its shortcodes in the context of the current post; true by default when displaying a field
+
 
 ### Other content types
 
-> **area** or **sidebar** - display a widget area/sidebar by *title*
+> **area** or **sidebar** - display a widget area/sidebar by *slug*, *title*, or *ID*
 
-> **menu** - display a menu list by *slug*, *title*, or *ID*; see also [Bootstrap tabs and navbar](options-general.php?page=ccs_reference&tab=bootstrap).
+> **menu** - display a menu list by *slug*, *title*, or *ID*; see also [Menu loop](options-general.php?page=ccs_reference&tab=menu) and [Bootstrap tabs and navbar](options-general.php?page=ccs_reference&tab=bootstrap).

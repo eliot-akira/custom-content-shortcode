@@ -11,18 +11,25 @@ new CCS_Paged;
 class CCS_Paged {
 
   // Query parameter name and value for CCS_Loop
-  public static $prefix;
+  public static $prefix = 'lpage';
   public static $current;
 
   function __construct() {
 
-    self::$prefix = 'lpage';
-    add_local_shortcode( 'ccs', 'loopage', array($this, 'loopage_shortcode'), true );
-    add_local_shortcode( 'ccs', 'loopage-now', array($this, 'loopage_now_shortcode'), true );
-    add_local_shortcode( 'ccs', 'loopage-total', array($this, 'loopage_total_shortcode'), true );
+    add_ccs_shortcode( array(
+      'loopage' => array($this, 'loopage_shortcode'),
+      'the-pagination' => array($this, 'loopage_shortcode'),
+      'loopage-now' => array($this, 'loopage_now_shortcode'),
+      'loopage-total' => array($this, 'loopage_total_shortcode'),
+      'loopage-prev' => array($this, 'loopage_prev_next_shortcode'),
+      'loopage-next' => array($this, 'loopage_prev_next_shortcode'),
+      'page-now' => array($this, 'page_now_shortcode'),
+      'page-total' => array($this, 'page_total_shortcode'),
+    ));
   }
 
-  function loopage_now_shortcode( $atts, $content ) {
+
+  static function loopage_now_shortcode( $atts = array(), $content = '' ) {
     extract( shortcode_atts( array(
       'id' => '',
     ), $atts ) );
@@ -39,7 +46,8 @@ class CCS_Paged {
     return isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
   }
 
-  function loopage_total_shortcode( $atts, $content ) {
+
+  static function loopage_total_shortcode( $atts = array(), $content = '' ) {
 
     if (!empty(CCS_Loop::$state['wp_query'])) {
       $max = CCS_Loop::$state['wp_query']->max_num_pages;
@@ -53,7 +61,55 @@ class CCS_Paged {
     }
   }
 
-  function loopage_shortcode( $atts, $content ) {
+
+  static function page_now_shortcode() {
+    return max( 1, get_query_var('paged') );
+  }
+
+  static function page_total_shortcode() {
+    global $wp_query;
+    return $wp_query->max_num_pages;
+  }
+
+
+
+  static function get_paged_url( $query_var, $now, $text, $anchor ) {
+
+    $current_url = add_query_arg( $query_var, $now ) . (!empty($anchor) ? '#'.$anchor : '');
+
+    return '<a href="'.$current_url.'">'.$text.'</a>';
+  }
+
+  function loopage_prev_next_shortcode( $atts, $content = '', $tag ) {
+
+    extract( shortcode_atts( array(
+      'text' => 'Previous',
+      'else' => '',
+      'anchor' => '',
+      'id' => '',
+    ), $atts ) );
+
+    if (empty($id)) $id = CCS_Loop::$state['loop_index'];
+    if (intval($id)==1) $id = '';
+    $query_var = self::$prefix.$id;
+
+    $now = self::loopage_now_shortcode();
+
+    if ( $tag == 'loopage-prev' ) {
+
+      if (--$now > 0) return self::get_paged_url( $query_var, $now, $text, $anchor );
+
+    } elseif ( $tag == 'loopage-next' ) {
+
+      $max = self::loopage_total_shortcode();
+      if (++$now <= $max) return self::get_paged_url( $query_var, $now, $text, $anchor );
+    }
+
+    return $else;
+  }
+
+
+  function loopage_shortcode( $atts, $content, $shortcode_name ) {
 
     global $wp;
     global $wp_query;
@@ -70,15 +126,20 @@ class CCS_Paged {
       'show_all' => 'false',
       'end_size' => '1',
       'mid_size' => '2',
-      'prev_next' => 'true'
+      'prev_next' => 'true',
+      'anchor' => ''
     ), $atts ) );
 
     $pagination_return = '';
 
-    if (class_exists('CCS_Loop') && !empty(CCS_Loop::$state['wp_query'])) {
+    if ( $shortcode_name === 'loopage' && !empty(CCS_Loop::$state['wp_query']) &&
+      empty(CCS_Loop::$state['alter_query']) ) {
+
       $query = CCS_Loop::$state['wp_query'];
 
       $id = CCS_Loop::$state['paged_index'];
+
+      if ($id == 0) return;
 
       if (empty($max) && !empty(CCS_Loop::$state['maxpage'])) {
         $max = CCS_Loop::$state['maxpage'];
@@ -93,22 +154,52 @@ class CCS_Paged {
       $current = isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
       if ($current > $query->max_num_pages) $current = $query->max_num_pages;
 
+      $base = $current_baseurl;
+
       $args = array(
-        'base' => $current_baseurl.'?'.$query_var.'=%#%',
+        'base' => $base.'?'.$query_var.'=%#%' . (!empty($anchor) ? '#'.$anchor : ''),
       );
 
     } else {
-      $query = $wp_query; // The loop
+
+      if ( !empty(CCS_Loop::$state['alter_query']) ) {
+
+        // Custom permalink
+
+        $query = CCS_Loop::$state['alter_query'];
+        $current = max( 1, get_query_var( self::$prefix ) );
+
+
+        $settings = get_option( CCS_Plugin::$settings_name );
+        $pagination_slug = empty($settings['paged_pagination_slug']) ?
+          'page' : $settings['paged_pagination_slug'];
+
+        // TODO: Support changing /page slug
+        $big = 999999999; // need an unlikely integer
+        $base = str_replace( $big, '%#%', esc_url(
+          self::get_custom_pagenum_link( $big, $pagination_slug ) ) );
+
+        $format = '?paged=%#%'; // If not using permalink ??
+
+      } else {
+        $query = $wp_query; // Default loop
+        $current = max( 1, get_query_var('paged') );
+
+        $big = 999999999; // need an unlikely integer
+        $base = str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) );
+        $format = '?paged=%#%'; // If not using permalink ??
+      }
+
       $max = !empty($max) && $max < $query->max_num_pages ?
         $max : $query->max_num_pages;
 
-      $current = max( 1, get_query_var('paged') );
       if ($current > $query->max_num_pages) $current = $query->max_num_pages;
-      $big = 999999999; // need an unlikely integer
+
+      if (!empty($anchor)) $base .= '#'.$anchor;
 
       $args = array(
-        'base' => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
-        'format' => '?paged=%#%',
+        'base' => $base,
+        'format' => $format
       );
     }
 
@@ -172,11 +263,65 @@ class CCS_Paged {
         echo '</ul>';
       }
 
-
       echo '</div>';
 
       return ob_get_clean();
     }
+  }
+
+
+  static function get_custom_pagenum_link( $pagenum, $slug = 'page' ) {
+
+    global $wp_rewrite;
+
+    $pagenum = (int) $pagenum;
+
+    $request = remove_query_arg( 'paged' ); // Or..?
+
+    $home_root = parse_url(home_url());
+    $home_root = ( isset($home_root['path']) ) ? $home_root['path'] : '';
+    $home_root = preg_quote( $home_root, '|' );
+
+    $request = preg_replace('|^'. $home_root . '|i', '', $request);
+    $request = preg_replace('|^/+|', '', $request);
+
+    if ( !$wp_rewrite->using_permalinks() || is_admin() ) {
+        $base = trailingslashit( get_bloginfo( 'url' ) );
+
+        if ( $pagenum > 1 ) {
+            $result = add_query_arg( 'paged', // Or..?
+              $pagenum, $base . $request );
+        } else {
+            $result = $base . $request;
+        }
+    } else {
+        $qs_regex = '|\?.*?$|';
+        preg_match( $qs_regex, $request, $qs_match );
+
+        if ( !empty( $qs_match[0] ) ) {
+            $query_string = $qs_match[0];
+            $request = preg_replace( $qs_regex, '', $request );
+        } else {
+            $query_string = '';
+        }
+
+        $request = preg_replace( "|$slug/\d+/?$|", '', $request);
+        $request = preg_replace( '|^' . preg_quote( $wp_rewrite->index, '|' ) . '|i', '', $request);
+        $request = ltrim($request, '/');
+
+        $base = trailingslashit( get_bloginfo( 'url' ) );
+
+        if ( $wp_rewrite->using_index_permalinks() && ( $pagenum > 1 || '' != $request ) )
+            $base .= $wp_rewrite->index . '/';
+
+        if ( $pagenum > 1 ) {
+            $request = ( ( !empty( $request ) ) ? trailingslashit( $request ) : $request ) . user_trailingslashit( $slug . "/" . $pagenum, 'paged' // Or..?
+            );
+        }
+
+        $result = $base . $request . $query_string;
+    }
+    return $result;
   }
 
 }

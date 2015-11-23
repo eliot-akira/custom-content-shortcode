@@ -10,17 +10,81 @@ new CCS_URL;
 
 class CCS_URL {
 
-  public static $urls; // Store URLs
+  static $urls; // Store URLs
+
+  static $route = '';
+  static $routes = array();
+  static $query = '';
+  static $queries = array();
 
   function __construct() {
 
     self::$urls = array();
 
-    add_local_shortcode( 'ccs', 'url', array($this, 'url_shortcode'), true );
-    add_shortcode( 'redirect', array($this, 'redirect_shortcode') );
+    add_ccs_shortcode( array(
+      'url' => array($this, 'url_shortcode'),
+      'redirect' => array($this, 'redirect_shortcode'),
+      'query' => array($this, 'query_shortcode'),
+      'route' => array($this, 'route_shortcode')
+    ));
+
+    add_action( 'wp_head', array($this, 'init') );
   }
 
-  public static function url_shortcode( $atts ) {
+
+  static function init() {
+
+    global $wp;
+
+    // Get routes
+    self::$route = $wp->request;
+    self::$routes = explode('/', self::$route);
+
+    // Get queries: direct method
+    $request_url = untrailingslashit( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+    $url = parse_url( $request_url );
+    $query_string = isset($url['query']) ? $url['query'] : '';
+    parse_str( $query_string, $query_array ); // Create array from query string
+
+    self::$query = $query_string;
+    self::$queries = array_filter($query_array); // Remove any empty keys
+  }
+
+  static function get_routes() {
+    return self::$routes;
+  }
+
+  static function get_route( $index = 0 ) {
+    // index starts at 1
+    if ( empty($index) ) return self::$route;
+    return isset(self::$routes[$index - 1]) ? self::$routes[$index - 1] : '';
+  }
+
+  static function get_queries() {
+    return self::$queries;
+  }
+
+  static function get_query( $name = '' ) {
+    if (empty($name)) return self::$query;
+    return isset(self::$queries[$name]) ? self::$queries[$name] : '';
+  }
+
+  function query_shortcode() {
+    return self::get_query( isset($atts[0]) ? $atts[0] : '' );
+  }
+
+  function route_shortcode() {
+    return self::get_route( isset($atts[0]) ? $atts[0] : '' );
+  }
+
+
+  /*---------------------------------------------
+   *
+   * URL
+   *
+   */
+
+  static function url_shortcode( $atts ) {
 
     $urls = self::$urls;
     $url = null;
@@ -42,7 +106,7 @@ class CCS_URL {
 
     if ( ($go=='here') || (isset($atts['logout']) && empty($go)) ) {
 
-      global $wp; $go = home_url($wp->request); // Current page URL
+      $go = home_url( self::$route ); // Current page URL
 
     } elseif ( !empty($go) ) {
 
@@ -65,79 +129,83 @@ class CCS_URL {
       }
     }
 
+    if (isset($urls[$arg])) {
+      // cached
+      return untrailingslashit( $urls[$arg] );
+    }
+
+
     switch ($arg) {
 
       case 'wordpress':
-        $url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = get_option('siteurl'));
-        break;
+        $url = ($urls[$arg] = get_option('siteurl'));
+      break;
 
       case 'content':
-        $url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = content_url());
-        break;
+        $url = ($urls[$arg] = content_url());
+      break;
 
       case 'admin':
-        $url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = admin_url());
-        break;
+        $url = ($urls[$arg] = admin_url());
+      break;
 
       case 'parent': // Parent Theme
       case 'theme':
-        $url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = get_bloginfo('template_directory'));
-        break;
+        $url = ($urls[$arg] = get_bloginfo('template_directory'));
+      break;
 
       case 'child':
-        $url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = get_bloginfo('stylesheet_directory'));
-        break;
+        $url = ($urls[$arg] = get_bloginfo('stylesheet_directory'));
+      break;
 
       case 'uploads':
 
-        if (isset($urls[$arg]))
-          $url = $urls[$arg];
-        else {
-
-          // Get uploads directory
-
-          $upload_dir = wp_upload_dir();
-          if( !$upload_dir['error'] ) {
-            $url = ($urls[$arg] = $upload_dir['baseurl']);
-          } elseif ( $url = get_option( 'upload_url_path' ) ) {
-            // Prior to WordPress 3.5, this was set in Settings > Media > Full URL path to files
-            // In WordPress 3.5+ this is now hidden
-            $urls[$arg] = $url;
-          } else {
-            $url = ($urls[$arg] = get_option('siteurl').'/'.get_option('upload_path') );
-          }
+        // Get uploads directory
+        $upload_dir = wp_upload_dir();
+        if( !$upload_dir['error'] ) {
+          $url = ($urls[$arg] = $upload_dir['baseurl']);
+        } elseif ( $url = get_option( 'upload_url_path' ) ) {
+          // Prior to WordPress 3.5, this was set in Settings > Media > Full URL path to files
+          // In WordPress 3.5+ this is now hidden
+          $urls[$arg] = $url;
+        } else {
+          $url = ($urls[$arg] = get_option('siteurl').'/'.get_option('upload_path') );
         }
-        break;
+      break;
 
       case 'layout':
-        $url = isset($urls[$arg]) ? $urls[$arg] : ($urls[$arg] = content_url().'/'.$arg);
-        break;
+        $url = ($urls[$arg] = content_url().'/'.$arg);
+      break;
       case 'views':
         if (defined('VIEWS_URL')) {
           $url = VIEWS_URL;
         } else {
-          $url = isset($urls[$arg]) ?
-            $urls[$arg] : ($urls[$arg] = content_url().'/'.$arg);
+          $url = ($urls[$arg] = content_url().'/'.$arg);
         }
-        break;
+      break;
 
       case 'login':
-        $url = wp_login_url( $go ); // Don't store this, as go parameter could be different
-        break;
+         // Don't cache, as go parameter could be different
+        $url = wp_login_url( $go );
+      break;
 
       case 'logout':
+         // Don't cache, as go parameter could be different
         $url = wp_logout_url( $go );
-        break;
+      break;
+
+      case 'current':
+        // Current page URL
+        $url = ($urls[$arg] = home_url( self::$route ));
+      break;
 
       case 'home':
       default:
-        $url = isset($urls['home']) ? $urls['home'] : get_option('home');
-        break;
+        $url = ($urls[$arg] =  get_option('home'));
+      break;
     }
 
     self::$urls = $urls; // Store it for later
-
-        // unslash?
 
     return untrailingslashit( $url );
 

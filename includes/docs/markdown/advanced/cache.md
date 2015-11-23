@@ -3,7 +3,6 @@
 
 ---
 
-
 Use `[cache]` to cache page sections.
 
 ~~~

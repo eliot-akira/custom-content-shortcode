@@ -3,7 +3,7 @@
 Plugin Name: Custom Content Shortcode
 Plugin URI: http://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 2.5.5
+Version: 3.1.9
 Shortcodes: loop, content, field, taxonomy, if, for, each, comments, user, url, load
 Author: Eliot Akira
 Author URI: eliotakira.com
@@ -21,12 +21,19 @@ class CCS_Plugin {
   public static $settings;
   public static $settings_name;
   public static $settings_definitions;
+  public static $state;
 
   function __construct() {
 
     $this->load_settings();
     $this->load_main_modules();
     $this->load_optional_modules();
+    self::$state['doing_ccs_filter'] = false;
+    self::$state['original_post_id'] = 0;
+    add_action('init',array($this,'init'));
+  }
+
+  function init() {
     $this->setup_wp_filters();
   }
 
@@ -90,8 +97,14 @@ class CCS_Plugin {
         'default' => 'on',
         'module' => '',
         'tab' => '',
-        'text' => 'Enable shortcodes inside Text widget',
-      )
+        'text' => 'Enable shortcodes in Text widget',
+      ),
+      'shortcodes_in_excerpt' => array(
+        'default' => 'off',
+        'module' => '',
+        'tab' => '',
+        'text' => 'Enable shortcodes in <code>the_excerpt()</code>',
+      ),
     );
 
     if ( self::$settings === false ) {
@@ -103,6 +116,13 @@ class CCS_Plugin {
       }
 
       update_option( self::$settings_name, self::$settings );
+    }
+
+    if ( isset(self::$settings['disable_shortcodes']) ) {
+      self::$state['disabled_shortcodes'] =
+        array_map( 'trim', explode(',', self::$settings['disable_shortcodes']) );
+    } else {
+      self::$state['disabled_shortcodes'] = array();
     }
   }
 
@@ -131,6 +151,7 @@ class CCS_Plugin {
       'modules/foreach',    // For/each loop
       'modules/format',     // Format shortcodes: br, p, x, clean, direct, format
       'modules/if',         // If shortcode
+      'modules/menu',       // Loop menu
       'modules/paging',     // Pagination shortcode
       'modules/pass',       // Pass shortcode
       'modules/related',    // Related posts loop
@@ -178,20 +199,39 @@ class CCS_Plugin {
     $settings = self::$settings;
 
 
-    // Render plugin shortcodes before content is passed to default filters
-    add_filter( 'the_content', array($this, 'render_local_shortcodes'), 5 );
+    // Render plugin shortcodes after wpautop but before do_shortcode
+    add_filter( 'the_content', array($this, 'ccs_content_filter'), 11 );
+    remove_filter( 'the_content', 'do_shortcode', 11 );
+    add_filter( 'the_content', 'do_shortcode', 12 );
+    add_action( 'doing_it_wrong_run', array($this, 'disable_nonexistent_shortcode_error'), 99 );
 
 
     /*---------------------------------------------
      *
-     * Enable shortcodes in widget
+     * Enable shortcodes in Text widget
      *
      */
 
     if ( isset( $settings['shortcodes_in_widget'] ) &&
-      ($settings['shortcodes_in_widget'] == "on") ) {
+      $settings['shortcodes_in_widget'] == "on" ) {
 
-      add_filter('widget_text', 'do_shortcode');
+      // Before 10, in case of other theme or plugin
+      add_filter('widget_text', array($this, 'ccs_content_filter'), 9 );
+      add_filter('widget_text', 'do_shortcode', 11 );
+    }
+
+
+    /*---------------------------------------------
+     *
+     * Enable shortcodes in the_excerpt()
+     *
+     */
+
+    if ( isset( $settings['shortcodes_in_excerpt'] ) &&
+      $settings['shortcodes_in_excerpt'] == "on" ) {
+
+      remove_filter( 'get_the_excerpt', 'wp_trim_excerpt' );
+      add_filter( 'get_the_excerpt', array($this, 'do_shortcode_before_excerpt') );
     }
 
     // Exempt [loop] from wptexturize()
@@ -200,16 +240,46 @@ class CCS_Plugin {
 
   }
 
+
+  function do_shortcode_before_excerpt($text = '') {
+    $raw_excerpt = $text;
+    if ( empty($text) ) {
+      $text = wp_trim_words(
+        apply_filters('the_content', get_the_content()),
+        apply_filters('excerpt_length', 55),
+        apply_filters('excerpt_more', ' ' . '[...]')
+      );
+    }
+    return apply_filters('wp_trim_excerpt', $text, $raw_excerpt);
+  }
+
+  function disable_nonexistent_shortcode_error( $function ) {
+    if ($function == 'do_shortcode_tag') {
+      add_filter('doing_it_wrong_trigger_error', array($this, 'return_false'), 99 );
+    } else {
+      remove_filter('doing_it_wrong_trigger_error', array($this, 'return_false'), 99 );
+    }
+  }
+
+  function return_false() { return false; }
+
   function shortcodes_to_exempt_from_wptexturize($shortcodes){
     $shortcodes[] = 'loop';
     return $shortcodes;
   }
 
 
-  function render_local_shortcodes( $content ) {
-    return do_local_shortcode( 'ccs', $content );
+  static function ccs_content_filter( $content ) {
+
+    $content = do_ccs_shortcode( $content, false );
+
+    // This gets passed to do_shortcode
+    return $content;
   }
 
+  static function add( $tag, $func = null, $global = true ) {
+    add_ccs_shortcode( $tag, $func, $global );
+  }
 
 } // End CCS_Plugin
 
@@ -222,7 +292,13 @@ class CCS_Plugin {
 
 if (!function_exists('do_short')) {
   function do_short($content) {
-    echo do_shortcode($content);
+    echo do_ccs_shortcode( $content );
+  }
+}
+
+if (!function_exists('return_short')) {
+  function return_short($content) {
+    return do_ccs_shortcode( $content );
   }
 }
 
@@ -236,4 +312,34 @@ if (!function_exists('end_short')) {
   function end_short() {
     do_short( ob_get_clean() );
   }
+}
+
+function add_ccs_shortcode( $tag, $func = null, $global = true ) {
+
+  if (is_array($tag)) {
+    if ($func === false) $global = false;
+    foreach ($tag as $this_tag => $this_func) {
+      if ( ! in_array($this_tag, CCS_Plugin::$state['disabled_shortcodes']) )
+        add_local_shortcode( 'ccs', $this_tag, $this_func, $global );
+    }
+  } else {
+    if ( ! in_array($tag, CCS_Plugin::$state['disabled_shortcodes']) )
+      add_local_shortcode( 'ccs', $tag, $func, $global );
+  }
+}
+
+function do_ccs_shortcode( $content, $global = true ) {
+
+  $prev = CCS_Plugin::$state['doing_ccs_filter'];
+  CCS_Plugin::$state['doing_ccs_filter'] = true;
+  //$content = CCS_Format::protect_script($content, $global);
+  $content = do_local_shortcode( 'ccs', $content, false );
+
+  CCS_Plugin::$state['doing_ccs_filter'] = $prev; // Restore
+
+  if ( $global ) {
+    $content = do_shortcode( $content );
+  }
+
+  return $content;
 }

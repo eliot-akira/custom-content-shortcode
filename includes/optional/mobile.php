@@ -86,12 +86,12 @@ class CCS_Mobile_Detect {
 
     // @todo Use [is] shortcode instead and deprecate these
 
-		add_shortcode( 'is_mobile', array($this, 'is_mobile') );
-		add_shortcode( 'is_phone', array($this, 'is_phone') );
-		add_shortcode( 'isnt_phone', array($this, 'isnt_phone') );
-		add_shortcode( 'is_tablet', array($this, 'is_tablet') );
-    add_shortcode( 'is_computer', array($this, 'is_computer') );
-    add_shortcode( 'isnt_computer', array($this, 'isnt_computer') );
+		add_ccs_shortcode( 'is_mobile', array($this, 'is_mobile') );
+		add_ccs_shortcode( 'is_phone', array($this, 'is_phone') );
+		add_ccs_shortcode( 'isnt_phone', array($this, 'isnt_phone') );
+		add_ccs_shortcode( 'is_tablet', array($this, 'is_tablet') );
+    add_ccs_shortcode( 'is_computer', array($this, 'is_computer') );
+    add_ccs_shortcode( 'isnt_computer', array($this, 'isnt_computer') );
 	}
 
 
@@ -137,7 +137,7 @@ class CCS_Mobile_Detect {
 
     if ( self::$device_type=='computer' ) return do_shortcode($content);
   }
-  
+
   function isnt_computer( $atts, $content ) {
 
     if ( self::$device_type!='computer' ) return do_shortcode($content);

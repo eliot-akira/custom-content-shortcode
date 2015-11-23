@@ -4,19 +4,29 @@
 ---
 
 
-### Supported field types
+The following field types are supported:
 
+- Text, textarea, editor, [image](options-general.php?page=ccs_reference&tab=field#image-field)
 - [Checkbox, select, radio](#checkbox-select-radio), [true/false](#true-false), [date](#date-field)
 - [Page link](#page-link), [relationship/post object](#relationship), [taxonomy](#related-by-taxonomy-field)
 - [Gallery](#gallery), [repeater](#repeater), [flexible content](#flexible-content)
+- [File field](#field-stored-as-attachment-id), [cropped image](#cropped-image), [Google map](#google-map)
 
 &nbsp;
 
+## Field label
+
+To display a field's label, set *out=field-label*.
+
+~~~
+[field field_name out=field-label]
+~~~
+
 ## Checkbox/Select/Radio
 
-### Label
+### Selection label
 
-To display the selection's label instead of slug, use the following syntax.
+To display the selection's label instead of value, use the following syntax.
 
 ~~~
 [field select out=label]
@@ -103,6 +113,46 @@ Use the *link* parameter to display a page link field. This will display the URL
 ~~~
 
 
+## Cropped image
+
+With [ACF Image Crop](https://wordpress.org/plugins/acf-image-crop-add-on/) add-on, use the *cropped* parameter to display a cropped image field.
+
+*Display cropped image*
+
+~~~
+[field cropped=field_name]
+~~~
+
+*Display cropped image URL*
+
+~~~
+[field cropped=field_name return=url]
+~~~
+
+## Google map
+
+To display a map based on a Google map field, you need a plugin or theme that provides a shortcode, for example: [Simple Google Maps Shortcode](https://wordpress.org/plugins/simple-google-maps-short-code).
+
+The map field is stored as an array with keys: *address*, *lat*, *lng*.
+
+*Display the values*
+
+~~~
+[array map_field]
+  Address: [field address]
+  Latitude: [field lat]
+  Longitude: [field lng]
+[/array]
+~~~
+
+*Display the map by passing the address to a shortcode*
+
+~~~
+[pass array=map_field]
+  [pw_map address='{ADDRESS}']
+[/pass]
+~~~
+
 ## Relationship
 
 
@@ -173,6 +223,14 @@ For an image field inside, use the *image* parameter to display the field. You c
 > **row=rand** - a randomly selected row
 
 
+### If repeater is not empty
+
+~~~
+[if field=repeater_field]
+  ..Repeater field has value..
+[/if]
+~~~
+
 
 ### Display a specific row
 
@@ -199,7 +257,6 @@ For an image field inside, use the *image* parameter to display the field. You c
 ~~~
 
 This displays a sub-field from a specific row. It's used by itself without a closing tag.
-
 
 
 ### Nested repeaters
@@ -232,7 +289,7 @@ To display a repeater inside a repeater, use `[-repeater]`.  Please note that th
   [/layout]
 
   [layout gallery]
-    [acf_gallery field=gallery]
+    [acf_gallery gallery_field]
       [acf_image size=thumbnail]
     [/acf_gallery]
   [/layout]
@@ -256,8 +313,7 @@ For gallery fields, use `[acf_gallery]`.
 [/acf_gallery]
 ~~~
 
-`[acf_image]` displays each image in the gallery field. It can also display these fields: *id*,* title*,* caption*,* alt*,* url*, and* description*. You can set the *size* parameter to:* thumbnail*,* medium*,* large*. The default is full-size.
-
+`[acf_image]` displays each image in the gallery field. It can also display these fields: *id*, *title*, *caption*, *alt*, *url*, and *description*. You can set the *size* parameter to: *thumbnail*, *medium*, *large*. The default is full-size.
 
 
 You can pass the image IDs to another shortcode.
@@ -272,7 +328,7 @@ You can pass the image IDs to another shortcode.
 ## In a loop
 
 
-Display ACF fields from other posts, using the loop.
+Use `[loop]` to display ACF fields from other posts.
 
 ~~~
 [loop name=hello-world]
@@ -289,20 +345,25 @@ Display ACF fields from other posts, using the loop.
 ## Field stored as array
 
 
-If the field value is stored as an array - for example, a file field - you can use the [`[array]` shortcode](options-general.php?page=ccs_reference&tab=field#array) to access its contents.
-
+If the field value is stored as an array, you can use the [`[array]` shortcode](options-general.php?page=ccs_reference&tab=field#array) to access its contents.
 
 ~~~
-[array file_field]
+[array field_name]
+  [field title]
+  [field description]
+[/array]
+~~~
+
+
+## Field stored as attachment ID
+
+If the field value is an attachment ID - for example, a file upload field - you can use the [`[attached]` shortcode](options-general.php?page=ccs_reference&tab=attach) to access its contents.
+
+~~~
+[attached field=file_upload]
   [field title]
   [field description]
   <a href="[field url]" download>Download Link</a>
-[/array]
+[/attached]
 
 ~~~
-
-
-## Columns
-
-
-You can use the *columns* parameter for gallery, repeater, or flexible content. For details, please see its description in [`[loop]` under *Parameters: Other*](options-general.php?page=ccs_reference&tab=loop#other).

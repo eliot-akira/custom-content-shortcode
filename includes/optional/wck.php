@@ -14,15 +14,15 @@ class CCS_To_WCK {
 
 	function __construct() {
 
-		self::$state['is_wck_loaded'] = 'false';
+		self::$state['is_wck_loaded'] = false;
 
 		self::$state['current_wck_metabox'] = '';
-		self::$state['is_wck_metabox_loop'] = 'false';
+		self::$state['is_wck_metabox_loop'] = false;
 
-		self::$state['is_wck_repeater'] = 'false';
+		self::$state['is_wck_repeater'] = false;
 		self::$state['wck_repeater_id'] = 0;
 
-		self::$state['is_wck_post_field'] = 'false';
+		self::$state['is_wck_post_field'] = false;
 		self::$state['current_wck_post_id'] = 0;
 
 
@@ -36,17 +36,20 @@ class CCS_To_WCK {
 
 		if ( function_exists('get_cfc_field') && function_exists('get_cfc_meta') ) {
 
-			self::$state['is_wck_loaded'] = 'true';
+			self::$state['is_wck_loaded'] = true;
 
-			add_local_shortcode( 'ccs', 'metabox', array($this, 'wck_metabox_shortcode'), true );
-			add_local_shortcode( 'ccs', 'wck-field', array($this, 'wck_field_shortcode'), true );
-			add_local_shortcode( 'ccs', 'post-field', array($this, 'wck_field_shortcode'), true );
-			add_local_shortcode( 'ccs', 'wck-repeat', array($this, 'wck_repeater_shortcode'), true );
-			add_local_shortcode( 'ccs', 'repeater', array($this, 'general_repeater_shortcode'), true );
+			add_ccs_shortcode(array(
+				'metabox'=> array($this, 'wck_metabox_shortcode'),
+				'wck-field'=> array($this, 'wck_field_shortcode'),
+				'post-field'=> array($this, 'wck_field_shortcode'),
+				'wck-repeat'=> array($this, 'wck_repeater_shortcode'),
+				'repeater'=> array($this, 'general_repeater_shortcode'),
+			));
+
 		} else {
 
 			if (class_exists('CCS_To_ACF')) {
-				add_local_shortcode( 'ccs', 'repeater', array('CCS_To_ACF', 'loop_through_acf_field'), true );
+				add_ccs_shortcode( 'repeater', array('CCS_To_ACF', 'loop_through_acf_field') );
 			}
 		}
 
@@ -62,13 +65,13 @@ class CCS_To_WCK {
 
 		if (!empty($name)) {
 
-			self::$state['is_wck_metabox_loop'] = 'true';
+			self::$state['is_wck_metabox_loop'] = true;
 			self::$state['current_wck_metabox'] = $name;
 
 			$out = do_local_shortcode( 'ccs',  $content, true );
 
 			self::$state['current_wck_metabox'] = '';
-			self::$state['is_wck_metabox_loop'] = 'false';
+			self::$state['is_wck_metabox_loop'] = false;
 		}
 		return $out;
 	}
@@ -99,7 +102,7 @@ class CCS_To_WCK {
 
 		if (!empty($metabox)) $meta = $metabox;
 
-		if ( self::$state['is_wck_repeater'] == 'true' ) {
+		if ( self::$state['is_wck_repeater'] ) {
 
 			// Inside repeater field
 
@@ -113,7 +116,7 @@ class CCS_To_WCK {
 			if (!empty(self::$state['wck_repeater_id']))
 				$id = self::$state['wck_repeater_id'];
 
-		} elseif ( self::$state['is_wck_metabox_loop'] == 'true' ) {
+		} elseif ( self::$state['is_wck_metabox_loop'] ) {
 
 			// Inside metabox loop
 
@@ -136,11 +139,11 @@ class CCS_To_WCK {
 			ob_start(); // Store output of the_cfc_field in buffer
 
 			// Remove nl2br formatting if shortcode is enabled
-			if ($shortcode == 'true') {
+			if ($shortcode) {
 				remove_filter( 'wck_output_get_field_textarea', 'wck_preprocess_field_textarea');
 			}
 
-			if (self::$state['is_wck_repeater']=='true') {
+			if ( self::$state['is_wck_repeater'] ) {
 
 				// In a repeater loop
 
@@ -181,12 +184,12 @@ class CCS_To_WCK {
 					return null;
 				}
 
-				self::$state['is_wck_post_field'] = 'true';
+				self::$state['is_wck_post_field'] = true;
 				self::$state['current_wck_post_id'] = $this_post->ID;
 
 				$out = do_local_shortcode( 'ccs', $content, true );
 
-				self::$state['is_wck_post_field'] = 'false';
+				self::$state['is_wck_post_field'] = false;
 				self::$state['current_wck_post_id'] = 0;
 
 			}
@@ -239,7 +242,7 @@ class CCS_To_WCK {
 
 		$out = null;
 
-		self::$state['is_wck_repeater']='true';
+		self::$state['is_wck_repeater'] = true;
 		self::$state['wck_repeater_meta'] = $meta;
 
 		if (!empty($id)) {
@@ -259,7 +262,7 @@ class CCS_To_WCK {
 			$out[] = do_local_shortcode( 'ccs',  $content, true );
 		}
 
-		self::$state['is_wck_repeater']='false';
+		self::$state['is_wck_repeater'] = false;
 		self::$state['wck_repeater_id'] = 0;
 
 		return implode("", $out);

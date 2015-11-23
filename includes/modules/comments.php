@@ -17,10 +17,13 @@ class CCS_Comments {
 
   function __construct() {
 
-    add_local_shortcode( 'ccs', 'comments', array($this, 'comments_shortcode'), true );
-    add_local_shortcode( 'ccs', 'comment', array($this, 'comment_shortcode'), true );
-
-    add_local_shortcode( 'ccs', 'comment-form', array($this, 'comment_form_shortcode'), true );
+    add_ccs_shortcode( array(
+      'comments' => array( $this, 'comments_shortcode'),
+      '-comments' => array( $this, 'comments_shortcode'),
+      'comment' => array( $this, 'comment_shortcode'),
+      '-comment' => array( $this, 'comment_shortcode'),
+      'comment-form' => array( $this, 'comment_form_shortcode'),
+    ));
 
     add_local_shortcode( 'comment-form',
       'input', array($this, 'comment_form_input_shortcode') );
@@ -35,7 +38,8 @@ class CCS_Comments {
 
     self::$state['is_comments_loop'] = false;
     self::$state['current_comment'] = '';
-
+    self::$state['comments_loop_index'] = 0;
+    self::$state['comments_loop_count'] = 0;
   }
 
 
@@ -69,11 +73,12 @@ class CCS_Comments {
       'order' => 'DESC',
       'parent' => '',
 
-      'author' => '',
+      'author' => '', // comments by *post author*
       'name' => '',
       'status' => 'approve',
 
-      'user_id' => ''
+      'user_id' => '',
+      'user' => '' // comments by *comment author*
 
     ), $atts));
 
@@ -84,7 +89,9 @@ class CCS_Comments {
 
     // Comments count
 
-    $args['number'] = $count=='all' ? 9999 : $count;
+    // Get all and filter later
+    // $args['number'] = $count=='all' ? 9999 : $count;
+    $args['number'] = 9999;
 
     // By post ID
 
@@ -113,12 +120,39 @@ class CCS_Comments {
       $args['post__not_in'] = CCS_Loop::explode_list( $exclude );
     }
 
-    // Hmm..
     if ( !empty( $offset ) ) $args['offset'] = $offset;
     if ( !empty( $orderby ) ) $args['orderby'] = $orderby;
     if ( !empty( $order ) ) $args['order'] = $order;
     if ( !empty( $parent ) ) $args['post_parent'] = CCS_Loop::explode_list( $parent );
-    if ( !empty( $author ) ) $args['post_author'] = CCS_Loop::explode_list( $author );
+
+    // Comments by post author or comment author (user)
+    if ( !empty( $author ) ||  !empty( $exclude_author ) ||
+      !empty( $user ) ||  !empty( $exclude_user ) ) {
+
+      if (  !empty( $author ) ||  !empty( $exclude_author ) ) {
+        $authors = CCS_Loop::explode_list( $author );
+      } else $authors = CCS_Loop::explode_list( $user );
+
+      $author_ids = array();
+      foreach ($authors as $this_author) {
+
+        if ( $this_author=='this' ) {
+          // current author ID
+          $author_ids[] = do_shortcode('[user id]');
+        } elseif (is_numeric( $this_author )) {
+          $author_ids[] = $this_author;
+        } else {
+          // get author ID from user name
+          $author_ids[] = do_shortcode('[users search='.$this_author.' search_column=login][user id][/users]');
+        }
+      }
+
+      if ( !empty( $author ) ) $args['post_author__in'] = $author_ids;
+      elseif ( !empty( $user ) ) $args['author__in'] = $author_ids;
+      elseif ( !empty( $exclude_author ) ) $args['post_author__not_in'] = $author_ids;
+      elseif ( !empty( $exclude_user ) ) $args['author__not_in'] = $author_ids;
+    }
+
     if ( !empty( $name ) ) $args['name'] = $name;
     if ( !empty( $status ) && $status != 'all' ) $args['status'] = $status;
     if ( !empty( $user_id ) ) $args['user_id'] = CCS_Loop::explode_list( $user_id );
@@ -141,16 +175,22 @@ class CCS_Comments {
     }
 
 
+    // If empty
+    $if_empty = CCS_Loop::get_between('[if empty]', '[/if]', $content);
+    $content = str_replace($if_empty, '', $content);
+
+
     /*---------------------------------------------
      *
      * Init loop
      *
      */
 
-    self::$state['is_comments_loop'] = true;
     $index = 0;
-    $max = $args['number'];
+    $max = $count=='all' ? 9999 : $count;
     $out = '';
+
+    $prev_state = self::$state;
 
     if ( isset($atts['debug']) && $atts['debug']=='true' ) {
       ob_start();
@@ -165,9 +205,13 @@ class CCS_Comments {
 
     // Loop through each comment
 
+    self::$state['comments_loop_index'] = 0;
+    self::$state['comments_loop_count'] = count($comments);
+
     foreach ($comments as $comment) {
 
-      if ( $index > $max ) break;
+      if ( $index >= $max ) break;
+      self::$state['comments_loop_index']++; // Starts with 1
 
       $matches = true;
 
@@ -184,17 +228,24 @@ class CCS_Comments {
       }
 
       if ( $matches ) {
-        $index++;
+
+        self::$state['is_comments_loop'] = true; // Keep it true in case nested
         self::$state['current_comment'] = $comment;
-        $out .= do_local_shortcode( 'ccs', $content, true  );
+        $result = do_ccs_shortcode( $content, false );
+
+        $check = trim($result);
+        if ( ! empty($check) ) $index++;
+        $out .= $result;
       }
     }
 
 
     // Close loop
 
-    self::$state['is_comments_loop'] = false;
-    self::$state['current_comment'] = '';
+    self::$state = $prev_state;
+
+//    self::$state['is_comments_loop'] = false;
+//    self::$state['current_comment'] = '';
     return $out;
 
   } // comments_shortcode
@@ -207,7 +258,7 @@ class CCS_Comments {
    *
    */
 
-  function comment_shortcode( $atts, $content ) {
+  function comment_shortcode( $atts = array(), $content ) {
 
     extract(shortcode_atts(array(
       'template' => '',
@@ -234,142 +285,141 @@ class CCS_Comments {
 
       $out = '';
 
-      if ( empty($atts) || ( is_array($atts) && count($atts)==0 ) ) {
-        $atts = array('content'); // Default field
-      }
-
-      // Check for parameters without value
-      $atts = CCS_Content::get_all_atts( $atts );
-      $post_id = $comment->comment_post_ID;
-
-      // Display comment fields
+      // Display comment fields 
 
       $fields = array(
-        'ID', 'post_ID', 'author', 'author_email', 'author_url', 'date',
-        'content', 'content-link', 'user_id', 'avatar', 'count', 'counted',
-        'title', 'url', 'post-url', 'title_link', 'author_link', 'link',
-        'reply-link'
+        'ID', 'author', 'author-id', 'author-email', 'author-link', 'author-url', 'avatar',
+        'content', 'content-link', 'count', 'counted', 'date',
+        'title', 'title-link', 'link', 'post-ID', 'post-title', 'post-link', 'post-url',
+        'reply-link', 'url', 'user-id'
       );
 
-      foreach ($fields as $field) {
+      if ( !isset($atts[0]) ) $atts[0] = 'content';
 
-        $arg_field = strtolower( $field );
-        $arg_field = str_replace( '_', '-', $arg_field );
+      $post_id = $comment->comment_post_ID;
 
-        if ( $arg_field == 'user-id' ) {
-          $field = 'user_id';
-        } else {
-          $field = 'comment_'.$field; // name of property in comment object
-        }
+      $field = strtolower( $atts[0] );
+      $arg_field = $field;
 
-        // Check first parameter [comment ~]
-
-        if ( isset($atts[$arg_field]) ) {
-
-          switch ($arg_field) {
-            case 'id' :
-              $out = $comment->comment_ID;
-            break;
-
-            case 'title':
-              $out = get_the_title($post_id);
-            break;
-
-            case 'url':
-              $comment_id = $comment->comment_ID;
-              $out = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
-            break;
-
-            case 'link':
-              $title = get_the_title($post_id);
-              $comment_id = $comment->comment_ID;
-              $url = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
-            break;
-
-            case 'post-url':
-              $out = get_permalink($post_id); // Just the post URL
-            break;
-
-            case 'title-link':
-            case 'post-link':
-              $title = get_the_title($post_id);
-              $url = get_permalink($post_id);
-              // $out = '<a href="'.$url.'">'.$title.'</a>';
-            break;
-
-            case 'author-link':
-              $title = isset($comment->comment_author) ? $comment->comment_author : null;
-              $url = isset($comment->comment_author_url) ? $comment->comment_author_url : null;
-              // $out = '<a href="'.$url.'">'.$title.'</a>';
-            break;
-
-            case 'avatar':
-              //$author_id = $comment->user_id;
-              $author_id = get_comment_author_email($comment->comment_ID);
-              $out = get_avatar( $author_id, $size );
-            break;
-
-            case 'count':
-              $out = get_comments_number( $post_id );
-            break;
-            case 'counted':
-              $count = get_comments_number( $post_id );
-              if ($count == 0) return 'No comments';
-              if ($count == 1) return '1 comment';
-              $out = $count.' comments';
-            break;
-
-            case 'content':
-              if (isset($comment->{$field}))
-                $out = $comment->{$field};
-              if (empty($format)) $format='true'; // Format content by default
-            break;
-
-            case 'content-link':
-              $comment_id = $comment->comment_ID;
-              $url = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
-
-              if (isset($comment->comment_content)) {
-                $out = $comment->comment_content;
-              } else {
-                $out = '';
-              }
-              if (empty($format)) $format='true'; // Format content by default
-            break;
-
-            case 'reply-link':
-
-              $comment_id = $comment->comment_ID;
-
-              //get the setting configured in the admin panel under settings discussions "Enable threaded (nested) comments  levels deep"
-              $max_depth = get_option('thread_comments_depth');
-              //add max_depth to the array and give it the value from above and set the depth to 1
-              $args = array(
-                'add_below'  => 'comment',
-                'respond_id' => 'respond',
-                'reply_text' => __('Reply'),
-                'login_text' => __('Log in to Reply'),
-                'depth'      => 1,
-                'before'     => '',
-                'after'      => '',
-                'max_depth'  => $max_depth
-              );
-
-              wp_enqueue_script( 'comment-reply' ); // comment-reply.js
-              $out = get_comment_reply_link( $args, $comment_id, $post_id );
-
-            break;
-
-            default:
-              if (isset($comment->{$field}))
-                $out = $comment->{$field};
-            break;
-          }
-        }
-
+      if ( $arg_field == 'user-id' ) {
+        $field = 'user_id';
+      } else {
+        $field = str_replace( '-', '_', $arg_field );
+        $field = 'comment_'.$field; // name of property in comment object
       }
 
+      // Check first parameter [comment ~]
+
+      switch ($arg_field) {
+        case 'id' :
+          $out = $comment->comment_ID;
+        break;
+
+        case 'title':
+          $out = get_the_title($post_id);
+        break;
+
+        case 'url':
+          $comment_id = $comment->comment_ID;
+          $out = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
+        break;
+
+        case 'link':
+          $title = get_the_title($post_id);
+          $comment_id = $comment->comment_ID;
+          $url = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
+        break;
+
+        case 'post-url':
+          $out = get_permalink($post_id); // Just the post URL
+        break;
+
+        case 'title-link':
+        case 'post-link':
+          $title = get_the_title($post_id);
+          $url = get_permalink($post_id);
+          // $out = '<a href="'.$url.'">'.$title.'</a>';
+        break;
+
+        case 'author-link':
+          $title = isset($comment->comment_author) ? $comment->comment_author : null;
+          $url = isset($comment->comment_author_url) ? $comment->comment_author_url : null;
+          // $out = '<a href="'.$url.'">'.$title.'</a>';
+        break;
+
+        case 'author-id':
+          $out = $comment->user_id;
+        break;
+
+        case 'avatar':
+          $author_email= get_comment_author_email($comment->comment_ID);
+          $out = get_avatar( $author_email, $size );
+        break;
+
+        case 'count':
+          $out = get_comments_number( $post_id );
+        break;
+        case 'counted':
+          $count = get_comments_number( $post_id );
+          if ($count == 0) return 'No comments';
+          if ($count == 1) return '1 comment';
+          $out = $count.' comments';
+        break;
+
+        case 'content':
+          if (isset($comment->{$field}))
+            $out = $comment->{$field};
+          if (empty($format)) $format='true'; // Format content by default
+        break;
+
+        case 'content-link':
+          $comment_id = $comment->comment_ID;
+          $url = get_permalink($post_id).'#comment-'.$comment_id; // Add anchor to comment
+
+          if (isset($comment->comment_content)) {
+            $out = $comment->comment_content;
+          } else {
+            $out = '';
+          }
+          if (empty($format)) $format='true'; // Format content by default
+        break;
+
+        case 'reply-link':
+
+          $comment_id = $comment->comment_ID;
+
+          //get the setting configured in the admin panel under settings discussions "Enable threaded (nested) comments  levels deep"
+          $max_depth = get_option('thread_comments_depth');
+          //add max_depth to the array and give it the value from above and set the depth to 1
+          $args = array(
+            'add_below'  => 'comment',
+            'respond_id' => 'respond',
+            'reply_text' => __('Reply'),
+            'login_text' => __('Log in to Reply'),
+            'depth'      => 1,
+            'before'     => '',
+            'after'      => '',
+            'max_depth'  => $max_depth
+          );
+
+          wp_enqueue_script( 'comment-reply' ); // comment-reply.js
+          $out = get_comment_reply_link( $args, $comment_id, $post_id );
+
+        break;
+
+        default:
+          if (isset($comment->{$field})) $out = $comment->{$field};
+        break;
+      }
+
+
+
+      // Allow check for parameters without value
+      $atts = CCS_Content::get_all_atts( $atts );
+
+
       if (!empty($words)) {
+        if ( $more=='false' ) $more = '';
         $out = wp_trim_words( $out, $words, $more );
       }
       if (!empty($length)) {
@@ -420,46 +470,45 @@ class CCS_Comments {
 
       if ( isset( $atts['count'] ) ) {
         return get_comments_number();
-      }
-      if ( isset( $atts['counted'] ) ) {
+
+      } elseif ( isset( $atts['counted'] ) ) {
+
         $count = get_comments_number();
         if ($count == 0) return 'No comments';
         if ($count == 1) return '1 comment';
         return $count.' comments';
-      }
 
-      if ( isset( $atts['total'] ) ) {
+      } elseif ( isset( $atts['total'] ) ) {
+
         return CCS_Loop::$state['comment_count'];
+
+      } elseif ( isset( $atts['form'] ) ) {
+
+        return self::comment_form_shortcode( $atts, $content );
+
+      } elseif ( !empty($template) || isset($atts['template']) ) {
+
+        // Comments template
+
+        $dir = '';
+
+        if ( empty($template) ) $template = '/comments.php';
+        if ( isset($template[0]) && $template[0]!='/' ) {
+          $template = '/'.$template;
+        }
+
+        $file = $dir.$template;
+
+  // Maybe necessary
+  //      global $withcomments;
+  //      $withcomments = "1";
+
+        // Return comments template
+        ob_start();
+        comments_template( $file );
+        return ob_get_clean();
       }
-
-    }
-
-    if ( isset( $atts['form'] ) ) {
-      return self::comment_form_shortcode( $atts, $content );
-    }
-
-    // Comments template
-
-    if ( !empty($template) || isset($atts['template']) ) {
-
-      $dir = '';
-
-      if ( empty($template) ) $template = '/comments.php';
-      if ( isset($template[0]) && $template[0]!='/' ) {
-        $template = '/'.$template;
-      }
-
-      $file = $dir.$template;
-
-// Maybe necessary
-//      global $withcomments;
-//      $withcomments = "1";
-
-      // Return comments template
-      ob_start();
-      comments_template( $file );
-      return ob_get_clean();
-    }
+    } // Outside comments loop
 
   } // comment_shortcode
 
@@ -477,7 +526,7 @@ class CCS_Comments {
     $inputs = self::$state['inputs'];
 
     if (in_array($atts[0], $inputs)) {
-      self::$state['comment_form_fields'][ $atts[0] ] = do_shortcode($content);
+      self::$state['comment_form_fields'][ $atts[0] ] = do_ccs_shortcode($content);
     }
   }
 

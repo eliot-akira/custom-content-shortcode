@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*---------------------------------------------
  *
@@ -11,21 +11,23 @@ new CCS_Cache;
 
 class CCS_Cache {
 
-	private static $start;					// Time at [timer start]
-	private static $mem;					// Memory usage at [timer start]
+	private static $start; // Time at [timer start]
+	private static $mem; // Memory usage at [timer start]
 
-	private static $num_queries;			// Number of queries at init
-	private static $transient_prefix; 		// Cache name prefix
+	private static $num_queries; // Number of queries at init
+	private static $transient_prefix; // Cache name prefix
 
 	function __construct() {
 
-		add_shortcode( 'cache', array( $this, 'cache_shortcode') );
-		add_shortcode( 'timer', array( $this, 'timer_shortcode') );
+    add_ccs_shortcode( array(
+			'cache' => array( $this, 'cache_shortcode'),
+			'timer' => array( $this, 'timer_shortcode')
+		));
 
 		self::$transient_prefix = 'ccs_';
 		self::$num_queries = get_num_queries(); // Number of queries at init
 	}
-	
+
 	function cache_shortcode( $atts, $content ) {
 
 		extract( shortcode_atts( array(
@@ -63,17 +65,17 @@ class CCS_Cache {
 		if (count($expire)>1) {
 
 			switch ($expire[1]) {
-				case 'minute': 
-				case 'minutes': 
-				case 'mins': 
+				case 'minute':
+				case 'minutes':
+				case 'mins':
 				case 'min': $expire_sec *= 60; break;
-				case 'hours': 
+				case 'hours':
 				case 'hour': $expire_sec *= 60 * 60; break;
-				case 'days': 
+				case 'days':
 				case 'day': $expire_sec *= 60 * 60 * 24; break;
-				case 'months': 
+				case 'months':
 				case 'month': $expire_sec *= 60 * 60 * 24 * 30; break;
-				case 'years': 
+				case 'years':
 				case 'year': $expire_sec *= 60 * 60 * 24 * 30 * 365; break;
 			}
 		}
@@ -82,12 +84,12 @@ class CCS_Cache {
 
 	public static function get_transient( $name ) {
 
-		return get_transient( self::$transient_prefix.$name );		
+		return get_transient( self::$transient_prefix.$name );
 	}
 
 	public static function set_transient( $name, $value, $expire ) {
 
-		return set_transient( self::$transient_prefix.$name, $value, self::get_expire_time( $expire ) );		
+		return set_transient( self::$transient_prefix.$name, $value, self::get_expire_time( $expire ) );
 	}
 
 
@@ -106,7 +108,7 @@ class CCS_Cache {
 		$x = count($atts);
 		$out = null;
 
-		for ($i=0; $i < $x; $i++) { 
+		for ($i=0; $i < $x; $i++) {
 			$action = isset($atts[$i]) ? $atts[$i] : null;
 			switch ($action) {
 				case 'stop':
@@ -179,4 +181,3 @@ class CCS_Cache {
 		return $ms/1000 . ' sec'; */
 	}
 }
-

@@ -37,10 +37,10 @@ function custom_carousel_gallery_shortcode( $output = '', $atts, $content = fals
 	$name = sanitize_title( $name );
 
 	/* Validate for necessary data */
-	if ( isset( $ids ) 
-		and ( ( isset( $type ) and 'carousel' == $type ) 
-			or ( 'carousel-gallery' == $tag ) 
-		) 
+	if ( isset( $ids )
+		and ( ( isset( $type ) and 'carousel' == $type )
+			or ( 'carousel-gallery' == $tag )
+		)
 	) :
 
 		/* Obtain HTML. */
@@ -226,7 +226,7 @@ function custom_carousel_make_array( $string ) {
 
 
 class ccs_bootstrap_navwalker extends Walker_Nav_Menu {
-	
+
 	/**
 	 * @see Walker::start_lvl()
 	 * @since 3.0.0
@@ -277,7 +277,7 @@ class ccs_bootstrap_navwalker extends Walker_Nav_Menu {
 			$classes[] = 'menu-item-' . $item->ID;
 
 			$class_names = join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args ) );
-			
+
 			if($args->has_children) {	$class_names .= ' dropdown'; }
 			if(in_array('current-menu-item', $classes)) { $class_names .= ' active'; }
 
@@ -342,7 +342,7 @@ class ccs_bootstrap_navwalker extends Walker_Nav_Menu {
 	 *
 	 * Display one element if the element doesn't have any children otherwise,
 	 * display the element and its children. Will only traverse up to the max
-	 * depth and no ignore elements under that depth. 
+	 * depth and no ignore elements under that depth.
 	 *
 	 * This method shouldn't be called directly, use the walk() method instead.
 	 *
@@ -382,7 +382,7 @@ class ccs_bootstrap_navwalker extends Walker_Nav_Menu {
 function custom_bootstrap_navbar( $atts, $content = null ) {
 
 	extract( shortcode_atts( array(
-		'menu' => null, 'navclass' => null, 
+		'menu' => null, 'navclass' => null,
 		), $atts ) );
 
 	$menu_args = array (
@@ -424,6 +424,4 @@ function custom_bootstrap_navbar( $atts, $content = null ) {
     return $output;
 }
 
-add_shortcode('navbar', 'custom_bootstrap_navbar');
-
-
+add_ccs_shortcode('navbar', 'custom_bootstrap_navbar');

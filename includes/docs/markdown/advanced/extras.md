@@ -37,10 +37,10 @@ Note: shortcode parameters cannot handle a backslash, so use double slashes `//`
 
 ### Comment
 
-Use `[*]` to place a comment inside the visual editor.
+Use `[note]` to place a comment inside the visual editor.
 
 ~~~
-[*] Here is a message for myself and others. [/*]
+[note] Here is a message for myself and others. [/note]
 ~~~
 
 This shortcode does not display anything, it's just a placeholder.

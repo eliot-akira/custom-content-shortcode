@@ -12,9 +12,11 @@ class CCS_Load {
 
 	function __construct() {
 
-		add_shortcode('load', array($this, 'load') );
-		add_shortcode('css', array($this, 'css_wrap'));
-		add_shortcode('js', array($this, 'js_wrap'));
+    add_ccs_shortcode( array(
+			'load' => array($this, 'load'),
+			'css' => array($this, 'css_wrap'),
+			'js' => array($this, 'js_wrap')
+		));
 
 		add_action('wp_head', array($this, 'load_css_field'));
 		add_action('the_content', array($this, 'load_html_field'));
@@ -168,9 +170,9 @@ class CCS_Load {
 
 				// Generate random string to prevent caching
 				$tail = '';
-				for ($i=0; $i<8; $i++) { 
-					$tail .= rand(0,9) ; 
-				} 
+				for ($i=0; $i<8; $i++) {
+					$tail .= rand(0,9) ;
+				}
 				$out .= '?' . $tail;
 			}
 			$out .= '" />';
@@ -253,7 +255,7 @@ class CCS_Load {
 				}
 
 				if (($shortcode != 'false') && ($shortcode != 'off')) { // Do shortcode by default
-					$out = do_shortcode( $out );
+					$out = do_ccs_shortcode( $out );
 				}
 				return $out;
 			}
@@ -308,7 +310,7 @@ class CCS_Load {
 	 * Load HTML field instead of content
 	 *
 	 */
-	
+
 	function load_html_field( $content ) {
 
 		global $post;
@@ -341,7 +343,7 @@ class CCS_Load {
 		$result .= '</script>';
 		return $result;
 	}
-	
+
 }
 
 
@@ -364,7 +366,7 @@ function do_shortcode_file( $file, $dir = null, $return = false ) {
 	$output = null;
 
 	switch($dir) {
-		case 'root' : 
+		case 'root' :
 		case 'wordpress' : $path = trailingslashit( ABSPATH ); break;
 		case 'content' : $path = $content_path; break;
 		case 'layout' : $path = $content_path . 'layout/'; break;
@@ -382,21 +384,12 @@ function do_shortcode_file( $file, $dir = null, $return = false ) {
 		$output = ob_get_clean();
 //	}
 
-	if ( !empty($output) ) {
+	if ( empty($output) ) return false;
 
-		$output = do_shortcode( $output );
+	$output = do_ccs_shortcode( $output );
 
-		if ($return) {
-			return $output;
-		} else {
+	if ($return) return $output;
 
-			echo $output;
-			return true;
-		}
-
-	} else {
-		return false;
-	}
+	echo $output;
+	return true;
 }
-
-

@@ -3,7 +3,6 @@
 
 ---
 
-
 Use `[attached]` to loop through attachments.
 
 *Display all attachments of the current post*
@@ -16,6 +15,13 @@ Use `[attached]` to loop through attachments.
 [/attached]
 ~~~
 
+*Display 3 random thumbnails from attached images*
+
+~~~
+[attached orderby=rand count=3]
+  [field thumbnail]
+[/attached]
+~~~
 
 
 ### Parameters
@@ -28,6 +34,9 @@ Use `[attached]` to loop through attachments.
 
 > **order** - *ASC* (ascending/alphabetical) or *DESC* (descending/from most recent date)
 
+> **id** - get attachments by attachment ID(s), even if it's not attached to current post
+
+> **field** - get attachment ID(s) from field
 
 &nbsp;
 

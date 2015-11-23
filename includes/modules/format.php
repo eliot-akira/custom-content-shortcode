@@ -10,134 +10,154 @@ new CCS_Format;
 
 class CCS_Format {
 
-	public static $state;
+  public static $state;
 
-	function __construct() {
+  function __construct() {
 
-    add_local_shortcode( 'ccs', 'direct', array($this, 'direct_shortcode'), true  );
-    add_local_shortcode( 'ccs', 'format', array($this, 'format_shortcode'), true  );
-		add_local_shortcode( 'ccs', 'clean', array($this, 'clean_shortcode'), true  );
-		add_local_shortcode( 'ccs', 'br', array($this, 'br_shortcode'), true  );
-		add_local_shortcode( 'ccs', 'p', array($this, 'p_shortcode'), true  );
-    add_local_shortcode( 'ccs', 'slugify', array($this, 'slugify_shortcode'), true  );
-    add_local_shortcode( 'ccs', 'today', array($this, 'today_shortcode'), true  );
-    add_local_shortcode( 'ccs', 'http', array($this, 'http_shortcode'), true  );
-    add_local_shortcode( 'ccs', 'embed', array($this, 'embed_shortcode'), true  );
-    add_local_shortcode( 'ccs', 'escape', array($this, 'escape_shortcode'), true  );
-    add_local_shortcode( 'ccs', 'random', array($this, 'random_shortcode'), true  );
-		add_local_shortcode( 'ccs', 'x', array($this, 'x_shortcode') );
-		self::$state['x_loop'] = 0;
-	}
-
-
-  // Don't run shortcodes inside
-  function direct_shortcode( $atts, $content ) {
-    return $content;
+    add_ccs_shortcode( array(
+      'direct' => array($this, 'direct_shortcode'),
+      'format' => array($this, 'format_shortcode'),
+      'clean' => array($this, 'clean_shortcode'),
+      'br' => array($this, 'br_shortcode'),
+      'p' => array($this, 'p_shortcode'),
+      'link' => array($this, 'link_shortcode'),
+      'image' => array($this, 'image_shortcode'),
+      'slugify' => array($this, 'slugify_shortcode'),
+      'today' => array($this, 'today_shortcode'),
+      'http' => array($this, 'http_shortcode'),
+      'embed' => array($this, 'embed_shortcode'),
+      'escape' => array($this, 'escape_shortcode'),
+      'random' => array($this, 'random_shortcode'),
+      'x' => array($this, 'x_shortcode')
+    ) );
+    //add_shortcode('direct',array($this, 'direct_shortcode'));
+    self::$state['x_loop'] = 0;
   }
 
-	function br_shortcode() { return '<br />'; }
 
-	function p_shortcode( $atts, $content ) {
+  function br_shortcode() { return '<br />'; }
 
-		$tag = 'p';
+  function p_shortcode( $atts, $content ) {
+
+    $tag = 'p';
 
     // Construct block
     $out = '<'.$tag;
 
-		if (!empty($atts)) {
-	    foreach ($atts as $key => $value) {
-	      if (is_numeric($key)) {
-	        $out .= ' '.$value; // Attribute with no value
-	      } else {
-	        $out .= ' '.$key.'="'.$value.'"';
-	      }
-	    }
-		}
+    if (!empty($atts)) {
+      foreach ($atts as $key => $value) {
+        if (is_numeric($key)) {
+          $out .= ' '.$value; // Attribute with no value
+        } else {
+          $out .= ' '.$key.'="'.$value.'"';
+        }
+      }
+    }
 
     $out .= '>';
 
     if (!empty($content)) {
-      $out .= do_local_shortcode( 'ccs', $content, true );
+      $out .= do_ccs_shortcode( $content );
       $out .= '</'.$tag.'>';
     }
-		return $out;
-	}
+    return $out;
+  }
 
 
-	// Do shortcode, then format
+  // Do shortcode, then format
   function format_shortcode( $atts, $content ) {
-    return wpautop(do_local_shortcode( 'ccs', $content, true ));
+    return wpautop( do_ccs_shortcode( $content ) );
   }
 
   // Repeat x times: [x 10]..[/x]
-	function x_shortcode( $atts, $content ) {
+  function x_shortcode( $atts, $content ) {
 
-		if (!isset($atts[0])) return $content;
+    if (!isset($atts[0])) return $content;
 
-		$x = $atts[0];
-		$out = '';
+    $x = $atts[0];
+    $out = '';
 
-		// Start index from 1
-		for ($i=1; $i <= $x; $i++) {
-			self::$state['x_loop'] = $i;
-			$rendered = str_replace('{X}', $i, $content);
-			$out .= do_local_shortcode( 'ccs', $rendered, true );
-		}
+    // Start index from 1
+    for ($i=1; $i <= $x; $i++) {
+      self::$state['x_loop'] = $i;
+      $rendered = str_replace('{X}', $i, $content);
+      $out .= do_ccs_shortcode( $rendered );
+    }
 
-		self::$state['x_loop'] = 0;
-		return $out;
-	}
+    self::$state['x_loop'] = 0;
+    return $out;
+  }
 
-	// Display current date
-	function today_shortcode( $atts, $content ) {
-		if ( isset($atts['format']) ) {
-			$format = str_replace("//", "\\", $atts['format']);
-		} else {
-			$format = get_option('date_format');
-		}
+  // Convert title to slug
 
-		return date($format);
-	}
+  function slugify_shortcode( $atts, $content ) {
 
-	// Convert title to slug
-
-	function slugify_shortcode( $atts, $content ) {
-
-  	// The Example Title -> the_example_title
+    // The Example Title -> the_example_title
     return strtolower( str_replace(array(' ','-'), '_', self::alphanumeric(do_shortcode($content)) ) );
-	}
+  }
 
-	public static function alphanumeric( $str ) {
+  public static function alphanumeric( $str ) {
 
-		// Remove any character that is not alphanumeric, white-space, or a hyphen
-    	return preg_replace("/[^a-z0-9\s\-_]/i", "", $str );
-	}
+    // Remove any character that is not alphanumeric, white-space, or a hyphen
+      return preg_replace("/[^a-z0-9\s\-_]/i", "", $str );
+  }
 
-	/*---------------------------------------------
-	 *
-	 * Strip an array of tags from content
-	 *
-	 */
+  /*---------------------------------------------
+   *
+   * Strip an array of tags from content
+   *
+   */
 
-	function strip_tag_list( $content, $tags ) {
-		$tags = implode("|", $tags);
-		$out = preg_replace('!<\s*('.$tags.').*?>((.*?)</\1>)?!is', '\3', $content);
-		return $out;
-	}
+  static function strip_tag_list( $content, $tags ) {
+    $tags = implode("|", $tags);
+    $out = preg_replace('!<\s*('.$tags.').*?>((.*?)</\1>)?!is', '\3', $content);
+    return $out;
+  }
 
-	function clean_content($content){
-	    $content = self::strip_tag_list( $content, array('p','br') );
-	    return $content;
-	}
+  static function clean_content($content){
+      $content = self::strip_tag_list( $content, array('p','br') );
+      return $content;
+  }
 
-	function clean_shortcode( $atts, $content ) {
-		$content = self::strip_tag_list( $content, array('p','br') );
-		return do_local_shortcode( 'ccs', $content, true );
-	}
+  function clean_shortcode( $atts, $content ) {
+    $content = self::strip_tag_list( $content, array('p','br') );
+    return do_ccs_shortcode( $content );
+  }
 
   static function trim( $content, $trim = '' ) {
     if ($trim=='true') $trim = '';
     return trim($content, " \t\n\r\0\x0B,".$trim);
+  }
+
+
+
+  // Don't run shortcodes inside
+  static function direct_shortcode( $atts, $content ) {
+
+    // Protect from global do_shortcode
+    global $doing_local_shortcode;
+    if ( $doing_local_shortcode || CCS_Plugin::$state['doing_ccs_filter'] ) {
+      return '[direct]'.$content.'[/direct]';
+    }
+    return $content;
+  }
+
+
+  // Protect JS inside content
+  static function protect_script( $content, $global = true ) {
+
+    $begin = '<script';
+    $end = '</script>';
+
+    $pre = '[direct]';
+    $pre .= $begin;
+    $post = $end;
+    $post .= '[/direct]';
+
+    $content = str_replace( $begin, $pre, $content );
+    $content = str_replace( $end, $post, $content );
+
+    return $content;
   }
 
 
@@ -151,8 +171,11 @@ class CCS_Format {
    */
 
   function http_shortcode( $atts, $content ) {
-    $content = do_shortcode($content);
-    if ( substr($content, 0, 4) !== 'http' ) {
+    return self::maybe_add_http( do_shortcode($content) );
+  }
+
+  static function maybe_add_http( $content ) {
+    if ( !empty($content) && substr($content, 0, 4) !== 'http' ) {
       $content = 'http://'.$content;
     }
     return $content;
@@ -180,22 +203,303 @@ class CCS_Format {
   }
 
   function escape_shortcode( $atts, $content ) {
-		if ($atts['shortcode']=='true')
-			$content = do_local_shortcode( 'ccs',  $content, true );
-		return str_replace(array('[',']'), array('&#91;','&#93;'), esc_html($content));
-	}
+    if ($atts['shortcode']=='true')
+      $content = do_ccs_shortcode( $content );
+    return str_replace(array('[',']'), array('&#91;','&#93;'), esc_html($content));
+  }
 
-	function random_shortcode( $atts, $content ) {
-		if (!isset($atts[0])) $atts[0] = '0-99'; // default
-	  $range = explode('-', $atts[0]);
-		$min = $range[0];
-		$max = @$range[1];
+  function random_shortcode( $atts, $content ) {
+    if (!isset($atts[0])) $atts[0] = '0-99'; // default
+    $range = explode('-', $atts[0]);
+    $min = $range[0];
+    $max = @$range[1];
 
-		return rand($min, $max);
-	}
+    return rand($min, $max);
+  }
+
+  function link_shortcode( $atts, $content ) {
+
+    extract( shortcode_atts( array(
+      'field' => '',
+      'custom' => '',
+      'url' => '', // URL directly; overrides parameter field
+      'alt' => '',
+      'title' => '',
+      'target' => '',
+      'open' => '', // new
+      'http' => '', // true/false
+      'id' => '',
+      'type' => '',
+      'name' => '',
+      'link_id' => '',
+      'class' => '',
+      'mail' => '',
+      'before' => '',
+      'after' => '',
+      'escape' => 'true',
+    ), $atts ) );
+
+    if (empty($field)) $field = isset($atts[0]) ? $atts[0] : 'url'; // default
+
+    if ( !empty($url) ) $value = $url;
+    else {
+      $x = '[field '.$field;
+      if (!empty($id)) $x .= ' id='.$id;
+      elseif (!empty($name)) $x .= ' name=\''.$name.'\'';
+      if (!empty($type)) $x .= ' type='.$type;
+      if (!empty($custom)) $x .= ' custom='.$custom;
+      $x .= ']';
+
+      $value = do_shortcode($x);
+      if ($escape=='true') $value = esc_html( $value );
+    }
+
+    if ($mail=='true') $before = "mailto:";
+    $value = $before . $value . $after;
+
+    if ($http=='true') $value = self::maybe_add_http( $value );
+
+    $out = '<a href="'.$value.'"';
+    if (!empty($alt)) $out .= ' alt="'.$alt.'"';
+    if (!empty($class)) $out .= ' class="'.$class.'"';
+    if (!empty($link_id)) $out .= ' id="'.$link_id.'"';
+    if (!empty($title)) $out .= ' title="'.$title.'"';
+    if ($open=='new') $target = '_blank';
+    if (!empty($target)) $out .= ' target="'.$target.'"';
+    $out .= '>';
+
+    $out .= do_ccs_shortcode($content);
+
+    $out .= '</a>';
+
+    return $out;
+  }
 
 
 
+  function image_shortcode( $atts, $content ) {
+
+    extract( shortcode_atts( array(
+      'alt' => '',
+      'width' => '',
+      'height' => '',
+      'class' => '',
+      'http' => '' // true/false
+    ), $atts ) );
+
+    $src = do_shortcode($content);
+
+    if ($http=='true') $src = self::maybe_add_http( $src );
+
+    $out = '<img src="'.$src.'"';
+    if (!empty($alt)) $out .= ' alt="'.$alt.'"';
+    if (!empty($width)) $out .= ' width="'.$width.'"';
+    if (!empty($height)) $out .= ' height="'.$height.'"';
+    if (!empty($class)) $out .= ' class="'.$class.'"';
+    $out .= '>';
+    return $out;
+  }
+
+
+
+  static function get_minus_prefix( $shortcode_name ) {
+
+    for ($i=5; $i > 0; $i--) {
+      $prefix = str_repeat('-', $i);
+      if ( substr($shortcode_name, 0, $i)==$prefix ) {
+        return $prefix;
+      }
+    }
+
+    return '';
+  }
+
+
+
+  static function trim_with_tags( $text, $length = 100, $ending = '' ) {
+
+    // if the plain text is shorter than the maximum length, return the whole text
+    if (strlen(preg_replace('/<.*?>/', '', $text)) <= $length) {
+      return $text;
+    }
+    // splits all html-tags to scanable lines
+    preg_match_all('/(<.+?>)?([^<>]*)/s', $text, $lines, PREG_SET_ORDER);
+    $total_length = strlen($ending);
+    $open_tags = array();
+    $truncate = '';
+    foreach ($lines as $line_matchings) {
+      // if there is any html-tag in this line, handle it and add it (uncounted) to the output
+      if (!empty($line_matchings[1])) {
+        // if it's an "empty element" with or without xhtml-conform closing slash
+        if ( preg_match(
+          '/^<(\s*.+?\/\s*|\s*(img|br|input|hr|area|base|basefont|col|frame|isindex|link|meta|param)(\s.+?)?)>$/is', $line_matchings[1]) ) {
+          // do nothing
+        // if tag is a closing tag
+        } else if (preg_match('/^<\s*\/([^\s]+?)\s*>$/s', $line_matchings[1], $tag_matchings)) {
+          // delete tag from $open_tags list
+          $pos = array_search($tag_matchings[1], $open_tags);
+          if ($pos !== false) {
+            unset($open_tags[$pos]);
+          }
+        // if tag is an opening tag
+        } else if (preg_match('/^<\s*([^\s>!]+).*?>$/s', $line_matchings[1], $tag_matchings)) {
+          // add tag to the beginning of $open_tags list
+          array_unshift($open_tags, strtolower($tag_matchings[1]));
+        }
+        // add html-tag to $truncate'd text
+        $truncate .= $line_matchings[1];
+      }
+      // calculate the length of the plain text part of the line; handle entities as one character
+      $content_length = strlen(preg_replace('/&[0-9a-z]{2,8};|&#[0-9]{1,7};|[0-9a-f]{1,6};/i', ' ', $line_matchings[2]));
+      if ($total_length+$content_length> $length) {
+        // the number of characters which are left
+          $left = $length - $total_length;
+        $entities_length = 0;
+          // search for html entities
+        if (preg_match_all(
+          '/&[0-9a-z]{2,8};|&#[0-9]{1,7};|[0-9a-f]{1,6};/i',
+          $line_matchings[2], $entities, PREG_OFFSET_CAPTURE) ) {
+          // calculate the real length of all entities in the legal range
+          foreach ($entities[0] as $entity) {
+            if ($entity[1]+1-$entities_length <= $left) {
+              $left--;
+              $entities_length += strlen($entity[0]);
+            } else {
+              // no more characters left
+              break;
+            }
+          }
+        }
+        $truncate .= substr($line_matchings[2], 0, $left+$entities_length);
+        // maximum lenght is reached, so get off the loop
+        break;
+      } else {
+        $truncate .= $line_matchings[2];
+        $total_length += $content_length;
+      }
+      // if the maximum length is reached, get off the loop
+      if($total_length>= $length) {
+        break;
+      }
+    }
+
+    $truncate .= $ending;
+
+    // close all unclosed html-tags
+    foreach ($open_tags as $tag) {
+      $truncate .= '</' . $tag . '>';
+    }
+
+    return $truncate;
+  }
+
+
+
+  static function trim_words_with_tags( $text, $num_words = 55, $more = null ) {
+
+    if ( null === $more ) $more = __( '&hellip;' );
+
+    /* translators: If your word count is based on single characters (East Asian characters),
+       enter 'characters'. Otherwise, enter 'words'. Do not translate into your own language. */
+    if ( 'characters' == _x( 'words', 'word count: words or characters?' ) && preg_match( '/^utf\-?8$/i', get_option( 'blog_charset' ) ) ) {
+
+        $text = trim( preg_replace( "/[\n\r\t ]+/", ' ', $text ), ' ' );
+        preg_match_all( '/./u', $text, $words_array );
+        $words_array = array_slice( $words_array[0], 0, $num_words + 1 );
+        $sep = '';
+    } else {
+        $words_array = preg_split( "/[\n\r\t ]+/", $text, $num_words + 1, PREG_SPLIT_NO_EMPTY );
+        $sep = ' ';
+    }
+    if ( count( $words_array ) > $num_words ) {
+        array_pop( $words_array );
+        $text = implode( $sep, $words_array );
+        $text = $text . $more;
+    } else {
+        $text = implode( $sep, $words_array );
+    }
+    return $text;
+  }
+
+
+  // Display current date
+  function today_shortcode( $atts, $content ) {
+    if ( isset($atts['format']) ) {
+      $format = str_replace("//", "\\", $atts['format']);
+    } else {
+      $format = get_option('date_format');
+    }
+    return date_i18n($format);
+  }
+
+
+  static function get_relative_date( $date ) {
+
+    // TODO: Just use human_time_diff()
+
+    $current_time = current_time('timestamp');
+    $date_today_time = gmdate('j-n-Y H:i:s', $current_time);
+    $compare_date_time = mysql2date('j-n-Y H:i:s', $date, false);
+    $date_today = gmdate('j-n-Y', $current_time);
+    $compare_date = mysql2date('j-n-Y', $date, false);
+    $time_diff = (strtotime($date_today_time) - strtotime($compare_date_time));
+    $format_ago = mysql2date(get_option('date_format'), $date);
+
+    if($time_diff < 60) { // < 1 minute
+      $format_ago = sprintf(_n('%s second ago', '%s seconds ago', $time_diff, 'domain'), number_format_i18n($time_diff));
+    } elseif ($time_diff < 3600) { // < 1 hour
+      $format_ago = sprintf(_n('%s minute ago', '%s minutes ago', intval($time_diff/60), 'domain'), number_format_i18n(intval($time_diff/60)));
+    } elseif ($time_diff < 86400) { // < 24 hours
+      $format_ago = sprintf(_n('%s hour ago', '%s hours ago', intval($time_diff/3600), 'domain'), number_format_i18n(intval($time_diff/3600)));
+    } elseif ($time_diff < 604800) { // < 7 days
+      $format_ago = sprintf(_n('Yesterday', '%s days ago', intval($time_diff/86400), 'domain'), number_format_i18n(intval($time_diff/86400)));
+    } elseif ($time_diff < 2592000) { // < 30 days
+      $format_ago = sprintf(_n('%s week ago', '%s weeks ago', intval($time_diff/604800), 'domain'), number_format_i18n(intval($time_diff/604800)));
+    }
+
+    return $format_ago;
+  }
+
+  // Unused
+
+  // set the PHP timezone to match WordPress
+  static function correct_php_timezone() {
+    $gofs = get_option( 'gmt_offset' ); // get WordPress offset in hours
+    $tz = date_default_timezone_get(); // get current PHP timezone
+    date_default_timezone_set('Etc/GMT'.(($gofs < 0)?'+':'').-$gofs);
+    self::$state['php_timezone'] = $tz;
+  }
+
+  // set the PHP timezone back the way it was
+  static function restore_php_timezone() {
+    $tz = date_default_timezone_get(); // get current PHP timezone
+    date_default_timezone_set( self::$state['php_timezone'] );
+  }
+
+
+
+
+  static function sort_array_of_array( &$array, $subfield, $order = 'asc' ) {
+
+    $sortarray = array();
+    foreach ($array as $key => $row) {
+      $sortarray[$key] = $row[$subfield];
+    }
+    $order = strtoupper($order);
+    array_multisort($sortarray, ($order=='ASC' ? SORT_ASC : SORT_DESC), $array);
+  }
+
+
+
+  static function normalize_alphabet( $string ) {
+    $pattern = array("'é'", "'è'", "'ë'", "'ê'", "'É'", "'È'", "'Ë'", "'Ê'", "'á'", "'à'", "'ä'", "'â'", "'å'", "'Á'", "'À'", "'Ä'", "'Â'", "'Å'", "'ó'", "'ò'", "'ö'", "'ô'", "'Ó'", "'Ò'", "'Ö'", "'Ô'", "'í'", "'ì'", "'ï'", "'î'", "'Í'", "'Ì'", "'Ï'", "'Î'", "'ú'", "'ù'", "'ü'", "'û'", "'Ú'", "'Ù'", "'Ü'", "'Û'", "'ý'", "'ÿ'", "'Ý'", "'ø'", "'Ø'", "'œ'", "'Œ'", "'Æ'", "'ç'", "'Ç'");
+
+    $replace = array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E', 'a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A', 'A', 'o', 'o', 'o', 'o', 'O', 'O', 'O', 'O', 'i', 'i', 'i', 'I', 'I', 'I', 'I', 'I', 'u', 'u', 'u', 'u', 'U', 'U', 'U', 'U', 'y', 'y', 'Y', 'o', 'O', 'a', 'A', 'A', 'c', 'C');
+
+    $string = preg_replace($pattern, $replace, $string);
+
+    return $string;
+  }
 
 
 
@@ -203,7 +507,7 @@ class CCS_Format {
    *
    * Currency format
    *
-   * TODO: Make this optional
+   * TODO: Separate into optional module
    *
    * @param flatcurr  float integer to convert
    * @param curr  string of desired currency format
@@ -342,7 +646,7 @@ class CCS_Format {
     }
   }
 
-  // Format Indian Rupees!
+  // Format Indian Rupees!!!
   static function formatinr($input){
     //CUSTOM FUNCTION TO GENERATE ##,##,###.##
     $dec = "";

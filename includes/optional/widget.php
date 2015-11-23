@@ -13,7 +13,7 @@ new CCS_Widget;
 class CCS_Widget {
 
 	function __construct() {
-		add_shortcode( 'widget', array($this, 'do_widget_shortcode') );
+		add_ccs_shortcode( 'widget', array($this, 'do_widget_shortcode') );
 	}
 
 	function do_widget_shortcode( $atts ) {

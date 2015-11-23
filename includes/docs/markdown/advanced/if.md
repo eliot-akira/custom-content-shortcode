@@ -1,5 +1,5 @@
 
-# If
+# If post..
 
 ---
 
@@ -15,17 +15,19 @@ Use `[if]` to display content based on post conditions.
 
 ## Parameters
 
-### Post type and name
+### Post
 
 > **type** - post type
 
 > **name** - post name/slug
 
+> **author** - post author ID or user name; set to *this* for current user
 
-### Parent
+> **comment_author** - comment by author ID or name; use inside comments loop
 
 > **parent** - slug or ID of parent
 
+> **format** - post format; if no value is set, checks if any post format exists
 
 ### Category, tag, taxonomy
 
@@ -40,21 +42,58 @@ Use `[if]` to display content based on post conditions.
 
 ### Field value
 
+> ~~~
+> [if field=product_color value=green]
+> ~~~
+
 > **field** - name of field to query
 
 > **value** - if post has value(s) in the specified field; if no value is set, it will check if any field value exists
 
-> **start** - use instead of **value** to check only the beginning of field value
+> **start/end** - use instead of **value** to check only the beginning or end of field value
 
 > **lowercase** - set to *true* to compare lowercased version of field value
 
-> **empty** - set to *false* if you're using dynamic values which could be empty, for example, when using `[pass]`
+> **empty** - set to *false* when using dynamic values which could be empty, for example, with `[pass]`
 
+### Search field value
+
+> ~~~
+> [if field=title,content contains='some keywords']
+> ~~~
+
+> **field** - name of field(s) to search
+
+> **contains** - words to search inside the field
+
+> By default, it checks if *all* words exist in the field value, regardless of order or case.
+
+> **compare=or** - search for *any* of the words
+
+> **exact=true** - search for exact phrase
+
+> **case=true** - search case sensitive
 
 ### Date field
 
-> **before**/**after** - used in place of *value* and *compare*; query for field values before/after a relative or specific date: *10 days*, *2 weeks ago*, or *2015-02-01*
+~~~
+[if field=date value=today]..[/if]
+[if field=date before='1 week ago']..[/if]
+~~~
 
+> **value** - predefined values: today, future, past, 'future not today', 'past and today'
+
+>> For date/time fields: now, future-time, past-time
+
+> **before**/**after** - if field value is before/after a relative or specific date: *+10 days*, *2 weeks ago*, or *2015-02-01*
+
+>> **field_2** - when using *before* or *after* with a relative date, you can set another field to be the reference; default is now
+
+>> **compare** - optionally set to '<=' (before including reference) or '>=' (after)
+
+> **date_format** - for a custom date field, default is 'Ymd'
+
+> **in=timestamp** - compare custom date field as timestamp; same as *date_format=U*
 
 
 ### User field
@@ -67,8 +106,19 @@ Use `[if]` to display content based on post conditions.
 
 ### Multiple values
 
-> For category, tag, taxonomy, field or user field, you can query for multiple values: for example, *category=sci-fi,comedy*. This returns posts in *either* Sci-Fi or Comedy. If you want posts matching *both* categories, set *compare=and*.
+For category, tag, taxonomy, field, user field, or post format, you can query for multiple values.
 
+*Science fiction **or** comedy*
+
+~~~
+[if category=sci-fi,comedy]
+~~~
+
+*Science fiction **and** comedy*
+
+~~~
+[if category=sci-fi,comedy compare=and]
+~~~
 
 
 ### If it exists
@@ -98,30 +148,53 @@ Use `[if]` to display content based on post conditions.
 
 ### Loop conditions
 
-> **empty** - if the loop is empty (no post found)
+Use these inside the loop.
+
+~~~
+[if empty]Nothing found[/if]
+[if first]First post[/if]
+[if last]Last post[/if]
+[if every=3]Every 3 posts[/if]
+[if count=3 compare=more]After 3rd post[/if]
+~~~
+
+> **empty** - if the loop is empty
 
 > **first, last** - if it's the first or last post found
 
-> **every** - for every number of posts in the loop
+> **count** - check current loop count; optionally set *compare* parameter: *more*, *less*, `>=`, `<=`
+
+> **every** - for every number of posts in the loop; set *first* or *last* to *true* to include first/last post
+
+>> This can be used, for example, to group four posts at a time.
+>>
+>> ~~~
+>> [loop type=post]
+>>   [if every=5 first=true]<div class="group-container">[/if]
+>>   [field thumbnail]
+>>   [field title]
+>>   [if every=4 last=true]</div>[/if]
+>> [/loop]
+>> ~~~
 
 
-
-### Passed value
-
-> **pass** - the value being passed: *pass='{FIELD}'*
-
-> **value** - the value to check: *value=this*
-
-### Other
+### Not
 
 > **not** - when the condition is not true, for example: `[if not first]`
 
 
-## Else
+### And
 
+> **and** - when multiple conditions must be met
+
+> ~~~
+> [if category=apple and field=status value=ready]
+> ~~~
+
+
+### Else
 
 Use `[else]` to display something when the condition is false.
-
 
 ~~~
 [if tag=discount]
@@ -131,120 +204,8 @@ Use `[else]` to display something when the condition is false.
 [/if]
 ~~~
 
-## Date field
-
-
-You can use the parameters *before* and *after* to compare dates.
-
-*If post was published in the last 2 weeks*
-
-~~~
-[if field=date after='2 weeks ago']
-  New post
-[else]
-  Old post
-[/if]
-~~~
-
-The value can be a specific date like *2015-02-01*, or a relative date such as *1 month ago*.
-
-## Other conditions
-
-
-### If there is no loop result
-
-Use `[if empty]` to display something when there is no post matching the query.
-
-*Display a message for no query result*
-
-~~~
-[loop type=events category=weekend]
-  [field title]
-  [field description]
-  [if empty]
-    There is no event for this category.
-  [/if]
-[/loop]
-~~~
-
-If there's no post found, the loop displays what's inside `[if empty]` only once.
-
-
-
-### For every X number of posts
-
-*Add an extra break line for every 3 posts*
-
-
-~~~
-[loop type=post count=9]
-  [field title]
-  [if every=3]
-    <br>
-  [/if]
-[/loop]
-~~~
-
-*Display something for the first and last post*
-
-~~~
-[loop type=post]
-  [field title]
-  [if first]
-    first post
-  [/if]
-  [if last]
-    last post
-  [/if]
-[/loop]
-~~~
-
-
-
-### If a field value exists
-
-To check if a field has any value, use the *field* parameter.
-
-*Display only products that have serial numbers*
-
-
-~~~
-[loop type=product]
-  [if field=serial_number]
-    Product: [field title]
-    Serial #: [field serial_number]
-  [/if]
-[/loop]
-~~~
-
-If you specify the *value* parameter, it will check for that specific value only.
-
-
-
-### If a taxonomy term exists
-
-To check if the post has any term in a given taxonomy, use the *taxonomy* parameter without specifying the term.
-
-*Display tags if any exists*
-
-
-~~~
-[loop type=book]
-  Book: [field title]
-  Author: [field author_name]
-  [if taxonomy=tag]
-    Tags:
-    [for each=tag trim=true]
-      [each name-link],
-    [/for]
-  [else]
-    There's no tag.
-  [/if]
-[/loop]
-~~~
 
 ## Nested
-
 
 For nested conditions, use the minus prefix.
 
@@ -264,3 +225,134 @@ For nested conditions, use the minus prefix.
 ~~~
 
 You can add up to 3 prefixes.
+
+
+## Other conditions
+
+### If a field value exists
+
+To check if a field has any value, use the *field* parameter without specifying a value.
+
+*Display only products that have serial numbers*
+
+~~~
+[loop type=product]
+  [if field=serial_number]
+    Product: [field title]
+    Serial #: [field serial_number]
+  [/if]
+[/loop]
+~~~
+
+If you specify the *value* parameter, it will check for that specific value only.
+
+
+
+### If a taxonomy term exists
+
+To check if there's any term in a given taxonomy, use the *taxonomy* parameter without specifying a term.
+
+*Display tags if any exists*
+
+~~~
+[loop type=book]
+  Book: [field title]
+  Author: [field author_name]
+  [if taxonomy=tag]
+    Tags:
+    [for each=tag trim=true]
+      [each name-link],
+    [/for]
+  [else]
+    There's no tag.
+  [/if]
+[/loop]
+~~~
+
+
+
+### Passed value
+
+> **check** - the value being passed
+
+> **value** - the value to check
+
+This is for checking values passed with the `[pass]` shortcode.
+
+~~~
+[pass global=query fields=tag]
+  [if check={TAG} value=news]
+    The value "news" was passed.
+  [/if]
+[/pass]
+~~~
+
+If you don't specify the value, it will check if the pass value is not empty.
+
+~~~
+[if check={TAG}]
+  Some value was passed.
+[else]
+  No value was passed.
+[/if]
+~~~
+
+### If enclosed content exists
+
+~~~
+[if exists]
+  [field optional_field]
+[else]
+  [field default_field]
+[/if]
+~~~
+
+This will display the enclosed content if it's not empty, otherwise display the else clause.
+
+
+## Switch/when
+
+Use the following syntax to check an `[if]` condition against several values.
+
+~~~
+[switch type]
+  [when post]This is a post[/when]
+  [when page]This is a page[/when]
+[/switch]
+~~~
+
+### Switch
+
+The `[switch]` shortcode takes one parameter.
+
+~~~
+[switch category]
+[switch tag]
+[switch format]
+~~~
+
+
+For field or taxonomy:
+
+~~~
+[switch field=field_name]
+[switch taxonomy=tax_name]
+~~~
+
+### When
+
+Use `[when default]` for when none of the other values match.
+
+~~~
+[when default]
+  This is some other post type
+[/when]
+~~~
+
+Set multiple values separated by comma, without space. This will check for any of them.
+
+~~~
+[when post,page]
+  This is a post or page
+[/when]
+~~~

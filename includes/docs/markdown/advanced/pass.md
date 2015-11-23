@@ -5,15 +5,17 @@
 
 Use `[pass]` to pass a field value to another shortcode's parameter.
 
-*Display a map based on an address in a field*
+*Display a list of posts based on field value*
 
 ~~~
 [pass field=address]
-  [google_map address='{FIELD}']
+  [loop type=store field=address value='{FIELD}']
+    [field title-link]
+  [/loop]
 [/pass]
 ~~~
 
-*Pass image IDs in the gallery field*
+*Pass a field value to another plugin's shortcode*
 
 ~~~
 [pass field=gallery]
@@ -127,6 +129,7 @@ The available tags are: TERM, TERM_NAME and TERM_ID.
 
 > **current** - Set *true* to get terms assigned to the current post only
 
+
 ## List loop
 
 This is a feature to loop through a list of items.
@@ -152,6 +155,22 @@ For more flexibility, you can pass multiple items for each loop.
   [/loop]
 [/pass]
 ~~~
+
+
+## Array field
+
+Use the *array* parameter to display values when the field is stored as a simple array, a collection of key-value pairs.
+
+~~~
+[pass array=map_field]
+  Address: {ADDRESS}
+  Latitude: {LAT}
+  Longitude: {LNG}
+  [google_map address='{ADDRESS}']
+[/pass]
+~~~
+
+The tags are uppercased versions of the array keys. Set *debug=true* to print the whole array content.
 
 ## Global variable
 

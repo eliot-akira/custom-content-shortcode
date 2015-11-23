@@ -8,7 +8,7 @@
  *
  */
 
-new Markdown_Module;
+new MarkDown_Module;
 
 class MarkDown_Module {
 
@@ -16,7 +16,8 @@ class MarkDown_Module {
 
 	function __construct() {
 
-		require(dirname(__FILE__).'/lib/parsedown.php');
+		if (!class_exists('Parsedown')) require(dirname(__FILE__).'/lib/parsedown.php');
+
 		self::$parsedown = new Parsedown();
 		add_shortcode( 'md', array($this, 'markdown_shortcode') );
 	}

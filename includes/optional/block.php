@@ -23,6 +23,7 @@ class CCS_Blocks {
       'center',
       'code',
       'div',
+      'dl', 'dt', 'dd',
       'em',
       'footer',
       'form',
@@ -52,7 +53,7 @@ class CCS_Blocks {
     );
 
     foreach ($tags as $tag) {
-      add_local_shortcode( 'ccs', $tag, array($this, 'block_shortcode'), true );
+      add_ccs_shortcode( $tag, array($this, 'block_shortcode') );
     }
 
     $nested = array('div','ol','li','ul');
@@ -60,12 +61,13 @@ class CCS_Blocks {
     foreach ($nested as $tag) {
       for ($i=1; $i < 6; $i++) {
         $prefix = str_repeat('-', $i);
-        add_local_shortcode( 'ccs', $prefix.$tag, array($this, 'block_shortcode'), true );
+        add_ccs_shortcode( $prefix.$tag, array($this, 'block_shortcode') );
       }
     }
   }
 
-  function block_shortcode( $atts = array(), $content = '', $tag ) {
+  function block_shortcode( $atts, $content = '', $tag ) {
+    if (!is_array($atts)) $atts = array($atts);
 
     // Remove prefix
     while (isset($tag[0]) && $tag[0]=='-') {
@@ -91,13 +93,13 @@ class CCS_Blocks {
 
         // Attribute values can have shortcodes with syntax: <shortcode>
         $value = str_replace( array('<','>'), array('[',']'), $value);
-        $out .= ' '.$key.'="'.do_shortcode($value).'"';
+        $out .= ' '.$key.'="'.do_ccs_shortcode($value).'"';
       }
     }
     $out .= '>';
 
     if (!empty($content)) {
-      $out .= do_local_shortcode( 'ccs', $content, true );
+      $out .= do_ccs_shortcode( $content );
       $out .= '</'.$tag.'>';
     }
 

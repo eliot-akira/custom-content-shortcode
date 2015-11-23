@@ -11,52 +11,55 @@
   padding-bottom: 30px;
 }
 .wrap {
-	max-width: 700px; /*margin: 0 auto;*/
-	font-weight: 300;
+  max-width: 700px; /*margin: 0 auto;*/
+  font-weight: 300;
   opacity: 1 !important;
 
   -webkit-transition: opacity 100ms;
   -moz-transition: opacity 100ms;
-  -o-transition: opacity 100m;
+  -o-transition: opacity 100ms;
   transition: opacity 100ms;
 }
 .wrap .plugin-title {
-	font-size: 24px;
-	font-weight: 300;
-	margin: 23px 0 13px 10px;
-	text-align: center;
+  font-size: 24px;
+  font-weight: 300;
+/*	margin: 23px 0 13px 10px; */
+  margin: 0;
+  text-align: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 .wrap h1, .wrap h2, .wrap h3, .wrap h4, .wrap h5, .wrap h6 {
-	font-weight: 400;
+  font-weight: 400;
 }
 .wrap h2 {
-	margin-bottom: -10px;
+  margin-bottom: -10px;
 }
 
 .doc-style {
-	padding-top:10px;
+  padding-top:10px;
 /*	padding-left:10px; */
 }
 .doc-style .nav-tab-wrapper {
-	padding-top: 0;
-	padding-left: 0;
-	padding-right: 0;
-	margin-bottom: 20px;
-	/* border-bottom: 1px solid #ddd; */
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 5px;
+  /* border-bottom: 1px solid #ddd; */
   border-bottom: 0;
-	text-align: center;
+  text-align: center;
 }
 .doc-style .nav-tab-wrapper a {
-	color: #555;
+  color: #555;
   border: 0;
-	border: 1px solid #e4e4e4;  /* border-bottom: 0; */
+  border: 1px solid #e4e4e4;  /* border-bottom: 0; */
   background-color: transparent;
 }
 .doc-style .nav-tab-wrapper a,
 .doc-style .nav-tab-wrapper a:focus,
 .doc-style .nav-tab-wrapper a:active,
 .doc-style .nav-tab-wrapper a:active:focus {
-	outline: 0; /* prevent dotted-line in Firefox */
+  outline: 0; /* prevent dotted-line in Firefox */
   /* box-shadow: none !important; */
 }
 .doc-style .menu-wrap {
@@ -86,7 +89,7 @@
   font-size: 13px;
   font-weight: 300;
   border: 0;
-  line-height: 25px;
+  line-height: 22px;
   box-shadow:  1px 3px 4px #555; /* 2px 2px 4px #ccc; */
   min-width: 115px;
 }
@@ -179,28 +182,28 @@
 }
 
 .doc-style :not(.tab-overview) h2 {
-  background-color:  #81a2be; /* #0073aa; /* #6A7A82; /* #0074A2; */
-  border-radius: 4px;
+  background-color: #81a2be; /* ; #0073aa; #6A7A82;  #0074A2;
+  border-radius: 4px; */
   color: white;
 }
 
 .doc-style .inner-wrap h3 {
-  font-size: 14px;
   margin: 25px auto 0;
   padding: 4px;
-  font-weight: 300;
+  font-size: 14px;
+  font-weight: 400;
   display: block;
-  background-color: #566A7B; /* green: #68BD7F; /* #e0e0e0; /* #e9e9e9; */
-  color: white;
+  background-color: #566A7B; /* #566A7B green: #68BD7F; #e0e0e0; #e9e9e9; */
+  color: #fafafa; /* white */
   text-align: center;
-  border-radius: 4px;
+/*  border-radius: 4px; */
 }
 
 .doc-style h4 {
-	/*font-weight:300;
-	 font-style:italic; */
-	font-size: 16px;
-	color: #000;
+  /*font-weight:300;
+   font-style:italic; */
+  font-size: 16px;
+  color: #000;
   margin: 1em 0;
 }
 
@@ -219,16 +222,16 @@ h2 .nav-tab {
  */
 
 .doc-style ul {
-	/* list-style:none;
+  /* list-style:none;
   padding-left:20px; */
   list-style: disc;
   margin-left: 2em;
 }
 .doc-style ul > li > ul {
 /*  padding-top: 5px;
-	padding-bottom: 10px;
-	list-style: none;
-	padding-left: 20px;
+  padding-bottom: 10px;
+  list-style: none;
+  padding-left: 20px;
 */
   padding-bottom: 5px;
   list-style-type: circle;
@@ -245,16 +248,16 @@ h2 .nav-tab {
   max-width:430px;
 }
 .doc-style .logo-pad {
-	margin: 15px auto;
+  margin: 15px auto;
 }
 .doc-style hr.setting-section {
-	margin-top: 0px;
-	padding-bottom: 10px;
+  margin-top: 0px;
+  padding-bottom: 10px;
 }
 .doc-style .form-table td {
-	width: 100%;
-	line-height: 1em;
-	padding: 10px;
+  width: 100%;
+  line-height: 1em;
+  padding: 7px 10px;
 }
 .doc-style .form-table hr {
 }
@@ -306,11 +309,38 @@ h2 .nav-tab {
   display: block; position: relative; top: 0px; visibility: hidden;
 }
 
+/*---------------------------------------------
+ *
+ * Settings
+ *
+ */
+
 .tab-overview .index,
 .tab-settings p.submit {
   text-align: center;
 }
 
+.tab-settings p.submit {
+  margin-top: 15px;
+}
+.tab-settings #submit {
+  width: 100%;
+}
+.tab-settings input[placeholder] {
+  font-size: 12px;
+}
+
+.tab-settings .advanced-field {
+  clear:both;
+  margin-top: 10px;
+  margin-bottom:10px;
+}
+.tab-settings input[type="text"] {
+  min-width:200px;float:right;margin-top:-3px;
+}
+.tab-settings .margin-top-half {
+  margin-top:10px;
+}
 /*---------------------------------------------
  *
  * Overview page
@@ -341,4 +371,14 @@ h2 .nav-tab {
 
 .doc-style .tab-overview h2 {
   margin-top: 30px;
+}
+.tab-overview .note h3 {
+  font-size: 15px;
+  font-weight: 400;
+  margin: 5px auto;
+}
+.tab-overview .note p {
+  font-size: 14px;
+  max-width: 560px;
+  margin: 0 auto 20px auto;
 }

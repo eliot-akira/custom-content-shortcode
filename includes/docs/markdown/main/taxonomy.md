@@ -14,8 +14,10 @@ Use `[taxonomy]` to display taxonomy terms from the current post.
 
 Optionally, you can specify the *field* parameter.
 
+*Display categories as links*
+
 ~~~
-[taxonomy category field=id]
+[taxonomy category field=link]
 ~~~
 
 Available fields are: *name* (default), *id*, *slug*, *description*, *url*, *link*, or custom taxonomy field.
@@ -59,7 +61,7 @@ The current post is not included in the result.
 
 > **order** - ASC (ascending/alphabetical) or DESC (descending/from most recent date)
 
-> **children** - include children for hierarchical taxonomies - *true* (default) or *false*
+> **children** - include posts related by child terms - *true* or *false* (default)
 
 
 ## For / each
@@ -99,19 +101,21 @@ Available parameters for the **[for]** shortcode are:
 
 > **count** - limit number of terms: *count=3*
 
-> **parent** - get child categories by parent slug
-
-> **parents** - set *true* to get only parent terms; see section below on child terms
-
 > **exclude** - exclude taxonomy term by ID or slug; *exlude=uncategorized*
 
 > **empty** - set *true* to include terms that have no associated posts; use outside the loop
 
-> **term/terms** - specify which term(s) to get, by ID or slug; can be a comma-separated list
-
 > **orderby** - order by *name* (default), *count* (post count), *id*, or *slug*
 
 > **order** - *ASC* (ascending - default), or *DESC* (descending)
+
+> **term/terms** - specify which term(s) to get, by ID or slug; can be a comma-separated list
+
+> **parent** - get direct children terms by parent ID or slug
+
+> **parents** - set *true* to get only parent terms; see section below on child terms
+
+> **children** - set *true* to get all descendants, when using *term* or *parent*
 
 > **trim** - set *true* to trim space or comma at the end
 
@@ -133,7 +137,7 @@ Available parameters for the **[each]** shortcode are:
 
 > **id** - term ID
 
-If no parameter is specified, the term name is displayed.
+You can also specify a custom taxonomy field. If no parameter is set, the term name is displayed.
 
 
 &nbsp;
@@ -200,7 +204,7 @@ To display child terms separately from parents, use a nested **[for]** loop.
 [for each=category parents=true]
   Parent: [each link]
   [-for each=child]
-    Child: [-each link]
+    Child: [each link]
   [/-for]
 [/for]
 
@@ -213,15 +217,13 @@ You can use **[if children]** to display something only if the current term has 
   [if children]
     Parent: [each link]
     [-for each=child]
-      Child: [-each link]
+      Child: [each link]
     [/-for]
   [else]
     [each link]
   [/if]
 [/for]
 ~~~
-
-
 
 
 &nbsp;
@@ -243,5 +245,75 @@ Use the *trim* parameter to create a list of terms. It removes extra space or co
 ~~~
 [for each=category trim='/']
   [each] /
+[/for]
+~~~
+
+
+&nbsp;
+
+### Conditions
+
+The following `[if]` conditions can be used inside a for/each loop.
+
+> **each** - check taxonomy term slug
+
+> **each_field** - check taxonomy term field
+
+> **each_value** - check taxonomy term field's value; if not set, it will check for any value
+
+---
+
+*Display something different for a specific term*
+
+~~~
+[for each=category]
+  [if not each=uncategorized]
+    Category name: [each name]
+  [/if]
+[/for]
+~~~
+
+*Check if a taxonomy term field has any value*
+
+~~~
+[for each=photographer]
+  Name: [each name]
+  [if each_field=website]
+    Website: [each website]
+  [/if]
+[/for]
+~~~
+
+
+&nbsp;
+
+### Pass each term
+
+Use `{TERM}` to pass each term's slug to another shortcode.
+
+~~~
+[for each=category current=true]
+  Category: [each name]
+  [loop type=post category={TERM} list=true]
+    [field title-link]
+  [/if]
+[/for]
+~~~
+
+There are also: `{TERM_ID}` and `{TERM_NAME}`.
+
+---
+
+Inside a nested `[for]` loop, add the same minus prefix to pass values from each loop. For example, to display the parent term's name:
+
+~~~
+[for each=parent_category]
+  Parent category: [each name]
+  [-for each=children]
+    [each name] is a child of {TERM_NAME}
+    [--for each=children]
+      [each name] is a child of {-TERM_NAME} and grandchild of {TERM_NAME}
+    [/--for]
+  [/-for]
 [/for]
 ~~~

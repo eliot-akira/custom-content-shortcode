@@ -2,7 +2,7 @@
 /**
  *
  * Local Shortcodes
- * @version  0.0.4
+ * @version  0.0.5
  *
  * Adapted from WordPress core:
  * https://github.com/WordPress/WordPress/blob/master/wp-includes/shortcodes.php
@@ -59,6 +59,8 @@ $local_shortcode_tags = array();
 
 // Current context: support nested local shortcodes by restoring parent namespace
 $current_local_shortcode_context = '';
+
+$doing_local_shortcode = false;
 
 /**
  * Add hook for shortcode tag.
@@ -212,15 +214,22 @@ function has_local_shortcode( $content, $tag, $global_tag ) {
 function do_local_shortcode($global_tag, $content, $do_global = false) {
 	global $local_shortcode_tags;
 	global $current_local_shortcode_context;
+	global $doing_local_shortcode;
+
+	$doing_local_shortcode = false;
 
 	// No shortcode in content, or no local shortcode registered in this namespace
-	if ( false === strpos( $content, '[' )  || !isset($local_shortcode_tags[$global_tag]))
+	if ( false === strpos( $content, '[' )  || !isset($local_shortcode_tags[$global_tag])) {
 		return $content;
+	}
 
 	$current_local_shortcodes = $local_shortcode_tags[$global_tag];
 
-	if ( empty( $current_local_shortcodes ) || ! is_array( $current_local_shortcodes ) )
+	if ( empty( $current_local_shortcodes ) || ! is_array( $current_local_shortcodes ) ) {
 		return $content;
+	}
+
+	$doing_local_shortcode = true;
 
 	// Store previous namespace and declare current one
 	$previous_context = $current_local_shortcode_context;
@@ -235,10 +244,13 @@ function do_local_shortcode($global_tag, $content, $do_global = false) {
 	// Restore previous namespace
 	$current_local_shortcode_context = $previous_context;
 
-	if ($do_global)
+	$doing_local_shortcode = false;
+
+	if ($do_global) {
 		return do_shortcode($content);
-	else
+	} else {
 		return $content;
+	}
 }
 
 /**

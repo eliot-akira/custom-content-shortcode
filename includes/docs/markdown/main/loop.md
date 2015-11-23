@@ -32,7 +32,11 @@ Use `[loop]` to get posts and loop through each one.
 
 ### Type, name, ID
 
-> **type** - post type to include; default is *any* - it's recommended to always specify post type
+> **type** - post type to include; if not specified, default is *any*; multiple post types possible
+
+> ~~~
+> [loop type=article,news orderby=date]
+> ~~~
 
 > **name** - post slug; if specified, usually only one post will match
 
@@ -62,7 +66,9 @@ Use `[loop]` to get posts and loop through each one.
 > **role** - show posts by user role, such as *administrator*, *editor*, *subscriber*
   - *this* - current user's role
 
-
+> **comment_author** - show posts which have comments by this author ID or name
+  - *this* - current user
+  - *same* - same author as current post
 
 ### Published date
 
@@ -100,6 +106,18 @@ Use `[loop]` to get posts and loop through each one.
 > [/loop]
 > ~~~
 
+> **compare** - set to *not* to exclude posts by taxonomy term
+
+---
+
+> #### Post format
+
+> ~~~
+> [loop type=post taxonomy=format term=audio]
+> ~~~
+
+---
+
 > #### Multiple terms
 
 > Multiple terms may be specified, such as *term=book,lamp*.
@@ -108,14 +126,17 @@ Use `[loop]` to get posts and loop through each one.
   - Use *compare=and* to get posts whose taxonomy contains all terms
   - Use *compare=not* to get posts whose taxonomy does not contain the term(s)
 
+---
+
 > #### Multiple taxonomies
+
+> ~~~
+> [loop taxonomy=color term=blue relation=or taxonomy_2=size term_2=small]
+> ~~~
 
 > **relation** - additional taxonomy query, where relation is *and* (default) or *or*
 
 > **taxonomy_2, term_2, compare_2, taxonomy_3, term_3, compare_3, ...**
-
-
-
 
 ### Field value
 
@@ -126,17 +147,21 @@ Use `[loop]` to get posts and loop through each one.
 
 > **start** - use instead of *value* to check only the beginning of field value
 
-> **compare** - equal (default), not, more, less, or operator like &lt; and &gt;.
+> **compare** - *equal* (default), *not*, *more*, *less*, or operator like &lt; and &gt;
 
-> **compare=between** - query for a range of values; for example, value=0,100
+> **compare=between** - query for a range of values; for example, *value=0,100*
+
+---
 
 > #### Multiple fields
+
+> ~~~
+> [loop field=color value=blue relation=or field_2=size value_2=small]
+> ~~~
 
 > **relation** - additional field query, where relation is *and* (default) or *or*
 
 > **field_2, value_2, compare_2, field_3, value_3, compare_3...**
-
-
 
 
 ### Date field
@@ -147,6 +172,7 @@ Use `[loop]` to get posts and loop through each one.
 
 >> You can specify exact value, or use the following predefined values.
   - *today* - compare to today
+  - *today-between* - when using date-and-time field, compare today as range (00:00:00~23:59:59)
   - *now* - if your field contains date and time
   - *future* - today and after
   - *past* - before today
@@ -156,7 +182,7 @@ Use `[loop]` to get posts and loop through each one.
 
 > **before, after** - used in place of *value* and *compare*; query for field values before/after a relative or specific date: *2 weeks ago*, or *2015-02-01*
 
-> **date_format** - date format of the field value; default is "Y-m-d". For ACF date field, set it to "Ymd".
+> **date_format** - date format of the field value; default is 'Ymd' - for a date-and-time field, set it to 'U' or use *in=timestamp*
 
 > #### Multiple date fields
 
@@ -194,7 +220,7 @@ Use `[loop]` to get posts and loop through each one.
 ### Sorting and series
 
 
-> **orderby** - order posts by *date* (default), *id*, *author*, *title*, *name*, *comment-date*, *rand* (random), *modified*, *menu_order*, *parent*, *field* (field value: string), or *field_num* (field value: number)
+> **orderby** - order posts by *date* (default), *modified*, *comment-date*, *id*, *author*, *title*, *name* (post slug), *parent*, *rand* (random), *menu*, *field* (field value as string), or *field_num* (field value as number)
 
 > **order** - *ASC* (ascending/alphabetical) or *DESC* (descending/from most recent date)
 

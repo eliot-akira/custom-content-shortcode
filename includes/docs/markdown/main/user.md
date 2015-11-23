@@ -10,7 +10,9 @@ Use `[user]` to display current user's info.
 ~~~
 ID: [user id]
 Full name: [user]
+Login name: [user name]
 E-mail: [user email]
+Author archive: [user archive-link]
 ~~~
 
 
@@ -21,6 +23,8 @@ E-mail: [user email]
 
 > **name** - login name
 
+> **fullname** - display name (default)
+
 > **email** - e-mail
 
 > **url** - website URL
@@ -29,15 +33,23 @@ E-mail: [user email]
 
 > **size** - avatar image size in pixels - default *96*, max *512*
 
-> **url** - website URL
+> **post-count** - user post count
+
+> **archive-url** - user posts archive URL
+
+> **archive-link** - display name linked to user posts archive
 
 > **role** - user role
 
-> **post-count** - user post count
+> **slug** - sanitized user name for use in URL; same as user "nicename"
+
+> **edit-url** - user profile edit URL in the admin
+
+> **edit-link** - user profile edit link; set *text* parameter for link text: default is "Edit Profile"
 
 ---
 
-You can also specify a custom user field.
+You can also display a custom user field.
 
 ~~~
 [user field_name]
@@ -63,19 +75,17 @@ Use `[users]` to loop through users.
 
 > **role** - *admin*, *editor*, *author*, *contributor*, *subscriber*
 
-> **include** - include users by ID
+> **include**, **exclude** - include/exclude users by ID
 
-> **exclude** - exclude users by ID
-
-> **orderby** - ID, display_name, name, login, email, url, registered, post_count, field, field_num
+> **orderby** - id, name, login (default), email, url, registered, post_count, field, field_num
 
 > **order** - *ASC* - alphabetical (default) or *DESC* (new to old)
 
-> **number** - maximum number of returned results
+> **count** - limit number of returned results
 
-> **offset** - offset the results by a number
+> **offset** - offset results by a number
 
-> **field** - custom field name to query
+> **field** - custom field to query
 
 > **value** - field value; multiple values possible depending on *compare*
 

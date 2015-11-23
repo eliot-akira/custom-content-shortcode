@@ -10,128 +10,152 @@ new CCS_Attached;
 
 class CCS_Attached {
 
-	public static $state;
+  public static $state;
 
-	function __construct() {
+  function __construct() {
 
-    add_local_shortcode( 'ccs',  'attached', array( $this, 'attached_shortcode' ), true  );
-    add_local_shortcode( 'ccs',  '-attached', array( $this, 'attached_shortcode' ), true  );
-    add_local_shortcode( 'ccs',  'attached-field', array( $this, 'attached_field_shortcode' ), true  );
+    add_ccs_shortcode( array(
+      'attached' => array( $this, 'attached_shortcode' ),
+      '-attached' => array( $this, 'attached_shortcode' ),
+      'attached-field' => array( $this, 'attached_field_shortcode' ),
+    ));
 
-		self::$state['is_attachment_loop'] = false;
-	}
+    self::$state['is_attachment_loop'] = false;
+  }
 
-	public static function attached_shortcode( $atts, $content, $tag ) {
+  public static function attached_shortcode( $atts, $content, $tag ) {
 
-		$args = array(
-			'orderby' => '',
-			'order' => '',
-			'category' => '',
-			'count' => '',
-			'offset' => '',
-			'trim' => '',
-			'columns' => '', 'pad' => '', 'between' => ''
-		);
+    $args = array(
+      'orderby' => '',
+      'order' => '',
+      'category' => '',
+      'count' => '',
+      'offset' => '',
+      'trim' => '',
+      'id' => '', // Specific attachment ID
+      'field' => '', // Get ID from field
+      'columns' => '', 'pad' => '', 'between' => ''
+    );
 
-		extract( shortcode_atts( $args , $atts, true ) );
+    extract( shortcode_atts( $args , $atts, true ) );
 
-		/*---------------------------------------------
-		 *
-		 * Get attachments
-		 *
-		 */
+    /*---------------------------------------------
+     *
+     * Get attachments
+     *
+     */
 
-		$attachment_ids = array();
-		$current_id = get_the_ID();
+    $attachment_ids = array();
+    if ( empty($field) ) {
+      $parent_id = do_shortcode('[field id]'); // Attachments of current post
+      if (empty($parent_id)) return;
+    } else {
+      // Specific attachment ID from field
+      $id = do_shortcode('[field '.$field.']');
+      if (empty($id)) return;
+      $parent_id = 0; // Any post
+    }
 
-		if ( isset($atts[0]) && ($atts[0]=='gallery') ){
+    if ( isset($atts[0]) && ($atts[0]=='gallery') ){
 
-			// Get attachment IDs from gallery field
-			$attachment_ids = CCS_Gallery_Field::get_image_ids( $current_id );
+      // Get attachment IDs from gallery field
+      $attachment_ids = CCS_Gallery_Field::get_image_ids( $parent_id );
 
       // Support for orderby title
       if ( $orderby=='title' ) {
         usort($attachment_ids, array($this, 'sort_gallery_by_title'));
       }
-		} else {
+    } else {
 
-			$attach_args = array (
-				'post_parent' => $current_id,
-				'post_type' => 'attachment',
-				'post_status' => 'any',
-				'posts_per_page' => '-1' // Get all attachments
-			);
+      $attach_args = array (
+        'post_parent' => $parent_id,
+        'post_type' => 'attachment',
+        'post_status' => 'any',
+        'posts_per_page' => '-1' // Get all attachments
+      );
 
-			// default orderby
-			$attach_args['orderby'] = empty($orderby) ? 'date' : $orderby;
+      // default orderby
+      $attach_args['orderby'] = empty($orderby) ? 'date' : $orderby;
 
-			// default for titles
-			if ( $orderby == 'title' ) $order = empty($order) ? 'ASC' : $order;
+      // default for titles
+      if ( $orderby == 'title' ) $order = empty($order) ? 'ASC' : $order;
 
-			if (!empty($order)) $attach_args['order'] = $order;
-			if (!empty($category)) $attach_args['category'] = $category;
-			if (!empty($count)) $attach_args['posts_per_page'] = $count;
-			if (!empty($offset)) $attach_args['offset'] = $offset;
+      if (!empty($order)) $attach_args['order'] = $order;
+      if (!empty($category)) $attach_args['category'] = $category;
+      if (!empty($count)) $attach_args['posts_per_page'] = $count;
+      if (!empty($offset)) $attach_args['offset'] = $offset;
+      if (!empty($id)) {
+        $attach_args['post__in'] = CCS_Loop::explode_list($id);
+        $attach_args['orderby'] = empty($orderby) ? 'post__in' : $orderby;
+        unset($attach_args['post_parent']);
+      }
 
-			// Get attachments for current post
+      // Get attachments for current post
 
-			$posts = get_posts($attach_args);
+      $posts = get_posts($attach_args);
 
-			$index = 0;
-			foreach( $posts as $post ) {
-				$attachment_ids[$index] = $post->ID; // Keep it in order
-				$index++;
-			}
-		}
+      $index = 0;
+      foreach( $posts as $post ) {
+        $attachment_ids[$index] = $post->ID; // Keep it in order
+        $index++;
+      }
+    }
 
-		// If no images in gallery field
-		if (count($attachment_ids)==0) return null;
+    // If no images in gallery field
+    if (count($attachment_ids)==0) return null;
 
 
-		/*---------------------------------------------
-		 *
-		 * Compile template
-		 *
-		 */
+    /*---------------------------------------------
+     *
+     * Compile template
+     *
+     */
 
-		$out = array();
+    $out = array();
 
 
     // if nested, save previous state
     if ($tag[0]=='-') $prev_state = self::$state;
 
-		self::$state['is_attachment_loop'] = true;
+    self::$state['is_attachment_loop'] = true;
 
-		foreach ( $attachment_ids as $index => $attachment_id ) {
+    foreach ( $attachment_ids as $index => $attachment_id ) {
 
-			self::$state['current_attachment_id'] = $attachment_id;
-			$out[] = do_shortcode( $content );
-		}
+      self::$state['current_attachment_id'] = $attachment_id;
+      $out[] = do_ccs_shortcode( $content );
+    }
 
-		self::$state['is_attachment_loop'] = false;
+    self::$state['is_attachment_loop'] = false;
 
     // if nested, restore previous state
     if ($tag[0]=='-') self::$state = $prev_state;
 
 
-		/*---------------------------------------------
-		 *
-		 * Post-process
-		 *
-		 */
 
-		if (!empty($columns)) {
-			$out = CCS_Loop::render_columns( $out, $columns, $pad, $between );
-		} else {
-			$out = implode('', $out);
 
-			if ( $trim == 'true' ) {
-				$out = trim($out, " \t\n\r\0\x0B,");
-			}
-		}
+    /*---------------------------------------------
+     *
+     * Post-process
+     *
+     * TODO: Combine this with loop and others
+     *
+     */
 
-		return $out;
-	}
+    if (!empty($columns)) {
+      $out = CCS_Loop::render_columns( $out, $columns, $pad, $between );
+    } else {
+      $out = implode('', $out);
+
+      if ( $trim == 'true' ) {
+        $out = trim($out, " \t\n\r\0\x0B,");
+      }
+    }
+
+
+
+
+    return $out;
+  }
 
 
   public static function sort_gallery_by_title( $a, $b ) {
