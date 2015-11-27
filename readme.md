@@ -1,7 +1,5 @@
-Custom Content Shortcode
-======
+#### Custom Content Shortcode
 
-## Plan
+This repository contains the latest development version.
 
-- Get field from ACF option page
-- 
+For production use, please see the [offical WordPress plugin page](https://wordpress.org/plugins/custom-content-shortcode/).
