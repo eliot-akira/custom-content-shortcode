@@ -206,6 +206,9 @@ class CCS_Content {
       // ACF date field
       'acf_date' => '',
 
+      // ACF option page field
+      'option' => '',
+
       // Read more
       'more' => '', 'link' => '', 'dots' => 'false',
       'between' => 'false',
@@ -1394,21 +1397,40 @@ class CCS_Content {
     $field = $parameters['field'];
     $result = '';
 
+    // Support getting field from ACF option page
+    if ( !empty($parameters['option'])
+      && $parameters['option'] == 'true'
+      && function_exists('get_field') ) {
+
+      return get_field( $field, 'option' );
+    }
+
+
+    if ( !empty($parameters['id']) ) {
+
+      // Manually set ID takes priority
+
+      $id = $parameters['id'];
+
     /*---------------------------------------------
      *
      * Attachment field
      *
      */
 
-    if ( (!empty($parameters['type']) && $parameters['type']=='attachment') ||
+    } elseif ( (!empty($parameters['type']) && $parameters['type']=='attachment') ||
       CCS_Loop::$state['is_attachment_loop'] || // gallery field
       CCS_Attached::$state['is_attachment_loop'] ) {
 
       return self::get_the_attachment_field( $parameters );
 
-    } elseif ( self::$state['is_array_field'] ) {
+    /*---------------------------------------------
+     *
+     * Array field
+     *
+     */
 
-      // Array field
+    } elseif ( self::$state['is_array_field'] ) {
 
       $array = self::$state['current_field_value'];
 
@@ -1418,6 +1440,15 @@ class CCS_Content {
         if (is_array($array)) $array = implode('', $array);
         return $array;
       }
+
+
+    // ACF gallery loop
+
+    } elseif ( class_exists('CCS_To_ACF') &&
+        CCS_To_ACF::$state['is_gallery_loop'] ) {
+
+
+      return CCS_To_ACF::get_image_details_from_acf_gallery( $parameters );
 
     /*---------------------------------------------
      *
@@ -1444,20 +1475,24 @@ class CCS_Content {
      */
 
     } elseif ( CCS_Menu::$state['is_menu_loop'] ) {
+
       if (isset(CCS_Menu::$state['current_menu_object'][$field])) {
+
         return CCS_Menu::$state['current_menu_object'][$field];
+
       } else {
 
-        // Get it from the post
-        if (isset(CCS_Menu::$state['current_menu_object']['id'])) {
+        if ( ! isset(CCS_Menu::$state['current_menu_object']['id'])) return;
 
-          $id = CCS_Menu::$state['current_menu_object']['id'];
-          CCS_Menu::$state['is_menu_loop'] = false;
-          $result = do_shortcode('[field '.$field.' id='.$id.']');
-          CCS_Menu::$state['is_menu_loop'] = true;
-          return $result;
-        }
-        return;
+        // Get it from the post
+
+        $id = CCS_Menu::$state['current_menu_object']['id'];
+        CCS_Menu::$state['is_menu_loop'] = false;
+
+        $result = do_shortcode('[field '.$field.' id='.$id.']');
+
+        CCS_Menu::$state['is_menu_loop'] = true;
+        return $result;
       }
     }
 
@@ -1506,6 +1541,7 @@ class CCS_Content {
 //        $attr['title'] = $parameters['title'];
     }
 
+    // Custom field only?
     if (!empty($parameters['custom']) && $parameters['custom']=='true') {
       $custom = $field;
       $field = 'custom'; // Skip predefined fields

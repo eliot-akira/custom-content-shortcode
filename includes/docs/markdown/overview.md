@@ -21,6 +21,7 @@
 
 [Raw](options-general.php?page=ccs_reference&tab=raw) &bullet; [Load](options-general.php?page=ccs_reference&tab=load) &bullet; [Pass](options-general.php?page=ccs_reference&tab=pass) &bullet; [PHP](options-general.php?page=ccs_reference&tab=php) &bullet; [Extras](options-general.php?page=ccs_reference&tab=extras)
 
+
 </div><div class="col-half">
 
 ### Optional
@@ -43,8 +44,6 @@
 
 ### What's New
 
-[`[if]` - Add parameter *and* for multiple conditions](options-general.php?page=ccs_reference&tab=if#and)
-
-[`[switch]` - Check condition against multiple values](options-general.php?page=ccs_reference&tab=if#switch-when)
+See the [Change log](options-general.php?page=ccs_reference&tab=changelog)
 
 </div>

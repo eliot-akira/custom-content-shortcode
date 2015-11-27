@@ -159,7 +159,7 @@ For more flexibility, you can pass multiple items for each loop.
 
 ## Array field
 
-Use the *array* parameter to display values when the field is stored as a simple array, a collection of key-value pairs.
+Use the *array* parameter to display values when the field is stored as an array.
 
 ~~~
 [pass array=map_field]
@@ -170,7 +170,9 @@ Use the *array* parameter to display values when the field is stored as a simple
 [/pass]
 ~~~
 
-The tags are uppercased versions of the array keys. Set *debug=true* to print the whole array content.
+The tags are uppercased versions of the array keys. If the array is a series of values, use the index as key.
+
+Set *debug=true* to print the whole array content.
 
 ## Global variable
 

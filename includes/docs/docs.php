@@ -372,6 +372,22 @@ class CCS_Docs {
             </div>
             <?php
 
+          // Changelog
+          } elseif ( $active_tab == 'changelog' ) {
+
+            ?>
+            <div style="max-width:600px;margin: 0 auto;">
+              <h1>Change log</h1>
+              <hr>
+              <?php
+                $changelog = @file_get_contents( CCS_PATH . '/readme.txt' );
+                $parts = explode('== Changelog ==', $changelog);
+                $changelog = @$parts[1];
+                echo Markdown_Module::render( $changelog, false, false );
+               ?>
+            </div>
+            <?php
+
           // Show the doc file for active tab
           } else {
 

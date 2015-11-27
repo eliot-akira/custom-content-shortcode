@@ -78,25 +78,25 @@ Additional parameters can be placed after the field name. Most [parameters for `
 
 > *image* - featured image
 
-> *image-url* - featured image URL
+> *image-url* - image URL
 
-> *image-title* - featured image title
+> *image-title* - image title
 
-> *image-caption* - featured image caption
+> *image-caption* - image caption
 
-> *image-alt* - featured image alternate text
+> *image-alt* - alternate text
 
-> *image-description* - featured image description
+> *image-description* - image description
 
-> *image-link* - featured image with link to the post
+> *image-link* - image with link to the post
 
-> *image-link-out* - featured image with link to the post, in new tab: *target=_blank*
+> *image-link-out* - image with link to the post, in new tab: *target=_blank*
 
 > *thumbnail* - featured image thumbnail
 
-> *thumbnail-url* - featured image thumbnail URL
+> *thumbnail-url* - thumbnail URL
 
-> *thumbnail-link* - featured image thumbnail with link to the post
+> *thumbnail-link* - thumbnail with link to the post
 
 > *title=true* - set *title* attribute to post title when using *image-link* and *thumbnail-link*
 

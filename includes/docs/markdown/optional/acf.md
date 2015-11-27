@@ -3,14 +3,15 @@
 
 ---
 
-
-The following field types are supported:
+Enable the ACF module under [Settings](options-general.php?page=ccs_reference&tab=settings). The following field types are supported:
 
 - Text, textarea, editor, [image](options-general.php?page=ccs_reference&tab=field#image-field)
 - [Checkbox, select, radio](#checkbox-select-radio), [true/false](#true-false), [date](#date-field)
 - [Page link](#page-link), [relationship/post object](#relationship), [taxonomy](#related-by-taxonomy-field)
 - [Gallery](#gallery), [repeater](#repeater), [flexible content](#flexible-content)
 - [File field](#field-stored-as-attachment-id), [cropped image](#cropped-image), [Google map](#google-map)
+- [Fields from an option page](#option-page)
+
 
 &nbsp;
 
@@ -307,16 +308,29 @@ For gallery fields, use `[acf_gallery]`.
 
 ~~~
 [acf_gallery gallery_field]
-  [acf_image]
-  [acf_image field=title]
-  [acf_image size=thumbnail]
+  [field image]
+  [field title]
+  [field image size=thumbnail]
 [/acf_gallery]
 ~~~
 
-`[acf_image]` displays each image in the gallery field. It can also display these fields: *id*, *title*, *caption*, *alt*, *url*, and *description*. You can set the *size* parameter to: *thumbnail*, *medium*, *large*. The default is full-size.
+The `[field]` shortcode can display these fields: *image*, *id*, *title*, *caption*, *alt*, *url*, and *description*. When displaying the image, you can also set the *size* parameter to: *thumbnail*, *medium*, *large*. Default is full-size.
 
+### Pass to another shortcode
 
-You can pass the image IDs to another shortcode.
+You can pass the image to another shortcode's parameter.
+
+*Each image ID or URL*
+
+~~~
+[acf_gallery gallery_field]
+  [pass fields=id,url]
+    [shortcode param={ID} or param={URL}]
+  [/pass]
+[/acf_gallery]
+~~~
+
+*All IDs from gallery - comma separated list*
 
 ~~~
 [pass acf_gallery=gallery_field]
@@ -365,5 +379,22 @@ If the field value is an attachment ID - for example, a file upload field - you 
   [field description]
   <a href="[field url]" download>Download Link</a>
 [/attached]
+~~~
+
+## Option Page
+
+To get a field from an option page, set *option=true*.
 
 ~~~
+[field option_field option=true]
+~~~
+
+This parameter can be used with: `field`, `repeater`, `flex` and `acf_gallery`.
+
+~~~
+[repeater field_name option=true]
+  [field inner_field]
+[/repeater]
+~~~
+
+Only the parent shortcode needs the *option* parameter.

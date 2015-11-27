@@ -97,6 +97,7 @@ class CCS_If {
       'each' => '',
       'each_field' => '',
       'each_value' => '',
+      'decode' => '',
 
       // CCS_Format::x_shortcode
       'x' => '',
@@ -258,11 +259,13 @@ class CCS_If {
 
       if ( !empty($each) ) {
         $v = do_shortcode('[each slug]');
+        if ($decode=='true') $v = urldecode($v);
         $eaches = CCS_Loop::explode_list($each);
         $condition = in_array($v, $eaches);
       }
       if ( !empty($each_field) ) {
         $v = do_shortcode('[each '.$each_field.']');
+        if ($decode=='true') $v = urldecode($v);
         if ( !empty($each_value) ) $condition = ($v == $each_value);
         else $condition = !empty($v);
       }
@@ -459,6 +462,8 @@ class CCS_If {
 
 
           foreach ($check as $check_this) {
+
+            if ($decode=='true') $check_this = urldecode($check_this);
 
             foreach ($values as $this_value) {
 
@@ -982,17 +987,30 @@ class CCS_If {
 
     /*---------------------------------------------
      *
-     * Every X number of repeater
+     * ACF repeater/flex/gallery
      *
      */
 
-    if ( class_exists('CCS_To_ACF') && CCS_To_ACF::$state['is_repeater_or_flex_loop'] ) {
+    if ( class_exists('CCS_To_ACF') ) {
 
-      if ( !empty($every) ) {
-        $condition = ( CCS_To_ACF::$state['repeater_index'] % $every == 0 );
+      if ( CCS_To_ACF::$state['is_repeater_or_flex_loop'] ) {
+
+        if ( !empty($every) ) {
+          $condition = ( CCS_To_ACF::$state['repeater_index'] % $every == 0 );
+        }
+        if ( isset($atts['first']) ) {
+          $condition = ( CCS_To_ACF::$state['repeater_index'] == 1 );
+        }
       }
-      if ( isset($atts['first']) ) {
-        $condition = ( CCS_To_ACF::$state['repeater_index'] == 1 );
+
+      if ( CCS_To_ACF::$state['is_gallery_loop'] ) {
+
+        if ( !empty($every) ) {
+          $condition = ( CCS_To_ACF::$state['gallery_index'] % $every == 0 );
+        }
+        if ( isset($atts['first']) ) {
+          $condition = ( CCS_To_ACF::$state['gallery_index'] == 1 );
+        }
       }
     }
 

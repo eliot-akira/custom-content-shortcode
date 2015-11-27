@@ -32,6 +32,10 @@
 .wrap h1, .wrap h2, .wrap h3, .wrap h4, .wrap h5, .wrap h6 {
   font-weight: 400;
 }
+.wrap h1 {
+  padding-left: 0;
+  padding-right: 0;
+}
 .wrap h2 {
   margin-bottom: -10px;
 }
@@ -191,8 +195,8 @@
   margin: 25px auto 0;
   padding: 4px;
   font-size: 14px;
-  font-weight: 400;
   display: block;
+  font-weight: 300;
   background-color: #566A7B; /* #566A7B green: #68BD7F; #e0e0e0; #e9e9e9; */
   color: #fafafa; /* white */
   text-align: center;
@@ -359,7 +363,8 @@ h2 .nav-tab {
   background-color: transparent;
   color: #333;
   margin-top: 10px;
-}
+  font-weight: 400;
+};
 .tab-overview .index {
   margin-top: -10px;
 }

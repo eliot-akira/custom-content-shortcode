@@ -18,6 +18,7 @@ class CCS_To_ACF {
 
     self::$state['is_relationship_loop'] = false;
     self::$state['is_repeater_or_flex_loop'] = false;
+    self::$state['is_gallery_loop'] = false;
     self::$state['repeater_index'] = 0;
 
 //    add_action( 'init', array($this, 'init') ); // Wait until plugins and theme loaded
@@ -116,7 +117,13 @@ class CCS_To_ACF {
       'sub_image' => '',
       'size' => '',
       'format' => '',
-      'columns' => '', 'pad' => '', 'between' => '',
+
+      'columns' => '',
+      'pad' => '',
+      'between' => '',
+
+      'option' => '',
+
     ), $atts ));
 
     if ( !empty($row) ) $num = $row; // Alias
@@ -142,7 +149,11 @@ class CCS_To_ACF {
       $content .= ']';
     }
 
-    if ( have_rows( $field ) ) {
+    // Support getting field from option page
+    $option = ($option == 'true') ? 'option' : false;
+
+
+    if ( have_rows( $field, $option ) ) {
 
       $index_now = 0;
       self::$state['repeater_index'] = 0;
@@ -151,7 +162,7 @@ class CCS_To_ACF {
 
       if ( $start == '' ) $start='1';
 
-      while ( have_rows( $field ) ) {
+      while ( have_rows( $field, $option ) ) {
 
         // Keep true for each row in case nested
         self::$state['is_repeater_or_flex_loop'] = true;
@@ -211,7 +222,10 @@ class CCS_To_ACF {
       'start' => '',
       'subfield' => '',
       'sub' => '',
-      'columns' => '', 'pad' => '', 'between' => '',
+      'columns' => '',
+      'pad' => '',
+      'between' => '',
+      'option' => '',
     ), $atts ));
 
 
@@ -228,11 +242,13 @@ class CCS_To_ACF {
       $sub = 'true';
     }
 
+    // Support getting field from option page
+    $option = ($option == 'true') ? 'option' : false;
 
     if (empty($sub)) {
-      $images = get_field( $field );
+      $images = get_field( $field, $option );
     } else {
-      $images = get_sub_field( $field );
+      $images = get_sub_field( $field ); // Gets option from the_row()
     }
 
 
@@ -243,20 +259,26 @@ class CCS_To_ACF {
       $index_now = 0;
       if ( $start == '' ) $start='1';
 
+      self::$state['is_gallery_loop'] = true;
+      self::$state['gallery_index'] = 0;
+
       foreach ( $images as $image ) {
 
         self::$state['current_image'] = $image;
         $index_now++;
+        self::$state['gallery_index'] = $index_now;
 
-        if ( $index_now >= $start ) { /* Start loop */
+        if ( $index_now >= $start ) {
 
           if ( ( $count!= '' ) && ( $index_now >= ($start+$count) ) ) {
-              break;				/* If over count, break the loop */
+            break;
           }
 
           $outputs[] = str_replace( '{COUNT}', $index_now, do_ccs_shortcode( $content ) );
         }
       }
+
+      self::$state['is_gallery_loop'] = false;
     }
     if( is_array($outputs)) {
 
@@ -284,31 +306,30 @@ class CCS_To_ACF {
       'class' => ''
     ), $atts));
 
-    if (empty($field) && isset($atts[0])) $field = $atts[0];
+    if ( empty($field) && isset($atts[0]) ) $field = $atts[0];
 
-    if ( empty($size) ||
-      (!empty($size) && !isset(self::$state['current_image']['sizes'][$size]))) {
-
-      $image_url = self::$state['current_image']['url'];
-    } else {
+    $image_url = self::$state['current_image']['url'];
+    if ( !empty($size) && isset(self::$state['current_image']['sizes'][$size]) ) {
       $image_url = self::$state['current_image']['sizes'][$size];
     }
 
-    if ( !empty($field) ) {
+    $output = '';
 
-        if ($field == 'url') {
-          $output = $image_url;
-        } else {
-          $output = self::$state['current_image'][$field];
-        }
-
-    } else {
+    if ( empty($field) || $field == 'image' ) {
 
       $output = '<img ';
       if (!empty($class)) $output .= ' class="'.$class.'"';
       $output .= 'src="' . $image_url . '">';
 
+    } elseif ($field == 'url') {
+
+      $output = $image_url;
+
+    } else {
+
+      $output = @self::$state['current_image'][$field];
     }
+
     return $output;
   }
 
@@ -337,7 +358,9 @@ class CCS_To_ACF {
     extract( shortcode_atts( array(
       'field' => '',
       'subfield' => '',
-      'trim' => ''
+      'sub' => '', // Alias
+      'trim' => '',
+      'option' => '',
     ), $atts ) );
 
     $output = array();
@@ -352,10 +375,13 @@ class CCS_To_ACF {
       }
     }
 
+    // Support getting field from option page
+    $option = ($option == 'true') ? 'option' : false;
+
     if (!empty($field)) {
-      $posts = get_field($field);
+      $posts = get_field( $field, $option );
     } elseif (!empty($subfield)) {
-      $posts = get_sub_field($subfield);
+      $posts = get_sub_field( $subfield ); // Gets option from the_row()
     } else return null;
 
 
