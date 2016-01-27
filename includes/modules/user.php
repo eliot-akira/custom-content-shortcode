@@ -292,6 +292,7 @@ class CCS_User {
     extract(shortcode_atts(array(
       'field' => '',
       'meta' => '', // Alias
+      'image' => '',
       'size' => '',
       'text' => '', // for author archive link
       'out' => ''
@@ -303,6 +304,14 @@ class CCS_User {
     // Get field specified
 
     if( !empty($meta) ) $field=$meta;
+    if( !empty($image) ) {
+      if (!empty($field)) {
+        $image_field = $field;
+      } else {
+        $image_field = 'image';
+      }
+      $field=$image;
+    }
 
     if ( empty($field) ) {
       // or just get the first parameter
@@ -391,6 +400,16 @@ class CCS_User {
     // Post-process
 
     // Attachment
+    if (!empty($image)) {
+      $params = '';
+      if (!empty($size)) $params .= ' size="'.$size.'"';
+
+      $result = do_ccs_shortcode(
+        '[attached id='.$result.']'
+          .'[field '.$image_field.$params.']'
+        .'[/attached]'
+      );
+    }
 
     // Array
 

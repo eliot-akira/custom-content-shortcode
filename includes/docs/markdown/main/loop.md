@@ -220,11 +220,30 @@ Use `[loop]` to get posts and loop through each one.
 ### Sorting and series
 
 
-> **orderby** - order posts by *date* (default), *modified*, *comment-date*, *id*, *author*, *title*, *name* (post slug), *parent*, *rand* (random), *menu*, *field* (field value as string), or *field_num* (field value as number)
+> **orderby** - order posts
+
+> - *date* - published date (default)
+> - *id*
+> - *author*
+> - *title*
+> - *name* - post slug
+> - *parent*
+> - *modified*
+> - *comment-date*
+> - *rand* - random
+> - *menu* - menu order
+> - *field* - field value as string
+> - *field_num* - field value as number
+
+>> If the value isn't any of these, it's assumed to be the field name.
 
 > **order** - *ASC* (ascending/alphabetical) or *DESC* (descending/from most recent date)
 
 > **key** - when ordering by *field* or *field_num*, specify *key* as the name of the field to use
+
+> **orderby_2**, **order_2**, **key_2**, ... - Order by multiple fields, up to 5; custom and default fields are supported, except *comment-date*, *rand*, *menu*, *parent*
+
+> ---
 
 > **series, key** - order posts by a series of field values, where *key* is the name of the field; the series can include ranges, for example: *1-15, 30-40, 42, 44*.
 

@@ -3,6 +3,15 @@
 
 ---
 
+### Site name and description
+
+~~~
+[field site=name]
+[field site=description]
+~~~
+
+&nbsp;
+
 ### Today
 
 To display today's date:

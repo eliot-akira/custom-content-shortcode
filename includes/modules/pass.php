@@ -191,8 +191,8 @@ class CCS_Pass {
           }
         }
 
-        $field_value = '(Array)';
-        //$field_value = implode(",", $field_value);
+        //$field_value = '(Array)';
+        $field_value = implode(",", $field_value);
 
       } else {
 
@@ -354,6 +354,22 @@ class CCS_Pass {
 
       $items = CCS_Loop::explode_list($list); // Comma-separated list -> array
 
+      // Create range
+      $new_items = array();
+      foreach ($items as $item) {
+        if ( strpos($item, '~') !== false ) {
+          $pair = CCS_Loop::explode_list($item, '~');
+          $list = range( $pair[0], $pair[1] );
+          foreach ($list as $list_item) {
+            $new_items[] = $list_item;
+          }
+        } else {
+          $new_items[] = $item;
+        }
+      }
+      $items = $new_items;
+
+
       $contents = '';
 
       foreach ($items as $item) {
@@ -389,7 +405,6 @@ class CCS_Pass {
       }
 
       $content = $contents;
-
     }
 
 

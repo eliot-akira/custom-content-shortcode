@@ -101,6 +101,8 @@ class CCS_Paged {
 
     } elseif ( $tag == 'loopage-next' ) {
 
+      if (empty($text)) $text = 'Next';
+
       $max = self::loopage_total_shortcode();
       if (++$now <= $max) return self::get_paged_url( $query_var, $now, $text, $anchor );
     }

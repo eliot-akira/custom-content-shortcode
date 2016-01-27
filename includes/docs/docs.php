@@ -20,7 +20,8 @@ class CCS_Docs {
     self::$state['settings_page_name'] = 'ccs_reference';
 
     // Create custom user settings menu
-    add_action('admin_menu', array($this, 'content_settings_create_menu'));
+    $admin_menu_hook = ! is_multisite() ? 'admin_menu' : 'network_admin_menu';
+    add_action($admin_menu_hook, array($this, 'content_settings_create_menu'));
 
     // Register doc sections
     add_action( 'admin_init', array($this, 'register_content_settings' ));
@@ -123,9 +124,15 @@ class CCS_Docs {
 
   function plugin_settings_link( $links ) {
 
-    $settings_link = '<a href="' .
-      admin_url( 'admin.php?page='.self::$state['settings_page_name'] ) . '">'
-      . 'Reference</a>';
+    if (!isset(self::$state['settings_page_name'])) return $links;
+
+    if (is_network_admin()) {
+      $url = network_admin_url( 'options-general.php?page='.self::$state['settings_page_name'] );
+    } else {
+      $url = admin_url( 'options-general.php?page='.self::$state['settings_page_name'] );
+    }
+
+    $settings_link = '<a href="'.$url.'">Reference</a>';
     array_unshift( $links, $settings_link );
 
     return $links;
@@ -139,6 +146,9 @@ class CCS_Docs {
    */
 
   function docs_admin_css() {
+
+    if (!isset(self::$state['overview_page_hook']))
+      self::$state['overview_page_hook'] = '';
 
     if ( $this->is_current_plugin_screen() ) {
 
@@ -335,7 +345,7 @@ class CCS_Docs {
 
             }
 
-            echo '&nbsp;'; // Between menu items
+            //echo '&nbsp;'; // Between menu items
 
           }
         ?>

@@ -56,7 +56,7 @@ class CCS_Blocks {
       add_ccs_shortcode( $tag, array($this, 'block_shortcode') );
     }
 
-    $nested = array('div','ol','li','ul');
+    $nested = array('div','ol','li','ul','block');
 
     foreach ($nested as $tag) {
       for ($i=1; $i < 6; $i++) {

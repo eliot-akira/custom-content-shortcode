@@ -3,7 +3,7 @@
 Plugin Name: Custom Content Shortcode
 Plugin URI: http://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 3.2.2
+Version: 3.3.2
 Shortcodes: loop, content, field, taxonomy, if, for, each, comments, user, url, load
 Author: Eliot Akira
 Author URI: eliotakira.com
@@ -18,18 +18,20 @@ new CCS_Plugin;
 
 class CCS_Plugin {
 
-  public static $settings;
-  public static $settings_name;
-  public static $settings_definitions;
-  public static $state;
+  static $settings;
+  static $settings_name;
+  static $settings_definitions;
+  static $state;
 
   function __construct() {
 
     $this->load_settings();
     $this->load_main_modules();
     $this->load_optional_modules();
+
     self::$state['doing_ccs_filter'] = false;
     self::$state['original_post_id'] = 0;
+
     add_action('init',array($this,'init'));
   }
 
@@ -141,6 +143,7 @@ class CCS_Plugin {
   function load_main_modules() {
 
     $modules = array(
+      'core/global',        // Global helper functions
       'core/local-shortcodes', // Local shortcodes
       'core/content',       // Content shortcode
       'core/loop',          // Loop shortcode
@@ -200,6 +203,7 @@ class CCS_Plugin {
 
 
     // Render plugin shortcodes after wpautop but before do_shortcode
+    // Added after WP 4.2.3 changed Shortcode API
     add_filter( 'the_content', array($this, 'ccs_content_filter'), 11 );
     remove_filter( 'the_content', 'do_shortcode', 11 );
     add_filter( 'the_content', 'do_shortcode', 12 );
@@ -282,64 +286,3 @@ class CCS_Plugin {
   }
 
 } // End CCS_Plugin
-
-
-/*---------------------------------------------
- *
- * Global helper functions
- *
- */
-
-if (!function_exists('do_short')) {
-  function do_short($content) {
-    echo do_ccs_shortcode( $content );
-  }
-}
-
-if (!function_exists('return_short')) {
-  function return_short($content) {
-    return do_ccs_shortcode( $content );
-  }
-}
-
-if (!function_exists('start_short')) {
-  function start_short() {
-    ob_start();
-  }
-}
-
-if (!function_exists('end_short')) {
-  function end_short() {
-    do_short( ob_get_clean() );
-  }
-}
-
-function add_ccs_shortcode( $tag, $func = null, $global = true ) {
-
-  if (is_array($tag)) {
-    if ($func === false) $global = false;
-    foreach ($tag as $this_tag => $this_func) {
-      if ( ! in_array($this_tag, CCS_Plugin::$state['disabled_shortcodes']) )
-        add_local_shortcode( 'ccs', $this_tag, $this_func, $global );
-    }
-  } else {
-    if ( ! in_array($tag, CCS_Plugin::$state['disabled_shortcodes']) )
-      add_local_shortcode( 'ccs', $tag, $func, $global );
-  }
-}
-
-function do_ccs_shortcode( $content, $global = true ) {
-
-  $prev = CCS_Plugin::$state['doing_ccs_filter'];
-  CCS_Plugin::$state['doing_ccs_filter'] = true;
-  //$content = CCS_Format::protect_script($content, $global);
-  $content = do_local_shortcode( 'ccs', $content, false );
-
-  CCS_Plugin::$state['doing_ccs_filter'] = $prev; // Restore
-
-  if ( $global ) {
-    $content = do_shortcode( $content );
-  }
-
-  return $content;
-}

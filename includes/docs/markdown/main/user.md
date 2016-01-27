@@ -47,13 +47,26 @@ Author archive: [user archive-link]
 
 > **edit-link** - user profile edit link; set *text* parameter for link text: default is "Edit Profile"
 
----
+### Custom user field
 
 You can also display a custom user field.
 
 ~~~
 [user field_name]
 ~~~
+
+For an image field, use the *image* parameter:
+
+~~~
+[user image=field_name size=thumbnail]
+~~~
+
+You can display other [attachment fields](options-general.php?page=ccs_reference&tab=attach#attachment-fields) from the image.
+
+~~~
+[user image=field_name field=url]
+~~~
+
 
 &nbsp;
 

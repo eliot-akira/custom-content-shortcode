@@ -44,16 +44,18 @@ class CCS_Attached {
      * Get attachments
      *
      */
-
     $attachment_ids = array();
-    if ( empty($field) ) {
-      $parent_id = do_shortcode('[field id]'); // Attachments of current post
-      if (empty($parent_id)) return;
-    } else {
+
+    if ( !empty($id) ) {
+      $parent_id = 0; // Any post
+    } elseif ( !empty($field) ) {
       // Specific attachment ID from field
       $id = do_shortcode('[field '.$field.']');
       if (empty($id)) return;
       $parent_id = 0; // Any post
+    } else {
+      $parent_id = do_shortcode('[field id]'); // Attachments of current post
+      if (empty($parent_id)) return;
     }
 
     if ( isset($atts[0]) && ($atts[0]=='gallery') ){

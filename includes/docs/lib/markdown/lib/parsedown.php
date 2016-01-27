@@ -897,7 +897,7 @@ class Parsedown
 
             if (isset($Element['handler']))
             {
-                $markup .= $this->$Element['handler']($Element['text']);
+                $markup .= $this->{$Element['handler']}($Element['text']);
             }
             else
             {
@@ -987,7 +987,7 @@ class Parsedown
             {
                 $handler = 'identify'.$spanType;
 
-                $Span = $this->$handler($Excerpt);
+                $Span = $this->{$handler}($Excerpt);
 
                 if ( ! isset($Span))
                 {

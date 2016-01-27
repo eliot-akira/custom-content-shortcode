@@ -69,6 +69,9 @@ class CCS_If {
       'in' => '', // For date-time field, set in=timestamp or date_format=U
       'field_2' => '', // Optional with before/after
 
+      'today' => '', // Check today's value
+      'day_of_week' => '', // 1~7, Mon~Sun
+
       'lowercase' => '',
       'case' => '', // Alias: opposite of lowercase
       'loose' => '', // lowercase and normalize special characters - default
@@ -138,10 +141,7 @@ class CCS_If {
     if ( ( !empty($before) || !empty($after) ) && empty($field) ) {
       $field = 'date'; // Default for before/after parameter
     }
-    if ( isset($atts['today']) ) {
-      $field = 'date';
-      $value = 'today';
-    }
+
     if (!empty($no_flag)) $flag = $no_flag;
 
     $compare = strtoupper($compare);
@@ -181,6 +181,25 @@ class CCS_If {
       $condition = !empty($result);
     }
 
+    /*---------------------------------------------
+     *
+     * Today
+     *
+     */
+
+    if (!empty($day_of_week)) {
+      $today = $day_of_week;
+      $date_format = 'N'; // 1~7, Mon~Sun
+    }
+
+    if (!empty($today)) {
+      $result = do_ccs_shortcode(
+        '[today'
+          .(!empty($date_format) ? ' format="'.$date_format.'"' : '')
+        .']'
+      );
+      $condition = ($result === $today);
+    }
 
     /*---------------------------------------------
      *
@@ -1098,6 +1117,12 @@ class CCS_If {
      */
 
     $routes = CCS_URL::get_routes();
+    // Whole route
+    if (!empty($route)) {
+      $result = implode('/', $routes);
+      $condition = ($result == $route);
+    }
+    // Route parts: route_1, route_2, ...
     for ($i=0; $i < count($routes); $i++) {
       if (isset($atts['route_'.($i+1)])) {
         $condition = $atts['route_'.($i+1)] == $routes[$i];
@@ -1208,27 +1233,30 @@ class CCS_If {
   function switch_shortcode( $atts, $content ) {
 
     $switch = '';
-    if (isset($atts[0])) $switch = $atts[0];
-    else {
-      // Pass to [if]
-      foreach ($atts as $key => $value) {
 
-        if ( is_numeric($key) ) continue;
+    foreach ($atts as $key => $value) {
 
-        $switch = $key.'='.$value;
-        // Add trailing parameter for when/case
-        switch ($key) {
+      if ( is_numeric($key) ) {
+        $switch .= $value;
+        continue;
+      }
 
-          case 'taxonomy':
-            $switch .= ' term';
-          break;
+      // Add trailing parameter for when/case
+      switch ($key) {
 
-          case 'field': // Fall through
-          case 'user_field': // Fall through
-          default:
-            $switch .= ' value';
-          break;
-        }
+        case 'taxonomy':
+          $switch .= $key.'='.$value.' term';
+        break;
+
+        case 'field': // Fall through
+        case 'user_field':
+          $switch .= $key.'='.$value.' value';
+        break;
+
+        default:
+          // Put other params in front
+          $switch = $key.'='.$value.' '.$switch;
+        break;
       }
     }
 
@@ -1263,6 +1291,7 @@ class CCS_If {
       self::$state['current_switch_default'] = $content;
       return;
     }
+
     return do_ccs_shortcode('[if '.$switch.'='.$when.']'.$content.'[/if]');
   }
 

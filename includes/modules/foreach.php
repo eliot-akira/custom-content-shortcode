@@ -330,6 +330,7 @@ class CCS_ForEach {
     if ( self::$index > 0 ) self::$index--;
     // Or finished
     else self::$state['is_for_loop'] = false;
+
     self::$state['for_count'] = 0;
 
     return $out;

@@ -44,16 +44,16 @@
   padding-top:10px;
 /*	padding-left:10px; */
 }
-.doc-style .nav-tab-wrapper {
+.wrap .doc-style .nav-tab-wrapper {
   padding-top: 0;
   padding-left: 0;
   padding-right: 0;
-  margin-bottom: 5px;
-  /* border-bottom: 1px solid #ddd; */
+  margin: 5px 5px 15px 5px;
   border-bottom: 0;
   text-align: center;
 }
-.doc-style .nav-tab-wrapper a {
+.wrap .doc-style .nav-tab-wrapper a {
+  float: none;
   color: #555;
   border: 0;
   border: 1px solid #e4e4e4;  /* border-bottom: 0; */
@@ -66,17 +66,16 @@
   outline: 0; /* prevent dotted-line in Firefox */
   /* box-shadow: none !important; */
 }
-.doc-style .menu-wrap {
+.wrap .doc-style .menu-wrap {
   position: relative;
   display: inline-block;
 }
 
-.doc-style .sub-menu {
+.wrap .doc-style .sub-menu {
   position: absolute;
-  left: 0;
+  left: 8px;
+  margin-top: 5px;
   text-align: left;
-  /* background-color: #DADADA;
-  padding: 0 10px; */
   width: 100%;
   min-width: 90px;
   display: none;
@@ -84,7 +83,7 @@
 .doc-style .menu-wrap.menu-open .sub-menu {
   display: block;
 }
-.doc-style .sub-menu a {
+.wrap .doc-style .sub-menu a {
   background-color: #e4e4e4;
   cursor: pointer;
   padding: 0 9px;
@@ -97,10 +96,10 @@
   box-shadow:  1px 3px 4px #555; /* 2px 2px 4px #ccc; */
   min-width: 115px;
 }
-.doc-style .sub-menu a:first-child {
+.wrap .doc-style .sub-menu a:first-child {
   margin-top: 5px;
 }
-.doc-style .sub-menu a:last-child {
+.wrap .doc-style .sub-menu a:last-child {
   margin-bottom: 5px;
 }
 .doc-style .nav-tab-wrapper .nav-tab-active,

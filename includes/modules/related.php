@@ -130,31 +130,34 @@ class CCS_Related {
 
 				// Get current post's taxonomy terms - unless given
 				if (!isset($terms)) {
-					$term_objects = get_the_terms( $post_id, $current_taxonomy );
+
+					$term_objects = CCS_Content::get_the_terms_silently( $post_id, $current_taxonomy );
+
 				} else {
 					$term_objects = $terms;
 				}
 
-				if (is_array($term_objects)) {
+				if ( ! is_array($term_objects) || empty($term_objects) ) continue;
 
-					foreach ($term_objects as $term) {
-						$target_terms[$current_taxonomy][] = $term->term_id;
-					}
-
-					if ($tax_count == 1) {
-						$query['tax_query']['relation'] = $relation;
-					}
-
-					$query['tax_query'][] = array(
-						'taxonomy' => $current_taxonomy,
-						'field' => 'id',
-						'terms' => $target_terms[$current_taxonomy],
-						'operator' => strtoupper($operator),
-						'include_children' => ($children == 'true'),
-					);
-
-					$tax_count++;
+				foreach ($term_objects as $term) {
+					$target_terms[$current_taxonomy][] = $term->term_id;
 				}
+
+				if (empty($target_terms[$current_taxonomy])) continue;
+
+				if ($tax_count == 1) {
+					$query['tax_query']['relation'] = $relation;
+				}
+
+				$query['tax_query'][] = array(
+					'taxonomy' => $current_taxonomy,
+					'field' => 'id',
+					'terms' => $target_terms[$current_taxonomy],
+					'operator' => strtoupper($operator),
+					'include_children' => ($children == 'true'),
+				);
+
+				$tax_count++;
 			}
 			$terms = $target_terms;
 

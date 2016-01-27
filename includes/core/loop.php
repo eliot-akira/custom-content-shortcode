@@ -90,56 +90,55 @@ class CCS_Loop {
 
   public static function the_loop_shortcode( $parameters, $template ) {
 
-    // Initialize loop state
     self::init_loop();
 
-      // Store original parameters
-      self::$original_parameters = $parameters;
+    // Store original parameters
+    self::$original_parameters = $parameters;
 
-      // Merge parameters with defaults
-      $parameters = self::merge_with_defaults( $parameters );
-      // Store merged parameters
-      self::$state['parameters'] = $parameters;
-
-
-      // Check cache - if loaded, return result
-      if ( ($result = self::check_cache( $parameters )) !== false ) {
-        self::close_loop();
-        return $result;
-      }
-
-      // If there's already result based on parameters, return it
-      $result = self::before_query( $parameters, $template );
-      if ( $result !== null ) {
-        self::close_loop();
-        return $result;
-      }
+    // Merge parameters with defaults
+    $parameters = self::merge_with_defaults( $parameters );
+    // Store merged parameters
+    self::$state['parameters'] = $parameters;
 
 
-      // Set up query based on parameters
-      $query = self::prepare_query( $parameters );
+    // Check cache - if loaded, return result
+    if ( ($result = self::check_cache( $parameters )) !== false ) {
+      self::close_loop();
+      return $result;
+    }
 
-      if (!empty($query)) {
+    // If there's already result based on parameters, return it
+    $result = self::before_query( $parameters, $template );
+    if ( $result !== null ) {
+      self::close_loop();
+      return $result;
+    }
 
-        // Get posts from query
-        $posts = self::run_query( $query );
 
-        // Process posts
-        $posts = self::prepare_posts( $posts );
+    // Set up query based on parameters
+    $query = self::prepare_query( $parameters );
 
-        // Loop through each post and compile shortcode template
-        $results = self::compile_templates( $posts, $template );
+    if (!empty($query)) {
 
-        // Combine results and process to final output
-        $result = self::process_results( $results );
+      // Get posts from query
+      $posts = self::run_query( $query );
 
-      } else {
+      // Process posts
+      $posts = self::prepare_posts( $posts );
 
-        // Query is empty
+      // Loop through each post and compile shortcode template
+      $results = self::compile_templates( $posts, $template );
 
-        $results = self::compile_templates( null, $template, false );
-        $result = self::process_results( $results );
-      }
+      // Combine results and process to final output
+      $result = self::process_results( $results );
+
+    } else {
+
+      // Query is empty
+
+      $results = self::compile_templates( null, $template, false );
+      $result = self::process_results( $results );
+    }
 
     self::close_loop();
 
@@ -188,6 +187,7 @@ class CCS_Loop {
     $state['skip_ids']           = array();
     $state['maxpage']            = 0;
     $state['include_descendants'] = false;
+    $state['multiple_orderby']    = '';
 
     $state['current_post_id']    = 0;
     // Store ID of post that contains the loop
@@ -269,8 +269,13 @@ class CCS_Loop {
 
       // Sort
 
-      'orderby' => '', 'order' => '',
-      'series' => '', 'key' => '',
+      'orderby' => '', 'key' => '', 'order' => '',
+      'orderby_2' => '', 'key_2' => '', 'order_2' => '',
+      'orderby_3' => '', 'key_3' => '', 'order_3' => '',
+      'orderby_4' => '', 'key_4' => '', 'order_4' => '',
+      'orderby_5' => '', 'key_5' => '', 'order_5' => '',
+
+      'series' => '',
       'meta_type' => '',
 
       // Format
@@ -1037,7 +1042,6 @@ class CCS_Loop {
      *
      */
 
-
     if ( !empty($parameters['comment_author']) && empty($parameters['orderby']) )  {
       $parameters['orderby'] = 'comment-date';
     }
@@ -1104,8 +1108,9 @@ class CCS_Loop {
 
         // Default order
 
-        if ( ($orderby=='meta_value') || ($orderby=='meta_value_num') ||
-          ($orderby=='menu_order') || ($orderby=='title') || ($orderby=='name') ) {
+        if ( in_array($orderby,
+          array('meta_value', 'meta_value_num', 'menu_order', 'title', 'name', 'id')
+        )) {
 
           $query['order'] = 'ASC';
 
@@ -1119,11 +1124,75 @@ class CCS_Loop {
 
     /*---------------------------------------------
      *
+     * Multiple orderby
+     *
+     * Sort by multiple fields: orderby_2, orderby_3
+     *
+     */
+
+    if ( !empty($parameters['orderby_2']) ) {
+
+      $first_orderby = $query['orderby'];
+      $to_num = $first_orderby=='meta_value_num' ? '+0' : '';
+
+      // Start building orderby query for filter
+      self::$state['multiple_orderby'] = 'mt1.meta_value'.$to_num.' '.$query['order'];
+
+      // Include orderby fields in query
+      $query['meta_query'] = array(
+        'relation' => 'AND',
+        // First orderby field
+        array( 'key' => $query['meta_key'], 'compare' => 'EXISTS' ),
+      );
+
+      // Up to five orderby fields
+      for ($i=2; $i <= 5; $i++) {
+
+        if (empty($parameters['orderby_'.$i])) break;
+
+        // Alias
+        if ($parameters['orderby_'.$i] == 'field_num')
+          $parameters['orderby_'.$i] = 'meta_value_num';
+
+        if ($parameters['orderby_'.$i] == 'meta_value_num') {
+          $next_orderby = $parameters['orderby_'.$i];
+          $next_orderby_field = @$parameters['key_'.$i];
+        } else {
+          $next_orderby = 'meta_value';
+          $next_orderby_field = $parameters['orderby_'.$i];
+        }
+
+          // Include additional orderby field in query
+        $query['meta_query'][] = array( 'key' => $next_orderby_field, 'compare' => 'EXISTS' );
+
+        $next_order = !empty($parameters['order_'.$i]) ?
+          strtoupper($parameters['order_'.$i]) : 'ASC';
+
+        $to_num = $next_orderby=='meta_value_num' ? '+0' : '';
+
+        // Add orderby field to database query filter
+        self::$state['multiple_orderby'] .= ', mt'.$i.'.meta_value'.$to_num.' '.$next_order;
+      }
+
+      if (!empty($next_orderby_field)) {
+        add_filter('posts_orderby', array(__CLASS__, 'multiple_orderby_filter'));
+      }
+    }
+
+    //debug_array($query);
+
+
+
+
+    /*---------------------------------------------
+     *
      * Sort by series
      *
      */
 
     if ( !empty($parameters['series']) ) {
+
+      // TODO: Just use range()
 
       // Remove white space
       $series = str_replace(' ', '', $parameters['series']);
@@ -2279,11 +2348,18 @@ class CCS_Loop {
      */
 
     if ( self::$state['parameters']['timer'] == 'true' ) {
-
       echo CCS_Cache::stop_timer('<br><b>Loop result</b>: ');
-
     }
 
+    /*---------------------------------------------
+     *
+     * Multiple orderby filter
+     *
+     */
+
+    if ( !empty($state['multiple_orderby']) ) {
+      remove_filter('posts_orderby', array(__CLASS__, 'multiple_orderby_filter'));
+    }
 
     /*---------------------------------------------
      *
@@ -2533,6 +2609,25 @@ class CCS_Loop {
     }
 
     return $template;
+  }
+
+
+  /*---------------------------------------------
+   *
+   * Multiple orderby filter
+   *
+   */
+
+  static function multiple_orderby_filter( $orderby ) {
+
+    if ( ! empty(self::$state['multiple_orderby']) ) {
+
+//echo 'ORDERBY:'.self::$state['multiple_orderby'].'<br>';
+
+      return self::$state['multiple_orderby'];
+    }
+
+    return $orderby;
   }
 
 

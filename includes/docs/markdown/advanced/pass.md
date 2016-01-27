@@ -170,7 +170,9 @@ Use the *array* parameter to display values when the field is stored as an array
 [/pass]
 ~~~
 
-The tags are uppercased versions of the array keys. If the array is a series of values, use the index as key.
+The tags are uppercased versions of the array keys.
+
+If the array is not in key-value pairs but just a series of values, use the index as key, for example: `{0}`
 
 Set *debug=true* to print the whole array content.
 
@@ -227,6 +229,22 @@ If you set *global=query*, you can get any query variable from the URL.
 Specify the query variables in the *fields* parameter. Use the tag syntax to display the values, which are uppercased versions of the variable names. Wrap the tags with quotes in case the query variable is empty.
 
 Please note that some query variables influence the *main* query, so it's better to use unique names.
+
+In some cases, it's necessary to use `[if check]` to catch when the parameter is empty.
+
+~~~
+[pass global=query fields=id]
+  [if check='{ID}']
+    [loop type=member id='{ID}']
+      ...
+    [/loop]
+  [else]
+    The parameter ID is empty
+  [/if]
+[/pass]
+~~~
+
+In the above example, the check is needed because the loop without ID parameter would display all posts of the given post type.
 
 ### URL Route
 

@@ -309,6 +309,28 @@ If you don't specify the value, it will check if the pass value is not empty.
 
 This will display the enclosed content if it's not empty, otherwise display the else clause.
 
+### URL route
+
+If the current URL is: `example.com/article/category/special`
+
+~~~
+[if route_1=article]This is an archive of articles.[/if]
+[if route_2=category]This is a category archive.[/if]
+
+[if route=article/category/special]
+  This is a category archive of special articles.
+[/if]
+~~~
+
+### Day of week
+
+~~~
+[if day_of_week=1]
+  Today is Monday.
+[/if]
+~~~
+
+Check which day of the week it is: 1~7 is Monday~Sunday.
 
 ## Switch/when
 
