@@ -47,7 +47,7 @@ Available parameters for `[comments]` are:
 
 > **category**, **tag** - filter by category or tag
 
-> **taxonomy**, **term** - filter by taxonomy term
+> **taxonomy**, **term**/**term_id** - filter by taxonomy term slug or ID
 
 
 &nbsp;

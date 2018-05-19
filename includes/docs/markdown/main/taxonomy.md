@@ -47,8 +47,6 @@ Use `[related]` to loop through posts related by taxonomy.
 
 The current post is not included in the result.
 
-
-
 ### Parameters
 
 > **taxonomy** - *category*, *tag*, or custom taxonomy; multiple values possible
@@ -61,8 +59,11 @@ The current post is not included in the result.
 
 > **order** - ASC (ascending/alphabetical) or DESC (descending/from most recent date)
 
+> **status** - display posts by status: *any, publish, pending, draft, future, private*; multiple values possible
+
 > **children** - include posts related by child terms - *true* or *false* (default)
 
+> **fill** - set *true* to include unrelated posts until post count is met; must set *count* parameter to work
 
 ## For / each
 

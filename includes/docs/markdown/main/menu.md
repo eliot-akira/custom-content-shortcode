@@ -56,4 +56,17 @@ The child menu inherits the parent's parameters unless overridden.
 [if first]The first menu item[/if]
 [if last]The last menu item[/if]
 [if children]Menu item has children[/if]
+[if id=this]This menu item is the current page[/if]
+~~~
+
+## Menu item classes
+
+You can add your own classes to the menu items.
+
+~~~
+[loop menu='Main Menu']
+  <div class="page_item-[field id][if id=this] current_page_item[/if]">
+    [field title-link]
+  </div>
+[/loop]
 ~~~

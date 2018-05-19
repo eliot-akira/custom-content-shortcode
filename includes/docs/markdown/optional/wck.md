@@ -3,21 +3,18 @@
 
 ---
 
-
-### Single field
+## Single field
 
 For WCK fields, use the `[field]` shortcode and specify a metabox name.
 
 
 ~~~
-[field field_name metabox=metabox_name]
+[field field-name metabox=metabox-name]
 ~~~
-
-
 
 ### Parameters
 
-> **image** - display an image field: *image=field_name*
+> **image** - display an image field: *image=field-name*
 
 > **size** - size of image: *thumbnail*, *medium*, *large*, *full* (default) or custom defined size
 
@@ -26,17 +23,15 @@ For WCK fields, use the `[field]` shortcode and specify a metabox name.
 >> Usually WCK formats a text area to create break lines, but it doesn't work well with shortcodes. When shortcodes are enabled, you'll need to insert &lt;br&gt; tags manually.
 
 
-
-
-### Multiple fields
+## Multiple fields
 
 For multiple fields from the same metabox, you can use the `[metabox]` shortcode.
 
 
 ~~~
-[metabox name=metabox_name]
-  [field field_name]
-  [field another_field]
+[metabox name=metabox-name]
+  [field field-name]
+  [field another-field]
 [/metabox]
 
 ~~~
@@ -51,9 +46,9 @@ Use `[repeater]` to display a repeating metabox.
 *Display repeater fields*
 
 ~~~
-[repeater metabox=metabox_name]
-  [field field_name]
-  [field another_field]
+[repeater metabox=metabox-name]
+  [field field-name]
+  [field another-field]
 [/repeater]
 ~~~
 
@@ -72,9 +67,19 @@ Use `[repeater]` to display a repeating metabox.
 ~~~
 [loop type=post_type count=5]
   Post Title: [field title]
-  [repeater metabox=metabox_name]
-    [field field_name]
-    [field another_field]
+  [repeater metabox=metabox-name]
+    [field field-name]
+    [field another-field]
   [/repeater]
 [/loop]
+~~~
+
+## Conditions
+
+Use [the `[if]` shortcode](options-general.php?page=ccs_reference&tab=if#field-value) to compare field value.
+
+Specify the *metabox* parameter when outside a metabox or repeater loop.
+
+~~~
+[if field=field-name metabox=metabox-name value=123]
 ~~~

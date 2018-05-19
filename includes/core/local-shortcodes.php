@@ -2,7 +2,7 @@
 /**
  *
  * Local Shortcodes
- * @version  0.0.5
+ * @version  0.0.6
  *
  * Adapted from WordPress core:
  * https://github.com/WordPress/WordPress/blob/master/wp-includes/shortcodes.php
@@ -117,7 +117,9 @@ function add_local_shortcode($global_tag, $tag, $func, $add_global=false) {
 	if ( is_callable($func) ) {
 		$local_shortcode_tags[$global_tag][$tag] = $func;
 		if ($add_global) add_shortcode($tag, $func);
-	}
+	} else {
+    // Not callable
+  }
 }
 
 /**

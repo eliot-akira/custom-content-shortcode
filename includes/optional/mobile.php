@@ -9,7 +9,7 @@
 if ( !is_admin() ) :
 
 if (!class_exists('Mobile_Detect')) {
-  require_once (CCS_PATH.'/includes/optional/mobile-detect.php');
+  require_once (CCS_PATH.'/includes/optional/lib/mobile-detect.php');
 }
 
 // Extend Mobile Detect to get specific device & browser

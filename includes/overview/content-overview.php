@@ -44,24 +44,19 @@
 
 			/* Generate list of post types */
 
-			$post_type_objects = get_post_types( array(/*'public' => true*/), 'objects' ); 
+			$post_type_objects = get_post_types( array('public' => true), 'objects' );
 
-				$exclude_types = array( 'revision', 'plugin_filter', 'plugin_group' );
-/*
-				foreach ($exclude_types as $exclude_type) {
-					unset($post_types[$exclude_type]);
-				}
-			Or..array('public' => true)
-
+      $exclude_types = array( 'revision', 'plugin_filter', 'plugin_group' );
+/*			foreach ($exclude_types as $exclude_type) {
+				unset($post_types[$exclude_type]);
+			}
 */
-
 
 			foreach ($post_type_objects as $post_type_object) {
 
 				$label = $post_type_object->labels->singular_name; if(empty($label)) $label=$post_type_object->labels->name;
 				$labels[] = $label;
 				$sorted_post_objects[$label] = $post_type_object;
-
 			}
 
 			sort( $labels );
@@ -196,18 +191,19 @@
 
 			    foreach ( $allposts as $post ) : setup_postdata($post);
 
-			        $post_id = $post->ID;
+		        $post_id = $post->ID;
 
-			        $fields = get_post_custom_keys($post_id);    // all keys for post as values of array
+		        $fields = get_post_custom_keys($post_id);    // all keys for post as values of array
 
-			        if ($fields) {
-			            foreach ($fields as $key => $value) {
+		        if ($fields) {
+	            foreach ($fields as $key => $value) {
 
-			                if ($value[0] != '_') {              // exclude where added by plugin
-			                    $all_fields[$value] = isset($customfields[$value]) ? $customfields[$value] + 1 : 1;
-			                }
-			            }
-			        }
+                if ($value[0] != '_') {              // exclude where added by plugin
+                  $all_fields[$value] = isset($customfields[$value]) ?
+                    $customfields[$value] + 1 : 1;
+                }
+	            }
+		        }
 
 			    endforeach; wp_reset_postdata();
 

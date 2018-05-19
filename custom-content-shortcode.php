@@ -1,27 +1,29 @@
 <?php
 /*
 Plugin Name: Custom Content Shortcode
-Plugin URI: http://wordpress.org/plugins/custom-content-shortcode/
+Plugin URI: https://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 3.3.2
+Version: 3.7.1
 Shortcodes: loop, content, field, taxonomy, if, for, each, comments, user, url, load
 Author: Eliot Akira
-Author URI: eliotakira.com
+Author URI: https://eliotakira.com
 License: GPL2
 */
+
+if (!class_exists('CCS_Plugin')) :
 
 define('CCS_PATH', dirname(__FILE__));
 define('CCS_URL', untrailingslashit(plugins_url('/',__FILE__)));
 define('CCS_PLUGIN_BASENAME', plugin_basename(__FILE__));
-
-new CCS_Plugin;
 
 class CCS_Plugin {
 
   static $settings;
   static $settings_name;
   static $settings_definitions;
-  static $state;
+  static $state = array(
+    'doing_ccs_shortcode' => false,
+  );
 
   function __construct() {
 
@@ -29,7 +31,6 @@ class CCS_Plugin {
     $this->load_main_modules();
     $this->load_optional_modules();
 
-    self::$state['doing_ccs_filter'] = false;
     self::$state['original_post_id'] = 0;
 
     add_action('init',array($this,'init'));
@@ -77,6 +78,24 @@ class CCS_Plugin {
         'tab' => 'gallery',
         'text' => '<b>Gallery Field</b> module',
       ),
+      'block_shortcode' => array(
+        'default' => 'off',
+        'module' => 'block',
+        'tab' => 'block',
+        'text' => '<b>HTML block</b> shortcodes',
+      ),
+      'load_math_module' => array(
+        'default' => 'off',
+        'module' => 'math',
+        'tab' => 'math',
+        'text' => '<b>Math</b> module',
+      ),
+      'load_meta_shortcodes_module' => array(
+        'default' => 'off',
+        'module' => 'meta-shortcodes',
+        'tab' => 'meta-shortcodes',
+        'text' => '<b>Meta Shortcodes</b> module',
+      ),
       'load_mobile_detect' => array(
         'default' => 'off',
         'module' => 'mobile',
@@ -88,12 +107,6 @@ class CCS_Plugin {
         'module' => 'raw',
         'tab' => 'raw',
         'text' => '<b>[raw]</b> shortcode',
-      ),
-      'block_shortcode' => array(
-        'default' => 'off',
-        'module' => 'block',
-        'tab' => 'block',
-        'text' => '<b>HTML block</b> shortcodes',
       ),
       'shortcodes_in_widget' => array(
         'default' => 'on',
@@ -181,9 +194,11 @@ class CCS_Plugin {
 
     foreach (self::$settings_definitions as $option_name => $def) {
 
-      if ( !empty($def['module']) &&
-        isset(self::$settings[ $option_name ]) &&
-        self::$settings[ $option_name ]=='on' ) {
+      if (
+          !empty($def['module']) &&
+          isset(self::$settings[ $option_name ]) &&
+          self::$settings[ $option_name ]=='on'
+        ) {
 
         $this->load_module( 'optional/'.$def['module'] );
       }
@@ -275,7 +290,7 @@ class CCS_Plugin {
 
   static function ccs_content_filter( $content ) {
 
-    $content = do_ccs_shortcode( $content, false );
+    $content = do_ccs_shortcode($content, $global = false, $filter = true);
 
     // This gets passed to do_shortcode
     return $content;
@@ -285,4 +300,8 @@ class CCS_Plugin {
     add_ccs_shortcode( $tag, $func, $global );
   }
 
-} // End CCS_Plugin
+}
+
+new CCS_Plugin;
+
+endif;

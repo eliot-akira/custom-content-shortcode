@@ -12,12 +12,10 @@ new CCS_If;
 class CCS_If {
 
   public static $state;
-  public static $vars;
 
   function __construct() {
 
     self::$state['is_if_block'] = false;
-    self::$vars = array();
 
     add_ccs_shortcode( array(
       'if' => array( $this, 'if_shortcode' ),
@@ -25,17 +23,22 @@ class CCS_If {
       '--if' => array( $this, 'if_shortcode' ),
       '---if' => array( $this, 'if_shortcode' ),
       '----if' => array( $this, 'if_shortcode' ),
-      'var' => array( $this, 'var_shortcode' ),
       'switch' => array( $this, 'switch_shortcode' ),
+      '-switch' => array( $this, 'switch_shortcode' ),
+      '--switch' => array( $this, 'switch_shortcode' ),
     ));
 
     add_local_shortcode('ccs_switch', 'when', array( $this, 'when_shortcode' ));
-    add_local_shortcode('ccs_switch', 'case', array( $this, 'when_shortcode' ));
+    add_local_shortcode('ccs_switch', '-when', array( $this, 'when_shortcode' ));
+    add_local_shortcode('ccs_switch', '--when', array( $this, 'when_shortcode' ));
   }
 
 
 
-  function if_shortcode( $atts, $content = null, $shortcode_name ) {
+  static function if_shortcode( $atts, $content = null, $shortcode_name = 'if' ) {
+
+    // if_all_conditions() can request false
+    if ( isset($atts['false']) ) return false;
 
     $atts_original = $atts;
 
@@ -59,14 +62,18 @@ class CCS_If {
       'field' => '',
       'custom' => '', // SKip predefined field names
       'user_field' => '',
+
       'check' => '', // Check passed value
       'value' => '',
+      'check_2' => '', // Check passed value
+      'value_2' => '',
 
       // Date field comparison
       'before' => '',
       'after' => '',
       'date_format' => '',
       'in' => '', // For date-time field, set in=timestamp or date_format=U
+
       'field_2' => '', // Optional with before/after
 
       'today' => '', // Check today's value
@@ -95,6 +102,7 @@ class CCS_If {
       'first' => '',
       'last' => '',
       'count' => '',
+      'total' => '',
 
       // Inside for/each loop
       'each' => '',
@@ -110,32 +118,51 @@ class CCS_If {
 
       'pass' => '',
 
-      'false' => '', // Force false
+      'host' => '', // Site URL base
 
       // deprecated
       'pass_empty' => 'true',
       'flag' => '',
       'no_flag' => '',
+
+      'var' => '', // Check get/set variable's value
     );
 
     extract( shortcode_atts( $args , $atts, true ) );
 
     $atts = CCS_Content::get_all_atts( $atts );
 
-    if ( isset($atts['and']) ) {
+    // Get [else] block
+    $if_else = self::get_if_else( $content, $shortcode_name );
+
+    // Provide filter hook
+    $result = apply_filters( 'ccs_if_filter', false, array(
+      'atts' => $atts,
+      'content' => $if_else['if'],
+      'else' => $if_else['else']
+    ));
+    // Anything other than false means we already have content
+    if ($result !== false) return $result;
+
+    // Split multiple conditions
+    if ( isset($atts['and']) || isset($atts['or']) ) {
       return self::if_all_conditions( $atts, $content, $shortcode_name );
     }
 
     if ( count($atts)==0 ) $condition = true;
     else $condition = false;
-
-
     $out = '';
 
-    // Get [else] block
-    $if_else = self::get_if_else( $content, $shortcode_name );
+    // Split content before and after [else]
     $content = $if_else['if'];
     $else = $if_else['else'];
+
+
+    if (isset($atts['true']))
+      // Skip the rest of conditions and finish
+      return self::close_if_block($atts, $content, $else, true);
+    elseif (isset($atts['false']))
+      return self::close_if_block($atts, $content, $else, false);
 
 
     if ( ( !empty($before) || !empty($after) ) && empty($field) ) {
@@ -160,6 +187,8 @@ class CCS_If {
     $post = get_post($current_post_id);
 
 
+
+
     /*---------------------------------------------
      *
      * If exists
@@ -169,17 +198,33 @@ class CCS_If {
     if (isset($atts['exists'])) {
 
       unset($atts['exists']);
+
       if (empty($atts)) {
-        $result = do_ccs_shortcode($content);
+
+        $parts = explode('['.$if_else['prefix'].'show]', $content);
+        if (isset($parts[1])) {
+          // Check if first part exists
+          $result = do_ccs_shortcode($parts[0]);
+          // And show second part
+          $content = $parts[1];
+        } else {
+          // Check if exists and show it
+          $result = do_ccs_shortcode($content);
+        }
+
       } else {
         // Check if post exists based on given parameters
         $result = CCS_Loop::the_loop_shortcode($atts_original, 'X');
-        // Remove params for rest of condition checks
-        $atts = array();
       }
       $result = trim($result);
+
       $condition = !empty($result);
+
+      // Skip the rest of conditions and finish
+      return self::close_if_block($atts, $content, $else, $condition);
     }
+
+
 
     /*---------------------------------------------
      *
@@ -241,10 +286,13 @@ class CCS_If {
         $condition = true;
 
       } else {
+
         foreach ($terms as $term) {
 
           if ( empty($compare) || $compare == 'OR' ) {
             $condition = in_array($term, $post_tax_array) ? true : $condition;
+          } elseif ( $compare == 'NOT' ) {
+            $condition = !in_array($term, $post_tax_array) ? true : false;
           } else {
             // AND
             $condition = in_array($term, $post_tax_array) ? true : false;
@@ -279,7 +327,7 @@ class CCS_If {
       if ( !empty($each) ) {
         $v = do_shortcode('[each slug]');
         if ($decode=='true') $v = urldecode($v);
-        $eaches = CCS_Loop::explode_list($each);
+        $eaches = CCS_Format::explode_list($each);
         $condition = in_array($v, $eaches);
       }
       if ( !empty($each_field) ) {
@@ -291,6 +339,31 @@ class CCS_If {
 
       if ( isset($atts['for-first']) ) {
         $condition = $condition || CCS_ForEach::$state['for_count'] == 1;
+      }
+    }
+
+    /*---------------------------------------------
+     *
+     * Inside [for type]
+     *
+     */
+
+    if ( CCS_ForEach::$state['is_for_post_type_loop'] ) {
+      $condition = self::first_last_every($atts, array(
+        'current' => CCS_ForEach::$state['for_post_type_count'],
+        'max' => CCS_ForEach::$state['for_post_type_max']
+      ), $condition);
+
+      if (isset($atts['archive'])) {
+        $archive_url = do_ccs_shortcode('[each url]');
+        $condition = !empty($archive_url);
+        // Outside of for type, [if archive] means if on arhive page
+        unset($atts['archive']);
+      }
+      if (isset($atts['prefix'])) {
+        $prefix = do_ccs_shortcode('[each prefix]');
+        $condition = !empty($prefix);
+        unset($atts['prefix']);
       }
     }
 
@@ -313,7 +386,7 @@ class CCS_If {
       $compare = 'CONTAINS';
       if (empty($loose)) $loose = 'true'; // Loose search by default
 
-      $field = CCS_Loop::explode_list($field);
+      $field = CCS_Format::explode_list($field);
 
       if ( count($field) > 1 ) {
 
@@ -339,6 +412,18 @@ class CCS_If {
     }
 
 
+    /*---------------------------------------------
+     *
+     * Check get/set variable value
+     *
+     */
+
+    if ( !empty($var) ) {
+      $check = isset( CCS_Pass::$vars[ $var ] )
+        ? CCS_Pass::$vars[ $var ]
+        : array(''); // Force check empty string
+    }
+
 
     /*---------------------------------------------
      *
@@ -346,7 +431,7 @@ class CCS_If {
      *
      */
 
-    if ( !empty($field) || !empty($user_field) || !empty($check) ) {
+    if ( !empty($field) || !empty($user_field) || $check !== '' ) {
 
       // Post field
       if ( !empty($field) ) {
@@ -377,8 +462,14 @@ class CCS_If {
 
         } else {
 
-          // Normal field
-          $check = CCS_Content::get_prepared_field( $field ); // do_shortcode('[field '.$field.']');// ;
+          // Allow filtering field before query
+          // Supports, for example, WCK metabox parameter
+          $check = CCS_Content::before_anything( $atts );
+
+          if ($check===false)
+            // Normal field
+            $check = CCS_Content::get_prepared_field( $field );
+
         }
 
 
@@ -391,7 +482,7 @@ class CCS_If {
             // Convert to imestamp
             if ($in!=='timestamp') $field_2 = strtotime( $field_2 . ' +0000');
             $now = intval($field_2);
-  //echo 'FIELD2:'.$field_2.' = '.$now.'<br>';
+
           } else {
             $now = current_time('timestamp');
           }
@@ -410,7 +501,6 @@ class CCS_If {
           } elseif ( !empty($after) ) {
             $value = date( $date_format, strtotime( $after . ' +0000', $now ) );
             $compare = empty($compare) ? '>' : $compare;
-  //echo 'VALUE: '.$now.' '.$after.' = '.$value.'<br>';
           }
 
         } elseif ( !empty($field_2) ) {
@@ -438,7 +528,6 @@ class CCS_If {
       }
 
 
-
       // Array
       if ( !empty($sub) ) {
         $check = isset($check[$sub]) ? $check[$sub] : '';
@@ -463,8 +552,7 @@ class CCS_If {
         $end = 'true';
       }
 
-      if ( $check === '' ) { // ( empty($check) || ( $check == false ) ) {
-        // @todo What if field value is boolean, i.e., checkbox?
+      if ( $check === '' ) { // check only empty string, allow false and zero
 
         $condition = false;
 
@@ -478,7 +566,6 @@ class CCS_If {
           $date_values = array(
             'today', 'today-between', 'now','future','past','future not today','past and today','future-time','past-time'
           );
-
 
           foreach ($check as $check_this) {
 
@@ -506,8 +593,6 @@ class CCS_If {
                 //debug_array($q);
                 if (is_array($this_value)) $this_value = implode(',', $this_value);
               }
-
-//echo 'Check field: '.$field.' '.$check_this.' '.$compare.' '.$this_value.'<br>';
 
               if ( $start == 'true' && $end == 'true' ) {
                 // Check beginning and end of field value
@@ -579,9 +664,15 @@ class CCS_If {
                           true : $condition;
                     }
                   break;
+                  case 'NOT':
+                  case '!=':
+                    // All values must be not equal
+                    $condition = ($check_this != $this_value) ? true : false;
+                  break;
                   case 'EQUAL':
                   case '=':
                   default:
+                    // Any value (at least one) is equal
                     $condition = ($check_this == $this_value) ? true : $condition;
                   break;
                 }
@@ -590,14 +681,19 @@ class CCS_If {
             } // End for each value
           } // End for each check
 
-        } // Value is not null - allow: false, 0
+        } // End if value is not null - allows: false, 0
 
         else {
 
           // No value specified - just check that there is field value
           if ( $empty=='true' ) {
-              if (is_array($check)) $check = implode('', $check); // catches ACF repeater
-              $condition = !empty($check) ? true : false;
+
+            if (is_array($check))
+              // Catches ACF repeater
+              $condition = count(array_filter($check)) > 0;
+            else
+              $condition = !empty($check);
+
           } else {
             $condition = false;
           }
@@ -633,6 +729,7 @@ class CCS_If {
         } else {
           $ids[$find_key] = get_the_ID();
         }
+
       }
 
       $condition = in_array($current_post_id, $ids) ? true : false;
@@ -667,7 +764,7 @@ class CCS_If {
 
     if ( !empty($author) ) {
 
-      $authors = CCS_Loop::explode_list( $author );
+      $authors = CCS_Format::explode_list( $author );
       $author_ids = array();
       foreach ($authors as $this_author) {
         if ( $this_author=='this' ) {
@@ -698,7 +795,7 @@ class CCS_If {
     if ( !empty($comment_author) ) {
       if (CCS_Comments::$state['is_comments_loop']) {
 
-        $authors = CCS_Loop::explode_list( $comment_author );
+        $authors = CCS_Format::explode_list( $comment_author );
         $author_ids = array();
         foreach ($authors as $this_author) {
           if ( $this_author=='this' ) {
@@ -746,32 +843,27 @@ class CCS_If {
 
         foreach ($parents as $check_parent) {
 
+          // Compare to parent id
           if (is_numeric($check_parent)) {
-            // compare to parent id
-
-            if ( empty($compare) || $compare == 'OR' ) {
-              $condition = ($check_parent==$current_post_parent) ? true : $condition;
-            } else { // AND
-              $condition = ($check_parent==$current_post_parent) ? true : false;
-              if (!$condition) break; // Every term must be found
-            }
-
+            $check_this = $current_post_parent;
+          // Compare to parent slug
           } else {
-            // compare to parent slug
-
             if ($start=='true') {
               // Only check beginning of string
               $check_this = substr($current_post_parent_slug, 0, strlen($check_parent));
             } else {
               $check_this = $current_post_parent_slug;
             }
+          }
 
-            if ( empty($compare) || $compare == 'OR' ) {
-              $condition = ($check_parent==$check_this) ? true : $condition;
-            } else { // AND
-              $condition = ($check_parent==$check_this) ? true : false;
-              if (!$condition) break; // Every term must be found
-            }
+          if ( empty($compare) || $compare == 'OR' ) {
+            $condition = ($check_parent==$check_this) ? true : $condition;
+          } elseif ( $compare == 'NOT' ) {
+            $condition = ($check_parent!=$check_this) ? true : false;
+            if (!$condition) break; // Every term must be not equal
+          } else { // AND
+            $condition = ($check_parent==$check_this) ? true : false;
+            if (!$condition) break; // Every term must be found
           }
         }
       }
@@ -850,7 +942,7 @@ class CCS_If {
      */
 
     if ( !empty($format) && function_exists( 'has_post_format' ) ) {
-      $formats = CCS_Loop::explode_list($format);
+      $formats = CCS_Format::explode_list($format);
       foreach ($formats as $this_format) {
         $this_format = strtolower($this_format);
         if ( has_post_format( $this_format, $current_post_id ) ) {
@@ -902,6 +994,11 @@ class CCS_If {
       $condition = !empty($check);
     }
 
+    if (isset($atts['host'])) {
+      // Check host: localhost, example.com..
+      $condition = ($atts['host'] === $_SERVER['SERVER_NAME']);
+    }
+
     /*---------------------------------------------
      *
      * Inside [loop]
@@ -910,37 +1007,38 @@ class CCS_If {
 
     if ( CCS_Loop::$state['is_loop'] ) {
 
+      // TODO: Support every/first/last for other loops: users, taxonomies, repeaters..
+
       /*---------------------------------------------
        *
        * Every X number of posts
        *
        */
 
+      $condition = self::first_last_every($atts, array(
+        'current' => CCS_Loop::$state['loop_count'],
+        'max' => CCS_Loop::$state['post_count']
+      ), $condition);
+
       if ( !empty($every) ) {
 
-        $count = CCS_Loop::$state['loop_count'];
+        // every='not X'
+        // Deprecated in favor of: [if not every]
 
         if (substr($every,0,4)=='not ') {
           $every = substr($every, 4); // Remove first 4 letters
-
           // not Modulo
-            $condition = ($every==0) ? false : (($count % $every)!=0);
-        } else {
-
-          // Modulo
-          $condition = ($every==0) ? false : (($count % $every)==0);
+            $condition = ($every==0) ? false : ((CCS_Loop::$state['loop_count'] % $every)!=0);
         }
+      }
 
-        if ($first == 'true') {
-          $condition = $condition || CCS_Loop::$state['loop_count'] == 1;
-          //unset($atts['first']);
-        }
-        if ($last == 'true') {
-          $condition = $condition || CCS_Loop::$state['loop_count'] == CCS_Loop::$state['post_count'];
-          //unset($atts['last']);
-        }
+      /*---------------------------------------------
+       *
+       * Current count
+       *
+       */
 
-      } elseif ( !empty($count) ) {
+      if ( !empty($count) ) {
 
         if ( $compare == '>=' ) {
           $condition = CCS_Loop::$state['loop_count'] >= $count;
@@ -950,26 +1048,47 @@ class CCS_If {
           $condition = CCS_Loop::$state['loop_count'] > $count;
         } elseif ( $compare == '<' || $compare == 'LESS' ) {
           $condition = CCS_Loop::$state['loop_count'] < $count;
+        } elseif ( $compare == '!' || $compare == 'NOT' ) {
+          $condition = CCS_Loop::$state['loop_count'] != $count;
         } else {
           $condition = CCS_Loop::$state['loop_count'] == $count;
         }
 
       }
 
-      /*---------------------------------------------
-       *
-       * First and last post in loop
-       *
-       */
-
-      $condition = isset($atts['first']) ?
-        CCS_Loop::$state['loop_count'] == 1 : $condition;
-
-      $condition = isset($atts['last']) ?
-        CCS_Loop::$state['loop_count'] == CCS_Loop::$state['post_count'] : $condition;
-
-
     } // End: if inside [loop]
+
+
+
+
+
+    /*---------------------------------------------
+     *
+     * Total
+     *
+     */
+
+    if ( !empty($total) ) {
+
+      // TODO: Add new function to handle compare situations like this
+
+      // Works even after loop is closed
+      $check_total = CCS_Loop::$state['post_count'];
+
+      if ( $compare == '>=' ) {
+        $condition = $check_total >= $total;
+      } elseif ( $compare == '<=' ) {
+        $condition = $check_total <= $total;
+      } elseif ( $compare == '>' || $compare == 'MORE' ) {
+        $condition = $check_total > $total;
+      } elseif ( $compare == '<' || $compare == 'LESS' ) {
+        $condition = $check_total < $total;
+      } elseif ( $compare == '!' || $compare == 'NOT' ) {
+        $condition = $check_total != $total;
+      } else {
+        $condition = $check_total == $total;
+      }
+    }
 
 
     /*---------------------------------------------
@@ -980,26 +1099,15 @@ class CCS_If {
 
     if ( CCS_Menu::$state['is_menu_loop'] ) {
 
-      $condition = isset($atts['first']) ?
-        CCS_Menu::$state['menu_index'][ CCS_Menu::$state['depth'] ] == 1 : $condition;
-
-      $condition = isset($atts['last']) ?
-        CCS_Menu::$state['menu_index'][ CCS_Menu::$state['depth'] ] ==
-          CCS_Menu::$state['total_menu_count'][ CCS_Menu::$state['depth'] ]
-        : $condition;
+      $condition = self::first_last_every($atts, array(
+        'current' => CCS_Menu::$state['menu_index'][ CCS_Menu::$state['depth'] ],
+        'max' => CCS_Menu::$state['total_menu_count'][ CCS_Menu::$state['depth'] ]
+      ), $condition);
 
       if (isset($atts['children'])) {
         $children = do_shortcode('[loop menu=children].[/loop]');
         if (!empty($children)) $condition = true;
         else $condition = false;
-      }
-
-
-      if ( !empty($every) ) {
-
-        $count = CCS_Menu::$state['menu_index'][ CCS_Menu::$state['depth'] ];
-        // Modulo
-        $condition = ($every==0) ? false : (($count % $every)==0);
       }
     }
 
@@ -1013,23 +1121,17 @@ class CCS_If {
     if ( class_exists('CCS_To_ACF') ) {
 
       if ( CCS_To_ACF::$state['is_repeater_or_flex_loop'] ) {
-
-        if ( !empty($every) ) {
-          $condition = ( CCS_To_ACF::$state['repeater_index'] % $every == 0 );
-        }
-        if ( isset($atts['first']) ) {
-          $condition = ( CCS_To_ACF::$state['repeater_index'] == 1 );
-        }
+        $condition = self::first_last_every($atts, array(
+          'current' => CCS_To_ACF::$state['repeater_index'],
+          // 'max' => we don't have max count
+        ), $condition);
       }
 
       if ( CCS_To_ACF::$state['is_gallery_loop'] ) {
-
-        if ( !empty($every) ) {
-          $condition = ( CCS_To_ACF::$state['gallery_index'] % $every == 0 );
-        }
-        if ( isset($atts['first']) ) {
-          $condition = ( CCS_To_ACF::$state['gallery_index'] == 1 );
-        }
+        $condition = self::first_last_every($atts, array(
+          'current' => CCS_To_ACF::$state['gallery_index'],
+          // 'max' => we don't have max count
+        ), $condition);
       }
     }
 
@@ -1040,13 +1142,12 @@ class CCS_If {
      */
 
     if (CCS_Content::$state['is_array_field']) {
-      if ( isset($atts['first']) ) {
-        $condition = ( CCS_Content::$state['array_field_index'] == 1 );
-      }
-      if ( isset($atts['last']) ) {
-        $condition = ( CCS_Content::$state['array_field_index'] == CCS_Content::$state['array_field_count'] );
-      }
+      $condition = self::first_last_every($atts, array(
+        'current' => CCS_Content::$state['array_field_index'],
+        'max' => CCS_Content::$state['array_field_count']
+      ), $condition);
     }
+
 
     /*---------------------------------------------
      *
@@ -1055,12 +1156,24 @@ class CCS_If {
      */
 
     if (CCS_Comments::$state['is_comments_loop']) {
-      if ( isset($atts['first']) ) {
-        $condition = ( CCS_Comments::$state['comments_loop_index'] == 1 );
-      }
-      if ( isset($atts['last']) ) {
-        $condition = ( CCS_Comments::$state['comments_loop_index'] == CCS_Comments::$state['comments_loop_count'] );
-      }
+      $condition = self::first_last_every($atts, array(
+        'current' => CCS_Comments::$state['comments_loop_index'],
+        'max' => CCS_Comments::$state['comments_loop_count'],
+      ), $condition);
+    }
+
+    /*---------------------------------------------
+     *
+     * Inside imgs loop
+     *
+     */
+
+    if (class_exists('CCS_Gallery_Field') && CCS_Gallery_Field::$state['is_imgs_loop']) {
+
+      $condition = self::first_last_every($atts, array(
+        'current' => CCS_Gallery_Field::$state['current_img_index'],
+        'max' => CCS_Gallery_Field::$state['img_count'],
+      ), $condition);
     }
 
 
@@ -1068,11 +1181,11 @@ class CCS_If {
      *
      * Passed value
      *
+     * TODO: Combine with *check*
+     *
      */
 
-    if ( ( isset($atts['pass']) && empty($atts['pass']) && $empty!='true' ) ||
-      ( $pass_empty!='true' && empty($pass) ) ) // @todo deprecated
-    {
+    if ((isset($atts['pass']) && empty($atts['pass']) && $empty!='true')) {
 
       // pass="{FIELD}" empty="false" -- pass is empty
 
@@ -1088,7 +1201,7 @@ class CCS_If {
 
       // pass="{FIELD}" value="something"
 
-      $values = CCS_Loop::explode_list( $value ); // Support multiple values
+      $values = CCS_Format::explode_list( $value ); // Support multiple values
 
       $condition = in_array( $pass, $values );
     }
@@ -1117,16 +1230,56 @@ class CCS_If {
      */
 
     $routes = CCS_URL::get_routes();
-    // Whole route
+
     if (!empty($route)) {
-      $result = implode('/', $routes);
-      $condition = ($result == $route);
+
+      // Multiple routes possible: "route_1,route_2"
+      $check_routes = CCS_Format::explode_list($route);
+
+      foreach ($check_routes as $check_route) {
+
+        // Remove empty values and reindex numeric keys
+        $checks = array_values(array_filter(explode('/', $check_route)));
+
+        // Check given route parts against current route
+        foreach ($checks as $index => $value) {
+
+          if ( $value=='**' ) {
+            $condition = true;
+            break;
+          } elseif ( ! isset($routes[$index]) )
+            $condition = false;
+          elseif ( $value=='*' )
+            $condition = true;
+          elseif ( $value[0]=='!' ) {
+            $value = substr($value, 1);
+            $condition = $routes[$index]!=$value;
+          } else {
+            $condition = $routes[$index]==$value;
+          }
+
+          // Must match all route parts
+          if (!$condition) break;
+        }
+
+        // URL parts count must be equal to given route parts
+        if ( $value!=='**' && (count($routes) !== count($checks)) )
+          $condition = false;
+
+        if ($condition) break; // If any route matches, it's true
+      }
     }
+
+//introspect('CHECK', $routes, $checks, $condition);
+
     // Route parts: route_1, route_2, ...
     for ($i=0; $i < count($routes); $i++) {
+
       if (isset($atts['route_'.($i+1)])) {
         $condition = $atts['route_'.($i+1)] == $routes[$i];
+        // All must match
         if (!$condition) break;
+
       } elseif ( isset($atts[0]) && $atts[0] == 'route_'.($i+1) ) {
         // if it exists
         $condition = !empty($routes[$i]);
@@ -1134,20 +1287,25 @@ class CCS_If {
       }
     }
 
+    return self::close_if_block($atts, $content, $else, $condition);
+  }
+
+
+  static function close_if_block($atts, $content, $else, $condition) {
 
     /*---------------------------------------------
      *
      * Not / else
-     *
      */
 
-    // Not - also catches compare="not"
+    // [if not] - alternative way to set compare=not
     $condition = isset($atts['not']) ? !$condition : $condition;
 
     self::$state['is_if_block'] = true;
-    $out = $condition ?
-      do_ccs_shortcode( $content ) :
-      do_ccs_shortcode( $else ); // [if]..[else]..[/if]
+    $out = $condition
+      ? (!empty($content) ? do_ccs_shortcode( $content ) : '')
+      : (!empty($else) ? do_ccs_shortcode( $else ) : '')
+    ; // [if]..[else]..[/if]
     self::$state['is_if_block'] = false;
 
     return $out;
@@ -1173,14 +1331,15 @@ class CCS_If {
 
     return array(
       'if' => $content,
-      'else' => $else
+      'else' => $else,
+      'prefix' => $prefix,
     );
   }
 
 
   /*---------------------------------------------
    *
-   * Handle multiple conditions with "and"
+   * Handle multiple conditions with "and" or "or"
    *
    */
 
@@ -1195,12 +1354,17 @@ class CCS_If {
 
     foreach ($atts as $key => $value) {
 
+      // or, or__2, or__3
       $check = explode('__', $key);
-      if ( isset($check[0]) && $check[0]=='and' ) {
-        $operator = 'and';
+
+      if ( isset($check[0]) && ($check[0]=='and' || $check[0]=='or') ) {
+        $operator = $check[0];
         $num_conditions++;
         $conditions .= ']X[/'.$tag.']['.$tag.' ';
       } else {
+        $parts = explode('_', $key); // ?
+        if ( isset($parts[1]) && is_numeric($parts[1]))
+          $key = $parts[0];
         $conditions .= ' '.$key.'='.$value;
       }
     }
@@ -1234,9 +1398,11 @@ class CCS_If {
 
     $switch = '';
 
+    if (!isset($atts) || !is_array($atts)) return;
+
     foreach ($atts as $key => $value) {
 
-      if ( is_numeric($key) ) {
+      if ( $key===0 ) { // is_numeric($key)
         $switch .= $value;
         continue;
       }
@@ -1262,6 +1428,7 @@ class CCS_If {
 
     if (empty($switch)) return;
 
+    // Pass to when
     self::$state['current_switch'] = $switch;
     self::$state['current_switch_default'] = '';
 
@@ -1284,49 +1451,42 @@ class CCS_If {
   }
 
   function when_shortcode( $atts, $content ) {
-    if (!isset($atts[0])) return;
+
+    //if (!isset($atts[0])) return;
+
     $switch = self::$state['current_switch'];
-    $when = $atts[0];
-    if ($when == 'default') {
-      self::$state['current_switch_default'] = $content;
-      return;
-    }
+    $switch_slug = explode('=', $switch);
+    $switch_slug = $switch_slug[0];
 
-    return do_ccs_shortcode('[if '.$switch.'='.$when.']'.$content.'[/if]');
-  }
-
-
-  /*---------------------------------------------
-   *
-   * Other
-   *
-   */
-
-  function var_shortcode( $atts ) {
+    $condition = '';
 
     foreach ($atts as $key => $value) {
+      if ($value == 'default') {
+        self::$state['current_switch_default'] = $content;
+        return;
+      } elseif ($value == 'or') continue;
 
-      if ( substr($value, 0 , 1) == '+' ) {
-
-        $value = substr($value, 1);
-        if (!isset(self::$vars[ $key ])) self::$vars[ $key ] = 0;
-        self::$vars[ $key ] += $value;
-
-      } elseif ( substr($value, 0 , 1) == '-' ) {
-
-        $value = substr($value, 1);
-        if (!isset(self::$vars[ $key ])) self::$vars[ $key ] = 0;
-        self::$vars[ $key ] -= $value;
-
-      } elseif (is_numeric($key)) {
-
-        // [var x] returns the value
-        return isset(self::$vars[ $value ]) ? self::$vars[ $value ] : '';
-
+      $this_switch = $switch;
+      if (is_numeric($key)) {
+        if ($switch_slug==='check') $this_switch = $switch.' value';
       } else {
-        self::$vars[ $key ] = $value;
+        $this_switch = $switch.' '.$key;
+      }
+
+      // Backward compatibility for multiple values
+      $values = explode(',', $value);
+      foreach ($values as $val) {
+        $condition .= '[if '.$this_switch.'='.$val.']x[/if]';
       }
     }
+
+//echo str_replace(array('[',']'), '', $condition).'<br>';
+
+    $condition = do_shortcode($condition);
+
+    if ( !empty($condition) )
+      // True
+      return do_ccs_shortcode($content);
   }
 
 
@@ -1338,7 +1498,7 @@ class CCS_If {
    *
    */
 
-  function comma_list_to_array( $string ) {
+  static function comma_list_to_array( $string ) {
 
     // Explode comma-separated list and trim white space
 
@@ -1352,4 +1512,29 @@ class CCS_If {
     } else return null;
   }
 
+
+  static function first_last_every( $atts, $args, $default_condition ) {
+
+    $condition = $default_condition;
+
+    if (!isset($args['max'])) $args['max'] = PHP_INT_MAX;
+
+    if (isset($atts['every'])) {
+      $condition =  $condition || ( $args['current'] % $atts['every'] == 0 );
+      if (isset($atts['first']) && $atts['first']=='false') {
+        $condition = $condition && ( $args['current'] !== 1 );
+        unset($atts['first']);
+      }
+      if (isset($atts['last']) && $atts['last']=='false') {
+        $condition = $condition && ( $args['current'] !== $args['max'] );
+        unset($atts['last']);
+      }
+    }
+    if (isset($atts['first']))
+      $condition = $condition || $args['current'] == 1;
+    if (isset($atts['last']))
+      $condition = $condition || $args['current'] == $args['max'];
+
+    return $condition;
+  }
 }

@@ -3,7 +3,6 @@
 
 ---
 
-
 Use `[loop]` to get posts and loop through each one.
 
 *Display five most recent posts*
@@ -38,7 +37,7 @@ Use `[loop]` to get posts and loop through each one.
 > [loop type=article,news orderby=date]
 > ~~~
 
-> **name** - post slug; if specified, usually only one post will match
+> **name** - post name, or "slug"; can specify multiple with comma-separated list
 
 > **id** - post ID to include; for example: *id=1,2,3*
 
@@ -106,7 +105,7 @@ Use `[loop]` to get posts and loop through each one.
 > [/loop]
 > ~~~
 
-> **compare** - set to *not* to exclude posts by taxonomy term
+> **compare** - set to *not* to exclude posts by taxonomy term; if using field compare at the same time, use *tax_compare*
 
 ---
 
@@ -140,14 +139,13 @@ Use `[loop]` to get posts and loop through each one.
 
 ### Field value
 
-
 > **field** - field name
 
 > **value** - field value(s) - if multiple, will match any: *value=this,that*
 
 > **start** - use instead of *value* to check only the beginning of field value
 
-> **compare** - *equal* (default), *not*, *more*, *less*, or operator like &lt; and &gt;
+> **compare** - *equal* (default), *not*, *more*, *less*, or operator like &lt; and &gt;. If using taxonomy compare at the same time, use *field_compare*
 
 > **compare=between** - query for a range of values; for example, *value=0,100*
 
@@ -175,8 +173,11 @@ Use `[loop]` to get posts and loop through each one.
   - *today-between* - when using date-and-time field, compare today as range (00:00:00~23:59:59)
   - *now* - if your field contains date and time
   - *future* - today and after
+  - *future-time* - after now
+  - *'future not today'* - from tomorrow
   - *past* - before today
-  - *past and today* - past including today
+  - *past-time* - before now
+  - *'past and today'* - past including today
 
 > **compare** - *equal* (default), *not*, *more*, *less*, or operator like &lt; and &gt;.
 
@@ -189,36 +190,112 @@ Use `[loop]` to get posts and loop through each one.
 > **field_2, value_2, compare_2, date_format_2, after_2, before_2...**
 
 
-
-### Parent / children
+### Parent
 
 > **parent** - display all children of a parent specified by ID or slug
   - *this* - get current post's children
-  - *same* - get current post's siblings (posts which share the same parent)
 
-> **exclude**
-  - *this* - exclude current post
-  - *children* - exclude child posts; display top-level posts only
-
-> **include**
-  - *children* - include child posts and descendants of each post; all current query parameters apply, except *id* and *parent*
-
->> A more flexible way to display child posts is by using a nested loop.
-
+>> This will include all first-level children of the current page.
 >> ~~~
->> [loop type=page orderby=title]
+>> [loop type=page parent=this]
 >>   [field title]
->>   [-loop parent=this orderby=title]
->>     Child page: [field title]
->>   [/-loop]
 >> [/loop]
 >> ~~~
 
+  - *same* - get current post's siblings (posts which share the same parent)
+
+### Children
+
+> **include=children** - include child posts and descendants
+
+>> This will include all descendants of the current page.
+>> ~~~
+>> [loop type=page parent=this include=children]
+>>   [field title]
+>> [/loop]
+>> ~~~
+>>
+>> Children are included together with their parents. When *list=true*, they will be appended after their parent.
+
+> **level** - set maximum level of descendants to include
+
+>> *level=1* will get only top parents, *level=2* will include their direct children, and so on.
+>>
+>> ~~~
+>> [loop type=page level=2]
+>>   [field title]
+>> [/loop]
+>> ~~~
+>>
+>> When you set a level, there's no need to add *include=children*.
+
+> ---
+> **parent=this**
+>
+>> You can also use a nested loop to get each descendant level separately.
+>> ~~~
+>> [loop type=page orderby=title]
+>>   [field title]
+>>   [-loop parent=this]
+>>     Child page: [field title]
+>>     [--loop parent=this]
+>>       Grandchild page: [field title]
+>>     [/--loop]
+>>   [/-loop]
+>> [/loop]
+>> ~~~
+>> Query parameters (except *id*, *name* and *parent*) of the top loop apply to inner loops. In the example above, all loops are ordered by title.
+
+---
+
+> **child=this** - loop through current post's parents from the top
+  - *include=this* - include current post
+  - *reverse=true* - reverse order: start from current post and go up
+
+>> For example, if the current post is a grandchild page:
+>> ~~~
+>> [loop child=this include=this]
+>>   [if not first] > [/if][field title]
+>> [/loop]
+>> ~~~
+
+>> This will display: Parent > Child > Grandchild
+
+
+### Order by child date
+
+Use *orderby=child-date* to sort posts by the most recently published children.
+
+~~~
+[loop type=page orderby=child-date]
+
+  Parent: [field title]
+
+  [-loop parent=this orderby=date count=1]
+    Most recent child: [field title] - [field date]<br>
+  [/-loop]
+[/loop]
+~~~
+
+---
+
+The following parameters are available:
+
+> **order**
+
+>> *DESC* - descending; new to old (default)
+
+>> *ASC* - ascending; old to new
+
+> **parents**
+
+>> *true* - exclude posts which have no children; by default they are placed at the end of the result
+
+>> *equal* - posts which have no children will be compared by their publish date
 
 
 
 ### Sorting and series
-
 
 > **orderby** - order posts
 
@@ -229,15 +306,16 @@ Use `[loop]` to get posts and loop through each one.
 > - *name* - post slug
 > - *parent*
 > - *modified*
-> - *comment-date*
-> - *rand* - random
+> - *comment-date* - sort by comment date
+> - *child-date* - sort by most recently published children (see above section)
+> - *rand* or *random* - random order
 > - *menu* - menu order
 > - *field* - field value as string
 > - *field_num* - field value as number
 
 >> If the value isn't any of these, it's assumed to be the field name.
 
-> **order** - *ASC* (ascending/alphabetical) or *DESC* (descending/from most recent date)
+> **order** - *ASC* (ascending/alphabetical) or *DESC* (default: descending/from most recent date)
 
 > **key** - when ordering by *field* or *field_num*, specify *key* as the name of the field to use
 
@@ -282,7 +360,7 @@ Use `[loop]` to get posts and loop through each one.
 
 > **list** - set *true* to create a list with &lt;ul&gt;, or specify tag like *ol* or *div*
 
-> **list_class, list_style** - add class or style to the list
+> **list_class, list_style** - add class or style to the list; classes can be separated by space or comma
 
 > **item** - tag to wrap each loop item; default is *li*, or specify tag like *span*
 
@@ -296,6 +374,8 @@ Use `[loop]` to get posts and loop through each one.
 > **paged** - number of posts per page
 
 > **maxpage** - maximum number of pages
+
+> **page** - manually set current page
 
 > These are used with the [[loopage] shortcode](options-general.php?page=ccs_reference&tab=paged) to create pagination.
 
@@ -323,13 +403,56 @@ Use `[loop]` to get posts and loop through each one.
 
 > **x** - repeat the loop x times - no query
 
+---
 
+When querying the *tribe_events* post type from [The Events Calendar](https://wordpress.org/support/plugin/the-events-calendar) plugin, you can use the following:
+
+> **display** - *custom* (all events), *past* (past events), *list* (default: all future events)
+
+
+
+## Loop exists
+
+This is a feature to perform a query first, to check if any post matches the given parameters. It displays nothing if no post is found.
+
+~~~
+[loop exists type=post category=important orderby=title]
+  <h1>Important posts</h1>
+  [the-loop]
+    [field title-link] by [field author]
+  [/the-loop]
+[/loop]
+~~~
+
+Use `[the-loop]` inside to loop through the result.
+
+---
+
+To display something when no post is found, use `[if empty]`.
+
+~~~
+[loop exists type=post category=important]
+  ...
+  [if empty]<h1>No important posts</h1>[/if]
+[/loop]
+~~~
 
 ## Loop count
 
 Use `[loop-count]` to display the current index of the loop, starting from 1.
 
 This can be useful, for example, to create unique element ID or class to wrap each post.
+
+The shortcode can also be used to display total post count after a loop is finished.
+
+---
+
+If you provide query parameters, it will count the result.
+
+~~~
+Total number of posts by current user: [loop-count type=post author=this]
+~~~
+
 
 ## Field tags
 

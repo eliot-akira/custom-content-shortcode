@@ -29,7 +29,7 @@ class CCS_Attached {
       'orderby' => '',
       'order' => '',
       'category' => '',
-      'count' => '',
+      'count' => 999,
       'offset' => '',
       'trim' => '',
       'id' => '', // Specific attachment ID
@@ -87,7 +87,7 @@ class CCS_Attached {
       if (!empty($count)) $attach_args['posts_per_page'] = $count;
       if (!empty($offset)) $attach_args['offset'] = $offset;
       if (!empty($id)) {
-        $attach_args['post__in'] = CCS_Loop::explode_list($id);
+        $attach_args['post__in'] = CCS_Format::explode_list($id);
         $attach_args['orderby'] = empty($orderby) ? 'post__in' : $orderby;
         unset($attach_args['post_parent']);
       }
@@ -106,6 +106,7 @@ class CCS_Attached {
     // If no images in gallery field
     if (count($attachment_ids)==0) return null;
 
+    if ($orderby=='random') shuffle($attachment_ids);
 
     /*---------------------------------------------
      *
@@ -122,9 +123,9 @@ class CCS_Attached {
     self::$state['is_attachment_loop'] = true;
 
     foreach ( $attachment_ids as $index => $attachment_id ) {
-
       self::$state['current_attachment_id'] = $attachment_id;
       $out[] = do_ccs_shortcode( $content );
+      if ($index>=($count-1)) break;
     }
 
     self::$state['is_attachment_loop'] = false;

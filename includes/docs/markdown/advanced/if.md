@@ -56,6 +56,8 @@ Use `[if]` to display content based on post conditions.
 
 > **empty** - set to *false* when using dynamic values which could be empty, for example, with `[pass]`
 
+> **compare** - *or* (default: any of the given values), *and* (all values), *not*
+
 ### Search field value
 
 > ~~~
@@ -164,6 +166,8 @@ Use these inside the loop.
 
 > **count** - check current loop count; optionally set *compare* parameter: *more*, *less*, `>=`, `<=`
 
+> **total** - check total post count, optionally with *compare* parameter
+
 > **every** - for every number of posts in the loop; set *first* or *last* to *true* to include first/last post
 
 >> This can be used, for example, to group four posts at a time.
@@ -224,7 +228,7 @@ For nested conditions, use the minus prefix.
 [/loop]
 ~~~
 
-You can add up to 3 prefixes.
+You can nest up to 5 levels.
 
 
 ## Other conditions
@@ -273,15 +277,17 @@ To check if there's any term in a given taxonomy, use the *taxonomy* parameter w
 
 ### Passed value
 
-> **check** - the value being passed
+> **pass** - the value being passed
 
-> **value** - the value to check
+> **value** - the value to compare
+
+> **empty=false** - return false if *pass* parameter is empty
 
 This is for checking values passed with the `[pass]` shortcode.
 
 ~~~
 [pass global=query fields=tag]
-  [if check={TAG} value=news]
+  [if pass='{TAG}' value=news empty=false]
     The value "news" was passed.
   [/if]
 [/pass]
@@ -290,12 +296,20 @@ This is for checking values passed with the `[pass]` shortcode.
 If you don't specify the value, it will check if the pass value is not empty.
 
 ~~~
-[if check={TAG}]
+[if pass='{TAG}']
   Some value was passed.
 [else]
   No value was passed.
 [/if]
 ~~~
+
+### Variable
+
+This is for checking variables used by `[get]`, `[set]` and `[calc]` shortcodes.
+
+> **var** - variable to check
+
+> **value** - the value to check
 
 ### If enclosed content exists
 
@@ -314,12 +328,30 @@ This will display the enclosed content if it's not empty, otherwise display the 
 If the current URL is: `example.com/article/category/special`
 
 ~~~
-[if route_1=article]This is an archive of articles.[/if]
-[if route_2=category]This is a category archive.[/if]
-
 [if route=article/category/special]
   This is a category archive of special articles.
 [/if]
+[if route_1=article]This is an archive of articles.[/if]
+[if route_2=category]This is a category archive.[/if]
+~~~
+
+The route value supports wildcards and negatives.
+
+
+> \* - will match any value
+
+> \*\* - will match the rest of the route
+
+> **!** - start a value with ! to match if it's not equal
+
+---
+
+You can also check the server host name:
+
+~~~
+[if host=example.com] Public site [/if]
+[if host=staging.example.com] Staging site [/if]
+[if host=localhost] Local development site [/if]
 ~~~
 
 ### Day of week
@@ -371,10 +403,24 @@ Use `[when default]` for when none of the other values match.
 [/when]
 ~~~
 
-Set multiple values separated by comma, without space. This will check for any of them.
+To match multiple values, separate with `or`. This will check for any of them.
 
 ~~~
-[when post,page]
+[when post or page]
   This is a post or page
 [/when]
+~~~
+
+To check the start of a value, use *start=value*.
+
+### Switch route
+
+You can use switch to achieve a basic URL routing.
+
+~~~
+[switch route]
+  [when product or service] Product or service archive [/when]
+  [when product/* or service/*] Single product or service [/when]
+  [when default] Other [/when]
+[/switch]
 ~~~

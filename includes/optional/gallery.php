@@ -10,7 +10,16 @@ new CCS_Gallery_Field;
 
 class CCS_Gallery_Field {
 
-	public static $state;
+	public static $state = array(
+    'img_atts' => array(),
+    'img_count' => 0,
+    'current_img_index' => 0,
+    'current_img' => null,
+    'is_imgs_loop' => false,
+    'cache' => array(
+      'attachment_count' => array(),
+    ),
+  );
 
 	function __construct() {
 
@@ -21,6 +30,10 @@ class CCS_Gallery_Field {
 		add_action( 'save_post', array($this, 'save_post') );
 
 		add_action( 'admin_menu', array($this, 'gallery_field_settings') );
+
+    add_ccs_shortcode('img', array($this, 'img_shortcode'));
+    add_ccs_shortcode('imgs', array($this, 'imgs_shortcode'));
+
 	}
 
 
@@ -32,9 +45,8 @@ class CCS_Gallery_Field {
 
 	function admin_css() {
 
-		if (self::is_edit_page()) {
-
-			// Include only when editing post
+		// Include only when editing post
+		if (!self::is_edit_page()) return;
 
 ?>
 <style>
@@ -81,6 +93,8 @@ ul.gallery_images {
 	/* max-width: 665px; */
 	margin: 0 auto;
 }
+
+.eig-metabox-sortable-placeholder,
 .gallery_images > li.image, .gallery_images > li.add_gallery_images {
 	float: left;
 	width: 150px;
@@ -93,7 +107,7 @@ ul.gallery_images {
 }
 .gallery_images li.image img {
   position: relative;
-/*	width: 100%; */
+  width: 100%;
   height: auto;
 }
 .gallery_images a.edit {
@@ -128,7 +142,7 @@ ul.gallery_images {
 	background: #eaeaea;
 }
 .add_gallery_images a {
-	text-decoration: none;
+	text-decoration: none !important;
 	width: 150px;
 	height: 150px;
 	line-height: 150px;
@@ -149,9 +163,6 @@ ul.gallery_images {
 }
 </style>
 		<?php
-
-		} // End include when edit post
-
 	}
 
 
@@ -160,7 +171,7 @@ ul.gallery_images {
 	 * Add meta boxes to selected post types
 	 *
 	 */
-	
+
 	function add_meta_boxes() {
 
 	    $post_types = $this->enabled_post_types();
@@ -302,16 +313,19 @@ ul.gallery_images {
 	                    selection.map( function( attachment ) {
 
 	                        attachment = attachment.toJSON();
-	                        console.log(attachment);
+	                        //console.log(attachment);
 
 	                        if ( attachment.id ) {
-	                            attachment_ids = attachment_ids ? attachment_ids + "," + attachment.id : attachment.id;
+	                            attachment_ids = attachment_ids ?
+                                attachment_ids + "," + attachment.id : attachment.id;
+                              url = attachment.sizes.thumbnail ?
+                                attachment.sizes.thumbnail.url : attachment.url;
 
 	                             $gallery_images.append('\
 	                                <li class="image attachment details" data-attachment_id="' + attachment.id + '">\
 	                                    <div class="attachment-preview">\
 	                                        <div class="thumbnail">\
-	                                            <img src="' + attachment.sizes.thumbnail.url + '" />\
+	                                            <img src="' + url + '" />\
 	                                        </div>\
 	                                       <a href="#" class="delete check" title="Remove image"><div class="media-modal-icon"></div></a><a href="#" class="edit check" title="Edit image"><div class="dashicons dashicons-search"></div></a>\
 	                                    </div>\
@@ -319,8 +333,8 @@ ul.gallery_images {
 
 	                        }
 
-						// Move "add image" icon to the end
-	                    $gallery_images.find('.add_gallery_images').appendTo($gallery_images);
+              						// Move "add image" icon to the end
+    	                    $gallery_images.find('.add_gallery_images').appendTo($gallery_images);
 
 	                    } );
 
@@ -335,9 +349,9 @@ ul.gallery_images {
 	            $gallery_images.sortable({
 	                items: 'li.image',
 	                cursor: 'move',
-	                scrollSensitivity:40,
+	                scrollSensitivity: 40,
 	                forcePlaceholderSize: true,
-	                forceHelperSize: true, // false
+	                forceHelperSize: true,
 	                helper: 'clone',
 	                opacity: 0.65,
 	                placeholder: 'eig-metabox-sortable-placeholder',
@@ -511,7 +525,7 @@ ul.gallery_images {
 			?><p>
 				<input type="checkbox" id="<?php echo $key; ?>" name="custom-gallery[post_types][<?php echo $key; ?>]" <?php checked( $post_types, 'on' ); ?>/><label for="<?php echo $key; ?>"> <?php echo $label; ?></label>
 			</p><?php
-		} 
+		}
 	}
 
 
@@ -526,9 +540,9 @@ ul.gallery_images {
 		// only loop through if there are post types in the array
 		if ( $post_types ) {
 			foreach ( $post_types as $post_type => $value )
-				$output[ 'post_types' ][ $post_type ] = isset( $input[ 'post_types' ][ $post_type ] ) ? 'on' : '';	
+				$output[ 'post_types' ][ $post_type ] = isset( $input[ 'post_types' ][ $post_type ] ) ? 'on' : '';
 		}
-		
+
 		return $output;
 	}
 
@@ -620,7 +634,7 @@ ul.gallery_images {
 
 			$attachment_ids = get_post_meta( self::$state['current_gallery_id'], $field, true );
 
-		}  */ 
+		}  */
 
 		else {
 
@@ -701,9 +715,7 @@ ul.gallery_images {
 		// get currently viewed post type
 		$post_type = ( string ) get_post_type();
 
-		//echo $post_type; exit; // download
-
-		// get the allowed post type from the DB
+		// get the allowed post type
 		$settings = ( array ) get_option( 'custom-gallery', $defaults );
 		$post_types = isset( $settings['post_types'] ) ? $settings['post_types'] : '';
 
@@ -733,6 +745,154 @@ ul.gallery_images {
 		return $number;
 	}
 
+
+
+  function img_shortcode( $atts ) {
+
+    if (!is_array($atts)) $atts = array();
+
+    if (self::$state['is_imgs_loop']) {
+      // Combine, preserving numeric keys
+      $atts = self::$state['img_atts'] + $atts;
+      if (!isset($atts[0])) $atts[0] = self::$state['current_img'];
+      $count = self::$state['img_count'];
+    } else {
+      // Cache attachment count by post ID
+      $id = do_ccs_shortcode('[field id]');
+      if (isset(self::$state['cache']['attachment_count'][$id])) {
+        $count = self::$state['cache']['attachment_count'][$id];
+      } else {
+        $count = strlen(do_ccs_shortcode('[attached gallery].[/attached]'));
+        self::$state['cache']['attachment_count'][$id] = $count;
+      }
+    }
+
+    if (empty($atts[0])) return;
+
+    $defaults = array(
+      'size' => isset($atts[1]) ? $atts[1] : 'full',
+      'class' => 'aligncenter',
+      'link' => 'true',
+      'caption' => '',
+    );
+
+    $atts += $defaults;
+
+    $translate_sizes = array(
+      'md' => 'medium',
+      'lg' => 'large',
+      'sm' => 'thumbnail',
+    );
+
+    if (isset($translate_sizes[$atts['size']]))
+      $atts['size'] = $translate_sizes[$atts['size']];
+
+    $size = ' size='.$atts['size'];
+
+    if (isset($atts['width'])) $size .= ' width='.$atts['width'];
+    if (isset($atts['height'])) $size .= ' height='.$atts['height'];
+
+    $result = '';
+
+    $nums = self::explode_with_range($atts[0], $count);
+
+    $titles = isset($atts['title']) ? CCS_Format::explode_list($atts['title']) : array();
+
+    $index = 0;
+    foreach ($nums as $num) {
+
+      if (!is_numeric($num)) continue;
+
+      $title = isset($titles[$index]) ? ' alt=\''.$titles[$index].'\'' : '';
+      $class = ' image_class=\''.$atts['class'].'\'';
+
+      $img = '[field gallery num='.$num.$size.$class.$title.']';
+
+      if (empty($img)) $content = '';
+      else {
+        $content = $img;
+        // wrap in link
+        if ($atts['link']=='true')
+          $content =
+            '<a href="[field gallery-url num='.$num.']" rel="attachment">'
+              .$content
+            .'</a>';
+
+        $result .= do_ccs_shortcode($content);
+
+        if (!empty($atts['caption']))
+          $result .= //'<br><span class="caption">'.$atts['caption'].'</span>';
+            '<div align="center" class="caption">'
+              .$atts['caption']
+            .'</div>';
+
+      }
+      $index++;
+    }
+
+    return $result;
+  }
+
+  static function explode_with_range($str, $max = 0) {
+    $result = array();
+    $nums = explode(',', $str);
+    foreach ($nums as $num) {
+      if ( strpos($num, '-') === false ) {
+        $result[] = $num;
+      } else {
+        $parts = explode('-', $num);
+        if (empty($parts[1])) $parts[1] = $max; // range with open end: 1-
+        $start = intval($parts[0]);
+        $end = intval($parts[1]);
+        for ($i=$start; $i <= $end; $i++) {
+          $result[] = $i;
+        }
+      }
+    }
+    return $result;
+  }
+
+  function imgs_shortcode( $atts = array(), $content = '' ) {
+
+    if (empty($content)) $content = '[img]';
+
+    // Get gallery image count
+    $count = strlen(do_ccs_shortcode('[attached gallery].[/attached]'));
+    self::$state['img_count'] = $count;
+
+    if (!isset($atts[0])) {
+      // Get all gallery images and create a list of numbers
+      $imgs = array();
+      for ($i=0; $i < $count; $i++) {
+        $imgs[]= $i+1; // index starts at 1
+      }
+      $atts[0] = implode(',', $imgs);
+    }
+
+    $nums = self::explode_with_range($atts[0], $count);
+//    $nums = explode(',', $atts[0]);
+
+    $result = '';
+
+    self::$state['is_imgs_loop'] = true;
+
+    // Pass the rest of attributes to all [img]
+    unset($atts[0]);
+    self::$state['img_atts'] = $atts;
+
+    $i = 0;
+    foreach ($nums as $num) {
+      $i++;
+      self::$state['current_img_index'] = $i;
+      self::$state['current_img'] = $num;
+      $result .= do_ccs_shortcode($content);
+    }
+
+    self::$state['img_atts'] = array();
+    self::$state['is_imgs_loop'] = false;
+
+    return $result;
+  }
 
 
 } // End CCS_Gallery_Field

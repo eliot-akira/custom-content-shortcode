@@ -2,7 +2,7 @@
 
 /*---------------------------------------------
  *
- * Pass shortcode - pass field values
+ * Pass shortcode - pass values
  *
  */
 
@@ -10,16 +10,23 @@ new CCS_Pass;
 
 class CCS_Pass {
 
+  static $vars = array();
+  static $shorts = array();
+
   function __construct() {
 
     add_ccs_shortcode( array(
       'pass' => array($this, 'pass_shortcode'),
       '-pass' => array($this, 'pass_shortcode'),
       '--pass' => array($this, 'pass_shortcode'),
+      '---pass' => array($this, 'pass_shortcode'),
+      'set' => array( $this, 'set_shortcode' ),
+      'get' => array( $this, 'get_shortcode' ),
+      'short' => array( $this, 'short_shortcode' ),
     ));
   }
 
-  public static function pass_shortcode( $atts, $content, $shortcode_name ) {
+  static function pass_shortcode( $atts, $content, $shortcode_name ) {
 
     $args = array(
 
@@ -44,7 +51,9 @@ class CCS_Pass {
       'post_render' => 'true',  // do_shortcode at the end
 
       'trim' => 'false',
-      'count' => '9999',      // Max number of taxonomy terms
+      'escape' => '', // Escape field value
+
+      'count' => '99999',      // Max number of taxonomy terms
 
       'user_field' => '',
       'user_fields' => '', // Multiple
@@ -54,22 +63,25 @@ class CCS_Pass {
       'random' => '',
     );
 
+
+    $atts = self::replace_variables( $atts );
+
     extract( shortcode_atts( $args , $atts, true ) );
 
-    if ( $pre_render == 'true' ) $content = do_local_shortcode( 'ccs', $content, true );
-
-    if (CCS_Loop::$state['is_loop']) $post_id = do_shortcode('[field id]');
-    else $post_id = get_the_ID();
-
-    // Support nested
-
-    $prefix = '';
-    if (substr($shortcode_name,0,2)=='--') {
-      $prefix = '--';
-    } elseif (substr($shortcode_name,0,1)=='-') {
-      $prefix = '-';
+    // Shortcuts
+    if ( isset($atts[0]) ) {
+      if ( $atts[0]==='route' ) $global = 'route';
+      elseif ( $atts[0]==='vars' ) $global = 'vars';
     }
 
+
+    if ( $pre_render == 'true' ) $content = do_ccs_shortcode( $content );
+
+    // This should get the current post in all contexts
+    $post_id = do_shortcode('[field id]');
+
+    // Support nested
+    $prefix = CCS_Format::get_minus_prefix($shortcode_name);
 
     if ( !empty($date_format) ) {
       // Date format: allow escape via "//" because "\" disappears in shortcode parameters
@@ -88,6 +100,7 @@ class CCS_Pass {
 
     if ( !empty($field) || $field=='0' ) {
 
+      $is_formatted = true;
       if ($field=='gallery') $field = '_custom_gallery'; // Support CCS gallery field
 
       // Pass global variable
@@ -110,6 +123,9 @@ class CCS_Pass {
               if (isset($requests[$i])) {
                 $part = $requests[$i];
               }
+              $tag = '{'.$prefix.'ROUTE_'.($i+1).'}';
+              $content = str_replace($tag, $part, $content);
+              // Deprecate
               $tag = '{'.$prefix.'FIELD_'.($i+1).'}';
               $content = str_replace($tag, $part, $content);
             }
@@ -131,7 +147,7 @@ class CCS_Pass {
           }
           if (!empty($fields)) {
             // Remove what was not rendered
-            $fields = CCS_Loop::explode_list($fields);
+            $fields = CCS_Format::explode_list($fields);
             foreach ($fields as $key) {
               $tag = '{'.$prefix.(strtoupper($key)).'}';
               $content = str_replace($tag, '', $content);
@@ -140,6 +156,13 @@ class CCS_Pass {
           } elseif (!empty($field)) {
             $tag = '{'.$prefix.'FIELD'.'}';
             $value = isset($query_array[$field]) ? $query_array[$field] : '';
+            $content = str_replace($tag, $value, $content);
+          }
+
+        } elseif ( $global=='vars' ) {
+
+          foreach (self::$vars as $key => $value) {
+            $tag = '{'. $prefix . strtoupper($key) . '}';
             $content = str_replace($tag, $value, $content);
           }
 
@@ -164,7 +187,10 @@ class CCS_Pass {
 
       // Predefined or custom field
       } else {
-        $field_value = CCS_Content::get_prepared_field( $field, $post_id );
+        //$field_value = CCS_Content::get_prepared_field( $field, $post_id );
+        // Slower but will get date format, etc.
+        $field_value = CCS_Content::content_shortcode($atts);
+        $is_formatted = true;
       }
 
       if (is_array($field_value)) {
@@ -198,11 +224,22 @@ class CCS_Pass {
 
         // Clean extra spaces if it's a list
         $field_value = CCS_Loop::clean_list($field_value);
+
+        // Escape value
+        if ($escape=='true') {
+          $field_value = CCS_Format::escape_shortcode(
+            array('html' => 'true'), $field_value
+          );
+        } /* elseif ($special=='true') {
+          $field_value = CCS_Format::escape_shortcode(
+            array('special' => 'true'), $field_value
+          );
+        } */
       }
 
 
-      if ( !empty($date_format) ) {
-        // Date format for custom field
+      if ( !$is_formatted && !empty($date_format) ) {
+        // Date format for values other than predefined or custom field
         if ( !empty($in) && ($in=='timestamp') && is_numeric($field_value) ) {
           $field_value = gmdate("Y-m-d H:i:s", $field_value);
         }
@@ -214,6 +251,7 @@ class CCS_Pass {
 
       $content = str_replace('{'.$prefix.'FIELD}', $field_value, $content);
 
+//introspect($field_value, $content);
 
     /*---------------------------------------------
      *
@@ -238,7 +276,7 @@ class CCS_Pass {
       if (!empty($field_values)) {
 
         if (!is_array($field_values))
-          $field_values = CCS_Loop::explode_list($field_values); // Get comma-separated list of values
+          $field_values = CCS_Format::explode_list($field_values); // Get comma-separated list of values
 
         $contents = null;
 
@@ -342,23 +380,24 @@ class CCS_Pass {
       }
 
       $content = $contents;
+    }
 
 
     /*---------------------------------------------
      *
-     * Pass an arbitrary list of items
+     * Pass a list of items
      *
      */
 
-    } elseif (!empty($list)) {
+    if (!empty($list)) {
 
-      $items = CCS_Loop::explode_list($list); // Comma-separated list -> array
+      $items = CCS_Format::explode_list($list); // Comma-separated list -> array
 
       // Create range
       $new_items = array();
       foreach ($items as $item) {
         if ( strpos($item, '~') !== false ) {
-          $pair = CCS_Loop::explode_list($item, '~');
+          $pair = CCS_Format::explode_list($item, '~');
           $list = range( $pair[0], $pair[1] );
           foreach ($list as $list_item) {
             $new_items[] = $list_item;
@@ -371,8 +410,11 @@ class CCS_Pass {
 
 
       $contents = '';
+      $item_index = 0;
 
       foreach ($items as $item) {
+
+        $item_index++; // Item index starts at 1
 
         $replaced_content = $content;
 
@@ -385,13 +427,13 @@ class CCS_Pass {
 
             $this_item = trim($parts[$i]);
 
-            // Index starts at ITEM_1
+            // Subitem index starts at ITEM_1
             $replaced_content = str_replace(
               '{'.$prefix.'ITEM_'.($i+1).'}', $this_item, $replaced_content);
 
-            // Would this be useful?
-            // $replaced_content = str_replace('{Item_'.$i.'}', ucfirst($this_item),
-            //  $replaced_content);
+            // Capitalized item
+            $replaced_content = str_replace(
+              '{'.$prefix.'Item_'.($i+1).'}', ucfirst($this_item), $replaced_content);
           }
 
         } else {
@@ -400,6 +442,9 @@ class CCS_Pass {
           $replaced_content = str_replace('{'.$prefix.'Item}',
             ucfirst($item), $replaced_content );
         }
+
+        $replaced_content = str_replace(
+          '{'.$prefix.'INDEX}', $item_index, $replaced_content);
 
         $contents .= $replaced_content;
       }
@@ -421,7 +466,7 @@ class CCS_Pass {
     }
 
     if (!empty($user_fields)) {
-      $user_fields_array = CCS_Loop::explode_list($user_fields);
+      $user_fields_array = CCS_Format::explode_list($user_fields);
 
       foreach ($user_fields_array as $this_field) {
         $user_field_value = do_shortcode('[user '.$this_field.' out="slug"]');
@@ -439,7 +484,7 @@ class CCS_Pass {
 
       if ( !empty($global) ) {
 
-        $fields = CCS_Loop::explode_list($fields);
+        $fields = CCS_Format::explode_list($fields);
 
         foreach ($fields as $this_field) {
           $tag = '{'.$prefix.strtoupper($this_field).'}';
@@ -456,10 +501,10 @@ class CCS_Pass {
         $content = CCS_Loop::render_field_tags( $content, array('fields' => $fields) );
       }
     } else {
-      $content = CCS_Loop::render_default_field_tags( $content );
+      $content = CCS_Loop::render_field_tags( $content, array() );
     }
 
-    if ( $post_render == 'true' ) $content = do_local_shortcode( 'ccs', $content, true );
+    if ( $post_render == 'true' ) $content = do_ccs_shortcode($content);
 
     // Trim trailing white space and comma
     if ( $trim != 'false' ) {
@@ -471,5 +516,87 @@ class CCS_Pass {
     return $content;
 
   } // End pass shortcode
+
+
+
+
+  static function set_shortcode( $atts, $content = '' ) {
+
+    if (!empty($atts['short'])) {
+      self::$shorts[$atts['short']] = array(
+        'template' => $content,
+        'optional' => !empty($atts['optional'])
+          ? CCS_Format::explode_list($atts['optional'])
+          : array()
+      );
+      return;
+    }
+
+    $var = !empty($atts['var']) ? $atts['var']
+      : ( !empty($atts[0]) ? $atts[0] : '');
+
+    if (empty($var)) return;
+
+    // Do shortcode by default
+    if ( empty($atts['shortcode']) ) $content = do_ccs_shortcode($content);
+
+    if ( !empty($atts['trim']) ) {
+      $trim = ($atts['trim'] == 'true' ? '' : $atts['trim']);
+      $content = trim($content, " \t\n\r\0\x0B,".$trim);
+    }
+
+    self::$vars[ $var ] = $content;
+  }
+
+  static function get_shortcode( $atts ) {
+
+    if ( empty($atts[0]) || !isset(self::$vars[ $atts[0] ]) ) return;
+
+    return self::$vars[ $atts[0] ];
+  }
+
+  static function replace_variables( $atts ) {
+
+    if (!isset($atts) || !is_array($atts)) return;
+
+    foreach ($atts as $key => $value) {
+
+      if ( empty($value[0]) || $value[0]!=='$' ) continue;
+
+      $value = substr($value, 1); // Remove the '$'
+      $atts[$key] = self::get_shortcode( array( $value ));
+    }
+
+    return $atts;
+  }
+
+  function short_shortcode( $atts, $content = '' ) {
+
+    if (isset($atts[0])) {
+      $block = $atts[0];
+      unset($atts[0]);
+    }
+
+    if (empty($block) || !isset(self::$shorts[$block])) return;
+
+    $atts['content'] = $content;
+
+    foreach (self::$shorts[$block]['optional'] as $key) {
+      if (!isset($atts[$key])) $atts[$key] = '';
+    }
+
+    return do_ccs_shortcode(
+      self::render_template(self::$shorts[$block]['template'], $atts),
+      $global = false
+    );
+  }
+
+  function render_template($template, $vars) {
+    foreach ($vars as $key => $value) {
+      $key = '{'.strtoupper($key).'}';
+      $template = str_replace($key, $value, $template);
+    }
+    return $template;
+  }
 
 } // End CCS_Pass

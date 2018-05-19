@@ -28,7 +28,7 @@ class CCS_URL {
       'route' => array($this, 'route_shortcode')
     ));
 
-    add_action( 'wp_head', array($this, 'init') );
+    add_action( 'wp', array($this, 'init') );
   }
 
 
@@ -57,6 +57,7 @@ class CCS_URL {
   static function get_route( $index = 0 ) {
     // index starts at 1
     if ( empty($index) ) return self::$route;
+    if ( $index == 'last' ) $index = count(self::$routes);
     return isset(self::$routes[$index - 1]) ? self::$routes[$index - 1] : '';
   }
 

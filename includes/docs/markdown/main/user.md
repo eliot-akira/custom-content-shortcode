@@ -86,7 +86,7 @@ Use `[users]` to loop through users.
 
 ### Parameters
 
-> **role** - *admin*, *editor*, *author*, *contributor*, *subscriber*
+> **role** - *admin*, *editor*, *author*, *contributor*, *subscriber*; supports multiple
 
 > **include**, **exclude** - include/exclude users by ID
 
@@ -109,6 +109,16 @@ Use `[users]` to loop through users.
 > **search_columns** - one or more columns to search: *ID*, *login*, *nicename*, *email*, *url*
 
 > **blog_id** - blog ID on a multisite
+
+#### Users list
+
+> **list** - set *true* to create a list with &lt;ul&gt;, or specify tag like *ol* or *div*
+
+> **list_class, list_style** - add class or style to the list; classes can be separated by space or comma
+
+> **item** - tag to wrap each loop item; default is *li*, or specify tag like *span*
+
+> **item_class, item_style** - add class or style to each item
 
 
 

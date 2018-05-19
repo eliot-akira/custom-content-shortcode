@@ -118,6 +118,8 @@ When inside a loop, it can be used without parameter to show each post's content
 
 >> **word** - set *true* to trim to last word
 
+>> **until** - trim to specified characters, for example: *until=...*
+
 > **class** - add `<div>` class to the output
 
 > **slugify** - set *true* to create a sanitized slug from field value
@@ -129,6 +131,8 @@ When inside a loop, it can be used without parameter to show each post's content
 > **shortcode** - set *true/false* for shortcodes inside post content or field
 
 > **http** - set *true* to add `http://` in front of field value, if it's not there already
+
+> **https** - set *true* to add `https://`
 
 > **embed** - set *true* to embed URLs like YouTube, Vimeo, etc. By default, such URLs in post content are auto-embedded.
 

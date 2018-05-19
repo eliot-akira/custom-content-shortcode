@@ -18,10 +18,10 @@ class CCS_Docs {
 
     self::$state['settings_saved'] = false;
     self::$state['settings_page_name'] = 'ccs_reference';
+    self::$state['settings_page_hook'] = '';
 
     // Create custom user settings menu
-    $admin_menu_hook = ! is_multisite() ? 'admin_menu' : 'network_admin_menu';
-    add_action($admin_menu_hook, array($this, 'content_settings_create_menu'));
+    add_action('admin_menu', array($this, 'content_settings_create_menu'));
 
     // Register doc sections
     add_action( 'admin_init', array($this, 'register_content_settings' ));
@@ -124,17 +124,10 @@ class CCS_Docs {
 
   function plugin_settings_link( $links ) {
 
-    if (!isset(self::$state['settings_page_name'])) return $links;
-
-    if (is_network_admin()) {
-      $url = network_admin_url( 'options-general.php?page='.self::$state['settings_page_name'] );
-    } else {
-      $url = admin_url( 'options-general.php?page='.self::$state['settings_page_name'] );
-    }
-
+    $url = admin_url( 'options-general.php?page='.self::$state['settings_page_name'] );
     $settings_link = '<a href="'.$url.'">Reference</a>';
-    array_unshift( $links, $settings_link );
 
+    array_unshift( $links, $settings_link );
     return $links;
   }
 
@@ -147,22 +140,31 @@ class CCS_Docs {
 
   function docs_admin_css() {
 
-    if (!isset(self::$state['overview_page_hook']))
-      self::$state['overview_page_hook'] = '';
+    if (is_network_admin()) return;
 
     if ( $this->is_current_plugin_screen() ) {
 
-      wp_enqueue_style( 'ccs-docs', CCS_URL.'/includes/docs/docs.css',array(),'2.0.6');
+      wp_enqueue_style( 'ccs-docs', CCS_URL.'/includes/docs/docs.css',array(),'2.0.7');
 
-      wp_enqueue_style( 'prism',
-          CCS_URL.'/includes/docs/lib/prism/css/prism.css', array(), '0.0.1' );
-      wp_enqueue_script( 'prism',
-          CCS_URL.'/includes/docs/lib/prism/js/prism.min.js', array(), '0.0.1', true );
+      self::load_markdown_and_prism();
 
     } elseif ( $this->is_current_plugin_screen(self::$state['overview_page_hook']) ) {
 
       wp_enqueue_style( 'ccs-docs', CCS_URL.'/includes/overview/content-overview.css',
         array(),'1.8.1');
+    }
+  }
+
+
+  static function load_markdown_and_prism() {
+
+    wp_enqueue_style( 'prism',
+        CCS_URL.'/includes/docs/lib/prism/css/prism.css', array(), '0.0.1' );
+    wp_enqueue_script( 'prism',
+        CCS_URL.'/includes/docs/lib/prism/js/prism.min.js', array(), '0.0.1', true );
+
+    if (!class_exists('Markdown_Module')) {
+      include('lib/markdown/markdown.php');
     }
   }
 
@@ -174,10 +176,6 @@ class CCS_Docs {
    */
 
   function content_settings_page() {
-
-    if (!class_exists('MarkDown_Module')) {
-      include('lib/markdown/markdown.php');
-    }
 
     $default_tab = 'overview';
 
@@ -200,6 +198,7 @@ class CCS_Docs {
           'content' => '',
           'field' => '',
           'taxonomy' => '',
+          'posttype' => 'Post type',
           'attach' => 'Attachment',
           'comment' => '',
           'user' => '',
@@ -226,12 +225,14 @@ class CCS_Docs {
       'optional' => array(
         'title' => 'Optional',
         'menu' => array(
+          'acf' => 'ACF',
           'gallery' => 'Gallery Field',
           'mobile' => 'Mobile Detect',
-          'acf' => 'ACF',
-          'wck' => 'WCK',
+          'math' => 'Math',
+          'meta-shortcodes' => 'Meta Shortcodes',
           'block' => 'HTML Blocks',
-          'bootstrap' => 'Bootstrap'
+          'bootstrap' => 'Bootstrap',
+          'wck' => 'WCK',
         )
       ),
 
@@ -357,7 +358,7 @@ class CCS_Docs {
           if ( $active_tab == 'settings' ) {
 
             ?>
-            <div style="max-width:380px;margin: 0 auto;">
+            <div style="">
 
             <h3>Settings</h3>
 
@@ -436,13 +437,17 @@ class CCS_Docs {
 
             <?php
              // Add footnote
-            ?><br><hr>
-
+            ?><hr>
             <div align="center" class="footer-notice logo-pad">
               <img src="<?php echo CCS_URL;?>/includes/docs/logo.png">
-              <div class="logo-pad"><b>Custom Content Shortcode</b> is developed by <a href="http://eliotakira.com" target="_blank">Eliot Akira.</a></div>
-              Please visit the <a href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin support forum</a> for questions or feedback.
-              If you'd like to contribute to this plugin, here is a <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a>.
+              <p class="no-margin-top">
+                <b>Custom Content Shortcode</b> is built by <a href="http://eliotakira.com" target="_blank">Eliot Akira</a>
+              </p>
+              <p>
+                Visit the <a class="bold" href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin forum</a> for complementary support.
+                <br>
+                Here is a <a class="bold" target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a> to contribute to development.
+              </p>
             </div>
             <?php
 
@@ -528,12 +533,12 @@ class CCS_Docs {
       $settings['paged_pagination_slug'] = '';
     if (!isset($settings['paged_permalink_query']))
       $settings['paged_permalink_query'] = '';
+    if (!isset($settings['disable_shortcodes']))
+      $settings['disable_shortcodes'] = '';
     ?>
     <h3 class="margin-top-half">Advanced</h3>
     <div class="margin-top-half" style="font-size:12px;margin-top:10px">
 
-    <?php if (!isset($settings['disable_shortcodes'])) $settings['disable_shortcodes'] = '';
-    ?>
       <div class="advanced-field">
         Deactivate shortcodes
         <input type="text"
@@ -551,9 +556,7 @@ class CCS_Docs {
           placeholder="post-name, page-name.."
           >
       </div>
-<?php
-// TODO: Support changing /page slug
-?>
+
       <div class="advanced-field">
         Pagination slug
         <input type="text"
@@ -562,7 +565,7 @@ class CCS_Docs {
           placeholder="page"
           >
       </div>
-<?php  ?>
+
       <div class="advanced-field">
         Default query string
         <input type="text"
@@ -571,12 +574,12 @@ class CCS_Docs {
           placeholder="name=post-name, pagename=page-name.."
           >
       </div>
-    <?php
-    if ( self::$state['settings_saved'] && !empty($settings['paged_permalink_slug']) ) {
-      echo '<b>Saved rewrite rules</b>';
-      flush_rewrite_rules();
-    }
-    ?>
+      <?php
+      if ( self::$state['settings_saved'] && !empty($settings['paged_permalink_slug']) ) {
+        echo '<b>Saved rewrite rules</b>';
+        flush_rewrite_rules();
+      }
+      ?>
     </div>
     <?php
   }
@@ -586,37 +589,36 @@ class CCS_Docs {
   static function maybe_paged_permalink() {
 
     $settings = get_option( CCS_Plugin::$settings_name );
-    if ( !empty($settings['paged_permalink_slug'])) {
+    if ( empty($settings['paged_permalink_slug']) ) return;
 
-      $slugs = explode(',', $settings['paged_permalink_slug']);
-      $slugs = array_map( 'trim', $slugs  );
+    $slugs = explode(',', $settings['paged_permalink_slug']);
+    $slugs = array_map( 'trim', $slugs  );
 //debug_array($slugs);
 
-      $pagination_slug = empty($settings['paged_pagination_slug']) ?
-        'page' : $settings['paged_pagination_slug'];
+    $pagination_slug = empty($settings['paged_pagination_slug']) ?
+      'page' : $settings['paged_pagination_slug'];
 
-      if ( !empty($settings['paged_permalink_query']) ) {
-        $add_queries = explode(',', $settings['paged_permalink_query']);
-        $add_queries = array_map( 'trim', $add_queries  );
+    if ( !empty($settings['paged_permalink_query']) ) {
+      $add_queries = explode(',', $settings['paged_permalink_query']);
+      $add_queries = array_map( 'trim', $add_queries  );
 
-      } else $add_queries = array();
+    } else $add_queries = array();
 //debug_array($add_queries);
 
-      $i = 0;
-      foreach ($slugs as $slug) {
-        $this_query = isset($add_queries[$i]) ? '&'.$add_queries[$i] : '';
+    $i = 0;
+    foreach ($slugs as $slug) {
+      $this_query = isset($add_queries[$i]) ? '&'.$add_queries[$i] : '';
 //debug_array(array('^'.$slug.'/page/([0-9]+)?/?$','index.php?lpage=$matches[1]'.$this_query,'top'));
-        if (empty($slug)) continue;
-        if ($slug=='/') $slug = '';
-        add_rewrite_rule(
-          '^'.$slug.'/'.$pagination_slug.'/([0-9]+)?/?$', // /page
-          'index.php?'.CCS_Paged::$prefix.'=$matches[1]'.$this_query,
-          'top'
-        );
-        $i++;
-      }
-      add_rewrite_tag('%'.CCS_Paged::$prefix.'%', '([^&]+)');
+      if (empty($slug)) continue;
+      if ($slug=='/') $slug = '';
+      add_rewrite_rule(
+        '^'.$slug.'/'.$pagination_slug.'/([0-9]+)?/?$', // /page
+        'index.php?'.CCS_Paged::$prefix.'=$matches[1]'.$this_query,
+        'top'
+      );
+      $i++;
     }
+    add_rewrite_tag('%'.CCS_Paged::$prefix.'%', '([^&]+)');
   }
 
 
@@ -629,7 +631,7 @@ class CCS_Docs {
 
   function docs_admin_js() {
 
-  if ( $this->is_current_plugin_screen() ) {
+  if ( !is_network_admin() && $this->is_current_plugin_screen() ) {
 
 ?>
 <script>
@@ -648,7 +650,7 @@ class CCS_Docs {
     var el = this;
 
     $menus
-      .filter(function() { return el !== this; })
+      .filter(function() { return el !== this })
       .parent().removeClass('menu-open');
 
     $(this).parent().toggleClass('menu-open');

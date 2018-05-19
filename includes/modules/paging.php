@@ -26,6 +26,15 @@ class CCS_Paged {
       'page-now' => array($this, 'page_now_shortcode'),
       'page-total' => array($this, 'page_total_shortcode'),
     ));
+
+
+    // Pagination permalink
+
+    $settings = get_option( CCS_Plugin::$settings_name );
+
+    if (isset($settings['paged_permalink_slug']))
+      self::$prefix = empty($settings['paged_pagination_slug']) ?
+        'page' : $settings['paged_pagination_slug'];
   }
 
 
@@ -123,13 +132,18 @@ class CCS_Paged {
       'max' => '',
       'list' => 'false',
       'class' => '',
+      'item_class' => '',
+      'active_class' => 'active',
+      'disabled_class' => '',
       'next_text' => '&raquo;',
       'prev_text' => '&laquo;',
       'show_all' => 'false',
       'end_size' => '1',
       'mid_size' => '2',
       'prev_next' => 'true',
-      'anchor' => ''
+      'anchor' => '',
+      'current' => '', 'page' => '',
+      'slug' => ''
     ), $atts ) );
 
     $pagination_return = '';
@@ -140,7 +154,6 @@ class CCS_Paged {
       $query = CCS_Loop::$state['wp_query'];
 
       $id = CCS_Loop::$state['paged_index'];
-
       if ($id == 0) return;
 
       if (empty($max) && !empty(CCS_Loop::$state['maxpage'])) {
@@ -153,14 +166,34 @@ class CCS_Paged {
       if (intval($id)==1) $id = '';
       $query_var = self::$prefix.$id;
 
-      $current = isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
+      // Allow manually setting current page
+
+      if (!empty($page)) $current = $page; // Alias
+      if (empty($current)) {
+        $current = isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
+      }
+
       if ($current > $query->max_num_pages) $current = $query->max_num_pages;
+
 
       $base = $current_baseurl;
 
-      $args = array(
-        'base' => $base.'?'.$query_var.'=%#%' . (!empty($anchor) ? '#'.$anchor : ''),
-      );
+      if (!empty($slug)) {
+
+        // Generate page links with permalink slug
+
+        $base = explode('/'.$slug.'/', $current_baseurl);
+        $base = trailingslashit( $base[0] );
+        $args = array(
+          'base' => $base.$slug.'/%#%' . (!empty($anchor) ? '#'.$anchor : ''),
+        );
+      } else {
+
+        // Page links with query variable
+        $args = array(
+          'base' => $base.'?'.$query_var.'=%#%' . (!empty($anchor) ? '#'.$anchor : ''),
+        );
+      }
 
     } else {
 
@@ -169,14 +202,17 @@ class CCS_Paged {
         // Custom permalink
 
         $query = CCS_Loop::$state['alter_query'];
-        $current = max( 1, get_query_var( self::$prefix ) );
-
 
         $settings = get_option( CCS_Plugin::$settings_name );
+
         $pagination_slug = empty($settings['paged_pagination_slug']) ?
           'page' : $settings['paged_pagination_slug'];
 
+
+        $current = max( 1, get_query_var( $pagination_slug ) ); // self::$prefix
+
         // TODO: Support changing /page slug
+
         $big = 999999999; // need an unlikely integer
         $base = str_replace( $big, '%#%', esc_url(
           self::get_custom_pagenum_link( $big, $pagination_slug ) ) );
@@ -184,6 +220,7 @@ class CCS_Paged {
         $format = '?paged=%#%'; // If not using permalink ??
 
       } else {
+
         $query = $wp_query; // Default loop
         $current = max( 1, get_query_var('paged') );
 
@@ -250,16 +287,19 @@ class CCS_Paged {
 
       } else {
 
-        // Bootstrap
+        // List - e.g., Bootstrap
 
         if (!empty($class)) $class = ' '.$class;
 
         echo '<ul class="pagination'.$class.'">';
         foreach ( $pagination_return as $page ) {
-          if ( strpos($page, 'current') > -1 ) {
-              echo '<li class="active">' . $page . '</li>';
+          if ( strpos($page, 'current') !== false ) {
+              echo '<li class="'.$active_class.' '.$item_class.'">' . $page . '</li>';
           } else {
-              echo '<li>' . $page . '</li>';
+              echo
+                '<li'
+                  . (!empty($item_class) ? ' class="'.$item_class.'"' : '')
+                .'>' . $page . '</li>';
           }
         }
         echo '</ul>';

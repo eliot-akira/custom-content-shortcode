@@ -58,7 +58,9 @@ The following fields are available for each attachment.
 
 > **image** - display image: *&lt;img src="~"&gt;*
 
-> **size** - image size: *thumbnail*, *medium*, *large*, *full* (default) or custom defined size
+> **size** - image size: *thumbnail*, *medium*, *large*, *full* (default) or custom size name
+
+>> Create a custom image size with a plugin like [Simple Image Sizes](https://wordpress.org/plugins/simple-image-sizes/), or [`add_image_size()`](http://codex.wordpress.org/Function_Reference/add_image_size)
 
 > **thumbnail** - thumbnail
 

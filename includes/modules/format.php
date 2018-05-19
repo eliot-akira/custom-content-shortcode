@@ -15,7 +15,7 @@ class CCS_Format {
   function __construct() {
 
     add_ccs_shortcode( array(
-      'direct' => array($this, 'direct_shortcode'),
+      //'direct' => array($this, 'direct_shortcode'),
       'format' => array($this, 'format_shortcode'),
       'clean' => array($this, 'clean_shortcode'),
       'br' => array($this, 'br_shortcode'),
@@ -23,17 +23,23 @@ class CCS_Format {
       'link' => array($this, 'link_shortcode'),
       'image' => array($this, 'image_shortcode'),
       'slugify' => array($this, 'slugify_shortcode'),
+      'unslugify' => array($this, 'unslugify_shortcode'),
       'today' => array($this, 'today_shortcode'),
       'http' => array($this, 'http_shortcode'),
       'embed' => array($this, 'embed_shortcode'),
       'escape' => array($this, 'escape_shortcode'),
       'random' => array($this, 'random_shortcode'),
-      'x' => array($this, 'x_shortcode')
+      'x' => array($this, 'x_shortcode'),
+      'global' => array($this, 'global_shortcode'),
     ) );
-    //add_shortcode('direct',array($this, 'direct_shortcode'));
+    add_shortcode('direct', array($this, 'direct_shortcode'));
     self::$state['x_loop'] = 0;
   }
 
+
+  function global_shortcode( $atts, $content ) {
+    return do_ccs_shortcode($content);
+  }
 
   function br_shortcode() { return '<br />'; }
 
@@ -64,10 +70,86 @@ class CCS_Format {
   }
 
 
-  // Do shortcode, then format
-  function format_shortcode( $atts, $content ) {
-    return wpautop( do_ccs_shortcode( $content ) );
+  function format_shortcode( $atts, $content = '' ) {
+
+    $content = do_ccs_shortcode( $content );
+
+    if ( isset($atts[0]) ) {
+      switch ($atts[0]) {
+        case 'slugify':
+          return self::slugify( $content );
+        break;
+        case 'unslugify':
+          return self::unslugify( $content );
+        break;
+        case 'ucfirst':
+          return ucfirst( $content );
+        break;
+        case 'ucwords':
+          return ucwords( $content );
+        break;
+        case 'plural':
+          return self::pluralize( $content );
+        break;
+      }
+    }
+
+    if ( !empty($atts['date']) )
+      return self::format_date( $atts, $content );
+
+    if ( !empty($atts['currency']) || !empty($atts['decimals'])
+      || !empty($atts['point']) || !empty($atts['thousands'])) {
+
+      return self::format_number( $atts, $content );
+    }
+
   }
+
+  static function format_date( $atts, $content = '' ) {
+
+    // Convert input
+    if ( !empty($atts['in']) ) {
+      if ($atts['in']=='timestamp')
+        $content = gmdate("Y-m-d H:i:s", intval($content));
+      else
+        $content = $content;
+    }
+
+
+    $format = $atts['date'];
+
+    if ($format=='relative') {
+      $content = self::get_relative_date( $content );
+    } else {
+
+      if ($format=='default') {
+        $format = get_option('date_format');
+      } else {
+        // allow escape via "//" because "\" disappears in shortcode parameters
+        $format = str_replace("//", "\\", $format);
+      }
+
+      $content = mysql2date($format, $content);
+    }
+    return $content;
+  }
+
+
+  static function format_number( $atts, $content ) {
+
+    $currency = !empty($atts['currency']) ? $atts['currency'] : '';
+    $decimals = !empty($atts['decimals']) ? $atts['decimals'] : 0;
+    $point = !empty($atts['point']) ? $atts['point'] : '.';
+    $thousands = !empty($atts['thousands'])
+      ? ($thousands==='false' ? '' : $atts['thousands']) : '';
+
+    $content = CCS_Format::getCurrency(
+      floatval($content), $currency, $decimals, $point, $thousands
+    );
+
+    return $content;
+  }
+
 
   // Repeat x times: [x 10]..[/x]
   function x_shortcode( $atts, $content ) {
@@ -89,18 +171,65 @@ class CCS_Format {
   }
 
   // Convert title to slug
+  // The Example Title -> the_example_title
 
   function slugify_shortcode( $atts, $content ) {
-
-    // The Example Title -> the_example_title
-    return strtolower( str_replace(array(' ','-'), '_', self::alphanumeric(do_shortcode($content)) ) );
+    $content = do_ccs_shortcode($content);
+    return self::slugify( $content );
   }
+
+  static function slugify( $content ) {
+    return strtolower( str_replace(array(' ','-'), '_', self::alphanumeric(
+      ltrim(str_replace('/', '-', $content), '-')
+    )));
+  }
+
+  // Convert slug to title
+  // the-example-title -> The Example Title
+
+  function unslugify_shortcode( $atts, $content ) {
+    $content = do_ccs_shortcode($content);
+    return self::unslugify( $content );
+  }
+
+  static function unslugify( $content ) {
+    return ucwords( str_replace( array('_','-'), ' ', $content) );
+  }
+
+
 
   public static function alphanumeric( $str ) {
 
-    // Remove any character that is not alphanumeric, white-space, or a hyphen
+    // Remove any character that is not alphanumeric, white-space, hyphen or underscore
       return preg_replace("/[^a-z0-9\s\-_]/i", "", $str );
   }
+
+
+  /*---------------------------------------------
+   *
+   * Explode comma-separated list and remove extra space from each item
+   *
+   */
+
+  public static function explode_list( $list, $delimiter = '' ) {
+
+    if (!is_string($list)) return $list;
+
+    // Support multiple delimiters
+
+    $delimiter .= ','; // default
+    $delimiters = str_split($delimiter); // convert to array
+
+    $list = str_replace($delimiters, $delimiters[0], $list); // change all delimiters to same
+
+    // explode list and trim each item
+
+    return array_map( 'trim', explode($delimiters[0], $list) );
+  }
+
+
+
+
 
   /*---------------------------------------------
    *
@@ -133,17 +262,11 @@ class CCS_Format {
 
   // Don't run shortcodes inside
   static function direct_shortcode( $atts, $content ) {
-
-    // Protect from global do_shortcode
-    global $doing_local_shortcode;
-    if ( $doing_local_shortcode || CCS_Plugin::$state['doing_ccs_filter'] ) {
-      return '[direct]'.$content.'[/direct]';
-    }
     return $content;
   }
 
 
-  // Protect JS inside content
+  // Protect JS inside content **Unused**
   static function protect_script( $content, $global = true ) {
 
     $begin = '<script';
@@ -190,22 +313,37 @@ class CCS_Format {
 
   function embed_shortcode( $atts, $content ) {
 
+    // Expand field if any
     $content = do_shortcode($content);
-
+    return wp_oembed_get($content);
+/*
     if (isset($GLOBALS['wp_embed'])) {
-      $wp_embed = $GLOBALS['wp_embed'];
-      $content = $wp_embed->autoembed($content);
+//      $content = $GLOBALS['wp_embed']->autoembed($content);
       // Run [audio], [video] in embed
-      $content = do_shortcode($content);
+      //$content = do_shortcode($content);
     }
 
     return $content;
+*/
   }
 
-  function escape_shortcode( $atts, $content ) {
-    if ($atts['shortcode']=='true')
+  static function escape_shortcode( $atts, $content ) {
+    if ( @$atts['shortcode']=='true' )
       $content = do_ccs_shortcode( $content );
-    return str_replace(array('[',']'), array('&#91;','&#93;'), esc_html($content));
+    if ( @$atts['html']=='true' ) {
+
+      //$content = esc_html($content);
+
+      // TODO: This gets &amp; and so on..but is it the expected behavior?
+      $content = htmlentities(esc_html($content));
+    }
+/*
+    if( @$atts['special']=='true' ) {
+      $content = htmlentities($content);
+//echo '<pre><code>'.$content.'</code></pre>';
+    }
+*/
+    return str_replace(array('[',']'), array('&#91;','&#93;'), $content);
   }
 
   function random_shortcode( $atts, $content ) {
@@ -228,12 +366,14 @@ class CCS_Format {
       'target' => '',
       'open' => '', // new
       'http' => '', // true/false
+      'https' => '', // true/false
       'id' => '',
       'type' => '',
       'name' => '',
       'link_id' => '',
       'class' => '',
       'mail' => '',
+      'protocol' => '',
       'before' => '',
       'after' => '',
       'escape' => 'true',
@@ -255,9 +395,16 @@ class CCS_Format {
     }
 
     if ($mail=='true') $before = "mailto:";
-    $value = $before . $value . $after;
+    elseif ($http=='true') $protocol = 'http';
+    elseif ($https=='true') $protocol = 'https';
 
-    if ($http=='true') $value = self::maybe_add_http( $value );
+    if ( !empty($protocol) && !empty($value)
+      && substr($value, 0, strlen($protocol)) !== $protocol ) {
+
+      $before = $protocol.'://';
+    }
+
+    $value = $before . $value . $after;
 
     $out = '<a href="'.$value.'"';
     if (!empty($alt)) $out .= ' alt="'.$alt.'"';
@@ -287,7 +434,7 @@ class CCS_Format {
       'http' => '' // true/false
     ), $atts ) );
 
-    $src = do_shortcode($content);
+    $src = do_ccs_shortcode($content);
 
     if ($http=='true') $src = self::maybe_add_http( $src );
 
@@ -460,22 +607,6 @@ class CCS_Format {
     return $format_ago;
   }
 
-  // Unused
-
-  // set the PHP timezone to match WordPress
-  static function correct_php_timezone() {
-    $gofs = get_option( 'gmt_offset' ); // get WordPress offset in hours
-    $tz = date_default_timezone_get(); // get current PHP timezone
-    date_default_timezone_set('Etc/GMT'.(($gofs < 0)?'+':'').-$gofs);
-    self::$state['php_timezone'] = $tz;
-  }
-
-  // set the PHP timezone back the way it was
-  static function restore_php_timezone() {
-    $tz = date_default_timezone_get(); // get current PHP timezone
-    date_default_timezone_set( self::$state['php_timezone'] );
-  }
-
 
 
 
@@ -503,11 +634,86 @@ class CCS_Format {
 
 
 
+
+	// Single to plural English word
+	public static function pluralize( $word ) {
+
+		$plural = array(
+			'/(quiz)$/i'               => "$1zes",
+			'/^(ox)$/i'                => "$1en",
+			'/([m|l])ouse$/i'          => "$1ice",
+			'/(matr|vert|ind)ix|ex$/i' => "$1ices",
+			'/(x|ch|ss|sh)$/i'         => "$1es",
+			'/([^aeiouy]|qu)y$/i'      => "$1ies",
+			'/(hive)$/i'               => "$1s",
+			'/(?:([^f])fe|([lr])f)$/i' => "$1$2ves",
+			'/(shea|lea|loa|thie)f$/i' => "$1ves",
+			'/sis$/i'                  => "ses",
+			'/([ti])um$/i'             => "$1a",
+			'/(tomat|potat|ech|her|vet)o$/i'=> "$1oes",
+			'/(bu)s$/i'                => "$1ses",
+			'/(alias)$/i'              => "$1es",
+			'/(octop)us$/i'            => "$1i",
+			'/(ax|test)is$/i'          => "$1es",
+			'/(us)$/i'                 => "$1es",
+			'/s$/i'                    => "s",
+			'/$/'                      => "s"
+		);
+
+		$uncountable = array(
+      'audio',
+      'info',
+			'sheep',
+			'fish',
+			'deer',
+			'series',
+			'species',
+			'money',
+			'rice',
+			'information',
+			'equipment'
+		);
+
+		$irregular = array(
+			'move'   => 'moves',
+			'foot'   => 'feet',
+			'goose'  => 'geese',
+			'sex'    => 'sexes',
+			'child'  => 'children',
+			'man'    => 'men',
+			'tooth'  => 'teeth',
+			'person' => 'people'
+		);
+
+		$lowercased_word = strtolower($word);
+
+		foreach ($uncountable as $_uncountable){
+			if(substr($lowercased_word,(-1*strlen($_uncountable))) == $_uncountable){
+				return $word;
+			}
+		}
+
+		foreach ($irregular as $_plural => $_singular){
+			if (preg_match('/('.$_plural.')$/i', $word, $arr)) {
+				return preg_replace('/('.$_plural.')$/i', substr($arr[0],0,1).substr($_singular,1), $word);
+			}
+		}
+
+		foreach ($plural as $rule => $replacement) {
+			if (preg_match($rule, $word)) {
+				return preg_replace($rule, $replacement, $word);
+			}
+		}
+
+		return false;
+	}
+
+
+  // TODO: Separate below into optional modules
+
   /*---------------------------------------------
    *
    * Currency format
-   *
-   * TODO: Separate into optional module
    *
    * @param flatcurr  float integer to convert
    * @param curr  string of desired currency format
@@ -666,6 +872,29 @@ class CCS_Format {
       $input = substr($input,0,-2);
     }
     return $num . $dec;
+  }
+
+
+  /*---------------------------------------------
+   *
+   * Unused
+   *
+   * TODO: Confirm and remove
+   *
+   */
+
+  // set the PHP timezone to match WordPress
+  static function correct_php_timezone() {
+    $gofs = get_option( 'gmt_offset' ); // get WordPress offset in hours
+    $tz = date_default_timezone_get(); // get current PHP timezone
+    date_default_timezone_set('Etc/GMT'.(($gofs < 0)?'+':'').-$gofs);
+    self::$state['php_timezone'] = $tz;
+  }
+
+  // set the PHP timezone back the way it was
+  static function restore_php_timezone() {
+    $tz = date_default_timezone_get(); // get current PHP timezone
+    date_default_timezone_set( self::$state['php_timezone'] );
   }
 
 }

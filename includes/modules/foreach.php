@@ -4,8 +4,15 @@
  *
  * For each taxonomy
  *
- * [for each="category"]
- * [each name,id,slug]
+ * [for each=category]
+ *   [each name,id,slug]
+ * [/for]
+ *
+ * For each post type
+ *
+ * [for type=all]
+ *   [each name,plural,slug]
+ * [/for]
  *
  */
 
@@ -14,15 +21,18 @@ new CCS_ForEach;
 
 class CCS_ForEach {
 
-  public static $state;
-  public static $index; // Support nested loop
-  public static $current_term;
+  public static $state = array(
+    'is_for_loop' => false,
+    'is_for_post_type_loop' => false,
+    'for_count' => 0,
+    'for_post_type_count' => 0,
+    'for_post_type_max' => 0
+  );
+  public static $index = 0; // Support nested loop
+  public static $current_term = array();
+  public static $current_post_type = array();
 
   function __construct() {
-
-    self::$index = 0;
-    self::$state['is_for_loop'] = false;
-    self::$state['for_count'] = 0;
 
     add_ccs_shortcode(array(
       'for' => array( $this, 'for_shortcode' ),
@@ -37,6 +47,9 @@ class CCS_ForEach {
   }
 
   function for_shortcode( $atts, $content = null, $shortcode_name ) {
+
+    if (isset($atts['type']))
+      return self::for_post_type_shortcode($atts, $content);
 
     $args = array(
       'each' => '',
@@ -76,9 +89,6 @@ class CCS_ForEach {
       self::$index++;
     }
 
-
-
-
     if ($each=='tag') $each='post_tag';
     $out = '';
 
@@ -90,8 +100,7 @@ class CCS_ForEach {
     $else = $if_else['else'];
 
     // Get terms according to parameters
-    // @todo Refactor - keep it DRY
-    // @todo Consolidate with CCS_Content::get_taxonomies
+    // TODO: Consolidate with CCS_Content::get_taxonomies
 
     $query = array(
       'orderby' => !empty($orderby) ? $orderby : 'name',
@@ -106,7 +115,7 @@ class CCS_ForEach {
     if ( !empty($terms) ) $term = $terms; // Alias
     if ( !empty($term) ) {
 
-      $terms = CCS_Loop::explode_list($term); // Multiple values support
+      $terms = CCS_Format::explode_list($term); // Multiple values support
 
       foreach ($terms as $this_term) {
         if ( is_numeric($this_term) ) {
@@ -257,7 +266,7 @@ class CCS_ForEach {
       $each_term = array();
       $each_term['taxonomy'] = $each; // Taxonomy name
 
-      $excludes = CCS_Loop::explode_list( $exclude );
+      $excludes = CCS_Format::explode_list( $exclude );
       $index = 0;
       if (empty($count)) $count = 9999; // Show all
 
@@ -297,7 +306,7 @@ class CCS_ForEach {
           $each_term['name-link'] = $each_term['link'];
 
           // Replace {TAGS}
-          // @todo Use a general-purpose function in CCS_Loop for replacing tags
+          // TODO: Use a general-purpose function in CCS_Format for replacing tags
 
           $replaced_content = str_replace('{'.$prefix.'TERM}',
             $each_term['slug'], $content);
@@ -339,8 +348,11 @@ class CCS_ForEach {
 
   function each_shortcode( $atts, $content = null, $shortcode_name ) {
 
-    if ( !self::$state['is_for_loop'] )
-        return; // Must be inside a for loop
+    if ( ! self::$state['is_for_loop'] ) {
+      if ( self::$state['is_for_post_type_loop'] )
+        return self::each_post_type_shortcode($atts, $content);
+      else return;
+    }
 
     if (isset($atts['image'])) {
       $field = $atts['image'];
@@ -368,4 +380,140 @@ class CCS_ForEach {
     return $out;
   }
 
+  /*---------------------------------------------
+   *
+   * [for type]
+   *
+   */
+
+  static function for_post_type_shortcode( $atts = array(), $content = null ) {
+
+    extract(shortcode_atts(array(
+      'type' => 'all',
+      'exclude' => '',
+      'public' => '',
+      'default' => '',
+      'debug' => '',
+      'field' => '',
+    ), $atts, true));
+
+    $args = array();
+
+    if (!empty($field)) $content = '[each '.$field.']';
+
+    if (!empty($public)) $args['public'] = ($public=='true');
+    // exclude_from_search, publicly_queryable, show_ui
+    if ($default=='false') $args['_builtin'] = false;
+
+    $include_types = array();
+    if ($type!=='all') $include_types = array_merge(
+      $include_types, CCS_Format::explode_list($type)
+    );
+
+    $exclude_types = array(
+      // These are excluded by default
+      'revision', 'attachment', 'nav_menu_item',
+      'acf-field', 'acf-field-group',
+      'plugin_filter', 'plugin_group'
+    );
+
+    if (!empty($exclude)) $exclude_types = array_merge(
+      $exclude_types, CCS_Format::explode_list($exclude)
+    );
+
+
+		$post_types = get_post_types($args, 'objects');
+
+    // Filter and sort
+    $processed_types = array();
+    $check_include = count($include_types) > 0;
+
+    foreach ($post_types as $post_type) {
+
+      $slug = $post_type->name;
+
+      if (
+          // types are specified and this one is not included
+          ($check_include && !in_array($slug, $include_types))
+          // or this one is specifically excluded
+          || (in_array($slug, $exclude_types) && !in_array($slug, $include_types))
+        )
+        // then skip
+        continue;
+
+      $processed_types[ $slug ] = $post_type;
+    }
+
+    ksort($processed_types);
+
+    // Dump post type objects for debug
+    if ($debug=='true') {
+      ccs_inspect($processed_types);
+    }
+
+    // Start loop
+    self::$state['is_for_post_type_loop'] = true;
+    self::$state['for_post_type_count'] = 1; // Current index starts with 1
+    self::$state['for_post_type_max'] = count($processed_types);
+
+    $result = '';
+    $original_content = $content;
+
+    foreach ($processed_types as $name => $post_type) {
+
+      $data = array(
+        'slug' => $name,
+        'name' => $post_type->labels->singular_name,
+        'plural' => $post_type->labels->name
+      );
+
+      $rewrite = $post_type->rewrite;
+
+      if ($rewrite['with_front'] && isset($rewrite['slug']))
+        $data['prefix'] = $rewrite['slug'];
+
+      self::$current_post_type = $data;
+
+      $content = str_replace('{TYPE}', $post_type->name, $original_content);
+      $result .= do_ccs_shortcode($content);
+      self::$state['for_post_type_count']++;
+    }
+
+    // End loop
+    self::$state['is_for_post_type_loop'] = false;
+    self::$state['for_post_type_count'] = 0;
+    self::$state['for_post_type_max'] = 0;
+
+    return $result;
+  }
+
+
+  static function each_post_type_shortcode( $atts = array(), $content = null ) {
+
+    if (empty(self::$current_post_type)) return;
+
+    $field = isset($atts[0]) ? $atts[0] : 'name';
+    $result = '';
+    $debug = isset($atts['debug']) || in_array('debug', $atts);
+
+    if (isset(self::$current_post_type[ $field ])) {
+
+      $result = self::$current_post_type[ $field ];
+
+      if (!empty($atts['lower'])) $result = strtolower($result);
+
+    } elseif ($field === 'url') {
+
+      $slug = self::$current_post_type['slug'];
+      $result = get_post_type_archive_link($slug);
+
+      if ($result===false) {
+        if ($debug)
+          ccs_inspect('Warning: the post type '.$slug.' does not exist, or has no archive.');
+        $result = '';
+      }
+    }
+
+    return $result;
+  }
 }

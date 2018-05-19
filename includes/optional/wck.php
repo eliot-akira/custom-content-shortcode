@@ -46,13 +46,7 @@ class CCS_To_WCK {
 				'repeater'=> array($this, 'general_repeater_shortcode'),
 			));
 
-		} else {
-
-			if (class_exists('CCS_To_ACF')) {
-				add_ccs_shortcode( 'repeater', array('CCS_To_ACF', 'loop_through_acf_field') );
-			}
 		}
-
 	}
 
 	function wck_metabox_shortcode( $atts, $content ) {
@@ -98,9 +92,11 @@ class CCS_To_WCK {
 			'size' => 'full',
 			'icon' => '0',
 			'attr' => '',
+      'debug' => '',
 		), $atts ) );
 
 		if (!empty($metabox)) $meta = $metabox;
+    $debug = ($debug=='true');
 
 		if ( self::$state['is_wck_repeater'] ) {
 
@@ -154,8 +150,12 @@ class CCS_To_WCK {
 
 				// Single meta and field
 
-				if (!empty($id)) $out = get_cfc_field( $meta, $field, $id );
-				else $out = get_cfc_field( $meta, $field );
+				if (empty($id)) $id = get_the_ID();
+        $out = get_cfc_field( $meta, $field, $id );
+
+        if ($debug) ccs_inspect(
+          'Post ID: '.$id, 'Meta: '.$meta, 'Field: '.$field, 'Result: '.$out
+        );
 			}
 
 

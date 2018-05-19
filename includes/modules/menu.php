@@ -7,7 +7,7 @@ class CCS_Menu {
 	static $state;
 
   function __construct() {
-		add_action( 'init', array( $this, 'register' ) );
+		add_action( 'wp_loaded', array( $this, 'register' ) );
     self::$state = array();
 		self::$state['is_menu_loop'] = false;
 		self::$state['depth'] = 0;
@@ -17,7 +17,6 @@ class CCS_Menu {
   }
 
   function register() {
-
     add_ccs_shortcode( array(
 			'loop-menu' => array( $this, 'loop_menu_shortcode' ),
 		));
@@ -39,6 +38,7 @@ class CCS_Menu {
 	}
 
 	function loop_menu_filter( $result, $parameters, $template ) {
+
 		if ( empty($parameters['menu']) ) return $result;
 		$parameters = array_filter($parameters);
 		$parameters['name'] = $parameters['menu'];

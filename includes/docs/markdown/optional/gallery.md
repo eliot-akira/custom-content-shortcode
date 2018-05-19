@@ -3,11 +3,13 @@
 
 ---
 
+Enable the Gallery Field module under [Settings](options-general.php?page=ccs_reference&tab=settings).
 
-Enable the gallery field under [*Admin Panel -> Settings -&gt; Gallery Fields*](options-general.php?page=ccs_gallery_field_settings).
+Then, select post types to use under [Admin Panel > Settings > Gallery Fields](options-general.php?page=ccs_gallery_field_settings).
+
+---
 
 You can add, order, edit and remove images in the field.
-
 
 
 ### Example
@@ -64,15 +66,20 @@ You can pass the following parameters to the native gallery: *orderby*, *order*,
 ### Individual image
 
 
-The `[content]` shortcode can display individual images of the gallery field.
+The `[field]` shortcode can display individual images of the gallery field.
 
 *Display the 3rd image in the gallery field*
 
 ~~~
-[content field=gallery num=3]
-..or..
 [field gallery num=3]
 ~~~
+
+*Get the first image's thumbnail URL*
+
+~~~
+[field gallery-url num=3 size=thumbnail]
+~~~
+
 
 &nbsp;
 

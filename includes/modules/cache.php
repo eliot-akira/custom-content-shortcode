@@ -21,7 +21,8 @@ class CCS_Cache {
 
     add_ccs_shortcode( array(
 			'cache' => array( $this, 'cache_shortcode'),
-			'timer' => array( $this, 'timer_shortcode')
+			'timer' => array( $this, 'timer_shortcode'),
+      '' => '',
 		));
 
 		self::$transient_prefix = 'ccs_';
@@ -48,7 +49,7 @@ class CCS_Cache {
 
 		if ( false === $result ) {
 
-			$result = do_shortcode( $content );
+			$result = do_ccs_shortcode( $content );
 
 			self::set_transient( $name, $result, $expire );
 		}

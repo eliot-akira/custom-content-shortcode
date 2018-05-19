@@ -24,7 +24,7 @@ class CCS_Related {
 		self::$state['current_related_post_id'] = 0;
 	}
 
-	function loop_related_posts( $atts, $content ) {
+	static function loop_related_posts( $atts, $content ) {
 
 		global $post;
 		$outputs = array();
@@ -49,16 +49,19 @@ class CCS_Related {
 			'value' => '', // For future update: related post by field value
 			'subfield' => '',
 			'count' => '',
+      'fill' => '', // Fill to count if result is less
+      'id' => '', // Specify posts by ID; used by fill
 			'children' => '', // Include child terms
 			'order' => 'DESC',
 			'orderby' => 'date',
+      'status' => 'publish',
 			'relation' => 'or',
 			'operator' => 'in',
 			'trim' => '' // Trim extra space and comma
 		), $atts ) );
 
 		if (!empty($type)) {
-			$post_type = CCS_Loop::explode_list($type);
+			$post_type = CCS_Format::explode_list($type);
 		}
 
 		if ( empty($field) && isset($atts[0]) ) $field = $atts[0];
@@ -66,7 +69,7 @@ class CCS_Related {
 		if ( !empty($taxonomy_field) ) {
 
 			$terms = do_ccs_shortcode( '[field '.$taxonomy_field.']', false );
-			$terms = CCS_Loop::explode_list($terms);
+			$terms = CCS_Format::explode_list($terms);
 
 			if (empty($terms) || count($terms)==0) return;
 
@@ -109,7 +112,8 @@ class CCS_Related {
 
 			// Support multiple taxonomies
 
-			$taxonomies = CCS_Loop::explode_list($taxonomy);
+			$taxonomies = CCS_Format::explode_list($taxonomy);
+      $status = CCS_Format::explode_list($status);
 			$relation = strtoupper($relation);
 			$tax_count = 0;
 
@@ -118,6 +122,7 @@ class CCS_Related {
 				'posts_per_page'   => -1,
 				'order' => $order,
 				'orderby' => $orderby,
+        'post_status' => $status,
 				'tax_query' => array()
 			);
 
@@ -164,6 +169,7 @@ class CCS_Related {
 			// print_r($query); echo '<br><br>';
 
 			$posts = new WP_Query( $query );
+      $foundIDs = array();
 
 			if ( $posts->have_posts() ) {
 
@@ -223,8 +229,9 @@ class CCS_Related {
 						if ( $condition ) {
 
 							// OK, post fits the criteria
-
-							self::$state['current_related_post_id'] = $post->ID;
+              $current = $post->ID;
+							self::$state['current_related_post_id'] = $current;
+              $foundIDs[] = $current;
 							$current_count++;
 							if ($current_count<=$count) {
 								$outputs[] = do_ccs_shortcode( $content );
@@ -239,6 +246,26 @@ class CCS_Related {
 		}
 
 		$out = implode('', $outputs);
+
+    // Fill if result is less
+
+    if ($fill=='true' && $current_count < $count) {
+      // Exclude current post
+      $foundIDs[] = $post_id;
+      $foundIDs = implode(',', $foundIDs);
+
+      $num = $count - $current_count;
+
+//      $out .= do_ccs_shortcode('[loop type='.$post_type.' orderby=random exclude='.$foundIDs.' count='.$num.']'.$content.'[/loop]');
+
+      $out .= CCS_Loop::the_loop_shortcode(array(
+        'type' => $post_type,
+        'orderby' => 'random',
+        'exclude' => $foundIDs,
+        'count' => $num,
+      ), $content, 'loop');
+
+    }
 
 		if (!empty($trim)) {
       $out = CCS_Format::trim($out, $trim);

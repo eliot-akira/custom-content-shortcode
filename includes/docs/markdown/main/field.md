@@ -32,15 +32,19 @@ Additional parameters can be placed after the field name. Most [parameters for `
 
 > *url* - post URL
 
-> *link* - link to post URL; set parameter *link_text* to change link text from post title (default) to, for example, "Read More"
+> *link* - link to post URL; set parameter *text* to change link text from post title (default) to, for example, "Read More"
 
 > *excerpt* - post excerpt; if excerpt doesn't exist, it will display post content with *words=25*. Excerpts are unformatted, and HTML tags are stripped. See also the *words* and *length* parameter for the content shortcode.
 
+> *after-excerpt* - content after the read more tag
+
 > *edit-url* - post edit URL
 
-> *edit-link* - post title with link to edit URL; set parameter *link_text* to change link text from post title to, for example, "Edit"
+> *edit-link* - post title with link to edit URL; set parameter *text* to change link text from post title to, for example, "Edit"
 
 > *post-status* - post status
+
+> *post-class* - post class
 
 > *post-type* - post type
 
@@ -141,7 +145,9 @@ You can display custom fields as well as predefined fields listed above. If your
 
 > **in** - type of image field: *id* (default), *url*, or *object*
 
-> **size** - size of image: *thumbnail*, *medium*, *large*, *full* (default) or [custom defined size](http://codex.wordpress.org/Function_Reference/add_image_size)
+> **size** - image size: *thumbnail*, *medium*, *large*, *full* (default) or custom size name
+
+>> Create a custom image size with a plugin like [Simple Image Sizes](https://wordpress.org/plugins/simple-image-sizes/), or [`add_image_size()`](http://codex.wordpress.org/Function_Reference/add_image_size)
 
 > **width**, **height** - set both to resize image by pixels; set *size* parameter with same proportion
 
@@ -186,10 +192,11 @@ The default field is URL of the current post.
 
 > **open=new** - same as *target=_blank*
 
-> **http** - set *true* to add `http://` before field value if it's not there already
+> **protocol** - add *http*, *https*, or *telnet*, plus `://` before field value, if it's not there already
+
+> **http**, **https** - set *true* to add `http://` or `https://`
 
 > **mail** - set *true* to add `mailto:` before field value
-
 
 ## Array
 
@@ -212,6 +219,8 @@ Use `[array]` to loop through an array of key-value pairs stored in a field.
 
 > **json** - set *true* if field value is stored as JSON string
 
+---
+
 Nested arrays are supported by using the minus prefix.
 
 ~~~
@@ -223,36 +232,3 @@ Nested arrays are supported by using the minus prefix.
 ~~~
 
 For an array that is not a key-value pair, use `[field value]` to display each value.
-
-
-## Currency
-
-To format a currency value, you can use the following parameters.
-
-> **decimals** - number of decimal points; for example, 2
-
-> **point** - separator for the decimal point; for example, "."
-
-> **thousands** - separator for thousands; for example, ","
-
----
-
-*Format a field value as currency*
-
-~~~
-[field field_name point=, thousands=.]
-~~~
-
-This will display a number like: 2.500,00
-
----
-
-To use a predefined currency format, use the parameter *currency*.
-
-~~~
-[field field_name currency=USD]
-~~~
-
-Please note that the currency symbol is not included in the output.
-
-Most [currency codes](http://en.wikipedia.org/wiki/ISO_4217#Active_codes) are defined for your convenience.

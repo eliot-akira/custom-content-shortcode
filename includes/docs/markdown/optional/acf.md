@@ -23,6 +23,14 @@ To display a field's label, set *out=field-label*.
 [field field_name out=field-label]
 ~~~
 
+## Field key
+
+To display a field by key (starts with *field_*), use the *key* parameter.
+
+~~~
+[field key=field_5039a99716d1d]
+~~~
+
 ## Checkbox/Select/Radio
 
 ### Selection label
@@ -274,7 +282,6 @@ To display a repeater inside a repeater, use `[-repeater]`.  Please note that th
 
 ## Flexible content
 
-
 ~~~
 [flex flexible_content]
 
@@ -298,6 +305,7 @@ To display a repeater inside a repeater, use `[-repeater]`.  Please note that th
 [/flex]
 ~~~
 
+Multiple layouts may be specified, separated by comma. Also, *default* layout will match all.
 
 ## Gallery
 

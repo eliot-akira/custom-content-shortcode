@@ -6,7 +6,7 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y
 Tags: loop, query, content, shortcode, post type, field, attachment, comment, sidebar, taxonomy
 Requires at least: 3.6
-Tested up to: 4.4
+Tested up to: 4.9.4
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -29,18 +29,14 @@ There is a reference section under Settings -> Custom Content.
 <br />
 Here are some of the included features:
 
+* Wide range of **query parameters** to display site content
+* **Conditional** content based on field value, login status, etc.
 * Overview of your site's **content structure**
-* **Pagination** for post loops
-* Display **comments** and **attachments**
-* **User info** and content based on user status
 * **Relative URLs** for links and images
 * **Cache** the result of a query
-* Optional: **Gallery field**, **Mobile Detect**
+* Optional: **Gallery field**, **Mobile Detect**, **Math**
 
-Support for other plugins:
-
-* [Advanced Custom Fields](http://wordpress.org/plugins/advanced-custom-fields/)
-* [WCK Fields and Post Types](http://wordpress.org/plugins/wck-custom-fields-and-custom-post-types-creator/)
+Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins/advanced-custom-fields/), [WCK Fields and Post Types](http://wordpress.org/plugins/wck-custom-fields-and-custom-post-types-creator/)
 
 
 == Installation ==
@@ -61,7 +57,154 @@ Support for other plugins:
 
 == Changelog ==
 
-3.3.2
+3.7.0
+---
+
+* Minor fixes in reference pages
+
+3.6.7
+---
+
+* [attached] - Support parameter *count* for gallery field
+* Meta Shortcodes - Improve code editor
+
+3.6.5
+---
+
+* Improve compatibility with PHP <5.3
+* Correct static function call to get_image_field()
+
+3.6.3
+---
+
+* [attached] - Add parameter *orderby=random*
+* [is] - Improve check for login/logout status
+* [loop include=children] - When *list=true*, append children after their parent
+
+3.6.0
+---
+
+This update includes a newly rewritten feature for [loop include=children]. Previously, children were appended after their parent wherever they occurred; now all descendants are included as equals and follow loop query parameters like *orderby*. If you were using this feature, please test before deploying to production.
+
+* [loop] - Add parameter *level* to set descendant level (number of generations)
+* [loop include=children] - Complete rewrite and update: improve handling of additional queries, internal [if] conditions, counting levels
+* [pass] - Add support for *date_format*
+
+3.5.8
+---
+
+* [loop] - Add predefined values *published* and *modified* for field query
+* [loop], [comment] - Optimize getting total comment count
+* [if field] - Support WCK fields: inside [metabox] loop, or add parameter *metabox*
+
+3.5.7
+---
+
+* [for type] - Post type rewrite slug for use in URLs: [each prefix]
+* [for type] - Post type archive URL: [each url]
+* [if] - Support for post type loop: if *first*, *last*, *every*, *archive*, *prefix*
+
+3.5.6
+---
+
+* [if] - Fix refactored code to handle default condition
+* Pagination - Fix warning when permalink slug does not exist
+* [if] - Optimize/refactor code
+* [note] - Ignore note content completely: do nothing
+* [for type] - Correctly pass post type slugs to [loop-count]
+* [for type] - Add *debug=true* to inspect post type query
+* [if] - Improve check for empty or zero value
+* [loop] - Add *debug=true* to inspect query
+* [pass] - Add documentation for nested levels
+* Improve support for The Events Calendar plugin: *display=custom*
+
+3.5.1
+---
+
+* [loop] - Add parameter *orderby=child-date*
+* [for type] - Improve check for included post types
+* [loop-count] - By default, perform query to count posts when inside [for type]
+
+3.4.8
+---
+
+* [field] - Add predefined fields: *post-class*, *gallery-url*
+* [field] - Add parameter *until* to trim value until specified character(s)
+* [related] - Add parameter *fill=true* to include unrelated posts until post count is met
+* [related] - Add parameter *status* to get future or draft posts
+* [loop exists] - Support `[if empty]` to display something if no post exists
+* [loop-count] - Display post count of query result if loop parameters are given
+* [the-loop] - Allow nesting by `-` prefix
+* [pass field] - Add parameter *escape=true* to escape HTML special characters
+
+3.4.4
+---
+
+* [array] - Add parameters *slugify* and *glue*
+* [calc] - Share variables with get/set shortcodes
+* [field] - Add default field *after-excerpt* to show content after read more tag
+* [field] - Add *https=true* to prepend protocol to field value
+* [field excerpt] - Apply *get_the_excerpt* filter to result
+* [format] - Add parameters: *ucfirst*, *ucwords*, *plural*
+* [if empty] - Improve check for empty ACF repeaters
+* [if every] - Improve when combined with *first* or *last* parameters
+* [if total] - Condition to check total post count
+* [if var] - Check variable set by [set] or [calc]
+* [loop] - Add parameters *tax_compare* and *field_compare*
+* [loop exists] - Improve check for empty query result
+* [loop name] - Support query by multiple post names
+* [pass list=$var] - Use variable as parameter value
+* [repeater] - Improve handling of nested repeaters
+* [set] - Add *trim=true* to trim spaces and new lines from start/end of value
+* [users] - Support query by multiple roles, for example: role=admin,editor
+* [when start] - Switch condition when value starts with a string
+* Gallery field - Improve sort function and thumbnail display
+* New optional module: Meta Shortcodes
+
+3.4.2
+---
+
+* [loop] - Improve published and modified date query for specific value
+
+3.4.1
+---
+
+* [field modified] - Support *date_format=relative*
+* [loop child=this] - Correctly handle *include=this* when current post is top parent
+* [if route], [switch route] - Support matching URL routes by wildcards
+* [get], [set], [pass] - Get/set/pass variables; see Advanced > Extras > Variables
+* Documentation - Update to Parsedown v1.6.0
+
+3.4.0
+---
+
+* [loop child=this] - Loop through current post's parents from the top
+* [comments] - Support filter by taxonomy term ID
+* [if host] - Check server host name: can be used to distinguish between localhost or staging/public site
+
+3.3.8
+---
+
+* [loop exists] - Perform a query first to check if any post matches the given parameters
+* [format] - Format number or date; see Advanced: Extras
+* [calc] - Perform spreadsheet-like calculations; see Optional: Math
+* Documentation - Add a note about how to create a custom image size using [Simple Image Sizes](https://wordpress.org/plugins/simple-image-sizes/)
+
+3.3.6
+---
+
+* [if] - Add parameter *compare=not*
+* [loop] - Correctly handle *list_class* and *item_class* as before
+* Improving multisite compatibility - thanks to @keyra
+
+3.3.4
+---
+
+* [users] - Add *list* parameter
+* [flex], [layout] - Add *default* layout
+* [if] - Improve condition with *and*
+
+3.3.3
 ---
 
 * [loop] - Sort by multiple fields: orderby_2, orderby_3..
@@ -69,8 +212,6 @@ Support for other plugins:
 * [if], [switch] - Add parameters *today* and *day_of_week*
 * [user] - Support custom user image fields
 * [block] - Support nested blocks
-* Multisite compatibility (in progress) - Doc menus
-* Thanks to everyone who contributed feedback and suggestions
 
 3.2.9
 ---

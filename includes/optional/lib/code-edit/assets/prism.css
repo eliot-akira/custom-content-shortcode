@@ -1,0 +1,110 @@
+
+/* Tommorow light theme */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	/*font-family: Consolas, Monaco, 'Andale Mono', monospace;*/
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 2;
+	-o-tab-size: 2;
+	tab-size: 2;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .75em 0;
+	overflow: auto;
+	border-radius: 0.3em;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+/*	background: #1B1C1D; #272822; */
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: #000; /*#f8f8f2;*/
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #0079bf; /* #5a96b9; /* #CC7070; #cc6666; #f92672; #e2777a */
+}
+
+.token.attr-name,
+.token.atrule {
+	color: #f7af1f; /*#b96887; /* #F7B200; #F1B21A; #E8BF6A; #f8c555; #e6db74; */
+}
+
+.token.attr-value,
+.token.selector,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #4dbb00; /*#69c32a; /* #62BF37; #89AF85; #86A284; #b5bd68; #a6e22e; #7ec699 */
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable,
+
+.token.punctuation,
+.token.bracket,
+.token.keyword {
+	color: #969896; /* #7592a3; #81a2be; #6193FF; 66d9ef #6196cc */
+}
+
+.token.boolean,
+.token.number {
+	color: #ae81ff;
+}
+
+.token.regex,
+.token.important {
+	color: #fd971f;
+}
+
+.token.important {
+	font-weight: bold;
+}
+
+.token.entity {
+	cursor: help;
+}

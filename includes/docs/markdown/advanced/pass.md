@@ -143,7 +143,11 @@ This is a feature to loop through a list of items.
 [/pass]
 ~~~
 
-`{ITEM}` is replaced by the item, for example: *blue*. And `{Item}` capitalizes the first letter, for example: *Blue*.
+`{ITEM}` is replaced by the item, for example: *blue*.
+
+`{Item}` capitalizes the first letter, for example: *Blue*.
+
+---
 
 For more flexibility, you can pass multiple items for each loop.
 
@@ -156,6 +160,15 @@ For more flexibility, you can pass multiple items for each loop.
 [/pass]
 ~~~
 
+---
+
+There is a quick way to create a range using the `~` character.
+
+~~~
+[pass list=A~Z]
+~~~
+
+The above will pass each letter of the alphabet.
 
 ## Array field
 
@@ -201,7 +214,7 @@ Use the field parameter to pass an element from an array.
 *Multiple fields*
 
 ~~~
-[pass global=_GET fields='type, category, status']
+[pass global=_GET fields=type,category,status]
   Queries: {TYPE}, {CATEGORY}, {STATUS}
 [/pass]
 ~~~
@@ -226,15 +239,15 @@ If you set *global=query*, you can get any query variable from the URL.
 [/pass]
 ~~~
 
-Specify the query variables in the *fields* parameter. Use the tag syntax to display the values, which are uppercased versions of the variable names. Wrap the tags with quotes in case the query variable is empty.
+Wrap the tags in quotes in case the query variable is empty.
 
 Please note that some query variables influence the *main* query, so it's better to use unique names.
 
-In some cases, it's necessary to use `[if check]` to catch when the parameter is empty.
+You can use `[if pass]` to catch when the parameter is empty.
 
 ~~~
 [pass global=query fields=id]
-  [if check='{ID}']
+  [if pass='{ID}' empty=false]
     [loop type=member id='{ID}']
       ...
     [/loop]
@@ -244,11 +257,11 @@ In some cases, it's necessary to use `[if check]` to catch when the parameter is
 [/pass]
 ~~~
 
-In the above example, the check is needed because the loop without ID parameter would display all posts of the given post type.
+In the above example, the check is needed because the loop without an ID parameter would display all posts of the given post type.
 
-### URL Route
+### URL route
 
-There's a special variable called *route*, which can be used to pass the current URL route or its parts.
+Use `[pass route]` to pass the current URL route or its parts.
 
 If the current URL is: `example.com/article/category/special`
 
@@ -260,3 +273,22 @@ If the current URL is: `example.com/article/category/special`
   {FIELD_3} is: special
 [/pass]
 ~~~
+
+## Nested pass
+
+Create nested levels of `[pass]` by using the minus `-` prefix.
+
+~~~
+[pass field=id]
+  [loop parent=this count=1]
+    [-pass field=id]
+      Parent ID: {FIELD}
+      Child ID: {-FIELD}
+    [/-pass]
+  [/loop]
+[/pass]
+~~~
+
+The `{FIELD}` tag also needs a minus prefix corresponding to the nest level.
+
+This works the same way with the *fields* parameter.

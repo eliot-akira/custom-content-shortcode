@@ -3,16 +3,7 @@
 
 ---
 
-### Site name and description
-
-~~~
-[field site=name]
-[field site=description]
-~~~
-
-&nbsp;
-
-### Today
+## Today
 
 To display today's date:
 
@@ -42,9 +33,80 @@ For details, see [the Codex: Formatting Date and Time](https://codex.wordpress.o
 
 Note: shortcode parameters cannot handle a backslash, so use double slashes `//` to escape.
 
-&nbsp;
+## Format
 
-### Comment
+Use `[format]` to format a number, date, or string.
+
+### Number
+
+~~~
+€ [format decimals=2 point=, thousands=.] [field product_price] [/format]
+~~~
+
+At least one of the following parameters must be set.
+
+> **decimals** - number of decimal points to include; default is 0
+
+> **point** - separator for the decimal point; default is "."
+
+> **thousands** - separator for thousands; default is ","
+
+> **currency** - [currency code](http://en.wikipedia.org/wiki/ISO_4217#Active_codes) (*EUR*, *USD*, ...) to use a predefined format for the above three parameters. The currency symbol is not included in the output.
+
+> ~~~
+> € [format currency=EUR][field price][/format]
+> ~~~
+
+### Date
+
+> **date** - [date format](https://codex.wordpress.org/Formatting_Date_and_Time), for example *Y-m-d*
+
+> **in=timestamp** - if the input value is a timestamp
+
+### String
+
+> **slugify** - The Example Title -> the_example_title
+
+> **unslugify** - the_example_title -> The Example Title
+
+> **ucfirst** - Uppercase first letter
+
+> **ucwords** - Uppercase words
+
+> **plural** - Make an English word into plural form
+
+## Variables
+
+This stores content in a variable with a given name:
+
+~~~
+[set any_name]Content of variable[/set]
+~~~
+
+To display it:
+
+~~~
+[get any_name]
+~~~
+
+To pass it:
+
+~~~
+[pass vars]{ANY_NAME}[/pass]
+~~~
+
+---
+
+If you have the Math module enabled under [Settings](options-general.php?page=ccs_reference&tab=settings), these variables are shared with the `[calc]` shortcode.
+
+## Site name and description
+
+~~~
+[field site=name]
+[field site=description]
+~~~
+
+## Comment
 
 Use `[note]` to place a comment inside the visual editor.
 
@@ -54,9 +116,7 @@ Use `[note]` to place a comment inside the visual editor.
 
 This shortcode does not display anything, it's just a placeholder.
 
-&nbsp;
-
-### Random number
+## Random number
 
 Use `[random]` to display a random number in a chosen range.
 

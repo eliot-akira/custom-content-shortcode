@@ -1,0 +1,101 @@
+.CodeFlask{
+  position:relative;
+  /*overflow:hidden;*/
+}
+
+.CodeFlask__textarea,
+.CodeFlask__pre {
+}
+
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:300);
+
+.CodeFlask__textarea,
+.CodeFlask__pre,
+.CodeFlask__code {
+
+    box-sizing:border-box;
+    position:absolute;
+    top:0;
+  	left:0;
+    width:100%;
+
+  margin: 0 !important;
+  padding: 0.75rem !important;
+
+    border:none;
+
+  	font-family: 'Source Code Pro', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-weight: 300;
+    font-size:13px;
+  	/*text-shadow: 0 1px rgba(0, 0, 0, 0.3);*/
+
+    background:transparent;
+    line-height:1.5em;
+/*
+    white-space:pre-wrap !important;
+    word-wrap: break-word !important;
+    /*width:100%; overflow-x:auto;
+*/
+    /* Syncing textarea, pre and code.. */
+    overflow:visible !important;
+    overflow-x:auto !important;
+    white-space: pre-wrap !important;
+    white-space: -moz-pre-wrap !important;
+    white-space: -pre-wrap !important;
+    white-space: -o-pre-wrap !important;
+    /*word-wrap: break-word !important;*/
+    /*word-break: break-all !important;*/
+
+	-moz-tab-size: 2;
+	-o-tab-size: 2;
+	tab-size: 2;
+}
+
+.CodeFlask__textarea,
+.CodeFlask__code{
+  font-size:15px;
+  box-shadow: 0 1px 1px rgba(0,0,0,.04);
+  border: 1px solid #e5e5e5;
+}
+
+.CodeFlask__textarea{
+    /*border:none;*/
+    outline:none;
+    box-shadow: none;
+    resize:none;
+    /*opacity:0.4;*/
+    color:#000;
+    z-index:1;
+    height:100%;
+    -webkit-overflow-scrolling: touch;
+  background-color: #ffffff;
+  border: 1px solid #eeeeee;
+}
+.CodeFlask__textarea:focus {
+  outline:none;
+  box-shadow: none;
+  border-color: #e5e5e5;
+}
+.CodeFlask__pre{
+    z-index:2;
+    pointer-events:none;
+    /*min-height:100%;
+    margin:0 !important;
+    padding:0 !important;*/
+}
+
+.CodeFlask__code{
+    font-family:inherit;
+    color:inherit;
+    display:block;
+
+    /*padding: 1rem;*/
+
+    min-height: 300px;
+    border: 1px solid transparent;
+}
+
+#flask {
+  margin-top: 10px;
+  /*min-height: 500px;*/
+}

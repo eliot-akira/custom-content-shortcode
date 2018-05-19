@@ -2,7 +2,7 @@
 
 # Always ignore
 
-_unused
+_*
 node_modules
 .DS_Store
 .svn

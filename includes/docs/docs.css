@@ -109,6 +109,10 @@
   background-color: #fff !important;
 }
 
+.inner-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+}
 
 /*---------------------------------------------
  *
@@ -129,6 +133,7 @@
 .doc-style .bold {
   font-weight: 400;
 }
+
 .doc-style .center {
   text-align: center;
 }
@@ -147,7 +152,15 @@
   color: #0074A2;
 }
 .doc-style a:hover {
+  /* text-decoration: underline; */
   color: #000;
+}
+
+.doc-style .italic {
+  font-style: italic;
+}
+.doc-style .small, .doc-style .small p {
+  font-size: 13px !important;
 }
 
 
@@ -160,12 +173,14 @@
 .doc-style b, .doc-style strong {
   font-weight: 400;
 }
-.doc-style, .doc-style p, .doc-style .form-table td {
-  font-size: 15px;
-  line-height: 1.3em;
+
+.doc-style p {
+  margin: 0.75em 0;
 }
-.doc-style .italic {
-  font-style: italic;
+
+.doc-style, .doc-style p, .doc-style .form-table td {
+  font-size: 16px;
+  line-height: 1.4em;
 }
 
 .doc-style .inner-wrap h1 {
@@ -176,12 +191,20 @@
 .doc-style .inner-wrap h2 {
   font-size: 16px;
   font-weight: 300;
-  padding: 2px 0;
-  margin: 0 0 10px 0;
+  padding: 4px 0;
+  margin: 50px 0 10px 0;
   text-align: center;
 /*  border-bottom: 1px solid #dadada;
   padding-bottom: 5px;
   margin-bottom: 10px; */
+}
+
+.doc-style .inner-wrap h2:first-of-type {
+  margin-top: 0px;
+}
+
+.doc-style .anchor-with-top-pad {
+  display: block; position: relative; top: 0px; visibility: hidden;
 }
 
 .doc-style :not(.tab-overview) h2 {
@@ -192,7 +215,7 @@
 
 .doc-style .inner-wrap h3 {
   margin: 25px auto 0;
-  padding: 4px;
+  padding: 2px 0;
   font-size: 14px;
   display: block;
   font-weight: 300;
@@ -247,9 +270,13 @@ h2 .nav-tab {
   padding-left: 0px;
 }
 .doc-style .footer-notice {
-  font-size:15px;
   max-width:430px;
 }
+
+.doc-style .footer-notice p {
+  font-size:14px;
+}
+
 .doc-style .logo-pad {
   margin: 15px auto;
 }
@@ -300,16 +327,12 @@ h2 .nav-tab {
   margin: 0;
   padding: 0;
 }
-
-
-.doc-style .inner-wrap h2 {
-  margin-top: 50px;
+.doc-style b,
+.doc-style .bold  {
+  font-weight:400;
 }
-.doc-style .inner-wrap h2:first-of-type {
-  margin-top: 0px;
-}
-.doc-style .anchor-with-top-pad {
-  display: block; position: relative; top: 0px; visibility: hidden;
+.doc-style .no-margin-top {
+  margin-top: 3px;
 }
 
 /*---------------------------------------------
@@ -321,6 +344,10 @@ h2 .nav-tab {
 .tab-overview .index,
 .tab-settings p.submit {
   text-align: center;
+}
+.tab-settings {
+  max-width:420px;
+  margin: 0 auto;
 }
 
 .tab-settings p.submit {
@@ -339,7 +366,9 @@ h2 .nav-tab {
   margin-bottom:10px;
 }
 .tab-settings input[type="text"] {
-  min-width:200px;float:right;margin-top:-3px;
+  min-width:240px;
+  float:right;
+  margin-top:-3px;
 }
 .tab-settings .margin-top-half {
   margin-top:10px;
@@ -354,6 +383,11 @@ h2 .nav-tab {
   max-width: 630px;
   margin: 0 auto;
 }
+.tab-overview .text-box {
+  max-width: 420px;
+  margin: 0 auto;
+  text-align: left;
+}
 .tab-overview h2 {
   font-weight: 400;
 }
@@ -363,7 +397,8 @@ h2 .nav-tab {
   color: #333;
   margin-top: 10px;
   font-weight: 400;
-};
+}
+
 .tab-overview .index {
   margin-top: -10px;
 }
@@ -371,6 +406,9 @@ h2 .nav-tab {
   margin: 0.5em 0;
   padding: 0;
   font-size: 15px;
+}
+.tab-overview small {
+  font-size: 13px;
 }
 
 .doc-style .tab-overview h2 {
@@ -381,8 +419,38 @@ h2 .nav-tab {
   font-weight: 400;
   margin: 5px auto;
 }
-.tab-overview .note p {
-  font-size: 14px;
-  max-width: 560px;
+
+.tab-overview .note {
+  max-width: 520px;
   margin: 0 auto 20px auto;
+  padding: 2px 15px 5px;
+  background-color: #f7f7f7;
+  border-radius: 3px;
+}
+
+.align-left { text-align: left }
+.align-right { text-align: right }
+
+.tab-overview .note p, li {
+  font-size: 14px;
+}
+.tab-overview .note ul {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.tab-overview .note li {
+  margin-bottom: 2px;
+}
+
+.tab-overview .star {
+  color: #F3DA09; /* #CCC */
+}
+
+.doc-style .tab-changelog h2 {
+  background-color: transparent;
+  color: #333;
+  font-weight: 400;
+  margin: 20px 0 0 0;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 1px 0 #fafafa;
 }

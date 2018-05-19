@@ -67,6 +67,7 @@ class CCS_Comments {
       'tag' => '',
       'taxonomy' => '',
       'term' => '',
+      'term_id' => '',
 
       'offset' => '',
       'orderby' => '',
@@ -111,27 +112,27 @@ class CCS_Comments {
     // By post type
 
     if ( !empty( $type ) ) {
-      $args['post_type'] = CCS_Loop::explode_list( $type );
+      $args['post_type'] = CCS_Format::explode_list( $type );
     }
     if ( !empty( $include ) ) {
-      $args['post__in'] = CCS_Loop::explode_list( $include );
+      $args['post__in'] = CCS_Format::explode_list( $include );
     }
     if ( !empty( $exclude ) ) {
-      $args['post__not_in'] = CCS_Loop::explode_list( $exclude );
+      $args['post__not_in'] = CCS_Format::explode_list( $exclude );
     }
 
     if ( !empty( $offset ) ) $args['offset'] = $offset;
     if ( !empty( $orderby ) ) $args['orderby'] = $orderby;
     if ( !empty( $order ) ) $args['order'] = $order;
-    if ( !empty( $parent ) ) $args['post_parent'] = CCS_Loop::explode_list( $parent );
+    if ( !empty( $parent ) ) $args['post_parent'] = CCS_Format::explode_list( $parent );
 
     // Comments by post author or comment author (user)
     if ( !empty( $author ) ||  !empty( $exclude_author ) ||
       !empty( $user ) ||  !empty( $exclude_user ) ) {
 
       if (  !empty( $author ) ||  !empty( $exclude_author ) ) {
-        $authors = CCS_Loop::explode_list( $author );
-      } else $authors = CCS_Loop::explode_list( $user );
+        $authors = CCS_Format::explode_list( $author );
+      } else $authors = CCS_Format::explode_list( $user );
 
       $author_ids = array();
       foreach ($authors as $this_author) {
@@ -155,7 +156,7 @@ class CCS_Comments {
 
     if ( !empty( $name ) ) $args['name'] = $name;
     if ( !empty( $status ) && $status != 'all' ) $args['status'] = $status;
-    if ( !empty( $user_id ) ) $args['user_id'] = CCS_Loop::explode_list( $user_id );
+    if ( !empty( $user_id ) ) $args['user_id'] = CCS_Format::explode_list( $user_id );
 
     // Filter by taxonomy
 
@@ -169,9 +170,12 @@ class CCS_Comments {
       $term = $tag;
     }
 
-    if ( !empty($taxonomy) && !empty($term) ) {
+    if ( !empty($taxonomy) ) {
       $taxonomy_filter = true;
-      $terms = CCS_Loop::explode_list($term);
+      $terms = array();
+      $term_ids = array();
+      if (!empty($term)) $terms = CCS_Format::explode_list($term);
+      if (!empty($term_id)) $term_ids = CCS_Format::explode_list($term_id);
     }
 
 
@@ -218,11 +222,24 @@ class CCS_Comments {
       if ( $taxonomy_filter ) {
         $matches = false;
         $pid = $comment->comment_post_ID;
-        $post_tax = do_shortcode('[taxonomy '.$taxonomy.' id="'.$pid.'" out="slug"]');
-        $post_tax = explode(' ', $post_tax); // Convert to array
-        foreach ($terms as $term) {
-          if ( in_array( $term, $post_tax ) ) {
-            $matches = true;
+        if (!empty($terms)) {
+          $post_tax = do_shortcode('[taxonomy '.$taxonomy.' id="'.$pid.'" field=slug]');
+          // Term slugs are separated by space
+          $post_tax = explode(' ', $post_tax);
+          foreach ($terms as $each_term) {
+            if ( in_array( $each_term, $post_tax ) ) {
+              $matches = true;
+            }
+          }
+        }
+        if (!empty($term_ids)) {
+          $post_tax_ids = do_shortcode('[taxonomy '.$taxonomy.' id="'.$pid.'" field=id]');
+          // Term IDs are separated by comma..
+          $post_tax_ids = CCS_Format::explode_list($post_tax_ids);
+          foreach ($term_ids as $each_term_id) {
+            if ( in_array( $each_term_id, $post_tax_ids ) ) {
+              $matches = true;
+            }
           }
         }
       }
@@ -480,7 +497,17 @@ class CCS_Comments {
 
       } elseif ( isset( $atts['total'] ) ) {
 
-        return CCS_Loop::$state['comment_count'];
+        // Get total comment count
+
+        $all_ids = CCS_Loop::$state['all_ids'];
+        $current_index = CCS_Loop::$state['loop_count'];
+        $total = 0;
+
+        for ($i=0; $i < $current_index; $i++) {
+          $total += get_comments_number(intval($all_ids[$i]));
+        }
+
+        return $total;
 
       } elseif ( isset( $atts['form'] ) ) {
 
@@ -542,7 +569,7 @@ class CCS_Comments {
       'fields' => 'author, email, url',
     ), $atts));
 
-    $enabled_fields = CCS_Loop::explode_list($fields);
+    $enabled_fields = CCS_Format::explode_list($fields);
 
     self::$state['comment_form_fields'] = array();
 

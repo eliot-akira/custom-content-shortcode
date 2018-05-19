@@ -48,6 +48,8 @@ There is no styling applied to the pagination. It's up to your theme's CSS.
 
 > **list** - set *true* to show pagination as a list; also compatible with Bootstrap
 
+> **page** - manually set current page
+
 
 ### Current and total
 

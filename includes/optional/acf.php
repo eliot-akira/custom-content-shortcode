@@ -31,6 +31,7 @@ class CCS_To_ACF {
       '-flex' => array( $this, 'loop_through_acf_field'),
       '--flex' => array( $this, 'loop_through_acf_field'),
 
+      'repeater' => array( $this, 'loop_through_acf_field'),
       '-repeater' => array( $this, 'loop_through_acf_field'), // Nested repeater
 
       'acf_gallery' => array( $this, 'loop_through_acf_gallery_field'),
@@ -117,6 +118,7 @@ class CCS_To_ACF {
       'sub_image' => '',
       'size' => '',
       'format' => '',
+      'trim' => '',
 
       'columns' => '',
       'pad' => '',
@@ -175,9 +177,16 @@ class CCS_To_ACF {
         if ( $index_now >= $start ) { /* Start loop */
 
           if ( ( !empty($count) ) && ( $index_now >= ($start+$count) ) ) {
-              /* If over count, continue empty looping for has_sub_field */
+
+              // If over count, continue empty looping for has_sub_field
+
           } else {
+
+            $prev_state = self::$state; // Store current state
+
             $outputs[] = str_replace( '{COUNT}', $index_now, do_ccs_shortcode( $content ) );
+
+            self::$state = $prev_state; // Restore current state
           }
         }
       }
@@ -206,13 +215,15 @@ class CCS_To_ACF {
       } else {
 
         $output = implode( '', $outputs );
+
+        if (!empty($trim)) $output = CCS_Format::trim( $output, $trim );
       }
     }
 
-
-
     return $output;
-  } //
+  }
+
+
 
   public static function loop_through_acf_gallery_field( $atts, $content ) {
 
@@ -341,10 +352,10 @@ class CCS_To_ACF {
 
     if (empty($name) && isset($atts[0])) $name = $atts[0];
 
-    $names = CCS_Loop::explode_list($name);
+    $names = CCS_Format::explode_list($name);
     $layout = get_row_layout();
 
-    if ( in_array($layout, $names) ) {
+    if ( $name == 'default' || in_array($layout, $names) ) {
       return do_ccs_shortcode( $content );
     } else {
       return null;
@@ -408,9 +419,8 @@ class CCS_To_ACF {
 
     self::$state['is_relationship_loop'] = false;
 
-    if (is_array($output)) {
-      $output = implode('', $output);
-    }
+    $output = implode('', $output);
+
     if (!empty($trim)) {
       $output = CCS_Format::trim($output, $trim);
     }

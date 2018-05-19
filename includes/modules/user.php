@@ -96,25 +96,20 @@ class CCS_User {
         $args[$arg] = $atts[$arg];
     }
 
-    if (isset($atts['role'])) {
-      if ($atts['role']=='admin') $atts['role'] = 'Administrator';
-      $args['role'] = ucwords($atts['role']); // Capitalize word
-    }
-
     if (isset($atts['count']))
       $args['number'] = $atts['count'];
     if (isset($atts['order']))
       $args['order'] = strtoupper($atts['order']);
     if (isset($atts['include']))
-      $args['include'] = CCS_Loop::explode_list($atts['include']);
+      $args['include'] = CCS_Format::explode_list($atts['include']);
     if (isset($atts['exclude']))
-      $args['exclude'] = CCS_Loop::explode_list($atts['exclude']);
+      $args['exclude'] = CCS_Format::explode_list($atts['exclude']);
 
     if (isset($atts['blog_id']))
       $args['blog_id'] = intval($atts['blog_id']);
 
     if (isset($atts['search_columns']))
-      $args['search_columns'] = CCS_Loop::explode_list($atts['search_columns']);
+      $args['search_columns'] = CCS_Format::explode_list($atts['search_columns']);
 
     if (isset($atts['field']) && isset($atts['value'])) {
 
@@ -131,7 +126,7 @@ class CCS_User {
       $multiple = array('IN', 'NOT IN', 'BETWEEN', 'NOT BETWEEN');
 
       if ( in_array($compare,$multiple) ) {
-        $value = CCS_Loop::explode_list($atts['value']);
+        $value = CCS_Format::explode_list($atts['value']);
       } else {
         $value = $atts['value'];
       }
@@ -163,11 +158,37 @@ class CCS_User {
 
 
     // Main action
+
     if (isset($atts['id'])) {
+
       $users = array( get_user_by( 'id', $atts['id'] ) );
+
     } elseif (isset($atts['slug'])) {
+
       $users = array( get_user_by( 'slug', $atts['slug'] ) );
+
+    } elseif (isset($atts['role'])) {
+
+      // Support query by multiple roles, because get_users() doesn't
+
+      $users = array();
+
+      $roles = CCS_Format::explode_list($atts['role']);
+
+      foreach ($roles as $role) {
+
+        if ($role=='admin') $role = 'Administrator';
+        else $role = ucwords($role); // Capitalize word
+
+        $args['role'] = $role;
+
+        $matching_users = get_users( $args );
+
+        $users = array_merge($users, $matching_users);
+      }
+
     } else {
+
       $users = get_users( $args );
     }
 
@@ -186,7 +207,9 @@ class CCS_User {
 
     // Sort by field value number
     if ( $sort_field_num !== false ) {
+
       // This is necessary because get_users doesn't do meta_value_num query
+
       $new_users = array();
 
       foreach ( $users as $user ) {
@@ -212,7 +235,12 @@ class CCS_User {
 
     self::$state['is_users_loop'] = true;
 
-    // Users Loop
+    /*---------------------------------------------
+     *
+     * Users Loop
+     *
+     */
+
     foreach ( $users as $user ) {
 
       self::$state['current_user_object'] = $user;
@@ -232,7 +260,37 @@ class CCS_User {
       $outputs[] = do_ccs_shortcode( self::$state['if_empty_else'] );
     }
 
-    $result = implode('', $outputs);
+    // Make a list
+
+    // TODO: Add new function: CCS_Format::make_list()
+
+    if (isset($atts['list'])) {
+
+      $outerTag = $atts['list']=='true' ? 'ul' : $atts['list'];
+
+      $innerTag = isset($atts['item']) ? $atts['item'] : 'li';
+
+      $result =
+        '<'.$outerTag
+          .( isset($atts['list_class']) ? ' class="'.implode(' ', array_map('trim', explode(',', $atts['list_class']))).'"' : '' )
+          .( isset($atts['list_style']) ? ' style="'.$atts['list_style'].'"' : '' )
+        .'>';
+
+      foreach ($outputs as $o) {
+
+        $result .=
+          '<'.$innerTag
+            .( isset($atts['item_class']) ? ' class="'.implode(' ', array_map('trim', explode(',', $atts['item_class']))).'"' : '' )
+            .( isset($atts['item_style']) ? ' style="'.$atts['item_style'].'"' : '' )
+          .'>'.$o.'</'.$outerTag.'>';
+      }
+
+      $result .= '</'.$outerTag.'>';
+
+    } else {
+      $result = implode('', $outputs);
+    }
+
 
     if (isset($atts['trim'])) {
 
@@ -241,7 +299,9 @@ class CCS_User {
       $result = trim($result, " \t\n\r\0\x0B,".$trim);
     }
 
+
     self::$state['is_users_loop'] = false;
+
     return $result;
   }
 
@@ -438,25 +498,16 @@ class CCS_User {
       'role' => '',
       'capable' => '',
       'compare' => 'OR',
-      'device' => ''
+      'device' => '',
+      'debug' => '',
     ), $atts));
 
     $condition = false;
+    $debug = ($debug == 'true');
 
-
-    // Load user info
-    // NOTE: Don't change $current_user
-
-    if ( self::$state['is_users_loop'] && isset(self::$state['current_user_object'])) {
-      $u = self::$state['current_user_object'];
-    } else {
-      //get_currentuserinfo();
-      $current_user = wp_get_current_user();
-      $u = $current_user;
-    }
+    if (is_array($atts)) $atts = CCS_Content::get_all_atts( $atts );
 
     // Get [else] if it exists
-
     $content_array = explode('[else]', $content);
     $content = $content_array[0];
     if (count($content_array)>1) {
@@ -465,76 +516,109 @@ class CCS_User {
       $else = null;
     }
 
-    if (!empty($user)) {
+    $logged_in = is_user_logged_in();
 
-      $user_array = explode(',', $user);
+    if ($logged_in) {
 
-      foreach ($user_array as $this_user) {
+      // Load user info
 
-        $this_user = trim($this_user);
+      if ( self::$state['is_users_loop'] && isset(self::$state['current_user_object'])) {
+        $u = self::$state['current_user_object'];
+      } else {
 
-        if ( $this_user == ($u->user_login) )
-          $condition = true;
-        elseif ( is_numeric($this_user) &&
-          $this_user == ($u->ID) ) // User ID
+        // NOTE: Don't use get_currentuserinfo(),
+        // it alters current user when in loop
+
+        $current_user = wp_get_current_user();
+        $u = $current_user;
+      }
+
+      if (!empty($user)) {
+
+        $user_array = explode(',', $user);
+
+        foreach ($user_array as $this_user) {
+
+          $this_user = trim($this_user);
+
+          if ( $this_user == ($u->user_login) )
             $condition = true;
-      }
-    }
-
-    if ( !empty($role) ) {
-
-      $current_roles = $u->roles; // an array of roles
-      $condition = false;
-
-      // check each role
-      $check_roles = explode(',', $role);
-      foreach ($check_roles as $check_role) {
-        $check_role = trim($check_role);
-
-        if (in_array($check_role, $current_roles)) {
-          $condition = true;
-        }
-        elseif ($compare == 'AND') {
-          $condition = false;
+          elseif ( is_numeric($this_user) && $this_user == ($u->ID) ) // User ID
+              $condition = true;
         }
       }
-    }
 
-    if (!empty($capable)) {
+      if (!empty($role) ) {
 
-      $capables = explode(',', $capable);
+        $current_roles = $u->roles; // an array of roles
+        $translate_roles = array(
+          'admin' => 'administrator',
+        );
+        $condition = false;
 
-      foreach ($capables as $capability) {
 
-        $check_capable = trim($capability);
+        if ($debug) ccs_inspect('Current roles', $current_roles);
 
-        if ( user_can( $u, $check_capable ) ) {
-          $condition = true;
-        }
-        elseif ($compare == 'AND') {
-          $condition = false;
+
+        // check each role
+        $check_roles = explode(',', $role);
+
+        foreach ($check_roles as $check_role) {
+
+          $check_role = trim($check_role);
+
+          if (isset($translate_roles[$check_role])) {
+            $check_role = $translate_roles[$check_role];
+          }
+
+          if (in_array($check_role, $current_roles)) {
+            $condition = true;
+          }
+          elseif ($compare == 'AND') {
+            $condition = false;
+          }
         }
       }
-    }
 
+      if (!empty($capable)) {
 
-    if (is_array($atts)) $atts = CCS_Content::get_all_atts( $atts );
+        $capables = explode(',', $capable);
 
-    if (( isset( $atts['admin'] ) && user_can( $u, 'manage_options' ) ) ||
-      ( isset( $atts['login'] ) && is_user_logged_in() ) ||
-      ( isset( $atts['logout'] ) && !is_user_logged_in() ) ) {
+        foreach ($capables as $capability) {
 
-      $condition = true;
-    }
+          $check_capable = trim($capability);
 
-    if ( isset( $atts['author'] ) ) {
-      // If user is the author of current post
-      if (!empty($post)) {
-
-        if ($post->post_author == $u->ID)
-          $condition = true;
+          if ( user_can( $u, $check_capable ) ) {
+            $condition = true;
+          }
+          elseif ($compare == 'AND') {
+            $condition = false;
+          }
+        }
       }
-    }
+
+      if ( ( isset( $atts['admin'] ) && user_can( $u, 'manage_options' ) ) ) {
+        $condition = true;
+      }
+
+      if ( isset( $atts['author'] ) ) {
+        // If user is the author of current post
+        if (!empty($post)) {
+
+          if ($post->post_author == $u->ID)
+            $condition = true;
+        }
+      }
+
+      if (isset($atts['login']) ||
+        (isset( $atts['admin']) && user_can( $u, 'manage_options' ))
+      ) {
+        $condition = true;
+      }
+
+      // End: Is logged in
+    } elseif (isset($atts['logout'])) $condition = true;
+
 
     if (class_exists('CCS_Mobile_Detect')) {
       if ( !empty($device) ) {
@@ -549,7 +633,6 @@ class CCS_User {
         $condition = (CCS_Mobile_Detect::$device_type == 'computer');
       }
     }
-
 
     if ( ($tag=='isnt') || (isset($atts['not'])) )
       $condition = !$condition;
