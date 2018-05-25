@@ -21,7 +21,7 @@ class CCS_To_ACF {
     self::$state['is_gallery_loop'] = false;
     self::$state['repeater_index'] = 0;
 
-//    add_action( 'init', array($this, 'init') ); // Wait until plugins and theme loaded
+    // add_action( 'init', array($this, 'init') ); // Wait until plugins and theme loaded
 
     // Available to themes
 
@@ -51,7 +51,6 @@ class CCS_To_ACF {
   }
 
   function init() {
-
     if ( ! self::is_acf_active('acf') ) return;
   }
 
@@ -370,6 +369,8 @@ class CCS_To_ACF {
       'field' => '',
       'subfield' => '',
       'sub' => '', // Alias
+      'count' => -1,
+      'start' => 1,
       'trim' => '',
       'option' => '',
     ), $atts ) );
@@ -410,11 +411,13 @@ class CCS_To_ACF {
 
         $index_now++;
 
+        if ($index_now < $start) continue;
+        if (($count !== -1) && ($index_now >= ($start+$count))) break;
+
         self::$state['relationship_id'] = $post->ID;
 
         $output[] = str_replace('{COUNT}', $index_now, do_ccs_shortcode( $content ));
       }
-
     }
 
     self::$state['is_relationship_loop'] = false;

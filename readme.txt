@@ -57,6 +57,11 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.7.1
+---
+
+* ACF [related] - Add parameters *start* and *count*
+
 3.7.0
 ---
 
