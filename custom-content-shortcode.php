@@ -257,6 +257,9 @@ class CCS_Plugin {
     add_filter( 'no_texturize_shortcodes',
       array( $this, 'shortcodes_to_exempt_from_wptexturize') );
 
+    // Support for Beaver Themer
+    add_filter('fl_theme_builder_before_parse_shortcodes', array($this, 'ccs_content_filter'), 9);
+
   }
 
 
