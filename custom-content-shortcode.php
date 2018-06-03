@@ -257,7 +257,7 @@ class CCS_Plugin {
     add_filter( 'no_texturize_shortcodes',
       array( $this, 'shortcodes_to_exempt_from_wptexturize') );
 
-    // Support for Beaver Themer
+    // Support for Beaver Themer - TODO: Separate to its own module
     add_filter('fl_theme_builder_before_parse_shortcodes', array($this, 'ccs_content_filter'), 9);
 
   }
@@ -293,7 +293,13 @@ class CCS_Plugin {
 
   static function ccs_content_filter( $content ) {
 
+    // Save reference to global post
+    // Better support for filtering content of other plugins
+    global $post; $_ = $post;
+
     $content = do_ccs_shortcode($content, $global = false, $filter = true);
+
+    $post = $_; // Restore reference
 
     // This gets passed to do_shortcode
     return $content;

@@ -61,7 +61,8 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 ---
 
 * ACF [related] - Add parameters *start* and *count*
-* Add shortcode support for Beaver Themer
+* Add CCS shortcode support for Beaver Themer
+* Improve use of content filter with other plugins
 
 3.7.0
 ---
