@@ -185,14 +185,18 @@ class CCS_URL {
         }
       break;
 
+       // Don't cache login/logout/register, as redirect is dynamic
       case 'login':
-         // Don't cache, as go parameter could be different
         $url = wp_login_url( $go );
       break;
 
       case 'logout':
-         // Don't cache, as go parameter could be different
         $url = wp_logout_url( $go );
+      break;
+
+      case 'register':
+        $url = wp_login_url( $go );
+        $url = add_query_arg('action', 'register', $url);
       break;
 
       case 'current':
