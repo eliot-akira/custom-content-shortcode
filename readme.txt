@@ -60,6 +60,8 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 3.7.1
 ---
 
+* [url register] - URL for user registration form under wp-login
+* [pass] - Add parameter *trim=all* to remove all white space, new lines, tabs
 * ACF [related] - Add parameters *start* and *count*
 * Add CCS shortcode support for Beaver Themer
 * Improve use of content filter with other plugins

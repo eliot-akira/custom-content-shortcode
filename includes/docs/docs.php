@@ -91,7 +91,7 @@ class CCS_Docs {
       if ( (isset($_GET['updated']) && $_GET['updated'] == 'true') ||
         (isset($_GET['settings-updated']) && $_GET['settings-updated'] == 'true') ) {
 
-          //this will clear the update message "Settings Saved" totally
+        // This will clear the update message "Settings Saved" totally
         unset($_GET['settings-updated']);
 
         self::$state['settings_saved'] = true;
