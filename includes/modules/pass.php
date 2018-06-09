@@ -541,8 +541,14 @@ class CCS_Pass {
     if ( empty($atts['shortcode']) ) $content = do_ccs_shortcode($content);
 
     if ( !empty($atts['trim']) ) {
-      $trim = ($atts['trim'] == 'true' ? '' : $atts['trim']);
-      $content = trim($content, " \t\n\r\0\x0B,".$trim);
+      if ($atts['trim']==='all') {
+        // Strip white space, tabs, carriage returns, etc.
+        $content = preg_replace(
+          "/(\t|\n|\v|\f|\r| |\xC2\x85|\xc2\xa0|\xe1\xa0\x8e|\xe2\x80[\x80-\x8D]|\xe2\x80\xa8|\xe2\x80\xa9|\xe2\x80\xaF|\xe2\x81\x9f|\xe2\x81\xa0|\xe3\x80\x80|\xef\xbb\xbf)+/", '', $content);
+      } else {
+        $trim = ($atts['trim'] == 'true' ? '' : $atts['trim']);
+        $content = trim($content, " \t\n\r\0\x0B,".$trim);
+      }
     }
 
     self::$vars[ $var ] = $content;
