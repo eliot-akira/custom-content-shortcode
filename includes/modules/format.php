@@ -94,8 +94,19 @@ class CCS_Format {
       }
     }
 
-    if ( !empty($atts['date']) )
+    if (!empty($atts['date']) ) {
       return self::format_date( $atts, $content );
+    }
+
+    if (!empty($atts['split'])) {
+      $parts = self::explode_list($content, $atts['split'], true);
+      if (isset($atts['part'])) {
+        $index = (int)$atts['part'] - 1; // "part" starts from 1
+        return @$parts[ $index ];
+      } else {
+        return implode(',', $parts);
+      }
+    }
 
     if ( !empty($atts['currency']) || !empty($atts['decimals'])
       || !empty($atts['point']) || !empty($atts['thousands'])) {
@@ -211,15 +222,21 @@ class CCS_Format {
    *
    */
 
-  public static function explode_list( $list, $delimiter = '' ) {
+  public static function explode_list( $list, $delimiter = '', $exclude_comma = false ) {
 
-    if (!is_string($list)) return $list;
+    if (!is_string($list)) {
+      if (is_array($list)) return $list;
+      // Assume integer or float
+      return array($list);
+    }
 
     // Support multiple delimiters
 
-    $delimiter .= ','; // default
-    $delimiters = str_split($delimiter); // convert to array
+    if (!$exclude_comma) {
+      $delimiter .= ','; // default
+    }
 
+    $delimiters = str_split($delimiter); // convert to array
     $list = str_replace($delimiters, $delimiters[0], $list); // change all delimiters to same
 
     // explode list and trim each item
