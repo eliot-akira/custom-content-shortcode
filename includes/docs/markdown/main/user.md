@@ -33,6 +33,8 @@ Author archive: [user archive-link]
 
 > **size** - avatar image size in pixels - default *96*, max *512*
 
+> **registered** - registered date; optionally add parameter *format=relative*, or [date format](https://codex.wordpress.org/Formatting_Date_and_Time), for example "Y-m-d"
+
 > **post-count** - user post count
 
 > **archive-url** - user posts archive URL

@@ -354,8 +354,9 @@ class CCS_User {
       'meta' => '', // Alias
       'image' => '',
       'size' => '',
-      'text' => '', // for author archive link
-      'out' => ''
+      'text' => '', // For author archive link
+      'out' => '',
+      'format' => '', // For user registered date
     ), $atts));
 
     if(empty($u)) return; // no current user
@@ -423,6 +424,14 @@ class CCS_User {
           return rtrim(implode(',',array_map('ucwords', $u->roles)),',');
         }
         break;
+      case 'registered':
+        $date = $u->user_registered;
+        if (empty($format)) $format = 'default';
+        $date = CCS_Format::format_date(array(
+          'date' => $format,
+        ), $date);
+        return $date;
+      break;
 
       case 'edit-url':
         return admin_url( 'user-edit.php?user_id=' . $u->ID );

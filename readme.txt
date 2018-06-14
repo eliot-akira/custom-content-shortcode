@@ -57,9 +57,10 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
-3.7.2
+3.7.3
 ---
 
+* [user] - Add field *registered* and parameter *format* ("relative" or custom format)
 * Settings - Add option to enable shortcodes in widget title
 
 3.7.1

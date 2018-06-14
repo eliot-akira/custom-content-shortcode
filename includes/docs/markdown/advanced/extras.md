@@ -59,7 +59,7 @@ At least one of the following parameters must be set.
 
 ### Date
 
-> **date** - [date format](https://codex.wordpress.org/Formatting_Date_and_Time), for example *Y-m-d*
+> **date** - *default*, *relative*, or [date format](https://codex.wordpress.org/Formatting_Date_and_Time), for example *Y-m-d*
 
 > **in=timestamp** - if the input value is a timestamp
 

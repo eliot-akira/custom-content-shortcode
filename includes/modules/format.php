@@ -17,6 +17,8 @@ class CCS_Format {
     add_ccs_shortcode( array(
       //'direct' => array($this, 'direct_shortcode'),
       'format' => array($this, 'format_shortcode'),
+      '-format' => array($this, 'format_shortcode'),
+      '--format' => array($this, 'format_shortcode'),
       'clean' => array($this, 'clean_shortcode'),
       'br' => array($this, 'br_shortcode'),
       'p' => array($this, 'p_shortcode'),
@@ -120,10 +122,11 @@ class CCS_Format {
 
     // Convert input
     if ( !empty($atts['in']) ) {
-      if ($atts['in']=='timestamp')
+      if ($atts['in']=='timestamp') {
         $content = gmdate("Y-m-d H:i:s", intval($content));
-      else
-        $content = $content;
+      } else {
+        // Other formats?
+      }
     }
 
 
