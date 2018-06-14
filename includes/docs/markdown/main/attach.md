@@ -54,13 +54,15 @@ The following fields are available for each attachment.
 
 > **url** - URL to attachment file
 
+> **download-url** - If the attachment is a PDF file and has preview image, field *url* shows the image URL and *download-url* will get the actual file URL
+
 > **page-url** - URL to attachment page
 
 > **image** - display image: *&lt;img src="~"&gt;*
 
 > **size** - image size: *thumbnail*, *medium*, *large*, *full* (default) or custom size name
 
->> Create a custom image size with a plugin like [Simple Image Sizes](https://wordpress.org/plugins/simple-image-sizes/), or [`add_image_size()`](http://codex.wordpress.org/Function_Reference/add_image_size)
+>> Create a custom image size with a plugin like [Simple Image Sizes](https://wordpress.org/plugins/simple-image-sizes/), or [`add_image_size`](http://codex.wordpress.org/Function_Reference/add_image_size)
 
 > **thumbnail** - thumbnail
 

@@ -385,9 +385,11 @@ If the field value is an attachment ID - for example, a file upload field - you 
 [attached field=file_upload]
   [field title]
   [field description]
-  <a href="[field url]" download>Download Link</a>
+  <a href="[field download-url]" download>Download Link</a>
 [/attached]
 ~~~
+
+If the attachment is a PDF file and has preview image, field *url* shows the image URL and *download-url* will get the actual file URL.
 
 ## Option Page
 
