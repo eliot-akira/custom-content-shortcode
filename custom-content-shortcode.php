@@ -3,7 +3,7 @@
 Plugin Name: Custom Content Shortcode
 Plugin URI: https://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 3.7.1
+Version: 3.7.2
 Shortcodes: loop, content, field, taxonomy, if, for, each, comments, user, url, load
 Author: Eliot Akira
 Author URI: https://eliotakira.com
@@ -114,6 +114,12 @@ class CCS_Plugin {
         'tab' => '',
         'text' => 'Enable shortcodes in Text widget',
       ),
+      'shortcodes_in_widget_title' => array(
+        'default' => 'off',
+        'module' => '',
+        'tab' => '',
+        'text' => 'Enable shortcodes in widget title',
+      ),
       'shortcodes_in_excerpt' => array(
         'default' => 'off',
         'module' => '',
@@ -175,8 +181,7 @@ class CCS_Plugin {
       'modules/user',       // User shortcodes
       'optional/wck',       // WCK support
 
-      // 'optional/widget'       // Widget shortcode (not ready)
-
+      //'optional/widget'     // Widget shortcode
     );
 
     foreach ($modules as $module) {
@@ -239,6 +244,15 @@ class CCS_Plugin {
       add_filter('widget_text', 'do_shortcode', 11 );
     }
 
+    // Enable shortcodes in widget title
+
+    if ( isset( $settings['shortcodes_in_widget_title'] ) &&
+      $settings['shortcodes_in_widget_title'] == "on" ) {
+
+      // Before 10, in case of other theme or plugin
+      add_filter('widget_title', array($this, 'ccs_content_filter'), 9 );
+      add_filter('widget_title', 'do_shortcode', 11 );
+    }
 
     /*---------------------------------------------
      *
