@@ -60,11 +60,12 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 3.7.1
 ---
 
-* [url register] - URL for user registration form under wp-login
+* [format] - Add parameters *split* and *part*; handle field values of number type in list
+* [attached] - Add field *download-url*, to get URL to actual PDF file instead of generated preview image
+* [url register] - URL to registration form under wp-login
 * [pass] - Add parameter *trim=all* to remove all white space, new lines, tabs
 * ACF [related] - Add parameters *start* and *count*
-* Add CCS shortcode support for Beaver Themer
-* Improve use of content filter with other plugins
+* Improve use of content filter with other plugins; support for Beaver Themer in progress
 
 3.7.0
 ---
