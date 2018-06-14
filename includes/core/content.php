@@ -2046,13 +2046,15 @@ class CCS_Content {
         $result = $post->post_content;
         break;
       case 'url' :
-      case 'download-url' :
         $src = wp_get_attachment_image_src( $post_id, $parameters['size'] );
         if (isset($src[0]) && !empty($src[0])) {
           $result = $src[0];
         } else {
           $result = wp_get_attachment_url( $post_id );
         }
+        break;
+      case 'download-url' :
+        $result = wp_get_attachment_url( $post_id );
         break;
       case 'download-link' :
         $target = '';
