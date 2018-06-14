@@ -51,6 +51,21 @@ There is no styling applied to the pagination. It's up to your theme's CSS.
 > **page** - manually set current page
 
 
+### Custom query variable
+
+The pagination URLs may conflict with existing permalinks. In that case, you can try using a custom query variable, with the *query* parameter on both `[loop]` and `[loopage]`.
+
+~~~
+[loop type=post paged=5 query=paged]
+  [field title]
+  [content]
+[/loop]
+
+[loopage query=paged]
+~~~
+
+The name of the variable should be something other than `page` or `p`.
+
 ### Current and total
 
 You can display the current page and total number of pages, *after* the loop.
@@ -128,7 +143,7 @@ For example, if the loop is on a page named *hello-world*:
 
 > 2. The query string is: `pagename=hello-world`
 
-> This will add permalinks like: *www.example.com/hello-world/page/2*
+> This will add permalinks like: *example.com/hello-world/page/2*
 
 Multiple permalink slugs and query strings can be given, separated by comma.
 
@@ -140,6 +155,7 @@ Then, for the loop where you want pagination, add the parameter *query=default*.
 [loop type=article paged=5 query=default]
   ...
 [/loop]
+
 [loopage]
 ~~~
 

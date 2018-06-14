@@ -143,7 +143,7 @@ class CCS_Paged {
       'prev_next' => 'true',
       'anchor' => '',
       'current' => '', 'page' => '',
-      'slug' => ''
+      'slug' => '',
     ), $atts ) );
 
     $pagination_return = '';
@@ -154,7 +154,6 @@ class CCS_Paged {
       $query = CCS_Loop::$state['wp_query'];
 
       $id = CCS_Loop::$state['paged_index'];
-      if ($id == 0) return;
 
       if (empty($max) && !empty(CCS_Loop::$state['maxpage'])) {
         $max = CCS_Loop::$state['maxpage'];
@@ -163,8 +162,14 @@ class CCS_Paged {
       $max = !empty($max) && $max < $query->max_num_pages ?
         $max : $query->max_num_pages;
 
-      if (intval($id)==1) $id = '';
-      $query_var = self::$prefix.$id;
+      if (isset($atts['query'])) {
+        $query_var = $atts['query'];
+        $id = $query_var; // For loopage ID below
+      } else {
+        if ($id == 0) return;
+        if (intval($id)==1) $id = '';
+        $query_var = self::$prefix.$id;
+      }
 
       // Allow manually setting current page
 

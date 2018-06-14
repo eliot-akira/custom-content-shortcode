@@ -57,6 +57,11 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.7.4
+---
+
+* [loop], [loopage] - Add parameter *query* to use custom query variable for pagination
+
 3.7.3
 ---
 

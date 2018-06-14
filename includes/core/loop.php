@@ -998,9 +998,11 @@ class CCS_Loop {
             $query_var .= self::$state['paged_index'];
 
           $paged = isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
-        } else {
+        } if ( $parameters['query']=='default' ) {
           // From permalink
           $paged = max( 1, get_query_var( CCS_Paged::$prefix ) );
+        } else {
+          $paged = isset($_GET[$parameters['query']]) ? $_GET[$parameters['query']] : 1;
         }
 
         $query['paged'] = $paged;
