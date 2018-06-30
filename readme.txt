@@ -57,6 +57,14 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.7.5
+---
+
+* [if] - Add parameter *count* for field value array, such as relationship fields
+* [if] - Improve field=content,excerpt with parameter *contains*
+* [is] - Allow nested
+* Content overview: cleaner list of shortcodes
+
 3.7.4
 ---
 
