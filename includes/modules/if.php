@@ -60,7 +60,7 @@ class CCS_If {
       'parent' => '',
 
       'field' => '',
-      'custom' => '', // SKip predefined field names
+      'custom' => '', // Skip predefined field names
       'user_field' => '',
 
       'check' => '', // Check passed value
@@ -452,9 +452,9 @@ class CCS_If {
 
         } elseif ( $field == 'excerpt' ) {
 
-          $check = get_the_excerpt();
-          $empty = 'true';
-          $value = ''; // ?
+          $check = CCS_Content::get_prepared_field($field); //get_the_excerpt($current_post_id);
+
+          if (empty($value)) $empty = 'true';
 
         } elseif ( $custom == 'true' ) {
 
@@ -466,12 +466,13 @@ class CCS_If {
           // Supports, for example, WCK metabox parameter
           $check = CCS_Content::before_anything( $atts );
 
-          if ($check===false)
-            // Normal field
-            $check = CCS_Content::get_prepared_field( $field );
-
+          if ($check===false) {
+            $check = $field==='content'
+              ? $post->post_content
+              : CCS_Content::get_prepared_field($field) // Normal field
+            ;
+          }
         }
-
 
         // Date field
 
@@ -527,7 +528,6 @@ class CCS_If {
         // $check == $value
       }
 
-
       // Array
       if ( !empty($sub) ) {
         $check = isset($check[$sub]) ? $check[$sub] : '';
@@ -552,7 +552,21 @@ class CCS_If {
         $end = 'true';
       }
 
-      if ( $check === '' ) { // check only empty string, allow false and zero
+      // Count field values
+      if ($count!=='') {
+
+        $value = $count;
+
+        if (is_array($check)) {
+          $check = count($check);
+        } else {
+          $check = empty($check) ? 0 : 1;
+        }
+      }
+
+      // Check against value
+
+      if ( $check === '' ) { // Allow false, 0
 
         $condition = false;
 
@@ -660,8 +674,8 @@ class CCS_If {
                     $values = explode(' - ', $this_value); // Hmm..to avoid conflict with ','
                     if (isset($values[0]) && isset($values[1])) {
                       $condition =
-                        ($values[0] <= $check_this && $check_this <= $values[1]) ?
-                          true : $condition;
+                        ($values[0] <= $check_this && $check_this <= $values[1])
+                          ? true : $condition;
                     }
                   break;
                   case 'NOT':
@@ -1028,7 +1042,7 @@ class CCS_If {
         if (substr($every,0,4)=='not ') {
           $every = substr($every, 4); // Remove first 4 letters
           // not Modulo
-            $condition = ($every==0) ? false : ((CCS_Loop::$state['loop_count'] % $every)!=0);
+          $condition = ($every==0) ? false : ((CCS_Loop::$state['loop_count'] % $every)!=0);
         }
       }
 
@@ -1038,7 +1052,7 @@ class CCS_If {
        *
        */
 
-      if ( !empty($count) ) {
+      if ( empty($field) && $count!=='' ) {
 
         if ( $compare == '>=' ) {
           $condition = CCS_Loop::$state['loop_count'] >= $count;
@@ -1269,8 +1283,6 @@ class CCS_If {
         if ($condition) break; // If any route matches, it's true
       }
     }
-
-//introspect('CHECK', $routes, $checks, $condition);
 
     // Route parts: route_1, route_2, ...
     for ($i=0; $i < count($routes); $i++) {
@@ -1537,4 +1549,28 @@ class CCS_If {
 
     return $condition;
   }
+
+  static function compare_values($compare, $value_1, $value_2) {
+
+    // $compare has been through strtoupper()
+
+    $condition = false;
+
+    if ( $compare == '>=' ) {
+      $condition = $value_1 >= $value_2;
+    } elseif ( $compare == '<=' ) {
+      $condition = $value_1 <= $value_2;
+    } elseif ( $compare == '>' || $compare == 'MORE' ) {
+      $condition = $value_1 > $value_2;
+    } elseif ( $compare == '<' || $compare == 'LESS' ) {
+      $condition = $value_1 < $value_2;
+    } elseif ( $compare == '!' || $compare == 'NOT' ) {
+      $condition = $value_1 != $value_2;
+    } else {
+      $condition = $value_1 == $value_2;
+    }
+
+    return $condition;
+  }
+
 }
