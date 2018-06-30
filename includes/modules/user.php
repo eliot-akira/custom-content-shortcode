@@ -21,6 +21,8 @@ class CCS_User {
       'users' => array($this, 'users_shortcode'),
       'user' => array($this, 'user_shortcode'),
       'is' => array($this, 'is_shortcode'),
+      '-is' => array($this, 'is_shortcode'),
+      '--is' => array($this, 'is_shortcode'),
       'isnt' => array($this, 'is_shortcode'),
       'get-blog' => array($this, 'blog_shortcode'),
       'list_shortcodes' => array($this, 'list_shortcodes'),
@@ -619,9 +621,7 @@ class CCS_User {
         }
       }
 
-      if (isset($atts['login']) ||
-        (isset( $atts['admin']) && user_can( $u, 'manage_options' ))
-      ) {
+      if (isset($atts['login'])) {
         $condition = true;
       }
 
