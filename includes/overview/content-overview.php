@@ -628,6 +628,8 @@
 
 				foreach ( $shortcode_tags as $key => $value ) {
 
+          if ($key[0]==="-") continue; // Skip prefixed shortcodes
+
 					if ($row_num % 2 == 0) {
 
 						$alternate = ( $alternate == '' ) ? 'class="alternate"' : '';
@@ -638,7 +640,7 @@
 					?>
 						<td style="vertical-align:top" class="row-title">
 								<?php
-									echo '[' . $key . ']<br>';
+									echo $key . '<br>';
 								?>
 						</td>
 
