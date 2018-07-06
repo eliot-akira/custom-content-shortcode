@@ -57,6 +57,11 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.7.6
+---
+
+* [each] - Add default field *count* for each term's post count
+
 3.7.5
 ---
 

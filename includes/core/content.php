@@ -2495,7 +2495,6 @@ class CCS_Content {
           // Nested array
           $array = self::$state['current_field_value'];
           $array = isset($array[ $field ]) ? $array[ $field ] : '';
-//debug_array($array);
         } else {
           $id = do_shortcode('[field id]');
           $array = get_post_meta( $id, $field, true );

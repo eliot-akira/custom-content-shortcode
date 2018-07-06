@@ -295,6 +295,7 @@ class CCS_ForEach {
           $each_term['name'] = $term_object->name;
           $each_term['slug'] = $term_object->slug;
           $each_term['description'] = $term_object->description;
+          $each_term['count'] = $term_object->count;
 
           $term_link = get_term_link( $term_object );
           if ( is_wp_error( $term_link ) ) $term_link = null;
