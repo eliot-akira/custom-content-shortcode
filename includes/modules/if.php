@@ -560,7 +560,9 @@ class CCS_If {
         if (is_array($check)) {
           $check = count($check);
         } else {
-          $check = empty($check) ? 0 : 1;
+          $check = empty($check) ? 0 : (
+            is_numeric($check) ? $check : 1
+          );
         }
       }
 
