@@ -48,7 +48,7 @@ class CCS_Related {
 			'taxonomy_field' => '',
 			'value' => '', // For future update: related post by field value
 			'subfield' => '',
-			'count' => '',
+			'count' => '', 'offset' => '',
       'fill' => '', // Fill to count if result is less
       'id' => '', // Specify posts by ID; used by fill
 			'children' => '', // Include child terms
@@ -105,6 +105,7 @@ class CCS_Related {
 		 */
 
 		if (empty($count)) $count = 99999; // Hypothetical maximum number of posts
+    if (empty($offset)) $offset = 0;
 
 		if ( !empty($taxonomy) ) {
 
@@ -171,79 +172,77 @@ class CCS_Related {
 			$posts = new WP_Query( $query );
       $foundIDs = array();
 
-			if ( $posts->have_posts() ) {
-
-				while ( $posts->have_posts() ) {
+			if ($posts->have_posts()) {
+				while ($posts->have_posts()) {
 
 					// Set up post data
 					$posts->the_post();
 
 					// Skip current post
-					if ($post->ID != $post_id) {
+					if ($post->ID==$post_id) continue;
 
-						// Manually filter out terms..
+					// Manually filter out terms..
+					// For some reason, WP_Query is returning more than we need
 
-						// For some reason, WP_Query is returning more than we need
+					$condition = false;
 
-						$condition = false;
+					$tax_count = 0;
 
-						$tax_count = 0;
+					foreach ($taxonomies as $current_taxonomy) {
 
-						foreach ($taxonomies as $current_taxonomy) {
+						if ($current_taxonomy == 'tag')
+							$current_taxonomy = 'post_tag';
 
-							if ($current_taxonomy == 'tag')
-								$current_taxonomy = 'post_tag';
-
-							// Include child terms
-							if ($children == 'true' && isset($terms[$current_taxonomy])) {
-								foreach ($terms[$current_taxonomy] as $this_term) {
-									$child_terms = get_term_children( $this_term, $current_taxonomy );
-									if (!empty($child_terms)) {
-										foreach ($child_terms as $child_term) {
-											if ( !in_array($child_term, $terms[$current_taxonomy]) )
-												$terms[$current_taxonomy][] = $child_term;
-										}
+						// Include child terms
+						if ($children == 'true' && isset($terms[$current_taxonomy])) {
+							foreach ($terms[$current_taxonomy] as $this_term) {
+								$child_terms = get_term_children( $this_term, $current_taxonomy );
+								if (!empty($child_terms)) {
+									foreach ($child_terms as $child_term) {
+										if ( !in_array($child_term, $terms[$current_taxonomy]) )
+											$terms[$current_taxonomy][] = $child_term;
 									}
 								}
 							}
+						}
 
-							if ( isset($terms[$current_taxonomy]) ) {
-								$tax_count++;
+						if ( isset($terms[$current_taxonomy]) ) {
+							$tax_count++;
 
-								if ($relation == 'AND') {
+							if ($relation == 'AND') {
 
-									if ( has_term( $terms[$current_taxonomy], $current_taxonomy )) {
-										if ($condition || $tax_count == 1) {
-											$condition = true;
-										}
-									}
-
-								} else {
-									if ( has_term( $terms[$current_taxonomy], $current_taxonomy )) {
+								if ( has_term( $terms[$current_taxonomy], $current_taxonomy )) {
+									if ($condition || $tax_count == 1) {
 										$condition = true;
 									}
 								}
+
+							} else {
+								if ( has_term( $terms[$current_taxonomy], $current_taxonomy )) {
+									$condition = true;
+								}
 							}
 						}
+					} // For each taxonomy
 
-						if ( $condition ) {
+					if (!$condition) continue;
 
-							// OK, post fits the criteria
-              $current = $post->ID;
-							self::$state['current_related_post_id'] = $current;
-              $foundIDs[] = $current;
-							$current_count++;
-							if ($current_count<=$count) {
-								$outputs[] = do_ccs_shortcode( $content );
-							}
-						}
+					// OK, post fits the criteria
+          $current = $post->ID;
+					self::$state['current_related_post_id'] = $current;
+          $foundIDs[] = $current;
+					$current_count++;
+					if (($current_count > $offset) && $current_count <= ($count + $offset)) {
+						$outputs[] = do_ccs_shortcode( $content );
 					}
-				}
-			}
+
+				} // While posts
+			} // If posts
 
 			wp_reset_postdata();
 			self::$state['is_related_posts_loop'] = false;
-		}
+
+		} // If taxonomy
 
 		$out = implode('', $outputs);
 

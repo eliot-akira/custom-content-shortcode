@@ -57,6 +57,12 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.7.7
+---
+
+* [related] - Add parameter *offset* to skip the first X number of posts
+* [if] - Improve logic to count repeater fields
+
 3.7.6
 ---
 

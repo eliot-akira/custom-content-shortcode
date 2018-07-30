@@ -110,6 +110,7 @@ class CCS_To_ACF {
     extract( shortcode_atts( array(
       'field' => '',
       'count' => '',
+      'offset' => '', // same as start, except 1 means start=2
       'start' => '',
       'num' => '',
       'row' => '',
@@ -132,6 +133,7 @@ class CCS_To_ACF {
       $start = $num;
       $count = 1;
     }
+    if (!empty($offset)) $start = $offset + 1;
 
     if (empty($field) && isset($atts[0])) $field = $atts[0];
 
@@ -370,6 +372,7 @@ class CCS_To_ACF {
       'subfield' => '',
       'sub' => '', // Alias
       'count' => -1,
+      'offset' => '', // same as start, except 1 means start=2
       'start' => 1,
       'trim' => '',
       'option' => '',
@@ -396,6 +399,7 @@ class CCS_To_ACF {
       $posts = get_sub_field( $subfield ); // Gets option from the_row()
     } else return null;
 
+    if (!empty($offset)) $start = $offset + 1;
 
     if ($posts) {
 

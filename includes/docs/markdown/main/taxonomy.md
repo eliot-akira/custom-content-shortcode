@@ -55,6 +55,8 @@ The current post is not included in the result.
 
 > **count** - maximum number of results
 
+> **offset** - skip the first X number of posts
+
 > **orderby** - order by* id*,* author*,* title*,* name*,* date* (default),* rand* (randomized)
 
 > **order** - ASC (ascending/alphabetical) or DESC (descending/from most recent date)
@@ -137,6 +139,8 @@ Available parameters for the **[each]** shortcode are:
 > **slug** - term slug
 
 > **id** - term ID
+
+> **count** - term's post count
 
 You can also specify a custom taxonomy field. If no parameter is set, the term name is displayed.
 
