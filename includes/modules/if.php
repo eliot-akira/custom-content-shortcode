@@ -992,7 +992,7 @@ class CCS_If {
 
     $condition = isset($atts['home']) ? is_front_page() : $condition;
     $condition = isset($atts['comment']) ? (get_comments_number($current_post_id)>0) : $condition;
-    $condition = isset($atts['image']) ? has_post_thumbnail() : $condition;
+    $condition = isset($atts['image']) ? has_post_thumbnail($current_post_id) : $condition;
     $condition = isset($atts['loop']) ? ( CCS_Loop::$state['is_loop'] ) : $condition;
     $condition = isset($atts['archive']) ? is_archive() : $condition;
     $condition = isset($atts['single']) ? is_single() : $condition;
