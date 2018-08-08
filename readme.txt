@@ -57,6 +57,11 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.7.8
+---
+
+* [if image] - Check correct current post when inside [related]
+
 3.7.7
 ---
 
