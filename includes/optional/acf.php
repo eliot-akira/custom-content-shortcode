@@ -370,6 +370,7 @@ class CCS_To_ACF {
     extract( shortcode_atts( array(
       'field' => '',
       'subfield' => '',
+      'user_field' => '', // i.e., from [related user_field]
       'sub' => '', // Alias
       'count' => -1,
       'offset' => '', // same as start, except 1 means start=2
@@ -382,6 +383,18 @@ class CCS_To_ACF {
 
     if (empty($field) && isset($atts[0])) $field = $atts[0];
 
+    // Support getting field from option page
+    $option = ($option == 'true') ? 'option' : false;
+
+    if (!empty($user_field)) {
+      $field = $user_field;
+      $user_id = CCS_User::user_shortcode(array(
+        'field' => 'id',
+      ));
+      // https://www.advancedcustomfields.com/resources/how-to-get-values-from-a-user/
+      $option = "user_{$user_id}";
+    }
+
     // If in repeater or flexible content, get subfield by default
     if ( self::$state['is_repeater_or_flex_loop'] ) {
       if (empty($subfield)) {
@@ -389,9 +402,6 @@ class CCS_To_ACF {
         $field = null;
       }
     }
-
-    // Support getting field from option page
-    $option = ($option == 'true') ? 'option' : false;
 
     if (!empty($field)) {
       $posts = get_field( $field, $option );
@@ -401,15 +411,29 @@ class CCS_To_ACF {
 
     if (!empty($offset)) $start = $offset + 1;
 
-    if ($posts) {
+    if (!empty($posts)) {
+
+      if (!is_array($posts)) {
+        $posts = array($posts); // Single post
+      }
+
+      // Check if posts are users
+
+      if (is_array($posts[0]) && isset($posts[0]['ID']) && isset($posts[0]['user_registered'])) {
+        // Create a users loop instead
+        $ids = [];
+        foreach ($posts as $post) {
+          if (isset($post['ID'])) $ids []= $post['ID'];
+        }
+        $atts['id'] = implode(',', $ids);
+        unset($atts['field']);
+        return CCS_User::users_shortcode($atts, $content);
+      }
+
+      // TODO: Related taxonomies
 
       self::$state['is_relationship_loop'] = true;
-
       $index_now = 0;
-
-      if ( ! is_array($posts) ) {
-        $posts = array( $posts ); // Single post
-      }
 
       foreach ($posts as $post) {
 
@@ -418,7 +442,13 @@ class CCS_To_ACF {
         if ($index_now < $start) continue;
         if (($count !== -1) && ($index_now >= ($start+$count))) break;
 
-        self::$state['relationship_id'] = $post->ID;
+        if (is_object($post)) {
+          self::$state['relationship_id'] = $post->ID;
+        } elseif (is_numeric($post)) {
+          self::$state['relationship_id'] = $post;
+        } elseif (isset($post['ID'])) {
+          self::$state['relationship_id'] = $post['ID'];
+        }
 
         $output[] = str_replace('{COUNT}', $index_now, do_ccs_shortcode( $content ));
       }

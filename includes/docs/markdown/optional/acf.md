@@ -174,7 +174,15 @@ Use `[related]` to loop through posts in a relationship field.
 [/related]
 ~~~
 
-You can use the same shortcode for a Post Object field.
+### Related by users
+
+If the related posts are users, use the `[user]` shortcode instead of `[field]`.
+
+To get posts related to a user, use the `user_field` parameter.
+
+~~~
+[related user_field=related_posts]
+~~~
 
 ## Related by taxonomy field
 

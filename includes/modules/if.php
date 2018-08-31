@@ -386,28 +386,40 @@ class CCS_If {
       $compare = 'CONTAINS';
       if (empty($loose)) $loose = 'true'; // Loose search by default
 
-      $field = CCS_Format::explode_list($field);
+      $is_user_field = !empty($user_field);
+      if ($is_user_field) {
+        $check_fields = CCS_Format::explode_list($user_field);
+      } else {
+        $check_fields = CCS_Format::explode_list($field);
+      }
 
-      if ( count($field) > 1 ) {
+      if ( count($check_fields) > 1 ) {
 
         // Support searching multiple fields
 
-        foreach ($field as $this_field) {
+        $key = $is_user_field ? 'user_field' : 'field';
+
+        foreach ($check_fields as $this_field) {
 
           $condition =
-            '[if field='.$this_field
+            '[if '.$key.'='.$this_field
               .' contains="'.$value.'"'
               . ( !empty($contains_compare) ? ' compare='.$contains_compare : '' )
             .'].[/if]';
 
-          $condition = do_shortcode( $condition );
+          $condition = do_ccs_shortcode($condition, false);
+
           $condition = !empty( $condition );
           if ( $condition ) break; // If keyword in any of the fields
         }
 
-        $field = ''; // Skip default field value condition
+        // Skip default field value condition
+        if ($is_user_field) $user_field = '';
+        else $field = '';
+
       } else {
-        $field = $field[0];
+        if ($is_user_field) $user_field = $check_fields[0];
+        else $field = $check_fields[0];
       }
     }
 

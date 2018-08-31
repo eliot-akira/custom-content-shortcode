@@ -39,7 +39,7 @@ class CCS_User {
    *
    */
 
-  function users_shortcode( $atts, $content ) {
+  public static function users_shortcode( $atts, $content ) {
 
     self::$state['user_query'] = '';
 
@@ -163,7 +163,11 @@ class CCS_User {
 
     if (isset($atts['id'])) {
 
-      $users = array( get_user_by( 'id', $atts['id'] ) );
+      $users = array();
+      $ids = CCS_Format::explode_list($atts['id']);
+      foreach ($ids as $id) {
+        $users []= get_user_by( 'id', $id );
+      }
 
     } elseif (isset($atts['slug'])) {
 
@@ -174,7 +178,6 @@ class CCS_User {
       // Support query by multiple roles, because get_users() doesn't
 
       $users = array();
-
       $roles = CCS_Format::explode_list($atts['role']);
 
       foreach ($roles as $role) {

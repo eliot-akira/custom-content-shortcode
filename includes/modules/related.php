@@ -46,6 +46,7 @@ class CCS_Related {
 			'taxonomy' => 'category', // Default
 			'field' => '',
 			'taxonomy_field' => '',
+      'user_field' => '',
 			'value' => '', // For future update: related post by field value
 			'subfield' => '',
 			'count' => '', 'offset' => '',
@@ -93,7 +94,7 @@ class CCS_Related {
 		 *
 		 */
 
-		if ( ( !empty($field) || !empty($subfield) ) && empty($value) ){
+		if ( ( !empty($field) || !empty($subfield) || !empty($user_field) ) && empty($value) ){
 			if ( class_exists('CCS_To_ACF') && CCS_To_ACF::is_acf_active() )
 				return CCS_To_ACF::loop_relationship_field( $atts, $content );
 		}
