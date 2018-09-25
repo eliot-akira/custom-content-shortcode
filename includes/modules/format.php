@@ -433,6 +433,10 @@ class CCS_Format {
     if (!empty($title)) $out .= ' title="'.$title.'"';
     if ($open=='new') $target = '_blank';
     if (!empty($target)) $out .= ' target="'.$target.'"';
+    if (isset($atts['download'])) {
+      $out .= ' download';
+      if ($atts['download']!=='true') $out .= '="'.$atts['download'].'"';
+    }
     $out .= '>';
 
     $out .= do_ccs_shortcode($content);

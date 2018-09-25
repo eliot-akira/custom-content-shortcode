@@ -57,6 +57,11 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.8.0
+---
+
+* [link] - Add parameter *download*; set "true" or file name
+
 3.7.9
 ---
 

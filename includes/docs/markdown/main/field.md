@@ -196,6 +196,8 @@ The default field is URL of the current post.
 
 > **http**, **https** - set *true* to add `http://` or `https://`
 
+> **download** - set *true* or file name
+
 > **mail** - set *true* to add `mailto:` before field value
 
 ## Array
