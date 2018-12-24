@@ -116,3 +116,19 @@ When using a shortcode in an HTML attribute and the value may include characters
 ~~~
 <a href="[field url]" title="[field title escape=true]">
 ~~~
+
+&nbsp;
+
+### Shortcode inside HTML attribute
+
+This note is relevant when using shortcodes outside the post content, such as a widget of a page builder plugin.
+
+For a shortcode in an HTML attribute *inside another shortcode*, use double square brackets to ensure that they run in the correct order.
+
+~~~
+[loop type=post count=3]
+  <div class="post-[[field slug]]">
+    [field title]
+  </div>
+[/loop]
+~~~
