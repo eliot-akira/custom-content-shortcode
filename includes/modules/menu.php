@@ -73,6 +73,7 @@ class CCS_Menu {
 			'parent' => 'true',
     ), $atts ) );
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
 
 		if ( empty($name) ) return;
     if ( $orderby == 'menu' ) $orderby = 'menu_order';

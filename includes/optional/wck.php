@@ -240,6 +240,8 @@ class CCS_To_WCK {
 		if (!empty($metabox)) $meta = $metabox;
 		if (empty($meta)) return; // Needs metabox name
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
+
 		$out = null;
 
 		self::$state['is_wck_repeater'] = true;

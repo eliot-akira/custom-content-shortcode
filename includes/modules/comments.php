@@ -83,6 +83,7 @@ class CCS_Comments {
 
     ), $atts));
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
 
     // Prepare comments query
 

@@ -132,6 +132,9 @@ class CCS_If {
 
     $atts = CCS_Content::get_all_atts( $atts );
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
+
+
     // Get [else] block
     $if_else = self::get_if_else( $content, $shortcode_name );
 

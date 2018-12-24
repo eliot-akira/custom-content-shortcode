@@ -128,6 +128,8 @@ class CCS_To_ACF {
 
     ), $atts ));
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
+
     if ( !empty($row) ) $num = $row; // Alias
     if ( !empty($num) && $num != 'rand' ) {
       $start = $num;
@@ -240,6 +242,7 @@ class CCS_To_ACF {
       'option' => '',
     ), $atts ));
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
 
     if (empty($field) && isset($atts[0])) $field = $atts[0];
 

@@ -247,8 +247,18 @@ class CCS_Format {
     return array_map( 'trim', explode($delimiters[0], $list) );
   }
 
-
-
+  /**
+   * Handle shortcodes in HTML attributes, when not using do_ccs_shortcode()
+   *
+   * do_shortcode() runs shortcodes in HTML attributes first, then the whole content.
+   * This makes [field] run before [loop], for example. To prevent this, use double-brackets
+   * inside attribute, like [[field]].
+   */
+  public static function handle_shortcodes_in_html_attributes($content) {
+    return CCS_Plugin::$state['doing_ccs_shortcode']
+      ? $content
+      : unescape_invalid_shortcodes($content);
+  }
 
 
   /*---------------------------------------------

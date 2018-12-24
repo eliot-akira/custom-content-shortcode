@@ -61,6 +61,8 @@ class CCS_Related {
       'trim' => '' // Trim extra space and comma
     ), $atts ) );
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
+
     if (!empty($type)) {
       $post_type = CCS_Format::explode_list($type);
     }

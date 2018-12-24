@@ -39,6 +39,8 @@ class CCS_Attached {
 
     extract( shortcode_atts( $args , $atts, true ) );
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
+
     /*---------------------------------------------
      *
      * Get attachments

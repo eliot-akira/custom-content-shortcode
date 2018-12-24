@@ -43,6 +43,8 @@ class CCS_User {
 
     self::$state['user_query'] = '';
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
+
     /*---------------------------------------------
      *
      * [if empty]

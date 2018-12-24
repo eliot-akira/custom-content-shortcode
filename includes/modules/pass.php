@@ -74,8 +74,10 @@ class CCS_Pass {
       elseif ( $atts[0]==='vars' ) $global = 'vars';
     }
 
+    $content = CCS_Format::handle_shortcodes_in_html_attributes($content);
 
     if ( $pre_render == 'true' ) $content = do_ccs_shortcode( $content );
+
 
     // This should get the current post in all contexts
     $post_id = do_shortcode('[field id]');

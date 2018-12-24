@@ -93,6 +93,8 @@ class CCS_Loop {
 
   static function the_loop_shortcode( $parameters = array(), $template ) {
 
+    $template = CCS_Format::handle_shortcodes_in_html_attributes($template);
+
     self::init_loop();
 
     // Store original parameters
@@ -1341,23 +1343,21 @@ class CCS_Loop {
 
     if ( !empty($parameters['series']) ) {
 
-      // TODO: Just use range()
 
       // Remove white space
       $series = str_replace(' ', '', $parameters['series']);
 
       // Expand range: 1-3 -> 1,2,3
 
-        /* PHP 5.3+
-          $series = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
-              return implode(',', range($m[1], $m[2]));
-          }, $series);
-        */
+      // PHP 5.3+
+      $series = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
+        return implode(',', range($m[1], $m[2]));
+      }, $series);
 
-        /* Compatible with PHP 5.2 and below */
-
-        $callback = create_function('$m', 'return implode(\',\', range($m[1], $m[2]));');
-        $series = preg_replace_callback('/(\d+)-(\d+)/', $callback, $series);
+      /* Compatible with PHP <= 5.2 and below
+      $callback = create_function('$m', 'return implode(\',\', range($m[1], $m[2]));');
+      $series = preg_replace_callback('/(\d+)-(\d+)/', $callback, $series);
+      */
 
       // Store posts IDs and key
 
