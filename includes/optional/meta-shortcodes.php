@@ -125,6 +125,9 @@ class Meta_Shortcodes {
 
     $template = $this->shortcodes[ $name ];
 
+    // Workaround for reported user issue with $atts being a string
+    if (!is_array($atts)) $atts = array();
+
     $atts['content'] = $content;
 
     foreach ($atts as $key => $value) {

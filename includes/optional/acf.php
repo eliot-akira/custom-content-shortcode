@@ -424,7 +424,7 @@ class CCS_To_ACF {
 
       if (is_array($posts[0]) && isset($posts[0]['ID']) && isset($posts[0]['user_registered'])) {
         // Create a users loop instead
-        $ids = [];
+        $ids = array();
         foreach ($posts as $post) {
           if (isset($post['ID'])) $ids []= $post['ID'];
         }
