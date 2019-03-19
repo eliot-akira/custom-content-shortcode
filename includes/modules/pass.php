@@ -491,8 +491,14 @@ class CCS_Pass {
         foreach ($fields as $this_field) {
           $tag = '{'.$prefix.strtoupper($this_field).'}';
           $value = '';
-          if (isset($GLOBALS[$global][$this_field])) {
-            $value = $GLOBALS[$global][$this_field];
+          if (is_array($GLOBALS[$global])) {
+              if (isset($GLOBALS[$global][$this_field])) {
+                $value = $GLOBALS[$global][$this_field];
+              }
+          } elseif ( is_object($GLOBALS[$global]) ) {
+              if (isset($GLOBALS[$global]->$this_field)) {
+                $value = $GLOBALS[$global]->$this_field;
+              }
           }
           $content = str_replace($tag, $value, $content);
         }
