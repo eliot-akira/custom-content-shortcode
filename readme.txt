@@ -61,8 +61,8 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 3.8.2
 ---
 
-* Pass: Allow passing user fields that are arrays or objects
-* Compatibility with PHP 5.3
+* Pass: Allow passing user fields that are arrays or objects - thanks to @jrevillini
+* Improve compatibility with PHP 5.3
 
 3.8.1
 ---
