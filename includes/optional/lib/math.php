@@ -9,7 +9,8 @@ Copyright (C) 2005 Miles Kaufmann <http://www.twmagic.com/>
 Modified:
 
 - Return empty on variable assignment
-- $m->vars() can get or set variables
+- Allow setting variables with $m->vars()
+- Replace safe eval() by even safer variable function call
 
 ================================================================================
 
@@ -394,7 +395,8 @@ class GoodMath {
                     if (is_null($op1 = $stack->pop())) return $this->trigger($this->get_string('internalerror', 'mathslib'));
                     $fnn = preg_replace("/^arc/", "a", $fnn); // for the 'arc' trig synonyms
                     if ($fnn == 'ln') $fnn = 'log';
-                    eval('$stack->push(' . $fnn . '($op1));'); // perfectly safe eval()
+                    //eval('$stack->push(' . $fnn . '($op1));'); // perfectly safe eval()
+                    $stack->push($fnn($op1)); // perfectly safe variable function call
                 } elseif (array_key_exists($fnn, $this->fc)) { // calc emulation function
                     // get args
                     $args = array();
