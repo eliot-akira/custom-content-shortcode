@@ -15,9 +15,9 @@ class CCS_Attached {
   function __construct() {
 
     add_ccs_shortcode( array(
-      'attached' => array( $this, 'attached_shortcode' ),
-      '-attached' => array( $this, 'attached_shortcode' ),
-      'attached-field' => array( $this, 'attached_field_shortcode' ),
+      'attached' => array( 'CCS_Attached', 'attached_shortcode' ),
+      '-attached' => array( 'CCS_Attached', 'attached_shortcode' ),
+      'attached-field' => array( 'CCS_Attached', 'attached_field_shortcode' ),
     ));
 
     self::$state['is_attachment_loop'] = false;
@@ -67,7 +67,7 @@ class CCS_Attached {
 
       // Support for orderby title
       if ( $orderby=='title' ) {
-        usort($attachment_ids, array($this, 'sort_gallery_by_title'));
+        usort($attachment_ids, array('CCS_Attached', 'sort_gallery_by_title'));
       }
     } else {
 

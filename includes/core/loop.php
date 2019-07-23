@@ -38,27 +38,27 @@ class CCS_Loop {
     self::init();
 
     add_ccs_shortcode( array(
-      'loop' => array( $this, 'the_loop_shortcode'),
-      '-loop' => array( $this, 'the_loop_shortcode'),
-      '--loop' => array( $this, 'the_loop_shortcode'),
-      'prev-next' => array( $this, 'prev_next_shortcode'),
-      'loop-count' => array( $this, 'loop_count_shortcode'),
-      'found-posts' => array( $this, 'found_posts_shortcode'),
-      'search-keyword' => array( $this, 'search_keyword_shortcode'),
-      'the-loop' => array( $this, 'default_loop_shortcode'), // Default query loop in template
-      '-the-loop' => array( $this, 'default_loop_shortcode'), // Nested for good measure
-      '--the-loop' => array( $this, 'default_loop_shortcode'),
-      'note' => array($this, 'shortcode_comment')
+      'loop' => array( 'CCS_Loop', 'the_loop_shortcode'),
+      '-loop' => array( 'CCS_Loop', 'the_loop_shortcode'),
+      '--loop' => array( 'CCS_Loop', 'the_loop_shortcode'),
+      'prev-next' => array( 'CCS_Loop', 'prev_next_shortcode'),
+      'loop-count' => array( 'CCS_Loop', 'loop_count_shortcode'),
+      'found-posts' => array( 'CCS_Loop', 'found_posts_shortcode'),
+      'search-keyword' => array( 'CCS_Loop', 'search_keyword_shortcode'),
+      'the-loop' => array($this, 'default_loop_shortcode'), // Default query loop in template
+      '-the-loop' => array($this, 'default_loop_shortcode'), // Nested for good measure
+      '--the-loop' => array($this, 'default_loop_shortcode'),
+      'note' => array('CCS_Loop', 'shortcode_comment')
     ));
 
-    add_local_shortcode( 'loop', 'prev', array($this, 'prev_shortcode') );
-    add_local_shortcode( 'loop', 'next', array($this, 'next_shortcode') );
+    add_local_shortcode( 'loop', 'prev', array('CCS_Loop', 'prev_shortcode') );
+    add_local_shortcode( 'loop', 'next', array('CCS_Loop', 'next_shortcode') );
 
     // newer/older - default order DESC (new to old)
-    add_local_shortcode( 'loop', 'newer', array($this, 'prev_shortcode') );
-    add_local_shortcode( 'loop', 'older', array($this, 'next_shortcode') );
+    add_local_shortcode( 'loop', 'newer', array('CCS_Loop', 'prev_shortcode') );
+    add_local_shortcode( 'loop', 'older', array('CCS_Loop', 'next_shortcode') );
 
-    add_filter('ccs_loop_before_query', array($this, 'include_children'),
+    add_filter('ccs_loop_before_query', array('CCS_Loop', 'include_children'),
       $priority = 10, $accepted_args = 3 );
   }
 

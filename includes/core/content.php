@@ -18,12 +18,12 @@ class CCS_Content {
   function __construct() {
 
     add_ccs_shortcode( array(
-      'content' => array( $this, 'content_shortcode'),
-      'field' => array( $this, 'field_shortcode'),
-      'taxonomy' => array( $this, 'taxonomy_shortcode'),
-      'array' => array( $this, 'array_field_shortcode'),
-      '-array' => array( $this, 'array_field_shortcode'),
-      '--array' => array( $this, 'array_field_shortcode'),
+      'content' => array( 'CCS_Content', 'content_shortcode'),
+      'field' => array( 'CCS_Content', 'field_shortcode'),
+      'taxonomy' => array( 'CCS_Content', 'taxonomy_shortcode'),
+      'array' => array( 'CCS_Content', 'array_field_shortcode'),
+      '-array' => array( 'CCS_Content', 'array_field_shortcode'),
+      '--array' => array( 'CCS_Content', 'array_field_shortcode'),
       'array-count' => array( $this, 'array_count_shortcode'),
       'raw' => array( $this, 'do_raw'),
     ));
