@@ -15,7 +15,7 @@ class Module_Prism_Admin {
 
 	function load() {
 		$url = str_replace(WP_CONTENT_DIR, WP_CONTENT_URL, dirname(__FILE__));
-		wp_enqueue_style( 'prism-admin', $url.'/css/prism.css', array(), '0.0.1' );
+		wp_enqueue_style( 'prism-admin', $url.'/css/prism.css', array(), '0.0.3' );
     wp_enqueue_script( 'prism-admin', $url.'/js/prism.min.js', array(), '0.0.1', true );
 	}
 

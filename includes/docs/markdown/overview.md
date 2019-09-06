@@ -34,3 +34,9 @@
 </div>
 
 </div>
+
+---
+
+<div style="font-size:14px;color:#777;text-align:center">
+<span style="font-size: 18px;color: #ff1b1b;vertical-align: bottom;">&hearts;</span> Special thanks to everyone who donated and wrote nice reviews!
+</div>

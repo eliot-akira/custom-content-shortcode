@@ -17,7 +17,7 @@ class Parsedown
 {
     # ~
 
-    const version = '1.6.0.1';
+    const version = '1.7.3';
 
     # ~
 
@@ -74,6 +74,32 @@ class Parsedown
     }
 
     protected $urlsLinked = true;
+
+    function setSafeMode($safeMode)
+    {
+        $this->safeMode = (bool) $safeMode;
+
+        return $this;
+    }
+
+    protected $safeMode;
+
+    protected $safeLinksWhitelist = array(
+        'http://',
+        'https://',
+        'ftp://',
+        'ftps://',
+        'mailto:',
+        'data:image/png;base64,',
+        'data:image/gif;base64,',
+        'data:image/jpeg;base64,',
+        'irc:',
+        'ircs:',
+        'git:',
+        'ssh:',
+        'news:',
+        'steam:',
+    );
 
     #
     # Lines
@@ -278,9 +304,6 @@ class Parsedown
         return $markup;
     }
 
-    #
-    # Allow for plugin extensibility
-    #
     protected function isBlockContinuable($Type)
     {
         return method_exists($this, 'block'.$Type.'Continue');
@@ -345,8 +368,6 @@ class Parsedown
     {
         $text = $Block['element']['text']['text'];
 
-        $text = htmlspecialchars($text, ENT_NOQUOTES, 'UTF-8');
-
         $Block['element']['text']['text'] = $text;
 
         return $Block;
@@ -357,7 +378,7 @@ class Parsedown
 
     protected function blockComment($Line)
     {
-        if ($this->markupEscaped)
+        if ($this->markupEscaped or $this->safeMode)
         {
             return;
         }
@@ -399,23 +420,42 @@ class Parsedown
 
     protected function blockFencedCode($Line)
     {
-        if (preg_match('/^['.$Line['text'][0].']{3,}[ ]*([\w-]+)?[ ]*$/', $Line['text'], $matches))
+        if (preg_match('/^['.$Line['text'][0].']{3,}[ ]*([^`]+)?[ ]*$/', $Line['text'], $matches))
         {
             $Element = array(
                 'name' => 'code',
                 'text' => '',
             );
 
-            if (!isset($matches[1]))
-              $matches[1] = 'markup'; // default
-            if ($matches[1]=='js')
-              $matches[1] = 'javascript'; // alias
-
+            if (!isset($matches[1])) $matches[1] = 'markup'; // default
+            if ($matches[1]=='js') $matches[1] = 'javascript'; // alias
             $class = 'language-'.$matches[1];
-
             $Element['attributes'] = array(
-                'class' => $class,
+              'class' => $class,
             );
+
+            if (isset($matches[1]))
+            {
+                /**
+                 * https://www.w3.org/TR/2011/WD-html5-20110525/elements.html#classes
+                 * Every HTML element may have a class attribute specified.
+                 * The attribute, if specified, must have a value that is a set
+                 * of space-separated tokens representing the various classes
+                 * that the element belongs to.
+                 * [...]
+                 * The space characters, for the purposes of this specification,
+                 * are U+0020 SPACE, U+0009 CHARACTER TABULATION (tab),
+                 * U+000A LINE FEED (LF), U+000C FORM FEED (FF), and
+                 * U+000D CARRIAGE RETURN (CR).
+                 */
+                $language = substr($matches[1], 0, strcspn($matches[1], " \t\n\f\r"));
+
+                $class = 'language-'.$language;
+
+                $Element['attributes'] = array(
+                    'class' => $class,
+                );
+            }
 
             $Block = array(
                 'char' => $Line['text'][0],
@@ -453,7 +493,7 @@ class Parsedown
             return $Block;
         }
 
-        $Block['element']['text']['text'] .= "\n".$Line['body'];;
+        $Block['element']['text']['text'] .= "\n".$Line['body'];
 
         return $Block;
     }
@@ -461,8 +501,6 @@ class Parsedown
     protected function blockFencedCodeComplete($Block)
     {
         $text = $Block['element']['text']['text'];
-
-        $text = htmlspecialchars($text, ENT_NOQUOTES, 'UTF-8');
 
         $Block['element']['text']['text'] = $text;
 
@@ -520,6 +558,16 @@ class Parsedown
                 ),
             );
 
+            if($name === 'ol')
+            {
+                $listStart = stristr($matches[0], '.', true);
+
+                if($listStart !== '1')
+                {
+                    $Block['element']['attributes'] = array('start' => $listStart);
+                }
+            }
+
             $Block['li'] = array(
                 'name' => 'li',
                 'handler' => 'li',
@@ -541,6 +589,8 @@ class Parsedown
             if (isset($Block['interrupted']))
             {
                 $Block['li']['text'] []= '';
+
+                $Block['loose'] = true;
 
                 unset($Block['interrupted']);
             }
@@ -588,6 +638,22 @@ class Parsedown
 
             return $Block;
         }
+    }
+
+    protected function blockListComplete(array $Block)
+    {
+        if (isset($Block['loose']))
+        {
+            foreach ($Block['element']['text'] as &$li)
+            {
+                if (end($li['text']) !== '')
+                {
+                    $li['text'] []= '';
+                }
+            }
+        }
+
+        return $Block;
     }
 
     #
@@ -673,12 +739,12 @@ class Parsedown
 
     protected function blockMarkup($Line)
     {
-        if ($this->markupEscaped)
+        if ($this->markupEscaped or $this->safeMode)
         {
             return;
         }
 
-        if (preg_match('/^<(\w*)(?:[ ]*'.$this->regexHtmlAttribute.')*[ ]*(\/)?>/', $Line['text'], $matches))
+        if (preg_match('/^<(\w[\w-]*)(?:[ ]*'.$this->regexHtmlAttribute.')*[ ]*(\/)?>/', $Line['text'], $matches))
         {
             $element = strtolower($matches[1]);
 
@@ -992,7 +1058,7 @@ class Parsedown
     # ~
     #
 
-    public function line($text)
+    public function line($text, $nonNestables=array())
     {
         $markup = '';
 
@@ -1008,6 +1074,13 @@ class Parsedown
 
             foreach ($this->InlineTypes[$marker] as $inlineType)
             {
+                # check to see if the current inline type is nestable in the current context
+
+                if ( ! empty($nonNestables) and in_array($inlineType, $nonNestables))
+                {
+                    continue;
+                }
+
                 $Inline = $this->{'inline'.$inlineType}($Excerpt);
 
                 if ( ! isset($Inline))
@@ -1027,6 +1100,13 @@ class Parsedown
                 if ( ! isset($Inline['position']))
                 {
                     $Inline['position'] = $markerPosition;
+                }
+
+                # cause the new element to 'inherit' our non nestables
+
+                foreach ($nonNestables as $non_nestable)
+                {
+                    $Inline['element']['nonNestables'][] = $non_nestable;
                 }
 
                 # the text that comes before the inline
@@ -1069,7 +1149,6 @@ class Parsedown
         if (preg_match('/^('.$marker.'+)[ ]*(.+?)[ ]*(?<!'.$marker.')\1(?!'.$marker.')/s', $Excerpt['text'], $matches))
         {
             $text = $matches[2];
-            $text = htmlspecialchars($text, ENT_NOQUOTES, 'UTF-8');
             $text = preg_replace("/[ ]*\n/", ' ', $text);
 
             return array(
@@ -1188,6 +1267,7 @@ class Parsedown
         $Element = array(
             'name' => 'a',
             'handler' => 'line',
+            'nonNestables' => array('Url', 'Link'),
             'text' => null,
             'attributes' => array(
                 'href' => null,
@@ -1199,7 +1279,7 @@ class Parsedown
 
         $remainder = $Excerpt['text'];
 
-        if (preg_match('/\[((?:[^][]|(?R))*)\]/', $remainder, $matches))
+        if (preg_match('/\[((?:[^][]++|(?R))*+)\]/', $remainder, $matches))
         {
             $Element['text'] = $matches[1];
 
@@ -1212,7 +1292,7 @@ class Parsedown
             return;
         }
 
-        if (preg_match('/^[(]((?:[^ ()]|[(][^ )]+[)])+)(?:[ ]+("[^"]*"|\'[^\']*\'))?[)]/', $remainder, $matches))
+        if (preg_match('/^[(]\s*+((?:[^ ()]++|[(][^ )]+[)])++)(?:[ ]+("[^"]*"|\'[^\']*\'))?\s*[)]/', $remainder, $matches))
         {
             $Element['attributes']['href'] = $matches[1];
 
@@ -1248,8 +1328,6 @@ class Parsedown
             $Element['attributes']['title'] = $Definition['title'];
         }
 
-        $Element['attributes']['href'] = str_replace(array('&', '<'), array('&amp;', '&lt;'), $Element['attributes']['href']);
-
         return array(
             'extent' => $extent,
             'element' => $Element,
@@ -1258,12 +1336,12 @@ class Parsedown
 
     protected function inlineMarkup($Excerpt)
     {
-        if ($this->markupEscaped or strpos($Excerpt['text'], '>') === false)
+        if ($this->markupEscaped or $this->safeMode or strpos($Excerpt['text'], '>') === false)
         {
             return;
         }
 
-        if ($Excerpt['text'][1] === '/' and preg_match('/^<\/\w*[ ]*>/s', $Excerpt['text'], $matches))
+        if ($Excerpt['text'][1] === '/' and preg_match('/^<\/\w[\w-]*[ ]*>/s', $Excerpt['text'], $matches))
         {
             return array(
                 'markup' => $matches[0],
@@ -1279,7 +1357,7 @@ class Parsedown
             );
         }
 
-        if ($Excerpt['text'][1] !== ' ' and preg_match('/^<\w*(?:[ ]*'.$this->regexHtmlAttribute.')*[ ]*\/?>/s', $Excerpt['text'], $matches))
+        if ($Excerpt['text'][1] !== ' ' and preg_match('/^<\w[\w-]*(?:[ ]*'.$this->regexHtmlAttribute.')*[ ]*\/?>/s', $Excerpt['text'], $matches))
         {
             return array(
                 'markup' => $matches[0],
@@ -1338,14 +1416,16 @@ class Parsedown
 
         if (preg_match('/\bhttps?:[\/]{2}[^\s<]+\b\/*/ui', $Excerpt['context'], $matches, PREG_OFFSET_CAPTURE))
         {
+            $url = $matches[0][0];
+
             $Inline = array(
                 'extent' => strlen($matches[0][0]),
                 'position' => $matches[0][1],
                 'element' => array(
                     'name' => 'a',
-                    'text' => $matches[0][0],
+                    'text' => $url,
                     'attributes' => array(
-                        'href' => $matches[0][0],
+                        'href' => $url,
                     ),
                 ),
             );
@@ -1358,7 +1438,7 @@ class Parsedown
     {
         if (strpos($Excerpt['text'], '>') !== false and preg_match('/^<(\w+:\/{2}[^ >]+)>/i', $Excerpt['text'], $matches))
         {
-            $url = str_replace(array('&', '<'), array('&amp;', '&lt;'), $matches[1]);
+            $url = $matches[1];
 
             return array(
                 'extent' => strlen($matches[0]),
@@ -1396,6 +1476,11 @@ class Parsedown
 
     protected function element(array $Element)
     {
+        if ($this->safeMode)
+        {
+            $Element = $this->sanitiseElement($Element);
+        }
+
         $markup = '<'.$Element['name'];
 
         if (isset($Element['attributes']))
@@ -1407,7 +1492,7 @@ class Parsedown
                     continue;
                 }
 
-                $markup .= ' '.$name.'="'.$value.'"';
+                $markup .= ' '.$name.'="'.self::escape($value).'"';
             }
         }
 
@@ -1415,13 +1500,18 @@ class Parsedown
         {
             $markup .= '>';
 
+            if (!isset($Element['nonNestables']))
+            {
+                $Element['nonNestables'] = array();
+            }
+
             if (isset($Element['handler']))
             {
-                $markup .= $this->{$Element['handler']}($Element['text']);
+                $markup .= $this->{$Element['handler']}($Element['text'], $Element['nonNestables']);
             }
             else
             {
-                $markup .= $Element['text'];
+                $markup .= self::escape($Element['text'], true);
             }
 
             $markup .= '</'.$Element['name'].'>';
@@ -1480,9 +1570,76 @@ class Parsedown
         return $markup;
     }
 
+    protected function sanitiseElement(array $Element)
+    {
+        static $goodAttribute = '/^[a-zA-Z0-9][a-zA-Z0-9-_]*+$/';
+        static $safeUrlNameToAtt  = array(
+            'a'   => 'href',
+            'img' => 'src',
+        );
+
+        if (isset($safeUrlNameToAtt[$Element['name']]))
+        {
+            $Element = $this->filterUnsafeUrlInAttribute($Element, $safeUrlNameToAtt[$Element['name']]);
+        }
+
+        if ( ! empty($Element['attributes']))
+        {
+            foreach ($Element['attributes'] as $att => $val)
+            {
+                # filter out badly parsed attribute
+                if ( ! preg_match($goodAttribute, $att))
+                {
+                    unset($Element['attributes'][$att]);
+                }
+                # dump onevent attribute
+                elseif (self::striAtStart($att, 'on'))
+                {
+                    unset($Element['attributes'][$att]);
+                }
+            }
+        }
+
+        return $Element;
+    }
+
+    protected function filterUnsafeUrlInAttribute(array $Element, $attribute)
+    {
+        foreach ($this->safeLinksWhitelist as $scheme)
+        {
+            if (self::striAtStart($Element['attributes'][$attribute], $scheme))
+            {
+                return $Element;
+            }
+        }
+
+        $Element['attributes'][$attribute] = str_replace(':', '%3A', $Element['attributes'][$attribute]);
+
+        return $Element;
+    }
+
     #
     # Static Methods
     #
+
+    protected static function escape($text, $allowQuotes = false)
+    {
+        return htmlspecialchars($text, $allowQuotes ? ENT_NOQUOTES : ENT_QUOTES, 'UTF-8');
+    }
+
+    protected static function striAtStart($string, $needle)
+    {
+        $len = strlen($needle);
+
+        if ($len > strlen($string))
+        {
+            return false;
+        }
+        else
+        {
+            return strtolower(substr($string, 0, $len)) === strtolower($needle);
+        }
+    }
 
     static function instance($name = 'default')
     {
@@ -1491,12 +1648,7 @@ class Parsedown
             return self::$instances[$name];
         }
 
-        // Not compatible with PHP <5.3
-        //$instance = new static();
-
-        // Closest workaround I could find: untested
-        // http://stackoverflow.com/questions/5197300/new-self-vs-new-static#5197655
-        $instance = new self();
+        $instance = new static();
 
         self::$instances[$name] = $instance;
 
@@ -1539,10 +1691,10 @@ class Parsedown
         'b', 'em', 'big', 'cite', 'small', 'spacer', 'listing',
         'i', 'rp', 'del', 'code',          'strike', 'marquee',
         'q', 'rt', 'ins', 'font',          'strong',
-        's', 'tt', 'sub', 'mark',
-        'u', 'xm', 'sup', 'nobr',
-                   'var', 'ruby',
-                   'wbr', 'span',
-                          'time',
+        's', 'tt', 'kbd', 'mark',
+        'u', 'xm', 'sub', 'nobr',
+                   'sup', 'ruby',
+                   'var', 'span',
+                   'wbr', 'time',
     );
 }

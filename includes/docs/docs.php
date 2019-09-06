@@ -159,7 +159,7 @@ class CCS_Docs {
   static function load_markdown_and_prism() {
 
     wp_enqueue_style( 'prism',
-        CCS_URL.'/includes/docs/lib/prism/css/prism.css', array(), '0.0.1' );
+        CCS_URL.'/includes/docs/lib/prism/css/prism.css', array(), '0.0.3' );
     wp_enqueue_script( 'prism',
         CCS_URL.'/includes/docs/lib/prism/js/prism.min.js', array(), '0.0.1', true );
 
@@ -441,10 +441,10 @@ class CCS_Docs {
             <div align="center" class="footer-notice logo-pad">
               <img src="<?php echo CCS_URL;?>/includes/docs/logo.png">
               <p class="no-margin-top">
-                <b>Custom Content Shortcode</b> is built by <a href="http://eliotakira.com" target="_blank">Eliot Akira</a>
+                <b>Custom Content Shortcode</b> is built by <a href="https://eliotakira.com" target="_blank">Eliot Akira</a>
               </p>
               <p>
-                Visit the <a class="bold" href="http://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin forum</a> for complementary support.
+                Visit the <a class="bold" href="https://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin forum</a> for complementary support.
                 <br>
                 Here is a <a class="bold" target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a> to contribute to development.
               </p>

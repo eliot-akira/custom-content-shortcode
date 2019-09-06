@@ -321,8 +321,8 @@ h2 .nav-tab {
   display: block;
 }
 .doc-style code {
-  font-family: Consolas,Monaco,monospace;
-  font-size: 15px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14px;
   background-color: transparent;
   margin: 0;
   padding: 0;

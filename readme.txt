@@ -6,8 +6,8 @@ Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y
 Tags: loop, query, content, shortcode, post type, field, attachment, comment, sidebar, taxonomy
 Requires at least: 4.6
-Tested up to: 5.0.2
-Requires PHP: 5.3
+Tested up to: 5.2.3
+Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -57,6 +57,13 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 
 == Changelog ==
+
+3.8.3
+---
+
+* Improve compatibility with PHP 7.2
+* Update to Parsedown library 1.7.3 for documentation pages
+* Math module: Use variable function call for built-in functions
 
 3.8.2
 ---
