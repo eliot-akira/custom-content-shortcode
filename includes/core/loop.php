@@ -3081,7 +3081,7 @@ class CCS_Loop {
 
 
 
-  function include_children( $result, $atts, $content ) {
+  static function include_children( $result, $atts, $content ) {
 
     // Get unfiltered parameters
     $atts = self::$original_parameters;

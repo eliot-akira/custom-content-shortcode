@@ -58,6 +58,11 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.8.4
+---
+
+* Fix deprecation warning about non-static method CCS_Loop::include_children
+
 3.8.3
 ---
 
