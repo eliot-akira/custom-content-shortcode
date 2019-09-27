@@ -58,10 +58,15 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.8.5
+---
+
+* Correct output of ACF field label when multiple choices are selected
+
 3.8.4
 ---
 
-* Fix deprecation warning about non-static method CCS_Loop::include_children
+* Remove deprecation warning about non-static method CCS_Loop::include_children
 
 3.8.3
 ---

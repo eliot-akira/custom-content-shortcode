@@ -850,6 +850,7 @@ class CCS_Content {
 
             if ( is_array($all_selected) ) {
               // Multiple selections
+              $out = array();
               foreach( $all_selected as $selected ){
                 $out[] = $field['choices'][ $selected ];
               }
