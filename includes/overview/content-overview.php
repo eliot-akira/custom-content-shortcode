@@ -646,38 +646,34 @@
 
 						<td style="vertical-align:top">
 							<?php
-								if (! is_array($value)) {
-									echo $value . '<br>';
-								} else {
-									if (is_object($value)) {
-										$class_name = get_class($value);
-									} else {
-										$class_name = '';
-									}
-									if ($class_name == '') {
+              // Get function name
 
-										if (is_object($value[0])) {
-											$class_name = get_class($value[0]);
-										} else {
-											$class_name = '';
-										}
+              $name = '';
+              if (!is_object($value) && !is_callable($value, false, $name)) {
+                // Empty
+              } else {
+                try {
+                  if (is_array($value)) {
+                    $f = new ReflectionMethod($value[0], $value[1]);
+                    $name = $f->class.'::'.$f->name;
+                  }
+                  if (is_object($value)) {
+                    if ($value instanceof Closure) {
+                      $f = new ReflectionFunction($value);
+                      $name = 'Anonymous function';
+                    }
+                    $f = new ReflectionClass($value);
+                    $name = ($f->isAnonymous() ? (
+                      isset( $value->name ) ? 'Object ' . $value->name
+                        : 'Anonymous class'
+                    ) : 'Class '.$f->name);
+                  }
+                  $f = new ReflectionFunction($value);
+                  $name = $f->name;
+                } catch (\Throwable $th) {}
 
-										if ($class_name == '') {
-											print_r($value[0]);
-										}
-										else
-											echo $class_name . '<br>';
-
-									}
-									else {
-										if (is_object($value))
-											$value = get_class($value);
-										else
-											$value = 'Unknown';
-										echo $value . '<br>';
-									}
-								}
-
+                echo $name;
+              }
 							?>
 						</td>
 
