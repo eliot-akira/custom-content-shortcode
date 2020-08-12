@@ -155,7 +155,7 @@ class CCS_Format {
     $decimals = !empty($atts['decimals']) ? $atts['decimals'] : 0;
     $point = !empty($atts['point']) ? $atts['point'] : '.';
     $thousands = !empty($atts['thousands'])
-      ? ($thousands==='false' ? '' : $atts['thousands']) : '';
+      ? ($atts['thousands'] ==='false' ? '' : $atts['thousands']) : '';
 
     $content = CCS_Format::getCurrency(
       floatval($content), $currency, $decimals, $point, $thousands
