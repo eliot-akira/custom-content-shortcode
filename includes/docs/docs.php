@@ -445,8 +445,6 @@ class CCS_Docs {
               </p>
               <p>
                 Visit the <a class="bold" href="https://wordpress.org/support/plugin/custom-content-shortcode" target="_blank">plugin forum</a> for complementary support.
-                <br>
-                Here is a <a class="bold" target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y">donation link</a> to contribute to development.
               </p>
             </div>
             <?php

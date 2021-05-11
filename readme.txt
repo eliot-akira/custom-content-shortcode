@@ -3,7 +3,6 @@ Contributors: miyarakira
 Author: Eliot Akira
 Author URI: eliotakira.com
 Plugin URI: wordpress.org/plugins/custom-content-shortcode/
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T3H8XVEMEA73Y
 Tags: loop, query, content, shortcode, post type, field, attachment, comment, sidebar, taxonomy
 Requires at least: 4.6
 Tested up to: 5.4
