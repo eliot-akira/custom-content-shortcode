@@ -91,7 +91,7 @@ class CCS_Loop {
    *
    */
 
-  static function the_loop_shortcode( $parameters = array(), $template ) {
+  static function the_loop_shortcode( $parameters = array(), $template = '' ) {
 
     $template = CCS_Format::handle_shortcodes_in_html_attributes($template);
 
@@ -2636,7 +2636,7 @@ class CCS_Loop {
    *
    */
 
-  static function render_columns( $items, $column_count, $pad = null, $between_row ) {
+  static function render_columns( $items, $column_count, $pad = null, $between_row = '' ) {
 
     $row_count = ceil( count($items) / (int)$column_count ); // How many rows
     $percent = 100 / (int)$column_count; // Percentage-based width for each item

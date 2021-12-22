@@ -89,7 +89,7 @@ class CCS_Paged {
     return '<a href="'.$current_url.'">'.$text.'</a>';
   }
 
-  function loopage_prev_next_shortcode( $atts, $content = '', $tag ) {
+  function loopage_prev_next_shortcode( $atts, $content = '', $tag = '' ) {
 
     extract( shortcode_atts( array(
       'text' => 'Previous',

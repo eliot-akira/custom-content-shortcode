@@ -1372,7 +1372,7 @@ class CCS_If {
    *
    */
 
-  static function if_all_conditions( $atts, $content = null, $tag ) {
+  static function if_all_conditions( $atts, $content = null, $tag = '' ) {
 
     // $atts must be pre-processed by CCS_Content::get_all_atts
 

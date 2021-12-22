@@ -276,7 +276,7 @@ class CCS_Comments {
    *
    */
 
-  function comment_shortcode( $atts = array(), $content ) {
+  function comment_shortcode( $atts, $content ) {
 
     extract(shortcode_atts(array(
       'template' => '',
