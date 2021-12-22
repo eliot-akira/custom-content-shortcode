@@ -1885,7 +1885,7 @@ class CCS_Content {
         $parts = explode('<!--more-->', $result);
         $result = isset($parts[0]) ? $parts[0] : '';
 
-        $result = apply_filters('get_the_excerpt', $result);
+        $result = apply_filters( 'get_the_excerpt', $result, $post );
 
       break;
 
