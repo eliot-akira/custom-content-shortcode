@@ -3038,7 +3038,7 @@ class CCS_Loop {
   }
 
 
-  function shortcode_comment( $atts, $content, $tag ) {
+  static function shortcode_comment( $atts, $content, $tag ) {
     if ($tag == '!' && !empty($content)) return '<!--'.do_shortcode($content).'-->';
   }
 
