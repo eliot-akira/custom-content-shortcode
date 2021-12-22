@@ -46,7 +46,7 @@ class CCS_ForEach {
     ));
   }
 
-  function for_shortcode( $atts, $content = null, $shortcode_name ) {
+  function for_shortcode( $atts, $content = null, $shortcode_name = '' ) {
 
     if (isset($atts['type']))
       return self::for_post_type_shortcode($atts, $content);
@@ -349,7 +349,7 @@ class CCS_ForEach {
   }
 
 
-  function each_shortcode( $atts, $content = null, $shortcode_name ) {
+  function each_shortcode( $atts, $content = null, $shortcode_name = '' ) {
 
     if ( ! self::$state['is_for_loop'] ) {
       if ( self::$state['is_for_post_type_loop'] )
