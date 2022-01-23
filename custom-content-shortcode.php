@@ -34,6 +34,21 @@ class CCS_Plugin {
     self::$state['original_post_id'] = 0;
 
     add_action('init',array($this,'init'));
+
+    add_action('admin_notices', function() {
+
+      // Show notice once and remove it after visit to plugin settings page
+      $notice_id = 'ccs_admin_notice_20220123';
+      if (!empty(get_option( $notice_id . '_dismissed'))) return;
+      if (isset($_GET['page']) && $_GET['page']==='ccs_reference') {
+        update_option( $notice_id . '_dismissed', 'TRUE');
+        return;
+      }
+
+      ?><div id="<?php echo $notice_id; ?>" class="notice notice-warning">
+        <p>Thank you for using Custom Content Shortcodes. Please see <a href="<?php echo esc_attr( admin_url( 'options-general.php?page=ccs_reference' ) ); ?>">a message from the author</a> about plugin retirement.</p>
+      </div><?php
+    });
   }
 
   function init() {
