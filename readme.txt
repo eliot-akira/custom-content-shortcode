@@ -5,7 +5,7 @@ Author URI: eliotakira.com
 Plugin URI: wordpress.org/plugins/custom-content-shortcode/
 Tags: loop, query, content, shortcode, post type, field, attachment, comment, sidebar, taxonomy
 Requires at least: 5.0
-Tested up to: 5.7
+Tested up to: 5.9
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv2 or later
@@ -62,6 +62,15 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 
 == Changelog ==
+
+3.8.8
+---
+
+* Add message about plugin retirement and move to Loops & Logic
+* Thanks to @Pross for improvements
+  * Improve compatibility with PHP 8
+  * Field shortcode: Improve get_the_excerpt filter
+* Test compatibility with WordPress 5.9
 
 3.8.7
 ---
