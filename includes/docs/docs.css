@@ -226,11 +226,10 @@
 }
 
 .doc-style h4 {
-  /*font-weight:300;
-   font-style:italic; */
-  font-size: 16px;
+  font-size: 14px;
   color: #000;
   margin: 1em 0;
+  text-align: center;
 }
 
 h2 .nav-tab {

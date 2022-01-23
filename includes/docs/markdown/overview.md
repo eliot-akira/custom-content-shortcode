@@ -34,9 +34,16 @@
 </div>
 
 </div>
+<div style="font-size:14px;color:#777; margin-bottom: 1.25rem">
+<hr>
+<h4>Message from the author</h4>
 
----
+This is an announcement that I've decided to retire this plugin from active development.
 
-<div style="font-size:14px;color:#777;text-align:center">
-<span style="font-size: 18px;color: #ff1b1b;vertical-align: bottom;">&hearts;</span> Special thanks to everyone who donated and wrote nice reviews!
+Since its initial release more than eight years ago, I've been pleasantly surprised by the WordPress community embracing it. It's been satisfying to see the many creative ways that people have used the plugin. However, over the years I've had to work around various limitations of shortcodes, and the code base has become complicated, not in such good condition. Importantly, I no longer use the plugin myself anymore.
+
+The good news is that I've been developing the next-generation template system called **[Loops & Logic](https://wordpress.org/plugins/tangible-loops-and-logic/)**, with my colleagues at the company Tangible.
+
+It is meant to be the successor of Custom Content Shortcode. Please take a look, and I recommend everyone to eventually move to using Loops & Logic.
+
 </div>

@@ -15,6 +15,12 @@ Display posts, pages, custom post types, fields, attachments, comments, images, 
 
 == Description ==
 
+= Deprecation Notice =
+<br />
+This plugin is no longer in active development.
+
+Please use the next-generation template system, [Loops & Logic](https://wordpress.org/plugins/tangible-loops-and-logic/).
+
 = Overview =
 <br />
 From a single field to entire pages, Custom Content Shortcode is a set of commands to display content where you need.
