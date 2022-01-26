@@ -1425,6 +1425,10 @@ class CCS_Content {
 
   static function process_shortcodes( $content, $parameters ) {
 
+    global $post;
+    $post_id = !empty($post) && !empty($post->ID) ? $post->ID : 0;
+    $content = sanitize_post_field('post_field', $content, $post_id, 'display');
+
     if ($parameters['shortcode'] == 'false') {
       return strip_shortcodes($content);
     }

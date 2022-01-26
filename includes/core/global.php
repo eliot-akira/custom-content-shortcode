@@ -23,7 +23,15 @@ function add_ccs_shortcode( $tag, $func = null, $global = true ) {
 }
 
 function remove_ccs_shortcode( $tag ) {
-  remove_local_shortcode( 'ccs', $tag );
+  if (is_array($tag)) {
+    foreach ($tag as $key => $value) {
+      remove_local_shortcode( 'ccs', $key );
+      remove_shortcode( $key );
+    }
+  } else {
+    remove_local_shortcode( 'ccs', $tag );
+    remove_shortcode( $tag );
+  }
 }
 
 

@@ -3,7 +3,7 @@
 Plugin Name: Custom Content Shortcode
 Plugin URI: https://wordpress.org/plugins/custom-content-shortcode/
 Description: Display posts, pages, custom post types, custom fields, files, images, comments, attachments, menus, or widget areas
-Version: 3.8.8
+Version: 3.8.9
 Shortcodes: loop, content, field, taxonomy, if, for, each, comments, user, url, load
 Author: Eliot Akira
 Author URI: https://eliotakira.com
@@ -243,6 +243,35 @@ class CCS_Plugin {
     remove_filter( 'the_content', 'do_shortcode', 11 );
     add_filter( 'the_content', 'do_shortcode', 12 );
     add_action( 'doing_it_wrong_run', array($this, 'disable_nonexistent_shortcode_error'), 99 );
+
+
+    // Enable certain shortcodes only within posts authored by an admin user
+
+    $admin_shortcodes = [
+      'field' => ['CCS_Content', 'field_shortcode'],
+      'load'  => ['CCS_Load', 'load'],
+    ];
+
+    add_filter('the_content', function($content) use ($admin_shortcodes) {
+
+      global $post;
+
+      if (!empty($post) && !empty($post->ID)) {
+        $user = get_userdata( $post->post_author );
+        $is_admin = !empty($user) && !empty($user->roles) && in_array('administrator', $user->roles);
+        if (!$is_admin) {
+          remove_ccs_shortcode($admin_shortcodes);
+        }
+      }
+
+      return $content;
+    }, 0);
+
+    add_filter('the_content', function($content) use ($admin_shortcodes) {
+      add_ccs_shortcode($admin_shortcodes);
+      return $content;
+    }, 999);
+
 
 
     /*---------------------------------------------

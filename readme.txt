@@ -63,6 +63,12 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
+3.8.9
+---
+
+* Enable certain shortcodes only within posts authored by an admin user
+* Sanitize field value before display
+
 3.8.8
 ---
 

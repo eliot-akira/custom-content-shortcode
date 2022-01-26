@@ -13,7 +13,7 @@ class CCS_Load {
 	function __construct() {
 
     add_ccs_shortcode( array(
-			'load' => array($this, 'load'),
+			'load' => array('CCS_Load', 'load'),
 			'css' => array($this, 'css_wrap'),
 			'js' => array($this, 'js_wrap')
 		));
@@ -31,7 +31,7 @@ class CCS_Load {
 	 */
 
 
-	function load( $atts ) {
+	static function load( $atts ) {
 
 		global $post;
 
