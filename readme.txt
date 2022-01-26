@@ -1,4 +1,5 @@
 === Custom Content Shortcode ===
+Stable tag: 4.0.0
 Contributors: miyarakira
 Author: Eliot Akira
 Author URI: eliotakira.com
@@ -7,7 +8,6 @@ Tags: loop, query, content, shortcode, post type, field, attachment, comment, si
 Requires at least: 5.0
 Tested up to: 5.9
 Requires PHP: 5.6
-Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,11 +63,20 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
-3.8.9
+4.0.0
 ---
 
+* Correct stable tag in readme.txt
+* Use HTTP API instead of CURL
+* Use wp_enqueue instead of inline style/script
+* Sanitize and escape data input/output
+
+**Breaking changes**
+
 * Enable certain shortcodes only within posts authored by an admin user
-* Sanitize field value before display
+* Remove features that allowed users to load custom CSS/JS
+  * Load shortcode: css, js, gfonts
+  * Auto-loaded fields: css, js, html
 
 3.8.8
 ---
