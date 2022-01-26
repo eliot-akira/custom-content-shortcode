@@ -17,10 +17,6 @@ class CCS_Load {
 			'css' => array($this, 'css_wrap'),
 			'js' => array($this, 'js_wrap')
 		));
-
-		add_action('wp_head', array($this, 'load_css_field'));
-		add_action('the_content', array($this, 'load_html_field'));
-		add_action('wp_footer', array($this, 'load_js_field'));
 	}
 
 
@@ -183,38 +179,6 @@ class CCS_Load {
 
 		/*---------------------------------------------
 		 *
-		 * Load Google Fonts - [load gfonts]
-		 *
-		 */
-
-		if (!empty($gfonts)) {
-
-			return '<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family='.$gfonts.'" />';
-		}
-
-
-		/*---------------------------------------------
-		 *
-		 * Load JS - [load js]
-		 *
-		 */
-
-		if (!empty($js)) {
-
-			if ($dir == 'web') {
-				$dir = '';
-				if ((strpos($js, 'http://') === false) && (strpos($js, 'https://') === false))
-					$dir = 'http://';
-			}
-
-			// cache/version?
-
-			return '<script type="text/javascript" src="' . $dir . $js . '"></script>';
-		}
-
-
-		/*---------------------------------------------
-		 *
 		 * Load file - [load file]
 		 *
 		 */
@@ -229,23 +193,6 @@ class CCS_Load {
 				@include($path . $file);
 				$out = ob_get_clean();
 
-			} else {
-
-				// Get external file
-
-				if ((strpos($file, 'http://') === false) && (strpos($file, 'https://') === false))
-					$file = 'http://'.$file;
-
-				$url = $file;
-				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_URL, $url);
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				$data = curl_exec($ch);
-				$status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-				curl_close($ch);
-				if ($status == 200) {
-					$out = $data; // Success
-				}
 			}
 
 			if (!empty($out)) {
@@ -263,73 +210,6 @@ class CCS_Load {
 	}
 
 
-	/*---------------------------------------------
-	 *
-	 * Load CSS
-	 *
-	 */
-
-	function load_css_field() {
-
-		global $post;
-
-		if (!empty($post)) {
-
-			$custom_css = get_post_meta( $post->ID, 'css', true );
-
-			if( !empty($custom_css) ) {
-				echo do_shortcode( $custom_css );
-			}
-		}
-	}
-
-
-	/*---------------------------------------------
-	 *
-	 * Load JS field
-	 *
-	 */
-
-	function load_js_field() {
-
-		global $post;
-
-		if (!empty($post)) {
-
-			$custom_js = get_post_meta( $post->ID, 'js', true );
-
-			if( !empty($custom_js) ) {
-				echo do_shortcode( $custom_js ); // print to footer
-			}
-		}
-	}
-
-
-	/*---------------------------------------------
-	 *
-	 * Load HTML field instead of content
-	 *
-	 */
-
-	function load_html_field( $content ) {
-
-		global $post;
-
-		if ( !CCS_Loop::$state['is_loop'] && !is_admin() && !empty($post) ) {
-
-			$html_field = get_post_meta( $post->ID, 'html', true );
-
-			if( !empty($html_field) ) {
-				return do_shortcode($html_field);
-			} else {
-				return $content;
-			}
-		}
-		return $content;
-	}
-
-
-
 	function css_wrap($atts, $content = null) {
 		$result = '<style type="text/css">';
 		$result .= do_shortcode($content);
@@ -345,12 +225,6 @@ class CCS_Load {
 	}
 
 }
-
-
-
-
-
-
 
 
 /*---------------------------------------------
