@@ -84,7 +84,7 @@ class CCS_Docs {
 
     global $pagenow;
 
-    $page = isset($_GET['page']) ? $_GET['page'] : null;
+    $page = isset($_GET['page']) ? sanitize_text_field( $_GET['page'] ) : null;
 
     if ( $pagenow == 'options-general.php' && $page == self::$state['settings_page_name'] ) {
 
@@ -179,9 +179,9 @@ class CCS_Docs {
 
     $default_tab = 'overview';
 
-    $active_tab = isset( $_GET['tab'] ) ? strtolower($_GET['tab']) : $default_tab;
+    $active_tab = isset( $_GET['tab'] ) ? strtolower(sanitize_text_field( $_GET['tab'] )) : $default_tab;
 
-    $lang = isset( $_GET['lang'] ) ? strtolower($_GET['lang']) : ''; // default: English
+    $lang = isset( $_GET['lang'] ) ? strtolower(sanitize_text_field( $_GET['lang'] )) : ''; // default: English
     $langq = !empty($lang) ? '&lang='.$lang : '';
 
     // Menu structure
@@ -333,10 +333,14 @@ class CCS_Docs {
                   if (empty($submenu_title)) {
                     $submenu_title = ucwords(str_replace('-', ' ', $submenu));
                   }
-                  echo '<a href="?page='.self::$state['settings_page_name'].'&tab='.$submenu.$langq.'" class="sub-menu-item';
+                  echo '<a href="?page='
+                    . esc_html( self::$state['settings_page_name'] )
+                    .'&tab='
+                    . esc_html( $submenu . $langq )
+                    .'" class="sub-menu-item';
                   echo $submenu == $active_tab ? ' nav-tab-active' : '';
                   echo '">';
-                  echo $submenu_title;
+                  echo esc_html( $submenu_title );
                   echo '</a>';
                 }
                 echo '</div>';
@@ -550,7 +554,7 @@ class CCS_Docs {
         Permalink slug for <a href="options-general.php?page=ccs_reference&tab=paged#permalink">pagination</a>
         <input type="text"
           name="ccs_content_settings[paged_permalink_slug]"
-          value="<?php echo $settings['paged_permalink_slug']; ?>"
+          value="<?php echo esc_attr( $settings['paged_permalink_slug'] ); ?>"
           placeholder="post-name, page-name.."
           >
       </div>
@@ -559,7 +563,7 @@ class CCS_Docs {
         Pagination slug
         <input type="text"
           name="ccs_content_settings[paged_pagination_slug]"
-          value="<?php echo $settings['paged_pagination_slug']; ?>"
+          value="<?php echo esc_attr( $settings['paged_pagination_slug'] ); ?>"
           placeholder="page"
           >
       </div>
@@ -568,7 +572,7 @@ class CCS_Docs {
         Default query string
         <input type="text"
           name="ccs_content_settings[paged_permalink_query]"
-          value="<?php echo $settings['paged_permalink_query']; ?>"
+          value="<?php echo esc_attr( $settings['paged_permalink_query'] ); ?>"
           placeholder="name=post-name, pagename=page-name.."
           >
       </div>

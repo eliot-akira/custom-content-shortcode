@@ -113,7 +113,7 @@ function ccs_inspect() {
   $function = (!empty($caller['class']) ? $caller['class'].'::' : '')
     .$caller['function'];
 
-  echo '<b>'.$function.'</b> &nbsp;<small>'.$file.'</small><br>';
+  echo '<b>'.esc_html($function).'</b> &nbsp;<small>'.esc_html($file).'</small><br>';
 
   $args = func_get_args();
 

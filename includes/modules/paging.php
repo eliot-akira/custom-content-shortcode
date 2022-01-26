@@ -52,7 +52,7 @@ class CCS_Paged {
 
     if (intval($id)==1) $id = '';
     $query_var = self::$prefix.$id;
-    return isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
+    return isset($_GET[$query_var]) ? sanitize_text_field( $_GET[$query_var] ) : 1;
   }
 
 
@@ -175,7 +175,7 @@ class CCS_Paged {
 
       if (!empty($page)) $current = $page; // Alias
       if (empty($current)) {
-        $current = isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
+        $current = isset($_GET[$query_var]) ? sanitize_text_field( $_GET[$query_var] ) : 1;
       }
 
       if ($current > $query->max_num_pages) $current = $query->max_num_pages;

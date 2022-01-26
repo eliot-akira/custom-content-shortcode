@@ -999,12 +999,12 @@ class CCS_Loop {
           if (self::$state['paged_index']>1)
             $query_var .= self::$state['paged_index'];
 
-          $paged = isset($_GET[$query_var]) ? $_GET[$query_var] : 1;
+          $paged = isset($_GET[$query_var]) ? sanitize_text_field( $_GET[$query_var] ) : 1;
         } if ( $parameters['query']=='default' ) {
           // From permalink
           $paged = max( 1, get_query_var( CCS_Paged::$prefix ) );
         } else {
-          $paged = isset($_GET[$parameters['query']]) ? $_GET[$parameters['query']] : 1;
+          $paged = isset($_GET[$parameters['query']]) ? sanitize_text_field( $_GET[$parameters['query']] ) : 1;
         }
 
         $query['paged'] = $paged;

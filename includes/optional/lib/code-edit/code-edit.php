@@ -129,12 +129,12 @@ class CodeEdit {
 
       if ( 'post.php' == $pagenow ) {
         if (!empty($_GET['post'])) {
-          $this_post = get_post($_GET['post']);
+          $this_post = get_post(sanitize_text_field( $_GET['post'] ));
           $post_type = $this_post->post_type;
         }
       } elseif ( 'post-new.php' == $pagenow ) {
         if (!empty($_GET['post_type'])) {
-          $post_type = $_GET['post_type'];
+          $post_type = sanitize_text_field( $_GET['post_type'] );
         }
       }
       $_current_single_post_type = $post_type;
