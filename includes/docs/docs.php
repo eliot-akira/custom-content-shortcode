@@ -292,7 +292,7 @@ class CCS_Docs {
                   .$tab_title
                 .'</a>';
 
-              echo $link;
+              echo wp_kses_post($link);
 
             } else {
 
@@ -323,7 +323,7 @@ class CCS_Docs {
 
               echo '<div class="menu-wrap">';
 
-              echo $link;
+              echo wp_kses_post($link);
 
               // Dropdown menu
 

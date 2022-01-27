@@ -455,8 +455,10 @@ ul.gallery_images {
 	    }
 
 	    // link to larger images
-	    if ( isset( $_POST[ 'custom_gallery_link_images' ] ) )
-	        update_post_meta( $post_id, '_custom_gallery_link_images', $_POST[ 'custom_gallery_link_images' ] );
+	    if ( isset( $_POST['custom_gallery_link_images'] ) )
+	        update_post_meta( $post_id, '_custom_gallery_link_images',
+            sanitize_text_field( $_POST['custom_gallery_link_images'] )
+          );
 	    else
 	        update_post_meta( $post_id, '_custom_gallery_link_images', 'off' );
 

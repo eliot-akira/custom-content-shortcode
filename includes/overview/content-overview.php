@@ -54,7 +54,8 @@
 
 			foreach ($post_type_objects as $post_type_object) {
 
-				$label = $post_type_object->labels->singular_name; if(empty($label)) $label=$post_type_object->labels->name;
+				$label = $post_type_object->labels->singular_name;
+        if(empty($label)) $label = $post_type_object->labels->name;
 				$labels[] = $label;
 				$sorted_post_objects[$label] = $post_type_object;
 			}
@@ -133,9 +134,9 @@
 
 								if ( $edit_url != '' ) {
 									echo '<a class="row-title" href="' . $edit_url . '">';
-									echo $label . '</a><br>';
+									echo esc_html($label) . '</a><br>';
 								} else {
-									echo $label . '<br>';
+									echo esc_html($label) . '<br>';
 								}
 
 							?>
@@ -144,7 +145,7 @@
 
 						<td>
 
-							<?php  echo $post_type . '<br>'; ?>
+							<?php  echo esc_html($post_type) . '<br>'; ?>
 
 						</td>
 
