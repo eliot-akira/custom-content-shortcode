@@ -3070,10 +3070,10 @@ class CCS_Loop {
         $count++;
         if ( $count > $max ) break;
         the_post(); // Set up post data
-        echo do_ccs_shortcode( $content );
+        echo wp_kses_post( do_ccs_shortcode( $content ) );
       }
     } elseif (!empty($if_empty)) {
-        echo do_ccs_shortcode( $if_empty );
+        echo wp_kses_post( do_ccs_shortcode( $if_empty ) );
     }
 
     return ob_get_clean();

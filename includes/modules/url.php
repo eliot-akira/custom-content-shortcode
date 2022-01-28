@@ -252,11 +252,11 @@ class CCS_URL {
 
       $after = self::get_expire_time_ms( $after );
       echo "<script> setTimeout(function(){window.location='"
-          .$content."';},".$after."); </script>";
+          .esc_url($content)."';},". sanitize_text_field($after)."); </script>";
 
     } else {
 
-      echo "<script> window.location = '" . $content . "'; </script>";
+      echo "<script> window.location = '" . esc_url($content) . "'; </script>";
     }
 
   }

@@ -268,7 +268,7 @@ class CCS_Paged {
       ob_start();
 
       if (!empty($id)) $id = '_'.$id;
-      echo '<div id="loopage'.$id.'" class="pagination-wrap">';
+      echo '<div id="loopage'.esc_attr($id).'" class="pagination-wrap">';
 
       if ($total!='false') {
         if ($total=='true') {
@@ -286,8 +286,8 @@ class CCS_Paged {
 
         // Default
 
-        if (!empty($class)) echo '<div class="'.$class.'">';
-        echo $pagination_return;
+        if (!empty($class)) echo '<div class="'. esc_attr($class) .'">';
+        echo wp_kses_post( $pagination_return );
         if (!empty($class)) echo '</div>';
 
       } else {
@@ -296,15 +296,15 @@ class CCS_Paged {
 
         if (!empty($class)) $class = ' '.$class;
 
-        echo '<ul class="pagination'.$class.'">';
+        echo '<ul class="pagination'. esc_attr($class) .'">';
         foreach ( $pagination_return as $page ) {
           if ( strpos($page, 'current') !== false ) {
-              echo '<li class="'.$active_class.' '.$item_class.'">' . $page . '</li>';
+              echo '<li class="'. esc_attr($active_class) . ' ' . esc_attr($item_class) .'">' . wp_kses_post($page) . '</li>';
           } else {
               echo
                 '<li'
-                  . (!empty($item_class) ? ' class="'.$item_class.'"' : '')
-                .'>' . $page . '</li>';
+                  . (!empty($item_class) ? ' class="'.esc_attr($item_class).'"' : '')
+                .'>' . wp_kses_post($page) . '</li>';
           }
         }
         echo '</ul>';

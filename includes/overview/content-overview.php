@@ -103,7 +103,7 @@
 
 					?>
 
-					<tr <?php echo $alternate; ?>>
+					<tr <?php echo esc_html($alternate); ?>>
 
 
 						<td class="column-title">
@@ -133,7 +133,7 @@
 								}
 
 								if ( $edit_url != '' ) {
-									echo '<a class="row-title" href="' . $edit_url . '">';
+									echo '<a class="row-title" href="' . esc_attr($edit_url) . '">';
 									echo esc_html($label) . '</a><br>';
 								} else {
 									echo esc_html($label) . '<br>';
@@ -223,10 +223,10 @@
 
 			        	$the_tax = get_taxonomy( $taxonomy );
 
-						echo '<a href="' . admin_url( 'edit-tags.php?taxonomy=' . $taxonomy ) . '">';
-						echo $the_tax->labels->name . '</a><br>';
+						echo '<a href="' . esc_attr(admin_url( 'edit-tags.php?taxonomy=' . $taxonomy )) . '">';
+						echo esc_html($the_tax->labels->name) . '</a><br>';
 					}
-					/*		echo implode(', ', $taxonomies ); */
+					/*		echo esc_html(implode(', ', $taxonomies )); */
 				?>
 		</td>
 		<td>
@@ -234,7 +234,7 @@
 			        foreach ($taxonomies as $row => $taxonomy) {
 
 			        	$the_tax = get_taxonomy( $taxonomy );
-						echo $taxonomy . '<br>';
+						echo esc_html($taxonomy) . '<br>';
 					}
 				?>
 		</td>
@@ -252,11 +252,11 @@
 					ksort( $all_fields );
 
 					foreach ( $all_fields as $key => $value ) {
-						echo $key . '<br>';
+						echo esc_html($key) . '<br>';
 					}
 				}
 /*
-			echo implode(', ', array_keys($all_fields) );
+			echo esc_html(implode(', ', array_keys($all_fields)));
 */			?>
 		</td>
 
@@ -287,10 +287,10 @@
 			} else {
 
 				sort( $all_supports );
-				echo implode(', ', $all_supports);
+				echo esc_html(implode(', ', $all_supports));
 /*
 				foreach ( $all_supports as $key ) {
-					echo $key . '<br>';
+					echo esc_html($key) . '<br>';
 				}
 */
 			}
@@ -302,7 +302,7 @@
 		<td class="column-author">
 
 		<?php
-			echo $post_count[ $post_type ] . '<br>';
+			echo esc_html($post_count[ $post_type ]) . '<br>';
 		?>
 
 		</td>
@@ -369,7 +369,7 @@
 						$alternate = ( $alternate == '' ) ? 'class="alternate"' : '';
 
 						?>
-						<tr <?php echo $alternate; ?>>
+						<tr <?php echo esc_html($alternate); ?>>
 
 							<td class="row-title">
 
@@ -378,10 +378,10 @@
 						        	$the_tax = get_taxonomy( $taxonomy, 'hide_empty=0' );
 
 						        	if (($taxonomy=="category")||($taxonomy=="post_tag")) {
-										echo '<a href="' . admin_url( 'edit-tags.php?taxonomy=' . $taxonomy ) . '">';
-										echo $the_tax->labels->name . '</a><br>';
+										echo '<a href="' . esc_attr(admin_url( 'edit-tags.php?taxonomy=' . $taxonomy )) . '">';
+										echo esc_html($the_tax->labels->name) . '</a><br>';
 						        	} else {
-										echo $the_tax->labels->name . '<br>';
+										echo esc_html($the_tax->labels->name) . '<br>';
 						        	}
 								?>
 
@@ -392,7 +392,7 @@
 
 //						        	$the_tax = get_taxonomy( $taxonomy, 'hide_empty=0' );
 
-									echo $taxonomy . '<br>';
+									echo esc_html($taxonomy) . '<br>';
 
 								?>
 
@@ -403,7 +403,7 @@
 								$terms = get_terms( $taxonomy, array('hide_empty'=>0) ); // Show empty terms
 
 								foreach ( $terms as $term ) {
-									echo $term->name . '<br>';
+									echo esc_html($term->name) . '<br>';
 								}
 								?>
 							</td>
@@ -411,7 +411,7 @@
 								<?php
 
 								foreach ( $terms as $term ) {
-									echo $term->slug . '<br>';
+									echo esc_html($term->slug) . '<br>';
 								}
 								?>
 							</td>
@@ -475,7 +475,7 @@
 				$count++;
 
 				if ( ($break>0) && ($count % $break == 1) ) echo '<td>';
-				echo $key.'<br>';
+				echo esc_html($key).'<br>';
 				if ( ($break>0) && ($count % $break == 0) ) echo '</td>';
 			}
 
@@ -543,17 +543,17 @@
 					if ($row_num % 2 == 0) {
 						$alternate = ( $alternate == '' ) ? 'class="alternate"' : '';
 					}
-					echo '<tr ' . $alternate . '>';
+					echo '<tr ' . esc_html($alternate) . '>';
 
 					?>
 						<td class="row-title">
 								<?php
-									echo $role['name'] . '<br>';
+									echo esc_html($role['name']) . '<br>';
 								?>
 						</td>
 						<td class="text-left">
 								<?php
-									echo $role_slug . '<br>';
+									echo esc_html($role_slug) . '<br>';
 								?>
 						</td>
 
@@ -568,7 +568,7 @@
 								$capabilities[] = $capability;
 							}
 
-							echo implode(", ", $capabilities) . '<br>';
+							echo esc_html(implode(", ", $capabilities)) . '<br>';
 
 							?>
 						</td>
@@ -634,14 +634,14 @@
 					if ($row_num % 2 == 0) {
 
 						$alternate = ( $alternate == '' ) ? 'class="alternate"' : '';
-						echo '<tr ' . $alternate . '>';
+						echo '<tr ' . esc_html($alternate) . '>';
 
 					}
 
 					?>
 						<td style="vertical-align:top" class="row-title">
 								<?php
-									echo $key . '<br>';
+									echo esc_html($key) . '<br>';
 								?>
 						</td>
 
@@ -673,7 +673,7 @@
                   $name = $f->name;
                 } catch (\Throwable $th) {}
 
-                echo $name;
+                echo esc_html($name);
               }
 							?>
 						</td>

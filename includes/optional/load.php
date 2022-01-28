@@ -264,6 +264,6 @@ function do_shortcode_file( $file, $dir = null, $return = false ) {
 
 	if ($return) return $output;
 
-	echo $output;
+	echo wp_kses_post($output);
 	return true;
 }

@@ -356,7 +356,7 @@ class CCS_Docs {
         ?>
         </h2>
 
-        <div class="inner-wrap tab-<?php echo $active_tab; ?>"><?php
+        <div class="inner-wrap tab-<?php echo esc_attr($active_tab); ?>"><?php
 
           // Settings Page
           if ( $active_tab == 'settings' ) {
@@ -443,7 +443,7 @@ class CCS_Docs {
              // Add footnote
             ?><hr>
             <div align="center" class="footer-notice logo-pad">
-              <img src="<?php echo CCS_URL;?>/includes/docs/logo.png">
+              <img src="<?php echo esc_attr(CCS_URL);?>/includes/docs/logo.png">
               <p class="no-margin-top">
                 <b>Custom Content Shortcode</b> is built by <a href="https://eliotakira.com" target="_blank">Eliot Akira</a>
               </p>
@@ -495,14 +495,14 @@ class CCS_Docs {
           <input
             type="checkbox"
             value="on"
-            name="ccs_content_settings[<?php echo $option_name; ?>]"
+            name="ccs_content_settings[<?php echo esc_attr($option_name); ?>]"
             <?php checked( $settings[$option_name], 'on' ); ?>
           />&nbsp;&nbsp;
           <?php
 
           if (!empty($def['tab'])) {
 
-            echo $def['text'];
+            echo wp_kses_post($def['text']);
 
             ?>&nbsp;
             <a href="options-general.php?page=ccs_reference&tab=<?php echo $def['tab']; ?>" title="Info">
@@ -511,7 +511,7 @@ class CCS_Docs {
 
           } else {
 
-            echo $def['text'];
+            echo wp_kses_post($def['text']);
 
           }
           ?>
@@ -545,7 +545,7 @@ class CCS_Docs {
         Deactivate shortcodes
         <input type="text"
           name="ccs_content_settings[disable_shortcodes]"
-          value="<?php echo $settings['disable_shortcodes']; ?>"
+          value="<?php echo esc_attr($settings['disable_shortcodes']); ?>"
           placeholder="shortcode1, shortcode2, ..."
           >
       </div>

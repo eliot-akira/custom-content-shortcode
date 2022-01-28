@@ -62,12 +62,12 @@ function do_ccs_shortcode( $content, $global = true, $in_content_filter = false 
 if ( function_exists('do_short') ) return;
 
 function do_short( $content = '', $data = array() ) {
-  echo get_short( $content, $data );
+  echo wp_kses_post( get_short( $content, $data ) );
 }
 
 function start_short() { ob_start(); }
 
-function end_short() { echo get_short(); }
+function end_short() { echo wp_kses_post( get_short() ); }
 
 function get_short( $content = '', $data = array() ) {
 
@@ -123,7 +123,7 @@ function ccs_inspect() {
   ?><pre><code><?php
   foreach ($args as $obj) {
     $result = ccs_inspect_replace($find, $replace, $obj);
-    if (is_string($result)) echo $result;
+    if (is_string($result)) echo wp_kses_post( $result );
     else print_r($result);
   }
   ?></code></pre><?php

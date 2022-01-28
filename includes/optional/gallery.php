@@ -204,7 +204,7 @@ ul.gallery_images {
 			    if ( $attachments ) {
 			        foreach ( $attachments as $attachment_id ) {
 			            echo '<li class="image attachment details" data-attachment_id="'
-			            	. $attachment_id
+			            	. esc_attr($attachment_id)
 			            	. '"><div class="attachment-preview"><div class="thumbnail">'
                     . wp_get_attachment_image( $attachment_id )
 			            	. '</div><a href="#" class="delete check" title="'
@@ -525,7 +525,7 @@ ul.gallery_images {
 			$post_types = isset( $settings['post_types'][ $key ] ) ? esc_attr( $settings['post_types'][ $key ] ) : '';
 
 			?><p>
-				<input type="checkbox" id="<?php echo $key; ?>" name="custom-gallery[post_types][<?php echo $key; ?>]" <?php checked( $post_types, 'on' ); ?>/><label for="<?php echo $key; ?>"> <?php echo $label; ?></label>
+				<input type="checkbox" id="<?php echo esc_attr($key); ?>" name="custom-gallery[post_types][<?php echo esc_attr($key); ?>]" <?php checked( $post_types, 'on' ); ?>/><label for="<?php echo esc_attr($key); ?>"> <?php echo esc_html($label); ?></label>
 			</p><?php
 		}
 	}

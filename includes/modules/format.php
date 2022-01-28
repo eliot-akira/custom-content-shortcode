@@ -369,8 +369,7 @@ class CCS_Format {
     }
 /*
     if( @$atts['special']=='true' ) {
-      $content = htmlentities($content);
-//echo '<pre><code>'.$content.'</code></pre>';
+//echo '<pre><code>'.esc_html($content).'</code></pre>';
     }
 */
     return str_replace(array('[',']'), array('&#91;','&#93;'), $content);
