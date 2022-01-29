@@ -1,5 +1,5 @@
 === Custom Content Shortcode ===
-Stable tag: 4.0.0
+Stable tag: 4.0.1
 Contributors: miyarakira
 Author: Eliot Akira
 Author URI: eliotakira.com
@@ -63,7 +63,7 @@ Support for other plugins: [Advanced Custom Fields](http://wordpress.org/plugins
 
 == Changelog ==
 
-4.0.0
+4.0.1
 ---
 
 * Correct stable tag in readme.txt

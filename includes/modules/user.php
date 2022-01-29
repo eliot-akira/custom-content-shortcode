@@ -18,8 +18,8 @@ class CCS_User {
   function __construct() {
 
     add_ccs_shortcode( array(
-      'users' => array($this, 'users_shortcode'),
-      'user' => array($this, 'user_shortcode'),
+      'users' => array('CCS_User', 'users_shortcode'),
+      'user' => array('CCS_User', 'user_shortcode'),
       'is' => array($this, 'is_shortcode'),
       '-is' => array($this, 'is_shortcode'),
       '--is' => array($this, 'is_shortcode'),
